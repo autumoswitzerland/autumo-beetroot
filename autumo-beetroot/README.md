@@ -514,6 +514,7 @@ as this one: https://keystore-explorer.org. The password for 'ssl/beetroot.jks' 
 <!-- ROADMAP -->
 ## Roadmap | Backlog
 
+- [Provid autumo patched / extended sources of NanoHTTPD](http://nanohttpd.org)
 - [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 - [Add SQLLite DB Coonnectivity](https://www.sqlite.org)
 
