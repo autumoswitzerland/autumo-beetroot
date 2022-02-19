@@ -8,7 +8,7 @@
 [stars-url]: https://github.com/autumoswitzerland/autumo/stargazers
 [issues-shield]: https://img.shields.io/github/issues/autumoswitzerland/autumo.svg?style=for-the-badge
 [issues-url]: https://github.com/autumoswitzerland/autumo/issues
-[license-shield]: https://img.shields.io/github/license/autumoswitzerland/autumo.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg?style=for-the-badge
 [license-url]: https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/company/autumo
@@ -24,7 +24,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)][license-url]
+[![License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
