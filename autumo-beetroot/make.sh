@@ -230,11 +230,11 @@ then
 
 # --------- Copy infos
 
-	cp ../README.txt autumo-beetRoot-$VERSION/
+	cp ../README.md autumo-beetRoot-$VERSION/
 	cp ../LICENSE.txt autumo-beetRoot-$VERSION/
 	cp ../THIRDPARTYLICENSES.txt autumo-beetRoot-$VERSION/
 
-	cp ../README.txt autumo-beetRoot-web-$VERSION/
+	cp ../README.md autumo-beetRoot-web-$VERSION/
 	cp ../LICENSE.txt autumo-beetRoot-web-$VERSION/
 	cp ../THIRDPARTYLICENSES.txt autumo-beetRoot-web-$VERSION/
 
