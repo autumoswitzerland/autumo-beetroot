@@ -139,7 +139,7 @@ Enjoy!
 3. **beetroot.war**: Tomcat version.
 4. **beetroot-jetty.war**: Jetty version. 
 
-Distributions will be available later at [products.autumo.ch](https://products.autumo.ch) - they can be generated with the make shell-script `make.sh` too.
+Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
