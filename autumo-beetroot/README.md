@@ -24,7 +24,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![BSD License][license-shield]][license-url]
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
