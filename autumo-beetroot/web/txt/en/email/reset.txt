@@ -1,0 +1,6 @@
+
+{$subtitle}
+
+{$message}
+
+Link: {$link}

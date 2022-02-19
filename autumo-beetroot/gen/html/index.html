@@ -1,0 +1,31 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+	<ul class="side-nav">
+		<li class="heading">Actions</li>
+		<li><a href="/{$lang}/##entitynameplural##/add">New ##Entityname##</a></li>
+	</ul>
+</nav>
+
+<div class="tasks index large-10 medium-8 columns content">
+
+	<h3>##Entitynameplural##</h3>
+	<div class="table-responsive">
+		<table>
+			<colgroup>
+				<!--  NOTE: Define widths per column with 'style="width: xx%;" ' -->
+##columns##
+				<col span="1">
+			</colgroup>
+			<thead>
+				<tr>
+					{$head}
+					<th class="actions">Actions</th>
+				</tr>
+			</thead>
+			<tbody>{$data}
+			</tbody>
+		</table>
+	</div>
+
+	{$paginator}
+
+</div>

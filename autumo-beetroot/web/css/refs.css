@@ -1,0 +1,89 @@
+/**
+ * Copyright 2022 autumo GmbH, Michael Gasche.
+ * All Rights Reserved.
+ * 
+ * NOTICE: All information contained herein is, and remains
+ * the property of autumo GmbH The intellectual and technical
+ * concepts contained herein are proprietary to autumo GmbH
+ * and are protected by trade secret or copyright law.
+ * 
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from autumo GmbH.
+ * 
+ */
+
+
+
+/**
+ * References - CSS style-sheets with URLs in it. 
+ * Always use single quotes ' for urls!
+ */
+
+ 
+/**
+ * Images for language selection entries.
+ */
+.lang_select_de {
+	background-image: url('/img/lang/de.gif');
+	background-repeat: no-repeat;
+	background-position: top;
+}
+.lang_select_en {
+	background-image: url('/img/lang/en.gif');
+	background-repeat: no-repeat;
+	background-position: top;
+}
+
+body {
+	background: url('/img/tiles-back.png');
+	background-repeat: repeat;
+}
+
+/**
+ * Status images
+ */
+.redStatus {
+	background-image: url('/img/status/redStatus32.png');
+	background-repeat: no-repeat;
+	background-size: 30px;
+	background-position: 6px 3px;
+}
+.orangeStatus {
+	background: url('/img/status/orangeStatus32.png');
+	background-repeat: no-repeat;
+	background-size: 30px;
+	background-position: 6px 3px;
+}
+.greenStatus {
+	background: url('/img/status/greenStatus32.png');
+	background-repeat: no-repeat;
+	background-size: 30px;
+	background-position: 6px 3px;
+}
+
+/**
+ * Fonts.
+ */
+@font-face {
+	font-family: 'Aileron-light';
+	src: url('/font/Aileron-Thin.eot');
+	src: url('/font/Aileron-Thin.eot?#iefix') format('embedded-opentype'),
+		url('/font/Aileron-Thin.woff2') format('woff2'),
+		url('/font/Aileron-Thin.woff') format('woff'),
+		url('/font/Aileron-Thin.ttf') format('truetype'),
+		url('/font/Aileron-Thin.svg#Aileron-Thin') format('svg');
+	font-weight: 100;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Aileron';
+	src: url('/font/Aileron-Regular.eot');
+	src: url('/font/Aileron-Regular.eot?#iefix') format('embedded-opentype'),
+		url('/font/Aileron-Regular.woff2') format('woff2'),
+		url('/font/Aileron-Regular.woff') format('woff'),
+		url('/font/Aileron-Regular.ttf') format('truetype'),
+		url('/font/Aileron-Regular.svg#Aileron-Regular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

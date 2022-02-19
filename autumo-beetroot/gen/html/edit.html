@@ -1,0 +1,38 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+	<ul class="side-nav">
+		<li class="heading">Actions</li>
+		<li>
+			<form name="post_##entitynameplural##_delete_{$id}" style="display: none;"
+				method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
+				<input type="hidden" name="_method" value="POST" /> <input
+					type="hidden" name="_csrfToken" autocomplete="off"
+					value="{$csrfToken}" />
+			</form> <a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="side-nav-item"
+			data-confirm-message="Are you sure you want to delete # {$dbid}??"
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_##entitynameplural##_delete_{$id}.submit(); } event.returnValue = false; return false;">Delete
+				##Entityname##</a>
+		</li>
+		<li><a href="/{$lang}/##entitynameplural##" class="side-nav-item">List ##Entitynameplural##</a></li>
+	</ul>
+</nav>
+
+<div class="##entitynameplural## form large-10 medium-8 columns content">
+	<div class="##entitynameplural## form content">
+		<form method="post" accept-charset="utf-8"
+			action="/{$lang}/##entitynameplural##/edit?id={$id}">
+			<div style="display: none;">
+				<input type="hidden" name="_method" value="PUT" /> <input
+					type="hidden" name="_csrfToken" autocomplete="off"
+					value="{$csrfToken}" />
+			</div>
+			<fieldset>
+				<legend>Edit ##Entityname##</legend>
+				{$data}
+			</fieldset>
+			<a href="/{$lang}/##entitynameplural##/index" class="button right">Cancel</a>
+			<button type="submit">Submit</button>
+			<br /> <br /> <br />
+		</form>
+	</div>
+</div>
+

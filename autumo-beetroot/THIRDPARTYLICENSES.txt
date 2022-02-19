@@ -1,0 +1,87 @@
+
+###################################################################################################
+#
+#  Third Party Licenses
+#
+#  autumo beetRoot 1.0.0 - slim & rapid Java web framework
+#  Version: 2.0
+#
+#--------------------------------------------------------------------------------------------------
+#
+#  2022 autumo GmbH
+#  Date: 14.02.2021
+#
+###################################################################################################
+
+
+
+Third-party licenses
+--------------------
+
+You as an end user don't have to purchase or take actions in further license agreements
+with third parties: All licenses are covered by the license for this product (see LICENSE.txt).
+
+
+-	Libraries:	Apache
+				- CLI
+				- Codec
+				- Io
+	License:	Apache License, Version 2.0
+	Link:		https://www.apache.org/licenses/LICENSE-2.0
+
+-	Library:	log4j2
+	License:	Apache License, Version 2.0
+	Link:		https://www.apache.org/licenses/LICENSE-2.0
+
+-	Library:	SLF4J Logging Framework
+	License:	MIT License
+	Link:		http://www.slf4j.org/license.html
+
+-	Library:	NanoHTTPD – a tiny web server in Java
+	License:	3-Clause BSD License
+	Link:		https://opensource.org/licenses/BSD-3-Clause
+
+-	Library:	NanoHTTPD, Nanolets
+	License:	3-Clause BSD License
+	Link:		https://opensource.org/licenses/BSD-3-Clause
+
+-	Library:	Jakarta Activation API
+	License:	Eclipse Distribution License - v 1.0
+	Link:		https://projects.eclipse.org/content/eclipse-distribution-license-1.0-bsd
+
+-	Library:	Jakarta Mail API
+	Licenses:	Eclipse Distribution License - v 1.0
+				Eclipse Public License 2.0
+				(Secondary) GNU General Public License, version 2 with the GNU Classpath Exception
+	Links:		https://projects.eclipse.org/content/eclipse-distribution-license-1.0-bsd
+				https://projects.eclipse.org/license/epl-2.0
+				https://projects.eclipse.org/license/secondary-gpl-2.0-cp
+
+-	Library:	The Checker Qualifiers
+	License:	MIT License
+	Link:		https://opensource.org/licenses/MIT
+
+-	Library:	Protocol Buffers
+	License:	3-Clause BSD License
+	Link:		https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
+
+-	Library:	H2 Database Engine
+	Licenses:	MPL 2.0 (Mozilla Public License Version 2.0) or
+				EPL 1.0 (Eclipse Public License)
+	Links:		https://www.mozilla.org/en-US/MPL/2.0/
+				https://opensource.org/licenses/eclipse-1.0.php
+
+-	Library:	PostgreSQL
+	License:	The PostgreSQL License (PostgreSQL)
+	Link:		https://www.postgresql.org/about/licence/
+
+-	Library:	MariaDB Connector/J
+	License:	GNU Lesser General Public License (LGPLv2.1)
+	Links:		https://opensource.org/licenses/LGPL-2.1
+				https://mariadb.com/kb/en/licensing-faq/
+
+
+NOTE: All specific licenses of the third-party-software distributed within this product above can be
+found in the directory: 'etc/licenses'.
+
+

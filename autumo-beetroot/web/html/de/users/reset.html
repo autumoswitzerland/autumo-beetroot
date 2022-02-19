@@ -1,0 +1,30 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar"></nav>
+
+<div class="users form large-10 medium-8 columns content">
+
+	<form method="POST" accept-charset="utf-8"
+		action="/{$lang}/users/reset">
+
+		<input type="hidden" name="_method" value="PUT" />
+
+		<fieldset>
+
+			<legend>Bitte geben Sie Ihre E-Mail Adresse ein</legend>
+
+			<div class="input email">
+				<label for="email">Email</label> <input type="email" name="email"
+					id="email" />
+			</div>
+
+			<br> Ein Link zum Zurücksetzen des Passworts wird an die
+			angegebene E-Mail-Adresse gesendet. <br> <br> <a
+				href="/{$lang}/users/login">Standard-Anmeldung...</a> <br>
+
+		</fieldset>
+
+		<button type="submit">Reset</button>
+		<br /> <br /> <br />
+
+	</form>
+
+</div>

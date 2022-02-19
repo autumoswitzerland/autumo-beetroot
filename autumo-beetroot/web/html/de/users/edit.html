@@ -1,0 +1,38 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+	<ul class="side-nav">
+		<li class="heading">Aktionen</li>
+		<li>
+			<form name="post_users_delete_{$id}" style="display: none;"
+				method="post" action="/{$lang}/users/delete?id={$id}">
+				<input type="hidden" name="_method" value="POST" /> <input
+					type="hidden" name="_csrfToken" autocomplete="off"
+					value="{$csrfToken}" />
+			</form> <a href="/{$lang}/users/delete?id={$id}" class="side-nav-item"
+			data-confirm-message="Are you sure you want to delete # {$dbid}??"
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.returnValue = false; return false;">Benutzer
+				löschen</a>
+		</li>
+		<li><a href="/{$lang}/tasks" class="side-nav-item">List Tasks</a></li>
+	</ul>
+</nav>
+
+<div class="users form large-10 medium-8 columns content">
+	<div class="users form content">
+		<form method="post" accept-charset="utf-8"
+			action="/{$lang}/users/edit?id={$id}">
+			<div style="display: none;">
+				<input type="hidden" name="_method" value="PUT" /> <input
+					type="hidden" name="_csrfToken" autocomplete="off"
+					value="{$csrfToken}" />
+			</div>
+			<fieldset>
+				<legend>Benutzer editieren</legend>
+				{$data}
+			</fieldset>
+			<a href="/{$lang}/users/index" class="button right">Abbrechen</a>
+			<button type="submit">Absenden</button>
+			<br /> <br /> <br />
+		</form>
+	</div>
+</div>
+

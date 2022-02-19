@@ -1,0 +1,80 @@
+/**
+ * Copyright 2022 autumo GmbH, Michael Gasche.
+ * All Rights Reserved.
+ * 
+ * NOTICE: All information contained herein is, and remains
+ * the property of autumo GmbH The intellectual and technical
+ * concepts contained herein are proprietary to autumo GmbH
+ * and are protected by trade secret or copyright law.
+ * 
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from autumo GmbH.
+ * 
+ */
+
+
+
+/**
+ * Customized design, 
+ * language additions,
+ * Overrides.
+ */
+
+
+/**
+ * Split design.
+ */
+header {
+	margin-bottom: 14px;
+	border-bottom: 2px solid #02090e;
+	box-shadow: 1px 1px rgba(0, 0, 0, 0.24);
+}
+
+nav {
+	border-top: 1px solid #0e4e74;
+	margin-top: -1px;
+}
+
+.container {
+	border-bottom: 1px solid #666666;
+}
+
+footer {
+	margin-top: 14px;
+}
+
+/**
+ * Further customization & overrides.
+ */
+
+.header {
+	display: table;
+	width:100%;	
+}
+.mainlogo {
+	margin-right: 10px;
+}
+.title-left {
+	display: flex;
+	float: left;
+}
+.title-right {
+	display: block;
+	float: right;
+}
+.mainslogan {
+	font-family: 'Aileron-light', sans-serif !important;
+	font-size: 1.6rem !important;
+	font-style: italic;
+	line-height: 1.6 !important;
+	color: #2dc7ff;
+	margin-top: 40px;
+	margin-right: 30px;
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+.dropdown-content {
+	right: 0px;
+}
+

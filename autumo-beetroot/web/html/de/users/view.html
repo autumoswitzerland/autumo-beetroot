@@ -1,0 +1,30 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+	<ul class="side-nav">
+		<li class="heading">Aktionen</li>
+		<li><a href="/{$lang}/users/edit?id={$id}" class="side-nav-item">Benutzer
+				editieren</a></li>
+		<li>
+			<form name="post_users_delete_{$id}" style="display: none;"
+				method="post" action="/{$lang}/users/delete?id={$id}">
+				<input type="hidden" name="_method" value="POST" /> <input
+					type="hidden" name="_csrfToken" autocomplete="off"
+					value="{$csrfToken}" />
+			</form> <a href="/{$lang}/users/delete?id={$id}" class="side-nav-item"
+			data-confirm-message="Are you sure you want to delete # {$dbid}?"
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.returnValue = false; return false;">Delete
+				User</a>
+		</li>
+		<li><a href="/{$lang}/users" class="side-nav-item">Benutzer
+				auflisten</a></li>
+		<li><a href="/{$lang}/users/add" class="side-nav-item">Neuer
+				Benutzer</a></li>
+	</ul>
+</nav>
+
+<div class="users view large-10 medium-8 columns content">
+	<h3>User '{$userName}'</h3>
+	<div class="table-responsive">
+		<table>{$data}
+		</table>
+	</div>
+</div>

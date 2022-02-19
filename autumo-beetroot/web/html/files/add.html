@@ -1,0 +1,21 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar"></nav>
+
+<div class="fileupload index large-10 medium-8 columns content">
+
+	<div class="fileupload form content">
+		<form enctype="multipart/form-data" action="/files/add" method="post">
+			<fieldset>
+				<legend>File upload example</legend>
+				<input type="file" id="file" name="file" onchange="checkUpload({$maxFileUploadSizeMb})">
+				<!-- <p id="showSize"></p>  -->
+			</fieldset>
+			<a href="/{$lang}/home" class="button right">Cancel</a>
+			<button type="submit">Upload</button>
+			<div style="display: none;">
+				<input type="hidden" name="MAX_FILE_SIZE" value="{$maxFileUploadSize}" />
+				<input type="hidden" name="_csrfToken" autocomplete="off" value="{$csrfToken}" />
+			</div>
+			<br /> <br /> <br />
+		</form>
+	</div>
+</div>
