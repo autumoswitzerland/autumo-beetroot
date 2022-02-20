@@ -102,7 +102,7 @@ It is shipped with the following features ready to use:
 - HTTPS protocol and TLS for mail if configured
 - User roles & access control on controller level
 - User session are stored when servers are stopped
-- Full CRUD-Generator 'PLANT' for views, models and handlers
+- Full CRUD-Generator **PLANT** for views, models and handlers
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
 - Runs stand-alone as well as in common servlet containers such as apache Tomcat and jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
 - Hierarchical resource loader; e.g. German language requested, if not found, use configured default language, then use no language at all; "lookup till you find something usable" is the 
