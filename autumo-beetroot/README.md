@@ -502,7 +502,7 @@ If you configure beetRoot to run with the HTTPS protocol (configuration paramete
 <!-- ROADMAP -->
 ## Roadmap | Backlog
 
-- [Provid autumo patched / extended sources of NanoHTTPD](http://nanohttpd.org)
+- [Provide autumo patched / extended sources of NanoHTTPD](http://nanohttpd.org)
 - [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 - [Add SQLLite DB Coonnectivity](https://www.sqlite.org)
 
