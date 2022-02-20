@@ -540,6 +540,15 @@ Project Link: [https://github.com/autumoswitzerland/autumo/tree/master/autumo-be
 
 
 
+<!-- DONATE -->
+## Donate
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=WWDWJG7Z4WJZC)
+
+You donation helps to develop autumo beetRoot further. Thank you!
+
+
+
 Copyright 2022, autumo Ltd., Switzerland
 
 
