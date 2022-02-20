@@ -134,10 +134,10 @@ Enjoy!
 <!-- DISTRIBUTIONS -->
 ## Distributions
 
-1. `**autumo-beetRoot-1.0.0.zip**`: Stand-alone server version with all files for every distribution.
-2. `**autumo-beetRoot-web-1.0.0.zip**`: General web-app version.
-3. `**beetroot.war**`: Tomcat version.
-4. `**beetroot-jetty.war**`: Jetty version. 
+1. **`autumo-beetRoot-1.0.0.zip`**: Stand-alone server version with all files for every distribution.
+2. **`autumo-beetRoot-web-1.0.0.zip`**: General web-app version.
+3. **`beetroot.war`**: Tomcat version.
+4. **`beetroot-jetty.war`**: Jetty version. 
 
 Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
@@ -199,7 +199,7 @@ There are two configuration variables for this: `admin_pw_encoded` & `db_pw_enco
  
 For security reasons, you should change the secret key seed (`secret_key_seed`) in the beginning and then generate new passwords with the tool `pwencoder.sh/pwencoder.bat`. If you do, you have to change the initial encoded password for the beetRoot `admin` user in the database to gain access again!
 
-**NOTE**: All passwords are `**beetroot**` in the beginning!
+**NOTE**: All passwords are **`beetroot`** in the beginning!
 
 
 Furthermore, the configuration offers wide possibilities of customization for your app, such as:

@@ -199,7 +199,7 @@ There are two configuration variables for this: `admin_pw_encoded` & `db_pw_enco
  
 For security reasons, you should change the secret key seed (`secret_key_seed`) in the beginning and then generate new passwords with the tool `pwencoder.sh/pwencoder.bat`. If you do, you have to change the initial encoded password for the beetRoot `admin` user in the database to gain access again!
 
-**NOTE**: All passwords are `**beetroot**` in the beginning!
+**NOTE**: All passwords are **`beetroot`** in the beginning!
 
 
 Furthermore, the configuration offers wide possibilities of customization for your app, such as:
