@@ -256,26 +256,26 @@ It generates the following sources:
 
 HTML templates & model configuration (`columns.cfg`):
 
-- web/html/{entity-plural-name}/add.html
-- web/html/{entity-plural-name}/edit.html
-- web/html/{entity-plural-name}/view.html
-- web/html/{entity-plural-name}/index.html
-- web/html/{entity-plural-name}/columns.cfg
+- web/html/`{entity-plural-name}`/add.html
+- web/html/`{entity-plural-name}`/edit.html
+- web/html/`{entity-plural-name}`/view.html
+- web/html/`{entity-plural-name}`/index.html
+- web/html/`{entity-plural-name}`/columns.cfg
 
 Java sources (handlers):
 
-- src/planted/beetroot/handler/{entity-plural-name}/{Entity-plural-name}AddHandler.java
-- src/planted/beetroot/handler/{entity-plural-name}/{Entity-plural-name}EditHandler.java
-- src/planted/beetroot/handler/{entity-plural-name}/{Entity-plural-name}ViewHandler.java
-- src/planted/beetroot/handler/{entity-plural-name}/{Entity-plural-name}IndexHandler.java
+- src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`AddHandler.java
+- src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`EditHandler.java
+- src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`ViewHandler.java
+- src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`IndexHandler.java
 
 Adjust them to your needs (see existing handlers for examples) and more **IMPORTANT**: Move the Java sources to another package! All generated files are overwritten the next time if you re-generate sources for the same entity!
 
 The HTML templates & model configuration are usually moved/copied to a language sub-directory:
 
-- web/html/{entity-plural-name}/en/*.html|columns.cfg
-- web/html/{entity-plural-name}/de/*.html|columns.cfg
-- web/html/{entity-plural-name}/fr/*.html|columns.cfg
+- web/html/`{entity-plural-name}`/en/*.html|columns.cfg
+- web/html/`{entity-plural-name}`/de/*.html|columns.cfg
+- web/html/`{entity-plural-name}`/fr/*.html|columns.cfg
 - etc.
 
 We suggest to keep your original generated HTML templates and model configuration, they serve as a fallback scenario when the user request a language that is not present!
