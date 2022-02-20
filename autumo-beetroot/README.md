@@ -193,7 +193,7 @@ If you want to keep everything under control use the archive `autumo-beetRoot-we
 <!-- CONFIGURATION AND PASSWORDS -->
 ## Configuration and Passwords
 
-Have a look at `cfg/beetroot.cfg`. Every configuration parameter is explained. You can run beetRoot with ALL passwords encoded if you wish. You can define, if passwords used in the configuration file should be encoded. The same for passwords stored in the beetRoot-database-table 'users'.
+Have a look at `cfg/beetroot.cfg`. Every configuration parameter is explained. You can run beetRoot with ALL passwords encoded if you wish. You can define, if passwords used in the configuration file should be encoded. The same for passwords stored in the beetRoot-database-table `users`.
 
 There are two configuration variables for this: `admin_pw_encoded` & `db_pw_encoded` (yes/no).
  
@@ -216,7 +216,7 @@ Furthermore, the configuration offers wide possibilities of customization for yo
 - DB access and DB type (connected through JDBC)
 - Supported databases: MySQL, MariaDB, Java H2, Oracle, PostgreSQL
 - Default web view (in case of certain redirects)
-- Mail configuration inclusive TLS; some configuration parameters can be overwritten by values in the standard DB table 'properties'
+- Mail configuration inclusive TLS; some configuration parameters can be overwritten by values in the standard DB table `properties`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -227,7 +227,7 @@ Furthermore, the configuration offers wide possibilities of customization for yo
 
 Every beetRoot package (stand-alone & web-apps) come with a [H2 database](https://h2database.com) filled with sample data and the configuration points to this database. If you want to connect to your own database, simply change the connections parameters in the configuration.
 
-To setup a new database scheme use the SQL-Script 'db/install_beetroot.sql' and customize it to your needs and database. 
+To setup a new database scheme use the SQL-Script `db/install_beetroot.sql` and customize it to your needs and database. 
 
 A word when using MySQL: Due to the GPL license, we don't distribute or create a dependency to the MySQL Connector for Java. Visit Oracle MySQL website and download it yourself if you want to use this connector. Note that the MariaAB connector for Java works also for MySQL databases up to the version 5.5 of MySQL or even for higher versions! Also have a look here for further valuable information in this context: [MariaDB License FAQ](https://mariadb.com/kb/en/licensing-faq).
 
@@ -310,11 +310,11 @@ Your TODO's are the following after generating:
 
 The following standard HTML templates are present, which can be customized too of course:
 
-1. web/html/blocks/*.html:
+- `web/html/blocks/*.html`:
  
 	- Defines the layout of the page with its general elements such as head, header, menu admin menu, language menu, message block and script section (javascript).
   
-	- They can be copied to other language directories too (e.g. `web/html/blocks/en/*.html:`), if they need to be language specific, which in most cases, is not necessary. They also serve as fallback templates, if the user requested a language that isn't found respectively the web-app is not yet translated into that language.
+	- They can be copied to other language directories too (e.g. `web/html/blocks/en/*.html`), if they need to be language specific, which in most cases, is not necessary. They also serve as fallback templates, if the user requested a language that isn't found respectively the web-app is not yet translated into that language.
   
 	- **NOTE**: Here, as well as with the generated HTML templates, the lookup algorithm is:
 		a) First, lookup templates in requested language directory (2-letter ISO code)
@@ -333,7 +333,7 @@ The following standard HTML templates are present, which can be customized too o
 <!-- ROUTING -->
 ## Routing
 
-The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced for your own app. The define your router's java class in the `web_router` parameter. You simply have to implement the 'Router' interface.
+The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced for your own app. The define your router's java class in the `web_router` parameter. You simply have to implement the `Router` interface.
 
 Let's have a look at some routes:
 
@@ -379,7 +379,7 @@ For example ('beetroot' is the default servlet name/url):
 beetRoot handles every pre-url-path / servlet-name-path by its own, if configured correctly!
 
 
-**IMPORTANT**: If you run beetRoot as a stand-alone server or in a servlet container, where beetRoot is installed on the ROOT path, NEVER specify the parameter `web_html_ref_pre_url_part`! When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an image source or any other source (e.g. `<img src="/img/beetroot-100.png">`), you always point to the root-path "/". Tough, you have to include the language placeholder ':lang' for HTML templates always.
+**IMPORTANT**: If you run beetRoot as a stand-alone server or in a servlet container, where beetRoot is installed on the ROOT path, NEVER specify the parameter `web_html_ref_pre_url_part`! When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an image source or any other source (e.g. `<img src="/img/beetroot-100.png">`), you always point to the root-path "/". Tough, you have to include the language placeholder `:lang` for HTML templates always.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -388,10 +388,7 @@ beetRoot handles every pre-url-path / servlet-name-path by its own, if configure
 <!-- ROUTING -->
 ## Logging
 
-beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2
-implementation (the one that has NOT the log4j bug in it...!) is used and the default 
-configuration 'cfg/logging.xml' (stand-alone) and 'logging.xml' (in tomcat web-app servlet
-directory) is used. If you want to specify your own, adjust it this way:
+beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default configuration 'cfg/logging.xml' (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
 
 - stand-alone: Define a runtime parameter in the shell/bash script when starting Java:
 
@@ -401,16 +398,13 @@ directory) is used. If you want to specify your own, adjust it this way:
 
 	`beetRootLogConfig`
 
-As for jetty, they stand above all that "log-framework-soup" and they just simply use a SLF4j 
-implementation that needs no further configuration. Hence, the library `slf4j.simple-x.y.z.jar`
-is packed into `beetroot-jetty.war`. The only concern is to add your package to the the jetty
-basic logging configuration in '{JETTY_BASE}/resources/jetty-logging.properties':
+As for jetty, they stand above all that "log-framework-soup" and they just simply use a SLF4j implementation that needs no further configuration. Hence, the library `slf4j.simple-x.y.z.jar` is packed into `beetroot-jetty.war`. The only concern is to add your package to the the jetty basic logging configuration in `{JETTY_BASE}/resources/jetty-logging.properties`:
 
 	## Configure a level for specific logger
 	ch.autumo.beetroot.LEVEL=INFO
 
 
-**NOTE**: All logging levels are set to 'INFO' in the beginning!
+**NOTE**: All logging levels are set to `INFO? in the beginning!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -444,7 +438,7 @@ Text format:
   - txt/html/de/email
   - etc.
   
-beetRoot can send both HTML and text emails. Formats are configured with the parameter 'mail_formats'. 
+beetRoot can send both HTML and text emails. Formats are configured with the parameter `mail_formats`. 
 
 
 **NOTE**: Java mail doesn't allow sending HTML with a head nor body-tag, hence you only are able to define HTNML templates with tags that would be inside of a the body-tag. It is specification! 
@@ -482,13 +476,13 @@ Also, in this case, you never have to reference a servlet name in any HTML templ
 
 A few words about existing stylesheets:
 
-  - web/css/base.css: Base styles, you don't want to change this in most cases.
+  - `web/css/base.css`: Base styles, you don't want to change this in most cases.
 
-  - web/css/style.css: Adjust your general web.app style here.
+  - `web/css/style.css`: Adjust your general web.app style here.
 
-  - web/css/refs.css: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet context correctly.
+  - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet context correctly.
 
-  - web/css/default.css: Your default web-app styles and designs.
+  - `web/css/default.css`: Your default web-app styles and designs.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -499,7 +493,7 @@ A few words about existing stylesheets:
 
 If you run beetRoot as a stand-alone server and you want to run it with the HTTPS protocol, there's a prepared and self-signed keystore file: `ssl/beetroot.jks` that is valid forever.
 
-If you configure beetRoot to run with the HTTPS protocol (configuration parameter `ws_https`), you can use this keystore file and it is specified by default in the configuration (`ws_ks`). Your browser will still complain, because it is not issued by a valid Certificate Authority (CA), but you can force the browser to still load the web-app by adding this exception. If you run beetRoot in productive mode, you have to acquire a valid certificate and store it this keystore or in a an own; Java supports the PKCS\#12 format and Java keystore can be opened with tools such as this one: https://keystore-explorer.org. The password for `ssl/beetroot.jks` is **beetroot**.  
+If you configure beetRoot to run with the HTTPS protocol (configuration parameter `ws_https`), you can use this keystore file and it is specified by default in the configuration (`ws_ks`). Your browser will still complain, because it is not issued by a valid Certificate Authority (CA), but you can force the browser to still load the web-app by adding this exception. If you run beetRoot in productive mode, you have to acquire a valid certificate and store it this keystore or in a an own; Java supports the PKCS\#12 format and Java keystore can be opened with tools such as this one: https://keystore-explorer.org. The password for `ssl/beetroot.jks` is **`beetroot`**.  
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
