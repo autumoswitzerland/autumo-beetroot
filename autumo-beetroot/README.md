@@ -133,8 +133,8 @@ Enjoy!
 <!-- DISTRIBUTIONS -->
 ## Distributions
 
-1. **`autumo-beetRoot-1.0.0.zip`**: Stand-alone server version with all files for every distribution.
-2. **`autumo-beetRoot-web-1.0.0.zip`**: General web-app version.
+1. **`autumo-beetRoot-x.y.z.zip`**: Stand-alone server version with all files for every distribution.
+2. **`autumo-beetRoot-web-x.y.z.zip`**: General web-app version.
 3. **`beetroot.war`**: Tomcat version.
 4. **`beetroot-jetty.war`**: Jetty version. 
 
