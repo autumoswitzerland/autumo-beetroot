@@ -29,7 +29,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/autumoswitzerland/autumo/autumo-beetroot">
+  <a href="https://github.com/autumoswitzerland/autumo/tree/master/autumo-beetroot">
     <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo/master/autumo-beetroot/web/img/beetroot.png" alt="Logo" width="200" height="200">
   </a>
 
@@ -73,7 +73,7 @@
     <li><a href="#toc_14">Webapp Design and Javascript</a></li>
     <li><a href="#toc_15">HTTPS</a></li>
     <li><a href="#toc_16">Roadmap | Backlog</a></li>
-    <li><a href="#toc_17">Lincense</a></li>
+    <li><a href="#toc_17">License</a></li>
     <li><a href="#toc_18">Contact</a></li>
     <li><a href="#toc_19">Acknowledgments</a></li>
   </ol>
@@ -139,7 +139,7 @@ Enjoy!
 3. **beetroot.war**: Tomcat version.
 4. **beetroot-jetty.war**: Jetty version. 
 
-Distributions can also be generated with the make shell-script.
+Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -171,15 +171,15 @@ beetRoot can be run within two modes:
 
 1. Stand-alone usage:
 
-- beetRoot.sh start / beetRoot.bat start 
+	- beetRoot.sh start / beetRoot.bat start 
 
-	See shell-script if you need special modifications. The stand-alone beetRoot web-server reads the configuration 'cfg/beetroot.cfg'. Most configuration parameters are used for servlet-container  operation too. All Configuration parameters are explained in the configuration file itself.
+		See shell-script if you need special modifications. The stand-alone beetRoot web-server reads the configuration 'cfg/beetroot.cfg'. Most configuration parameters are used for servlet-container  operation too. All Configuration parameters are explained in the configuration file itself.
 
-- Surf to 'http://localhost:8778' (8778 is the default port for the stand-alone server).
+	- Surf to 'http://localhost:8778' (8778 is the default port for the stand-alone server).
 
-- The stand-alone server with its resources is packed into 'autumo-beetRoot-x.y.z.zip'.
+	- The stand-alone server with its resources is packed into 'autumo-beetRoot-x.y.z.zip'.
 
-- Use 'beetRoot.sh stop' / 'beetRoot.bat stop' to properly stop the stand-alone server.
+	- Use 'beetRoot.sh stop' / 'beetRoot.bat stop' to properly stop the stand-alone server.
 
 2. Servlet-container:
 
@@ -547,11 +547,12 @@ Project Link: [https://github.com/autumoswitzerland/autumo/tree/master/autumo-be
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* Thanks [CakePHP] inspiring me (https://cakephp.org)
+* Thank you CakePHP inspiring me (https://cakephp.org)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
 
-~~ Copyright 2022, autumo Ltd., Switzerland
+Copyright 2022, autumo Ltd., Switzerland
+
 
