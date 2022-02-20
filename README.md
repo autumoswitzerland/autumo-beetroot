@@ -88,7 +88,7 @@
 
 ![autumo beetroot screen][product-screenshot]
 
-beetRoot is a rapid Java web-development framework ready to run! If you know CakePHP (cakePHP.org), you'll like beetRoot. It is based on the same principles and comes with a full CRUD generatorgenerating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model!
+beetRoot is a rapid Java web-development framework ready to run! If you know [CakePHP](https://cakePHP.org), you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model!
 
 It is shipped with the following features ready to use:
 
