@@ -387,7 +387,7 @@ beetRoot handles every pre-url-path / servlet-name-path by its own, if configure
 <!-- ROUTING -->
 ## Logging
 
-beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default configuration 'cfg/logging.xml' (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
+beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default configuration `cfg/logging.xml` (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
 
 - stand-alone: Define a runtime parameter in the shell/bash script when starting Java:
 
