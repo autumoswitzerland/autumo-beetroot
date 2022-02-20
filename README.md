@@ -237,7 +237,7 @@ A word when using MySQL: Due to the GPL license, we don't distribute or create a
 
 
 <!-- CRUD GENERATOR PLANT -->
-##CRUD Generator *PLANT*
+## CRUD Generator *PLANT*
 
 Start the CRUD generator with the script 'plant.sh' / 'plant.bat' and follow the steps!
 
