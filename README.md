@@ -134,10 +134,10 @@ Enjoy!
 <!-- DISTRIBUTIONS -->
 ## Distributions
 
-1. `**autumo-beetRoot-1.0.0.zip**`: Stand-alone server version with all files for every distribution.
-2. `**autumo-beetRoot-web-1.0.0.zip**`: General web-app version.
-3. `**beetroot.war**`: Tomcat version.
-4. `**beetroot-jetty.war**`: Jetty version. 
+1. **`autumo-beetRoot-1.0.0.zip`**: Stand-alone server version with all files for every distribution.
+2. **`autumo-beetRoot-web-1.0.0.zip`**: General web-app version.
+3. **`beetroot.war`**: Tomcat version.
+4. **`beetroot-jetty.war`**: Jetty version. 
 
 Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
