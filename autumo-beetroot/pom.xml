@@ -9,6 +9,13 @@
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
+	<properties>
+		<!-- Adjust to your structure -->
+		<basePath>/Users/Mike/Development/git-ext</basePath>
+		<nanohttpjar>${basePath}/nanohttpd/core/target/nanohttpd-2.3.2-BEETROOT.jar</nanohttpjar>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -73,11 +80,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<nanohttpjar>/Users/Mike/Development/git-ext/nanohttpd/core/target/nanohttpd-2.3.2-BEETROOT.jar</nanohttpjar>
-	</properties>
 
 	<dependencies>
 
