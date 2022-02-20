@@ -63,7 +63,7 @@
     <li><a href="#toc_4">Running</a></li>
     <li><a href="#toc_5">Configuration and Passwords</a></li>
     <li><a href="#toc_6">Default Database and Schema</a></li>
-    <li><a href="#toc_7">CRUD Generator **PLANT**</a></li>
+    <li><a href="#toc_7">CRUD Generator PLANT</a></li>
     <li><a href="#toc_8">Standard HTML Templates</a></li>
     <li><a href="#toc_9">Routing</a></li>
     <li><a href="#toc_10">Logging</a></li>
@@ -78,7 +78,6 @@
     <li><a href="#toc_19">Acknowledgments</a></li>
   </ol>
 </details>
-<br />
 <br />
 
 
