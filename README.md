@@ -363,7 +363,7 @@ The requested URL's are translated to generated (or self-created) handlers which
 
 	public  String getResource();
 
-For generated handlers (with the CRUD generator) this in usually not necessary, because they have a standard implementation:
+For generated handlers (with the CRUD generator) this is usually not necessary, because they have a standard implementation:
 
 	@Override
 	public  String getResource() {
