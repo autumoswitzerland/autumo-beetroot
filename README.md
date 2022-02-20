@@ -274,7 +274,7 @@ Adjust them to your needs (see existing handlers for examples) and more **IMPORT
 
 The HTML templates & model configuration are usually moved/copied to a language sub-directory:
 
-- web/html/{entity-plural-name}/en/*.html|columns.cfg[]()
+- web/html/{entity-plural-name}/en/*.html|columns.cfg
 - web/html/{entity-plural-name}/de/*.html|columns.cfg
 - web/html/{entity-plural-name}/fr/*.html|columns.cfg
 - etc.
