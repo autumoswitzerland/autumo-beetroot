@@ -33,7 +33,7 @@
     <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo/master/autumo-beetroot/web/img/beetroot.png" alt="Logo" width="200" height="200">
   </a>
 
-<h3 align="center">autumo beetRoot</h3>
+<h2 align="center">autumo beetRoot</h2>
 
   <p align="center">
     A slim & rapid Java web-dev framework
