@@ -121,7 +121,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Every handler MUST be intialized!
+	 * Every handler MUST be initialized!
 	 * 
 	 * @param session session
 	 */
@@ -143,10 +143,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String res = null;
 		
 		if (userSession == null)
-			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", session.getUri());
+			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
 		else
 			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
 
+		
+		// TODO file cache
 		
 		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
 		File file = null;	
@@ -676,6 +678,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		
 		try {
+			
+			// TODO file cache
+			
 			sc = getNewScanner(currRessource);
 
 			while (sc.hasNextLine()) {
@@ -1395,17 +1400,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			if (response != null) {
 				switch (response.getStatus()) {
-				case HandlerResponse.STATE_OK:
-					addSuccessMessage(response.getMessage());
-					break;
-				case HandlerResponse.STATE_NOT_OK:
-					addErrorMessage(response.getMessage());
-					break;
-				case HandlerResponse.STATE_WARNING:
-					addWarningMessage(response.getMessage());
-					break;
-				default:
-					break;
+					case HandlerResponse.STATE_OK:
+						addSuccessMessage(response.getMessage());
+						break;
+					case HandlerResponse.STATE_NOT_OK:
+						addErrorMessage(response.getMessage());
+						break;
+					case HandlerResponse.STATE_WARNING:
+						addWarningMessage(response.getMessage());
+						break;
+					default:
+						break;
 				}
 			}
 			

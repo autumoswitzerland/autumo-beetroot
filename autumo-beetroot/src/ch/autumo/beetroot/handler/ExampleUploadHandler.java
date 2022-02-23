@@ -103,11 +103,19 @@ public class ExampleUploadHandler extends BaseHandler {
 	@Override
 	public String parse(String line) {
 
+		int mus = ConfigurationManager.getInstance().getInt("web_max_upload_size");
+		if (mus == -1) {
+			mus = 32;
+			LOG.warn("Using 32 MB for max. upload file size.");
+		}
+		
 		if (line.contains("{$maxFileUploadSizeMb}")) {
-			line = line.replace("{$maxFileUploadSizeMb}", ""+ConfigurationManager.getInstance().getInt("web_max_upload_size"));
+			
+			line = line.replace("{$maxFileUploadSizeMb}", ""+mus);
 		}
 		if (line.contains("{$maxFileUploadSize}")) {
-			line = line.replace("{$maxFileUploadSize}", "" + (ConfigurationManager.getInstance().getInt("web_max_upload_size") * 1024 * 1024));
+			
+			line = line.replace("{$maxFileUploadSize}", "" + (mus * 1024 * 1024));
 		}
 		
 		return line;

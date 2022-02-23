@@ -72,7 +72,7 @@ public class Mailer {
 		String file = null;
 		
 		if (userSession == null)
-			file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, session.getUri());
+			file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Utils.normalizeUri(session.getUri()));
 		else
 			file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
 
@@ -222,8 +222,13 @@ public class Mailer {
 		String portStr = DatabaseManager.getProperty("mail.port");
 		if (portStr != null)
 			port = Integer.valueOf(portStr).intValue();
-		if (port < 0)
+		if (port < 0) {
 			port = ConfigurationManager.getInstance().getInt("mail_port");
+			if (port == -1) {
+				LOG.warn("Using mail port 25.");
+				port = 25;
+			}
+		}
 		
 		String host = DatabaseManager.getProperty("mail.host");
 		host = host == null ? ConfigurationManager.getInstance().getString("mail_host") : host; 

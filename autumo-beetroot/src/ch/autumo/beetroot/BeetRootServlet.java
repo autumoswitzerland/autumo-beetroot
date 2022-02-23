@@ -31,13 +31,14 @@
 package ch.autumo.beetroot;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.autumo.beetroot.cache.FileCacheManager;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -59,7 +60,7 @@ public class BeetRootServlet extends HttpServlet {
 	private BeetRootService beetRootService = null;
 	private BeetRootWebServer beetRootWebServer = null;
 	
-	private Map<String, BeetRootHTTPSession> sessions = new HashMap<String, BeetRootHTTPSession>();
+	private Map<String, BeetRootHTTPSession> sessions = new ConcurrentHashMap<String, BeetRootHTTPSession>();
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -182,6 +183,9 @@ public class BeetRootServlet extends HttpServlet {
 		
 		// clear sessions from memory
 		sessions.clear(); // all we need to do here
+		
+		// Clear cache
+		FileCacheManager.getInstance().clear();
 		
 		// no threads need to be stopped, no streams closed,
 		// servlet container does it all for us here.

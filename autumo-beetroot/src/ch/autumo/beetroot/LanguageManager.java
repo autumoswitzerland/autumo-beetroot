@@ -36,10 +36,10 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class LanguageManager {
 	
 	private static LanguageManager instance = null;	
 	
-    private static Map<String, ResourceBundle> bundles = new HashMap<String, ResourceBundle>();
+    private static Map<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
 	
     private static ResourceBundle defaultTrans = null;
     
@@ -256,7 +256,7 @@ public class LanguageManager {
 		
 		String lang = null;
 		for (int i = 0; i < langs.length; i++) {
-			if (uri.startsWith("/"+langs[i]+"/") || uri.startsWith("/"+langs[i])) {
+			if (uri.startsWith(langs[i]+"/") || uri.startsWith(langs[i])) {
 					lang = langs[i];
 			}
 		}

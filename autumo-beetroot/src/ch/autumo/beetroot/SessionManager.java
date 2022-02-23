@@ -36,7 +36,9 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
 import org.slf4j.Logger;
@@ -58,7 +60,7 @@ public class SessionManager {
 	private static final String TOKEN_COOKIE = "__SESSION_ID__";
 	private static final int TOKEN_SIZE = 24;
 	
-	private static HashMap<String, Session> sessions = new HashMap<>();
+	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 	
 	/**
 	 * Access session manager.

@@ -54,6 +54,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import jakarta.servlet.ServletContext;
+
 
 
 /**
@@ -81,6 +83,74 @@ public class Utils {
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
+	/**
+	 * Normalize URI.
+	 * @param uri URI
+	 * @return normalized URI
+	 */
+    public static String normalizeUri(String uri) {
+        if (uri == null)
+            return uri;
+        if (uri.startsWith("/"))
+        	uri = uri.substring(1);
+        if (uri.endsWith("/"))
+        	uri = uri.substring(0, uri.length() - 1);
+        return uri;
+    }
+    
+	/**
+	 * Is supported text mime type?
+	 * 
+	 * @param mimeType mime type
+	 * @return true if so
+	 */
+	public static boolean isMimeTypeText(String mimeType) {
+		switch (mimeType.trim()) {
+			case "text/plain"				:
+			case "text/css"					:
+			case "image/svg+xml"			:
+			case "application/xml"			:
+			case "application/json"			:
+			case "application/javascript"	: return true;
+			default: return false;
+		}
+	}
+
+	/**
+	 * Is supported octet-stream mime type?
+	 * 
+	 * @param mimeType mime type
+	 * @return true if so
+	 */
+	public static boolean isMimeTypeOctet(String mimeType) {
+		
+		switch (mimeType.trim()) {
+			case "image/png"					:
+			case "image/gif"					:
+			case "image/x-icon"					:
+			case "application/vnd.ms-fontobject":
+			case "font/ttf"						:
+			case "font/woff"					:
+			case "font/woff2"					: return true;
+			default: return false;
+		}
+	}
+	
+	/**
+	 * Is supported archive mime type?
+	 * 
+	 * @param mimeType mime type
+	 * @return true if so
+	 */
+	public static boolean isMimeTypeArchive(String mimeType) {
+		
+		switch (mimeType.trim()) {
+			case "application/zip"	:
+			case "application/gzip"	:
+			case "application/tar"	: return true;
+			default: return false;
+		}
+	}
 	
 	/**
 	 * Configure the log4j2 framework specifically with a log configuration file.
@@ -170,6 +240,21 @@ public class Utils {
 		return false;
 	}
 
+	/**
+	 * Get servlets context's real path.
+	 * 
+	 * @param context servlet context
+	 * @return real path
+	 */
+	public static String getRealPath(ServletContext context) {
+		
+		String cp = context.getRealPath("/");
+		if (!cp.endsWith(Utils.FILE_SEPARATOR))
+			cp += Utils.FILE_SEPARATOR;
+		
+		return cp;
+	}
+	
 	/**
 	 * Determine HTML div field type for SQL data type.
 	 * 

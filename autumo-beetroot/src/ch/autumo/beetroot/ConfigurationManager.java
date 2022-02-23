@@ -236,8 +236,10 @@ public class ConfigurationManager {
 		
 		String v = generalProps.getProperty(key);
 		
-		if (v == null)
+		if (v == null) {
 			LOG.warn("Value for key '"+key+"' doesn't exist in beetroot configuration!");
+			return -1;
+		}
 		
 		return Integer.valueOf(v);
 	}

@@ -32,6 +32,8 @@ package ch.autumo.beetroot;
 
 import java.sql.Types;
 
+import jakarta.activation.MimetypesFileTypeMap;
+
 /**
  * Constants. 
  */
@@ -42,6 +44,22 @@ public class Constants {
 	 */
 	protected static final String APP_VERSION = "1.0.0";
 	
+	/**
+	 * Initialize mime types registry.
+	 */
+	static {
+		// use our patched version of the mime type registry; 
+		// we want this under our control!
+		System.setProperty("jakarta.activation.spi.MimeTypeRegistryProvider", 
+				"ch.autumo.beetroot.mime.MimeTypeRegistryProviderImpl");
+		
+		MIME_TYPES_MAP = new MimetypesFileTypeMap();
+	}
+	
+	/**
+	 * MIME types map.
+	 */
+	public static final MimetypesFileTypeMap MIME_TYPES_MAP;
 	
 	
 	// Config specific

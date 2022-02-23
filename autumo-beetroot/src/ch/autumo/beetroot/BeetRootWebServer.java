@@ -30,11 +30,6 @@
  */
 package ch.autumo.beetroot;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -45,6 +40,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.ClientHandler;
 import org.nanohttpd.protocols.http.IHTTPSession;
@@ -56,6 +52,8 @@ import org.nanohttpd.router.RouterNanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.autumo.beetroot.cache.FileCache;
+import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.ErrorHandler;
@@ -82,8 +80,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     private boolean insertServletNameInTemplateRefs = false;
     private String servletName = null;
     
-    private Map<String, String> parsedCss = new HashMap<String, String>();
-	
+    private Map<String, String> parsedCss = new ConcurrentHashMap<String, String>();
+    
 	
 	public BeetRootWebServer() throws Exception {
 		this(-1);
@@ -146,6 +144,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		try {
 			
 	        timeout = ConfigurationManager.getInstance().getInt("ws_connection_timeout");
+	        
+	        if (timeout == -1) {
+	        	
+				timeout = 5000;
+				LOG.error("Using 5 seconds for client connection timeout.");
+	        }
+	        
 	        timeout = timeout * 1000;
 	        
 		} catch (Exception e) {
@@ -191,6 +196,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         } catch (Exception e) {
         	LOG.warn("Couldn't save current user sessions!", e);
         }
+        
+		// Clear cache
+		FileCacheManager.getInstance().clear();
     }	
   
 	/**
@@ -216,12 +224,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		boolean loggedIn = false;
 		
 		final String dir = "web/";
-		String uri = session.getUri();
+		String uri = Utils.normalizeUri(session.getUri());
+		//String uri = session.getUri();
 
 		
 		// servlet magic :)
-		if (insertServletNameInTemplateRefs && uri.startsWith("/"+servletName)) {
-			uri = uri.replaceFirst("/"+servletName, "");
+		if (insertServletNameInTemplateRefs && uri.startsWith(servletName)) {
+			uri = uri.replaceFirst(servletName, "");
 		}
 		
 		
@@ -260,96 +269,118 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 	    // Are we running in a servlet context?
     	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
-	    
+        
+        
 		// web resources except html templates
-		if (uri.contains(".") && !uri.endsWith(".html")) {
+		if (uri.contains(".") && !uri.endsWith(".html")) { // Note: template request have no extension at all!
 	    	
-	    	String fPath = dir + uri;
-	    	File file = new File(fPath);
-	    	String cp = "";
-	    	InputStream is = null;
+			final boolean isSpecialCss = uri.endsWith("refs.css") || uri.endsWith("default.css");
+	        
+	    	FileCache fc = null;
+	    	String filePath = null;
+	    	boolean isResource = false;
         	if (context != null) {
-        		
-    			cp = context.getRealPath("/");
-    			if (!cp.endsWith(Utils.FILE_SEPARATOR))
-    				cp += Utils.FILE_SEPARATOR;
-        		
-        		fPath = cp + dir + uri;
-    	    	file = new File(fPath);
-    			if (!file.exists())
-					is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + dir + uri);
-        	}        		
-        	
-	    	InputStream fis = is;
-	        try {
-	        	
-	        	if (file != null)
-	        		fis = new FileInputStream(file);
-	
-	        } catch (FileNotFoundException e) {
-	        	
-				final String err = "Resource Not found! - Web resource '" + file.getAbsolutePath() + "' not found on server!";
-				LOG.error(err, e);
-				String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, file.getAbsolutePath());
-				return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
-	        }		
-			
-			final String ext = uri.substring(uri.lastIndexOf("."), uri.length());
-			try {
-				switch (ext) {
-				
-					case ".css"	  :	if (insertServletNameInTemplateRefs 
-											&& ( (uri.endsWith("refs.css")) || (uri.endsWith("default.css")) ) ) {
-											// NOTICE: we need to add the servletname to "url('" too for specific css!
-										String css = null;
-										if (!parsedCss.containsKey(fPath)) {
-											final StringBuffer sb = new StringBuffer();
-											try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-											    String line;
-											    while ((line = br.readLine()) != null) {
-											    	sb.append(line.replace("url('", "url('/"+servletName));
-											        sb.append("\n");
-											    }
-											}
-											css = sb.toString();
-											parsedCss.put(fPath, css);
-										} else {
-											css = parsedCss.get(fPath);
-										}
-										return Response.newFixedLengthResponse(Status.OK, "text/css", css);
-									} else {
-										return Response.newFixedLengthResponse(Status.OK, "text/css", fis, file.length());
-									}
-					case ".js"	  :	return Response.newFixedLengthResponse(Status.OK, "text/javascript", fis, file.length());	
-					case ".png"	  :	return Response.newFixedLengthResponse(Status.OK, "image/png", fis, file.length());
-					case ".gif"	  :	return Response.newFixedLengthResponse(Status.OK, "image/gif", fis, file.length());
-					case ".ico"	  :	return Response.newFixedLengthResponse(Status.OK, "image/x-icon", fis, file.length());
-					case ".eot"	  :	return Response.newFixedLengthResponse(Status.OK, "application/vnd.ms-fontobject", fis, file.length());
-					case ".ttf"	  :	return Response.newFixedLengthResponse(Status.OK, "font/ttf", fis, file.length());
-					case ".woff"  :	return Response.newFixedLengthResponse(Status.OK, "font/woff", fis, file.length());
-					case ".woff2" :	return Response.newFixedLengthResponse(Status.OK, "font/woff2", fis, file.length());
-					case ".svg"   :	return Response.newFixedLengthResponse(Status.OK, "image/svg+xml", fis, file.length());
-			
-					default:
-						
-						final String err = "Resource Not found! - Web resource '" + file.getAbsolutePath() + "' not found!";
-						LOG.warn(err);
+
+        		try {
+        			filePath = Utils.getRealPath(context) + dir + uri;
+					fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
+				} catch (IOException e) {
+					LOG.warn("File '" + (Utils.getRealPath(context) + dir + uri) + "'not found on server, looking further within archives...");
+					try {
+						filePath = "/" + dir + uri;
+						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+						isResource = true;
+					} catch (IOException e1) {
+						final String err = "Resource not found on server looking up with resource path '" + filePath + "'!";
+						LOG.error(err, e);
 						String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, file.getAbsolutePath());
+						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+					}
 				}
+        	}        		
+	        try {
+	        	filePath = dir + uri;
+        		fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 	        } catch (IOException e) {
 	        	
-				final String err = "Couldn't parse css for pre-url replacements Resource Not found! - Web resource '" + fPath + "'.";
+				final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
 				LOG.error(err, e);
 				String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, file.getAbsolutePath());
+				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
 				return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
-	        }	
+	        }
+	        
+			
+	    	// this consults cached 'META-INF/mime.types' !
+	        final String mimeType = Constants.MIME_TYPES_MAP.getContentType(uri);
+	        //LOG.trace("MIME: "+mimeType);
+
+	        
+	        // decide what to do with different mime types and requests
+			try {
+				//final String ext = uri.substring(uri.lastIndexOf("."), uri.length());
+				
+				// archives
+				if (Utils.isMimeTypeArchive(mimeType)) {
+					
+					return fc.createResponse();
+					
+				// binaries
+				} else if (Utils.isMimeTypeOctet(mimeType)) {
+					
+					return fc.createResponse();
+					
+				// text
+				} else {
+	
+					// Special case: URL-parsed CSS within servlet context
+					if (insertServletNameInTemplateRefs && isSpecialCss) {
+						// NOTICE: we need to add the servlet-name to "url('" too for specific css!
+						String css = null;
+						FileCache cache = null;
+							 cache = isResource ? 
+									FileCacheManager.getInstance().findOrCreateByResource(filePath) : 
+										FileCacheManager.getInstance().findOrCreate(filePath);
+			        
+						if (!parsedCss.containsKey(filePath)) {
+							// special CSS is cached, no further checks necessary with a 
+							// certainty of 99.99% (first files, max. cache isn't reached at all)
+							// So we can getTextData !
+							css = cache.getTextData();
+							css = css.replaceAll("url\\('", "url('/"+servletName); //test it: "url('" -> "url('/"+servletName
+							parsedCss.put(filePath, css);
+						} else {
+							css = parsedCss.get(filePath);
+						}
+							
+						return Response.newFixedLengthResponse(Status.OK, "text/css", css);
+					}
+					
+					// Everything else: Text data !
+					if (Utils.isMimeTypeText(mimeType))
+						return fc.createResponse();
+	
+					
+					// If we come here, a mime type has been requested that is not yet implemented
+					final String err = "Mime type for web resource '" + filePath + "' not implemented yet!";
+					LOG.warn(err);
+					String t = LanguageManager.getInstance().translate("base.err.resource.mime.title", userSession);
+					String m = LanguageManager.getInstance().translate("base.err.resource.mime.msg", userSession, filePath);
+					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+		        }	
+				
+	        } catch (IOException e) {
+				final String err = "Couldn't parse css for pre-url replacements Resource Not found! - Web resource '" + filePath + "'.";
+				LOG.error(err, e);
+				String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, filePath);
+				return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+	        }
 		}
 		
         
+		// Continue with HTML engie requests !
 		final Map<String, String> files = new HashMap<String, String>();
 	    final Method method = session.getMethod();
 	    
@@ -376,11 +407,11 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				
 	        } catch (ResponseException re) {
 
-				final String err = "Server Internal Error - Response Exception (Status: "+re.getStatus()+"): " + re.getMessage();
+				final String err = "Server Internal Error - Response Exception (Status: "+re.getStatus().getDescription()+"): " + re.getMessage();
 				LOG.error(err, re);
 				
 				String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus(), re.getMessage());
+				String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 	        }
 	    }

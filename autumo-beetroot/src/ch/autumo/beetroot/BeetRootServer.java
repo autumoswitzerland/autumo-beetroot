@@ -28,6 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package ch.autumo.beetroot;
 
 import java.io.BufferedInputStream;
@@ -182,6 +183,10 @@ public class BeetRootServer {
 		String v = null;
 		try {
 			portAdminServer = configMan.getInt(Constants.KEY_ADMIN_PORT);
+			if (portAdminServer == -1) {
+				LOG.error("Admin server port not specified !");
+				Utils.fatalExit();
+			}
 		} catch (Exception e) {
 			LOG.error("Admin server port has an invalid value: '" + v + "' !", e);
 			Utils.fatalExit();

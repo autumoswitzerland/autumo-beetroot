@@ -36,7 +36,6 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.nanohttpd.protocols.http.HTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.NanoHTTPD.ResponseException;
@@ -56,9 +54,11 @@ import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
+import org.nanohttpd.router.RouterNanoHTTPD.UriResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.autumo.beetroot.handler.ErrorHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
@@ -71,11 +71,30 @@ public class BeetRootHTTPSession extends HTTPSession {
 	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootHTTPSession.class.getName());
 	
 	static {
-		final int kBytes = ConfigurationManager.getInstance().getInt("ws_response_buffer_size");
+		
+		int kBytes = ConfigurationManager.getInstance().getInt("ws_response_buffer_size");
+		if (kBytes == -1) {
+			LOG.warn("Using 16 kBytes for response buffer size.");
+			kBytes = 16;
+		}
+		
 		RESPONSE_BUFFER_SIZE = kBytes * 1024;
+		System.setProperty("ch.autumo.beetroot.respDownBufSizeKB", "" + kBytes);
+		
+		int kBytesDown = ConfigurationManager.getInstance().getInt("ws_response_download_buffer_size");
+		if (kBytesDown == -1) {
+			LOG.warn("Using 8 kBytes for response download buffer size.");
+			kBytesDown = 8;
+		}
+		
+		RESPONSE_DOWNLOAD_BUFFER_SIZE = kBytesDown * 1024;
 	}
+	
 	// buffer size
 	public static final long RESPONSE_BUFFER_SIZE;
+
+	// download buffer size
+	public static final long RESPONSE_DOWNLOAD_BUFFER_SIZE;
 	
     private String externalSessionId;
 
@@ -140,8 +159,8 @@ public class BeetRootHTTPSession extends HTTPSession {
             super.uri = pre.get("uri");
             super.cookies = new CookieHandler(this.headers);
 
-            String connection = this.headers.get("connection");
-            boolean keepAlive = "HTTP/1.1".equals(protocolVersion) && (connection == null || !connection.matches("(?i).*close.*"));
+            final String connection = this.headers.get("connection");
+            final boolean keepAlive = "HTTP/1.1".equals(protocolVersion) && (connection == null || !connection.matches("(?i).*close.*"));
 
             
             r = externalBeetrootServer.serve(this, request);
@@ -155,43 +174,44 @@ public class BeetRootHTTPSession extends HTTPSession {
 				
                 r.setKeepAlive(keepAlive);
 
-                // SEND !
-                
             	// is it a download?
             	final String downHeaderVal = r.getHeader("Content-disposition");
             	if (downHeaderVal != null) {
             		response.setContentType(r.getMimeType());
             		response.setHeader("Content-disposition", downHeaderVal);
-            		
-            		byte[] buffer = new byte[Long.valueOf(RESPONSE_BUFFER_SIZE).intValue()];
+            		final byte[] buffer = new byte[Long.valueOf(RESPONSE_BUFFER_SIZE).intValue()];
             		int numBytesRead;
                     while ((numBytesRead = r.getData().read(buffer)) > 0) {
                         response.getOutputStream().write(buffer, 0, numBytesRead);
                     }
+                    
+                    // manually necessary here, because sendBody isn't called
+                    r.close();
+                    
                 // Everything else
             	} else {
-                	if (this.uri.contains(".") && !this.uri.endsWith(".html") && !this.uri.endsWith(".css") && !this.uri.endsWith(".js")) {
-                		// binary stuff
-                		r.sendBody(response.getOutputStream(), -1);
-                		
-                	} else {
-                		// text stuff
-                    	String text = new String(IOUtils.toByteArray(r.getData()), StandardCharsets.UTF_8);
-                    	response.getWriter().write(text);
-                	}
+            		r.sendBody(response.getOutputStream(), -1);
             	}
             }
             
             if (!keepAlive || r.isCloseConnection()) {
-                throw new SocketException("NanoHttpd (Servlet) connection closed!");
+                throw new SocketException("BeetRootWebServer (within Servlet) connection closed!");
             }	            
         
         } catch (ResponseException re) {
         	
             LOG.error("Response exception occured!", re);
-        	
-            //Response resp = newFixedLengthResponse(re.getStatus(), NanoHTTPD.MIME_PLAINTEXT, re.getMessage());
-            response.getWriter().write(re.getMessage());
+
+            final Session userSession = SessionManager.getInstance().findOrCreate(this);
+            
+            final String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
+            final String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());
+            final UriResource uriResource = new UriResource(null, 100, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+            final Map<String, String> urlParams = new HashMap<String, String>();
+            final Response errorResponse = uriResource.process(urlParams, this);
+            errorResponse.sendBody(response.getOutputStream(), -1);
+            
+            //response.getWriter().write(re.getMessage());
             
         } finally {
         	
@@ -201,8 +221,6 @@ public class BeetRootHTTPSession extends HTTPSession {
     
     /**
      * Provide a method for decoding the header from the servlet context in this nano session.
-     * 
-     * Note: autumo, MG: patched for beetroot.
      * 
      * @param request http request
      * @param pre map to fill
@@ -238,8 +256,6 @@ public class BeetRootHTTPSession extends HTTPSession {
     /**
      * Provide a method for parsing the body from a servlet context
      * in this nano session.
-     * 
-     * Note: autumo, MG: patched for beetroot.
      * 
      * @param files the map for the files
      * @param request HttpServletRequest 

@@ -68,11 +68,15 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		super(entity);
 		
+		final String err = "Couldn't read max records per page, using 20.'";
 		try {
 			maxRecPerPage = ConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
+			if (maxRecPerPage == -1) {
+				maxRecPerPage = 20;
+				LOG.warn(err);
+			}
 		} catch (Exception e) {
 			maxRecPerPage = 20;
-			final String err = "Couldn't read max records per page, using 20.'";
 			LOG.warn(err, e);
 		}
 	}
