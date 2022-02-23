@@ -63,7 +63,7 @@ public class FileCacheManager {
 			mBytes = 2;
 		}
 		
-		MAX_CACHE_SIZE = mBytes * 1024;
+		MAX_CACHE_SIZE = mBytes * 1024 * 1024;
 	}
 	public static final long MAX_CACHE_SIZE; 
 	
@@ -112,11 +112,11 @@ public class FileCacheManager {
 	 * 			changed resource
 	 * @return true, is there is space, otherwise false
 	 */
-	public boolean hasSpace(long oldValueInBytes, long newValueInBytes) {
+	public synchronized boolean hasSpace(long oldValueInBytes, long newValueInBytes) {
 
 		long csize = this.size; 
 		csize -= oldValueInBytes;
-		csize += oldValueInBytes;
+		csize += newValueInBytes;
 		
 		if (csize > MAX_CACHE_SIZE)
 			return false;
@@ -133,10 +133,10 @@ public class FileCacheManager {
 	 * 			changed resource
 	 * @return true if max. cache size has been reached, otherwise false
 	 */
-	public boolean updateCacheSize(long oldValueInBytes, long newValueInBytes) {
+	public synchronized boolean updateCacheSize(long oldValueInBytes, long newValueInBytes) {
 		
 		size -= oldValueInBytes;
-		size += oldValueInBytes;
+		size += newValueInBytes;
 		
 		if (size > MAX_CACHE_SIZE)
 			maxSizeReached = true;
@@ -216,6 +216,9 @@ public class FileCacheManager {
 		
 			final FileCache fc = new FileCache(path.toAbsolutePath(), mimeType);
 			cacheMap.put(pstr, fc);
+			
+			LOG.trace("FileCache added: " + fc.getFullPath() + ", cachesize="+this.size);
+			
 			return fc;
 		}
 		return cacheMap.get(pstr);
@@ -236,6 +239,9 @@ public class FileCacheManager {
 		
 			final FileCache fc = new FileCache(path.toAbsolutePath(), mimeType, forcedCaching);
 			cacheMap.put(pstr, fc);
+			
+			LOG.trace("FileCache added: " + fc.getFullPath() + ", cachesize="+this.size);
+			
 			return fc;
 		}
 		return cacheMap.get(pstr);
@@ -254,6 +260,9 @@ public class FileCacheManager {
 		if (!cacheMap.containsKey(rstr)) {
 		
 			final FileCache fc = new FileCache(resourcePath, mimeType);
+			
+			LOG.trace("FileCache added: " + fc.getFullPath() + ", cachesize="+this.size);
+			
 			cacheMap.put(rstr, fc);
 			return fc;
 		}

@@ -34,10 +34,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URLDecoder;
@@ -73,6 +73,8 @@ import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.cache.FileCache;
+import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import jakarta.activation.MimeType;
 import jakarta.servlet.ServletContext;
@@ -147,86 +149,81 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		else
 			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
 
-		
-		// TODO file cache
-		
+    	FileCache fc = null;
+		String prePath = "";
+    	String filePath = null;
+    	boolean tryFurther = false;
 		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
-		File file = null;	
-		String cp = "";
-		InputStream is = null;
-		boolean streamIt = false;
-		if (context != null) {
-			
-			cp = context.getRealPath("/");
-			if (!cp.endsWith(Utils.FILE_SEPARATOR))
-				cp += Utils.FILE_SEPARATOR;
 
-			file = new File(cp + res);
-			if (!file.exists()) {
-				is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
-				streamIt = true;
+    	if (context != null)
+    		prePath = Utils.getRealPath(context);
+		
+		try {
+			filePath = prePath + res;
+			fc = FileCacheManager.getInstance().findOrCreate(filePath);
+		} catch (IOException e) {
+			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+			try {
+				filePath = "/" + res;
+				fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+			} catch (IOException e1) {
+				tryFurther = true;
 			}
 		}
-		else
-			file = new File(res);
 		
-		boolean colConfExists = file.exists();
-		
-		if (!colConfExists || (streamIt && is == null)) {
+		if (tryFurther) {
 			
-			streamIt = false;
+			tryFurther = false;
 			
-			LOG.info("Resource '"+res+"' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.trace("Resource '" + res + "' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			if (userSession == null)
-				res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", session.getUri());
+				res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
 			else
 				res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
 
-			if (context != null) {
-				
-				file = new File(cp + res);
-				if (!file.exists()) {
-					is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
-					streamIt = true;
+			try {
+				filePath = prePath + res;
+				fc = FileCacheManager.getInstance().findOrCreate(filePath);
+			} catch (IOException e) {
+				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+				try {
+					filePath = "/" + res;
+					fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+				} catch (IOException e1) {
+					tryFurther = true;
 				}
-			}
-			else
-				file = new File(res);
-			
-			if (!file.exists() || (streamIt && is == null)) {
+			}			
 				
-				streamIt = false;
+			if (tryFurther) {
 				
-				LOG.info("Resource '"+res+"' doesn't exist, trying with NO language!");
-				res = LanguageManager.getInstance().getResourceWithoutLang("web/html/"+entity+"/columns.cfg", session.getUri());
+				tryFurther = false;
 				
-				if (context != null) {
-					
-					file = new File(cp + res);
-					if (!file.exists()) {
-						is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
-						streamIt = true;
+				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
+				res = LanguageManager.getInstance().getResourceWithoutLang("web/html/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
+				
+				try {
+					filePath = prePath + res;
+					fc = FileCacheManager.getInstance().findOrCreate(filePath);
+				} catch (IOException e) {
+					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+					try {
+						filePath = "/" + res;
+						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+					} catch (IOException e1) {
+						LOG.debug("Resource '"+res+"' doesn't exist, no columns used!");
+						
+						return; // !
 					}
-				}
-				else
-					file = new File(res);
-				
-				if (!file.exists() || (streamIt && is == null)) {
-					LOG.debug("Resource '"+res+"' doesn't exist, no columns used!");
-					return;
-				}
+				}			
 			}
 		}
 		
 		BufferedReader br = null;
-		
 		try {
-			
-			if (context != null && is != null) {
-				br = new BufferedReader(new InputStreamReader(is));
-			} else {
-				br = new BufferedReader(new FileReader(file));
-			}
+			if (fc.isCached())
+				br = new BufferedReader(new StringReader(fc.getTextData()));
+			else
+				br = new BufferedReader(new InputStreamReader(fc.getData(), fc.getEncoding()));
 			
 		    String line;
 		    int l = 0;
@@ -328,7 +325,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// Not good !
 			
-			LOG.error("Couldn't read columns for entity '"+entity+"' from file '" + file + "'!\n"
+			LOG.error("Couldn't read columns for entity '"+entity+"' from file '" + fc.getFullPath() + "'!\n"
 					+ "Create this file and add such a line for every column you want to show:\n"
 					+ "columnName=Name of Column on Web Page", e);
 			
@@ -340,7 +337,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				try {
 					br.close();
 				} catch (IOException e) {
-					LOG.warn("Couldn't close file reader for resource '"+file+"'!", e);
+					LOG.warn("Couldn't close file reader for resource '" + fc.getFullPath() + "'!", e);
 				}
 			}
 		}	
@@ -675,11 +672,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/layout.html", userSession);
 		
 		Scanner sc = null;
-		
-		
 		try {
-			
-			// TODO file cache
 			
 			sc = getNewScanner(currRessource);
 
@@ -887,7 +880,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 		} catch (Exception ex) {
 			
-			final String err = "Web resource '" + currRessource + "' parsing erroe!";
+			final String err = "Web resource '" + currRessource + "' parsing error!";
 			LOG.error(err, ex);
 			return "PARERROR:" + currRessource + ":" + ex.getMessage();
 			
@@ -1171,59 +1164,77 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	protected Scanner getNewScanner(String resource) throws FileNotFoundException {
 		
+		String prePath = "";
+    	String filePath = null;
+    	FileCache fc = null;
+    	boolean tryFurther = false;
 		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+    	if (context != null)
+    		prePath = Utils.getRealPath(context);
 		
-		File file = null;	
-		
-		String cp = "";
-		InputStream is = null;
-		boolean streamIt = false;
-		
-		if (context != null) {
-			
-			cp = context.getRealPath("/");
-			if (!cp.endsWith(Utils.FILE_SEPARATOR))
-				cp += Utils.FILE_SEPARATOR;
-			
-			file = new File(cp + resource);
-			
-			if (!file.exists()) {
-				is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/"+resource);
-				streamIt = true;
+		try {
+			filePath = prePath + resource;
+			fc = FileCacheManager.getInstance().findOrCreate(filePath);
+		} catch (IOException e) {
+			//LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
+			try {
+				filePath = "/" + resource;
+				fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+			} catch (IOException e1) {
+				tryFurther = true;
 			}
 		}
-		else
-			file = new File(resource);
 		
-		if (!file.exists() || (is == null && streamIt)) {
+		if (tryFurther) {
 
-			streamIt = false;
+			tryFurther = false;
 			
-			LOG.debug("Resource '"+resource+"' doesn't exist, trying default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.trace("Resource '"+resource+"' doesn't exist, trying default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			resource = LanguageManager.getInstance().getResourceByLang(this.getResource(), LanguageManager.DEFAULT_LANG);
-			
-			if (context != null) {
-				
-				file = new File(cp + resource);
-				if (!file.exists())
-					is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/"+resource);
+
+			try {
+				filePath = prePath + resource;
+				fc = FileCacheManager.getInstance().findOrCreate(filePath);
+			} catch (IOException e) {
+				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+				try {
+					filePath = "/" + resource;
+					fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+				} catch (IOException e1) {
+					tryFurther = true;
+				}
 			}
-			else
-				file = new File(resource);
 			
-			if (!file.exists() || (is == null && streamIt)) {
+			if (tryFurther) {
+
+				tryFurther = false;
 				
-				LOG.debug("Resource '"+resource+"' doesn't exist, trying NO language!");
-				
+				LOG.trace("Resource '"+resource+"' doesn't exist, trying NO language!");
 				resource = LanguageManager.getInstance().getResourceWithoutLang(this.getResource(), LanguageManager.DEFAULT_LANG);
-				file = new File(cp + resource);
+				
+				try {
+					filePath = prePath + resource;
+					fc = FileCacheManager.getInstance().findOrCreate(filePath);
+				} catch (IOException e) {
+					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+					try {
+						filePath = "/" + resource;
+						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+					} catch (IOException e1) {
+						tryFurther = false;
+					}
+				}				
 			}			
 		}		
 		
-		if (file.exists())
-			return new Scanner(file);
-		else 
-			return new Scanner(is);
+		try {
+			if (fc.isCached())
+				return new Scanner(fc.getTextData());
+			else 
+				return new Scanner(fc.getData());
+		} catch (IOException e) {
+			throw new FileNotFoundException("File/resource '"+fc.getFullPath()+"' not found! Exception: " + e.getMessage());
+		}				
 	}
 	
 	@Override

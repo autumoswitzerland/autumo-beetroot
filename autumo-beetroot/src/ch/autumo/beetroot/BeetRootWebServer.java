@@ -285,7 +285,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         			filePath = Utils.getRealPath(context) + dir + uri;
 					fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 				} catch (IOException e) {
-					LOG.warn("File '" + (Utils.getRealPath(context) + dir + uri) + "'not found on server, looking further within archives...");
+					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
 						filePath = "/" + dir + uri;
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);

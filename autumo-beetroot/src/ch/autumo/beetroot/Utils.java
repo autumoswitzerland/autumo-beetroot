@@ -105,8 +105,10 @@ public class Utils {
 	 * @return true if so
 	 */
 	public static boolean isMimeTypeText(String mimeType) {
+		//TODO configurable
 		switch (mimeType.trim()) {
 			case "text/plain"				:
+			case "text/html"				:
 			case "text/css"					:
 			case "image/svg+xml"			:
 			case "application/xml"			:
@@ -123,7 +125,7 @@ public class Utils {
 	 * @return true if so
 	 */
 	public static boolean isMimeTypeOctet(String mimeType) {
-		
+		//TODO configurable
 		switch (mimeType.trim()) {
 			case "image/png"					:
 			case "image/gif"					:
@@ -143,7 +145,7 @@ public class Utils {
 	 * @return true if so
 	 */
 	public static boolean isMimeTypeArchive(String mimeType) {
-		
+		//TODO configurable
 		switch (mimeType.trim()) {
 			case "application/zip"	:
 			case "application/gzip"	:

@@ -60,8 +60,8 @@ public class FileCache  {
 		int kBytes = ConfigurationManager.getInstance().getInt("ws_file_cache_size");
 		
 		if (kBytes == -1) {
-			LOG.warn("Using 10 kBytes for file cache size.");
-			kBytes = 10;
+			LOG.warn("Using 100 kBytes for file cache size.");
+			kBytes = 100;
 		}
 		
 		BUFFER_LIMIT = kBytes * 1024;
@@ -134,7 +134,6 @@ public class FileCache  {
 		if (!this.isArchive && fileSize <= BUFFER_LIMIT && FileCacheManager.getInstance().hasSpace(0, this.fileSize)) {
 
 			final FileInputStream fis = new FileInputStream(file);
-			
 			if (isBinary)
 				buffer = IOUtils.toByteArray(fis, fileSize);
 			if (isText)
@@ -255,6 +254,9 @@ public class FileCache  {
 		// beforehand.
 		if (!isArchive) {
 			final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+			if (is == null)
+				throw new IOException("Resource '" + resourcePath + "' cannot be read.");
+				
 			if (isBinary) {
 				buffer = IOUtils.toByteArray(is);
 				this.cacheSize = buffer.length;
@@ -297,6 +299,8 @@ public class FileCache  {
     			fis.close();
     			FileCacheManager.getInstance().updateCacheSize(oldCacheSize, this.cacheSize);			
     			this.isCached = true;
+    			LOG.trace("FileCache re-cached: " + this.getFullPath() + ", cachesize="+FileCacheManager.getInstance().getSize());
+    			
     		} else {
     			FileCacheManager.getInstance().updateCacheSize(oldCacheSize, 0);			
     			this.cacheSize = 0;
@@ -341,6 +345,7 @@ public class FileCache  {
     			FileCacheManager.getInstance().updateCacheSize(oldCacheSize, this.cacheSize);			
     			fis.close();
     			this.isCached = true;
+    			LOG.trace("FileCache re-cached: " + this.getFullPath() + ", cachesize="+FileCacheManager.getInstance().getSize());
     		} else {
     			FileCacheManager.getInstance().updateCacheSize(oldCacheSize, 0);			
     			this.cacheSize = 0;
