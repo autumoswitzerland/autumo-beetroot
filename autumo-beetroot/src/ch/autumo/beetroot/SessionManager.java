@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -164,7 +163,7 @@ public class SessionManager {
 			return;
 		
 		final FileInputStream input = new FileInputStream(SESSION_DATA);
-		sessions = (HashMap<String, Session>) new ObjectInputStream(input).readObject();
+		sessions = (Map<String, Session>) new ObjectInputStream(input).readObject();
 		input.close();
 	}
 	

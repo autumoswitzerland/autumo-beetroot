@@ -229,8 +229,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		
 		// servlet magic :)
-		if (insertServletNameInTemplateRefs && uri.startsWith(servletName)) {
-			uri = uri.replaceFirst(servletName, "");
+		if (insertServletNameInTemplateRefs && uri.startsWith(servletName+"/")) {
+			uri = uri.replaceFirst(servletName+"/", "");
 		}
 		
 		
@@ -298,18 +298,19 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 				}
-        	}        		
-	        try {
-	        	filePath = dir + uri;
-        		fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
-	        } catch (IOException e) {
-	        	
-				final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
-				LOG.error(err, e);
-				String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
-				return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
-	        }
+        	} else {  
+		        try {
+		        	filePath = dir + uri;
+	        		fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
+		        } catch (IOException e) {
+		        	
+					final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
+					LOG.error(err, e);
+					String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+					String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
+					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+		        }
+        	}
 	        
 			
 	    	// this consults cached 'META-INF/mime.types' !

@@ -33,6 +33,9 @@ package ch.autumo.beetroot;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -322,13 +325,31 @@ public class ConfigurationManager {
 	}
 
 	/**
+	 * Get allowed mime types.
+	 * @param key mime type key
+	 * @return allowed mime types
+	 */
+	public List<String> getMimeTypes(String key) {
+		
+		final String mimes = generalProps.getProperty(key);
+		if (mimes == null || mimes.trim().length() == 0) {
+			LOG.warn("There are no mime types for key '" + key + "' ! This will create errors...");
+			return Collections.emptyList();
+		}
+		final String arr[] = mimes.trim().split(" ");
+		/**
+		for (int i = 0; i < arr.length; i++) {
+			System.err.println(key+": "+arr[i]);
+		}*/
+		return Arrays.asList(arr);
+	}
+	
+	/**
 	 * Get servlet context
 	 * @return servlet context or null
 	 */
 	public ServletContext getServletContext() {
 		return servletContext;
 	}
-	
-	
 	
 }

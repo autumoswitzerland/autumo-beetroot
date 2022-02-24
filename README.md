@@ -94,9 +94,11 @@ It is shipped with the following features ready to use:
 - Add, edit, view, list and delete functionality for entities
 - Language management
 - File up- and download
+- Full MIME types control
 - Password reset mechanism
 - Mailing inclusive mail templates
 - URL routing with language support
+- File caching (resources and templates)
 - Easy to understand HTML template engine
 - Password encryption (PBE with MD5 and DES)
 - HTTPS protocol and TLS for mail if configured
@@ -204,8 +206,8 @@ For security reasons, you should change the secret key seed (`secret_key_seed`) 
 Furthermore, the configuration offers wide possibilities of customization for your app, such as:
 
 - Roles
-- Server ports
 - Buffer sizes
+- Server ports
 - SSL keystore
 - Session storage
 - Protocol (HTTP/HTTPS)
@@ -325,6 +327,16 @@ The following standard HTML templates are present, which can be customized too o
 
 - The relative URL (without Host, Port and Servlet name) requested by the web-app user is translated not 1-to-1 by the directory structure, but through Routing! See next chapter!
 
+The following template variables are always parsed and you can use them as many times as you want:
+
+- `{$lang}` : User's language, 2-ISO-code
+- `{$user}` : User login name
+- `{$userfull}` : Full user name (first and last name if available, otherwise login name)  
+- `{$title}` : Page title (within add, edit, view and list)
+- `{$id}` : Obfuscated object id (within add, edit and view)
+- `{$dbid}` : Real database id (within add, edit and view)
+- `{$csrfToken}` : CSRF token
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
@@ -412,7 +424,7 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-**NOTE**: Due to the licenses, we don't distribute or create a dependency to Java Mail implementations behind the Jakarta Mail API (including the Jakarta Activation API). You have to download them by yourself e.g. through maven-dependencies or here: [Eclipse Jakarta Mail](https://jakarta.ee/specifications/mail).
+**NOTE**: Due to the licenses, we don't distribute or create a dependency to Java Mail implementations behind the Jakarta Mail and Activation API. You have to download them by yourself e.g. through maven-dependencies or here: [Eclipse Jakarta Mail](https://jakarta.ee/specifications/mail).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

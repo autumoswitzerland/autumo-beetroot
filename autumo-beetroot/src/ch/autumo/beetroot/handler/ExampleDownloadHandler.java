@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.Constants;
 import jakarta.servlet.ServletContext;
 
 /**
@@ -77,12 +78,15 @@ public class ExampleDownloadHandler extends BaseHandler {
 			
 			final HandlerResponse downloadResponse = new HandlerResponse(HandlerResponse.STATE_OK);
 			downloadResponse.setType(HandlerResponse.TYPE_FILE_DOWNLOAD);
-			downloadResponse.setDownloadFileMimeType("image/png");
+			downloadResponse.setDownloadFileMimeType(Constants.MIME_TYPES_MAP.getContentType(requestedFilename));
 			
 			File f = null;
 			final ServletContext context = ConfigurationManager.getInstance().getServletContext();
-			if (context != null)
+			if (context != null) {
+				// NOTE: This example will not work in jetty; we would 
+				// need to load the resource from the war archive 
 				f = new File(context.getRealPath("/") + requestedFilename);
+			}
 			else
 				f = new File(requestedFilename);
 

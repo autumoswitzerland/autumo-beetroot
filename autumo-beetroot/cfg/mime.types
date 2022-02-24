@@ -14,7 +14,8 @@
 # MIME type (lowercased)			Extensions
 # ============================================	==========
 # Manually added extensions:
-# - text/plain: cfg, 2022-02-23
+# - text/plain					: cfg			2022-02-23
+# - application/gzip			: gzip			2022-02-23
 # ============================================	==========
 application/andrew-inset			ez
 application/applixware				aw
@@ -601,6 +602,7 @@ application/xv+xml				mxml xhvml xvml xvm
 application/yang				yang
 application/yin+xml				yin
 application/zip					zip
+application/gzip				gz
 audio/adpcm					adp
 audio/basic					au snd
 audio/midi					mid midi kar rmi

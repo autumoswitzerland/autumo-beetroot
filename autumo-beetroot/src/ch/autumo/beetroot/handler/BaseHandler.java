@@ -251,7 +251,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		}
 		    		
 		    		// If no config prefix is defined, all config lines are taken!
-		    		// This makes sense if one dosne't need to distinguis between
+		    		// This makes sense if one doesn't need to distinguish between
 		    		// list and single records data field names aka GUI column names.
 		    		String templateResource = getResource();
 		    		if (templateResource != null && templateResource.length() != 0) {

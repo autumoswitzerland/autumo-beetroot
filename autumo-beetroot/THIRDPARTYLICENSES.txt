@@ -3,7 +3,7 @@
 #
 #  Third Party Licenses
 #
-#  autumo beetRoot 1.0.0 - slim & rapid Java web framework
+#  autumo beetRoot 1.1.0 - slim & rapid Java web framework
 #  Version: 2.0
 #
 #--------------------------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 #
 #------------------------------------------------------------------------------
 #
-#  2022 autumo GmbH
+#  Copyright 2022 autumo GmbH
 #  Date: 11.02.2022
 #
 ###############################################################################
@@ -19,7 +19,7 @@
 
 
 # Vars
-VERSION=1.0.0
+VERSION=1.1.0
 
 
 
@@ -170,9 +170,15 @@ then
 	# copy libs
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
+	rm autumo-beetRoot-$VERSION/lib/jakarta.mail*.jar
+	rm autumo-beetRoot-$VERSION/lib/jakarta.activation*.jar
 	
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail*.jar
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.activation*.jar
+	cp ../lib/jakarta.activation-api*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
+	
 	
 	echo "-> Signing libs..."
 	jarsigner -storepass 73UtVBzPU7ULY5Ewp6sSQMpi -keystore ../cfg/KeyStore.jks -tsa http://tsa.pki.admin.ch/tsa autumo-beetRoot-$VERSION/lib/autumo-beetroot-${VERSION}.jar autumo.ch
@@ -226,6 +232,9 @@ then
 
 	cp ../beetroot.sh autumo-beetRoot-$VERSION/.
 	cp ../beetroot.bat autumo-beetRoot-$VERSION/.
+
+	cp ../plant.sh autumo-beetRoot-$VERSION/.
+	cp ../plant.bat autumo-beetRoot-$VERSION/.
 
 
 # --------- Copy infos
@@ -300,7 +309,7 @@ then
 
 	
 else
-	echo "Nope! -> make create "
+	echo "Nope! -> make create|clear "
 	echo " "
 fi
 

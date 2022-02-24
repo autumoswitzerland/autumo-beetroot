@@ -239,7 +239,12 @@ public class FileCache  {
 	 * @throws IOException
 	 */
 	public FileCache(String resourcePath, ContentType contentType) throws IOException {
+		this.resourceInitialization(resourcePath, contentType);
+	}
+
+	private void resourceInitialization(String resourcePath, ContentType contentType) throws IOException {
 		
+		this.contentType = contentType;
 		this.mimeType = contentType.getContentType();
 		
 		this.isArchive = Utils.isMimeTypeArchive(mimeType); 
@@ -272,9 +277,9 @@ public class FileCache  {
 			this.isCached = true;
 		}
 		
-		this.lastModified = 1;
+		this.lastModified = 1;		
 	}
-
+	
 	/**
 	 * Get data as stream from file or cache, depending of the buffer size.
 	 * 

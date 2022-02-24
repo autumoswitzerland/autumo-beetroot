@@ -32,11 +32,11 @@ package ch.autumo.beetroot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
 
@@ -50,7 +50,7 @@ public class Session implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private HashMap<String, Serializable> data = new HashMap<>();
+	private Map<String, Serializable> data = new ConcurrentHashMap<String, Serializable>();
 	private final String sessionID;
 	
 	/**
@@ -111,7 +111,7 @@ public class Session implements Serializable {
 	/**
 	 * Clean session from all ID pairs!
 	 */
-	public void removeAllIds() {
+	public synchronized void removeAllIds() {
 		
 		final List<String> remKeys = new ArrayList<String>();
 		final Set<String> keys = data.keySet();

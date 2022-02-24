@@ -217,7 +217,6 @@ public class Mailer {
 		boolean auth = ConfigurationManager.getInstance().getYesOrNo("mail_auth");
 		boolean tlsEnable = ConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
 		
-		
 		int port = -1;
 		String portStr = DatabaseManager.getProperty("mail.port");
 		if (portStr != null)
@@ -229,12 +228,11 @@ public class Mailer {
 				port = 25;
 			}
 		}
-		
+		   
 		String host = DatabaseManager.getProperty("mail.host");
 		host = host == null ? ConfigurationManager.getInstance().getString("mail_host") : host; 
-				
 
-		props.setProperty(Constants.MAIL_SMTP_HOST_KEY, host);
+		props.put(Constants.MAIL_SMTP_HOST_KEY, host);
 		props.put(Constants.MAIL_SMTP_PORT_KEY, "" + port);
 		props.put(Constants.MAIL_SMTP_AUTH_KEY, Boolean.valueOf(auth).toString());
 
@@ -255,14 +253,16 @@ public class Mailer {
 						SecureApplicationHolder.getInstance().getSecApp())
 				: ConfigurationManager.getInstance().getString("mail_password");
 
-		if (auth)
+		if (auth) {
 			mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(u, p);
 				}
 			});
-		else
+		}
+		else {
 			mailSession = jakarta.mail.Session.getDefaultInstance(props);
+		}
 
 		final MimeMessage message = new MimeMessage(mailSession);
 		

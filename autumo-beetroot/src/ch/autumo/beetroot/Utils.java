@@ -43,6 +43,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -63,6 +64,13 @@ import jakarta.servlet.ServletContext;
  */
 public class Utils {
 
+	/** Allowed text mime types. */
+	public static List<String> mimeTextList;
+	/** Allowed octet mime types. */
+	public static List<String> mimeOctetList;
+	/** Allowed archive mime types. */
+	public static List<String> mimeArchiveList;
+	
 	/**
 	 * OS.
 	 */
@@ -105,17 +113,10 @@ public class Utils {
 	 * @return true if so
 	 */
 	public static boolean isMimeTypeText(String mimeType) {
-		//TODO configurable
-		switch (mimeType.trim()) {
-			case "text/plain"				:
-			case "text/html"				:
-			case "text/css"					:
-			case "image/svg+xml"			:
-			case "application/xml"			:
-			case "application/json"			:
-			case "application/javascript"	: return true;
-			default: return false;
-		}
+		
+		if (mimeTextList == null)
+			mimeTextList = ConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_text");
+		return mimeTextList.contains(mimeType);
 	}
 
 	/**
@@ -125,17 +126,9 @@ public class Utils {
 	 * @return true if so
 	 */
 	public static boolean isMimeTypeOctet(String mimeType) {
-		//TODO configurable
-		switch (mimeType.trim()) {
-			case "image/png"					:
-			case "image/gif"					:
-			case "image/x-icon"					:
-			case "application/vnd.ms-fontobject":
-			case "font/ttf"						:
-			case "font/woff"					:
-			case "font/woff2"					: return true;
-			default: return false;
-		}
+		if (mimeOctetList == null)
+			mimeOctetList = ConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_octet");
+		return mimeOctetList.contains(mimeType);
 	}
 	
 	/**
@@ -145,13 +138,9 @@ public class Utils {
 	 * @return true if so
 	 */
 	public static boolean isMimeTypeArchive(String mimeType) {
-		//TODO configurable
-		switch (mimeType.trim()) {
-			case "application/zip"	:
-			case "application/gzip"	:
-			case "application/tar"	: return true;
-			default: return false;
-		}
+		if (mimeArchiveList == null)
+			mimeArchiveList = ConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_archive");
+		return mimeArchiveList.contains(mimeType);
 	}
 	
 	/**

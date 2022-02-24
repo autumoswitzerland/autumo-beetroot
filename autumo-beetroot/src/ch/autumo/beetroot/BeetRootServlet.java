@@ -91,6 +91,8 @@ public class BeetRootServlet extends HttpServlet {
 				LOG.error("Logging configuration initialization failed !", ioex);
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
+			
+			//jakarta.mail.util.StreamProvider
 		}
 		
 		// Read general config
@@ -142,6 +144,15 @@ public class BeetRootServlet extends HttpServlet {
 		}
 		
 		beetRootWebServer = (BeetRootWebServer) beetRootService;
+
+		/** Servlet's life-cycle doesn't allow this.
+		// Finally load user sessions
+		try {
+			SessionManager.getInstance().load();
+	    } catch (Exception e) {
+	    	LOG.warn("Couldn't load user sessions!", e);
+	    }
+	    */
 	}
 
 	@Override
@@ -174,12 +185,14 @@ public class BeetRootServlet extends HttpServlet {
 	@Override
 	public void destroy() {
 		
+		/** Servlet's life-cycle doesn't allow this.
 		// save user session
 		try {
 			SessionManager.getInstance().save();
 		} catch (Exception e) {
 			LOG.error("Couldn't store user sessions!", e);
 		}
+		*/
 		
 		// clear sessions from memory
 		sessions.clear(); // all we need to do here
