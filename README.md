@@ -155,10 +155,10 @@ beetRoot can be run within two modes:
 
 1. Stand-alone web-server, based on a partially patched version of NanoHTTP and [RouterNanoHTTPD](https://github.com/NanoHttpd/nanohttpd/tree/master/nanolets/src/main/java/org/nanohttpd/router); the specific versions are:
      
-	- NanoHTTP 2.3.2-SNAPHOT, which is distributed by autumo GmbH through the library
-       'nanohattpd-2.3.2-BEETROOT.jar'
+	- NanoHTTP a.b.c-SNAPHOT, which is distributed by autumo GmbH through the library
+       'nanohattpd-a.b.c-BEETROOT.jar'
        
-	- RouterNanoHTTPD 2.3.2-SNAPHOT, patched within `autumo-beetroot-x.y.z.jar`
+	- RouterNanoHTTPD a.b.c-SNAPHOT, patched within `autumo-beetroot-x.y.z.jar`
       
 2. Within a servlet container such as tomcat or jetty.
 
