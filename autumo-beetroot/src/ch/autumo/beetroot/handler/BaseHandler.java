@@ -527,11 +527,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String clause = "";
 		
 		int uid = userSession.getUserId();
-		int dbuid = -1; 
+		int origId = -1; 
 		boolean currentUser = false;
-		if (columns.containsValue("username") && columns.containsValue("lasttoken")) { // we have a user entity in process
-			dbuid = Integer.valueOf(session.getParms().get("id")).intValue();
-			if (dbuid == uid)
+		if (entity.equals("users")) { // we have a user entity in process
+			final String obfSessId = session.getParms().get("id");
+			origId = userSession.getOrigId(obfSessId, getEntity());
+			if (origId == uid)
 				currentUser = true;
 		}
 		

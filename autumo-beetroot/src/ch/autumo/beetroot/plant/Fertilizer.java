@@ -412,16 +412,17 @@ public class Fertilizer {
 		if (sqlType.startsWith("varchar") || sqlType.startsWith("nvarchar") || sqlType.startsWith("lvarchar") || sqlType.startsWith("char") || sqlType.startsWith("nchar") || sqlType.startsWith("text") || sqlType.startsWith("character")) {
 			javaType = "String";
 		}
-		if (sqlType.startsWith("date")) {
-			javaType= "java.sql.Date";
-			if (!importList.contains(javaType))
-				importList.add(javaType);
-		}
+		
 		if (sqlType.startsWith("datetime")) {
 			javaType= "java.sql.Timestamp";
 			if (!importList.contains(javaType))
 				importList.add(javaType);
+		} else if (sqlType.startsWith("date")) { // don't overwrite date-time!
+			javaType= "java.sql.Date";
+			if (!importList.contains(javaType))
+				importList.add(javaType);
 		}
+		
 		if (sqlType.startsWith("decimal") || sqlType.startsWith("numeric")) {
 			javaType= "java.math.BigDecimal";
 			if (!importList.contains(javaType))
@@ -433,7 +434,7 @@ public class Fertilizer {
 		if (sqlType.startsWith("smallfloat")) {
 			javaType= "float";
 		}
-		if (sqlType.startsWith("int") || sqlType.startsWith("integer") || sqlType.startsWith("serial")) {
+		if (sqlType.startsWith("int") || sqlType.startsWith("integer") || sqlType.equals("serial")) { // overwrite serial8 if necessary
 			javaType = "int";
 		}
 		if (sqlType.startsWith("smallint")) {

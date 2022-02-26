@@ -56,8 +56,6 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 	@Override
 	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
-		Task t = (Task) entity;
-		
 		switch (columnName) {
 		
 			case "name"			: return "<td>" + set.getString(columnName) + "</td>";

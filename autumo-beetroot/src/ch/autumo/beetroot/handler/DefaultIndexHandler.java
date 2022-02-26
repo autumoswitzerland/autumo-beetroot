@@ -183,6 +183,12 @@ public class DefaultIndexHandler extends BaseHandler {
 			if (clz != null)
 				entity = (Entity) processor.toBean(set, clz);
 			
+			// NOTE: We could deliver the whole bean which could be extracted by the
+			// user with HTML and bean property-tags and waive the 'columns.cfg'-approach,
+			// but then we would do it the way every web-framework does it and we want to
+			// have only the tags {$head} and {$data} that generate the fields and table data
+			// entries in every view.
+			
 			// columns
 			htmlData += "<tr>";
 			for (int i = 1; i <= columns().size(); i++) {

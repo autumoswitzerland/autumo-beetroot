@@ -10,7 +10,9 @@ import ch.autumo.beetroot.Entity;
  */
 public class User implements Entity {
 
-    private String firstname;
+    private static final long serialVersionUID = 1L;
+    
+	private String firstname;
 
     public String getFirstname() {
         return firstname;

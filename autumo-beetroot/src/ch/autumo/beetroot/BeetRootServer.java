@@ -337,6 +337,12 @@ public class BeetRootServer {
 	private String readCommand(DataInputStream in) throws IOException {
 		
 		final int length = in.readInt();
+		
+		if (length > 24) {
+			// prevent other requests
+			return "NOPE"; 
+		}
+		
 		byte[] messageByte = new byte[length];
 	    boolean end = false;
 	    final StringBuilder dataString = new StringBuilder(length);

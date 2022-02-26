@@ -10,6 +10,8 @@ import ch.autumo.beetroot.Entity;
  */
 public class ##Entityname## implements Entity {
 
+    private static final long serialVersionUID = 1L;
+	
 ##beanContents##	
 	
 }

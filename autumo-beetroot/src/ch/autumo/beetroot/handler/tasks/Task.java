@@ -10,7 +10,9 @@ import ch.autumo.beetroot.Entity;
  */
 public class Task implements Entity {
 
-    private String monthofyear;
+    private static final long serialVersionUID = 1L;
+    
+	private String monthofyear;
 
     public String getMonthofyear() {
         return monthofyear;
