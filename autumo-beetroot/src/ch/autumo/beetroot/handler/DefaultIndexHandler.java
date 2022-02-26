@@ -46,6 +46,7 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
+import ch.autumo.beetroot.Utils;
 
 /**
  * Default handler for 'web/html/<entity>/index.html' templates.
@@ -178,10 +179,8 @@ public class DefaultIndexHandler extends BaseHandler {
 			
 			userSession.createIdPair(idr, getEntity());
 			String modifyID = userSession.getModifyId(idr, getEntity());
-			Entity entity = null;
-			final Class<?> clz = this.getBeanClass();
-			if (clz != null)
-				entity = (Entity) processor.toBean(set, clz);
+			
+			final Entity entity = Utils.createBean(getBeanClass(), set, processor);
 			
 			// NOTE: We could deliver the whole bean which could be extracted by the
 			// user with HTML and bean property-tags and waive the 'columns.cfg'-approach,

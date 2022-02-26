@@ -36,8 +36,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Map;
 
-import org.apache.commons.dbutils.BeanProcessor;
-
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.DatabaseManager;
@@ -93,11 +91,7 @@ public class DefaultEditHandler extends BaseHandler {
 
 		set.next(); // one record !
 		
-		final BeanProcessor processor = new BeanProcessor();
-		Entity entity = null;
-		final Class<?> clz = this.getBeanClass();
-		if (clz != null)
-			entity = (Entity) processor.toBean(set, clz);
+		final Entity entity = Utils.createBean(getBeanClass(), set);
 		
 		for (int i = 1; i <= columns().size(); i++) {
 			

@@ -34,11 +34,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.apache.commons.dbutils.BeanProcessor;
-
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Utils;
 
 /**
  * Default handler for 'web/html/<entity>/view.html' templates.
@@ -60,11 +59,7 @@ public class DefaultViewHandler extends BaseHandler {
 
 		set.next(); // one record !
 		
-		final BeanProcessor processor = new BeanProcessor();
-		Entity entity = null;
-		final Class<?> clz = this.getBeanClass();
-		if (clz != null)
-			entity = (Entity) processor.toBean(set, clz);
+		final Entity entity = Utils.createBean(getBeanClass(), set);
 		
 		for (int i = 1; i <= columns().size(); i++) {
 			

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -52,6 +53,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.dbutils.BeanProcessor;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -90,7 +92,37 @@ public class Utils {
      * System-specific separator.
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
+
+	/**
+	 * Create bean.
+	 * 
+	 * @param beanClass bean class, must be of type  {@link Entity}.
+	 * @param set result set at current position the data is taken from
+	 * @return entity bean or null
+	 * @throws SQLException
+	 */
+	public static Entity createBean(Class<?> beanClass, ResultSet set) throws SQLException {
+		return createBean(beanClass, set, new BeanProcessor());
+	}
+	
+	/**
+	 * Create bean.
+	 * 
+	 * @param beanClass bean class, must be of type  {@link Entity}.
+	 * @param set result set at current position the data is taken from
+	 * @param processor bean processor
+	 * @return entity bean or null
+	 * @throws SQLException
+	 */
+	public static Entity createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
+		
+		Entity entity = null;
+		if (beanClass != null)
+			entity = (Entity) processor.toBean(set, beanClass);
+		
+		return entity;
+	}
+	
 	/**
 	 * Normalize URI.
 	 * @param uri URI
