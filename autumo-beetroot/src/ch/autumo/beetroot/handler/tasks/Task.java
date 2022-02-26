@@ -3,10 +3,12 @@
  */
 package ch.autumo.beetroot.handler.tasks;
 
+import ch.autumo.beetroot.Entity;
+
 /**
  * Task. 
  */
-public class Task {
+public class Task implements Entity {
 
     private String monthofyear;
 

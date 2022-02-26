@@ -61,7 +61,10 @@ public class DefaultViewHandler extends BaseHandler {
 		set.next(); // one record !
 		
 		final BeanProcessor processor = new BeanProcessor();
-		final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
+		Entity entity = null;
+		final Class<?> clz = this.getBeanClass();
+		if (clz != null)
+			entity = (Entity) processor.toBean(set, clz);
 		
 		for (int i = 1; i <= columns().size(); i++) {
 			

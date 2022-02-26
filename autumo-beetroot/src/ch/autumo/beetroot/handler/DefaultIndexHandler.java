@@ -178,8 +178,10 @@ public class DefaultIndexHandler extends BaseHandler {
 			
 			userSession.createIdPair(idr, getEntity());
 			String modifyID = userSession.getModifyId(idr, getEntity());
-			
-			final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
+			Entity entity = null;
+			final Class<?> clz = this.getBeanClass();
+			if (clz != null)
+				entity = (Entity) processor.toBean(set, clz);
 			
 			// columns
 			htmlData += "<tr>";

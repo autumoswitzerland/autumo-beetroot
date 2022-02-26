@@ -92,9 +92,6 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity + ";";
 		final ResultSet set = stmt.executeQuery(stmtStr); // call only for types, make this better!
-
-		//final BeanProcessor processor = new BeanProcessor();
-		//final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
 		
 		for (int i = 1; i <= columns().size(); i++) {
 			

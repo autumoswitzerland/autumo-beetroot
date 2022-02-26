@@ -3,10 +3,12 @@
  */
 package ch.autumo.beetroot.handler.users;
 
+import ch.autumo.beetroot.Entity;
+
 /**
  * User. 
  */
-public class User {
+public class User implements Entity {
 
     private String firstname;
 
