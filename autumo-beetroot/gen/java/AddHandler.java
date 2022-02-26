@@ -36,5 +36,10 @@ public class ##Entitynameplural##AddHandler extends DefaultAddHandler {
 ##mandfields##
 		return fields;
 	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return ##Entityname##.class;
+	}
 	
 }

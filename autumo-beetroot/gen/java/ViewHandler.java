@@ -6,6 +6,7 @@ package planted.beetroot.handler.##entitynameplural##;
 import java.sql.ResultSet;
 
 //import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 
 /**
@@ -18,7 +19,10 @@ public class ##Entitynameplural##ViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String extractSingleTableData(ResultSet set, String columnName, int idx) throws Exception {
+	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+		
+		// in case you want to use a bean
+		final ##Entityname## ##entityname## = (##Entityname##) entity;
 		
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
@@ -27,6 +31,11 @@ public class ##Entitynameplural##ViewHandler extends DefaultViewHandler {
 ##columns##
 			default: return "<td>"+set.getObject(columnName)+"</td>";
 		}
+	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return ##Entityname##.class;
 	}
 	
 }

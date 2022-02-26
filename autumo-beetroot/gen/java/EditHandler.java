@@ -22,5 +22,10 @@ public class ##Entitynameplural##EditHandler extends DefaultEditHandler {
 	public Class<?> getRedirectHandler() {
 		return ##Entitynameplural##IndexHandler.class;
 	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return ##Entityname##.class;
+	}
 	
 }

@@ -28,31 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.handler.tasks;
+package ch.autumo.beetroot;
 
-import ch.autumo.beetroot.handler.DefaultEditHandler;
+import java.io.Serializable;
 
 /**
- * Tasks edit handler. 
+ * Marker interface for all entities.
  */
-public class TasksEditHandler extends DefaultEditHandler {
-	
-	public TasksEditHandler(String entity) {
-		super(entity);
-	}
-
-	public TasksEditHandler(String entity, String errMsg) {
-		super(entity, errMsg);
-	}
-	
-	@Override
-	public Class<?> getRedirectHandler() {
-		return TasksIndexHandler.class;
-	}
-
-	@Override
-	public Class<?> getBeanClass() {
-		return Task.class;
-	}
-	
+public interface Entity extends Serializable {
 }

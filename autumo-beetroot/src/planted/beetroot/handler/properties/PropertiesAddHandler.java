@@ -43,4 +43,9 @@ public class PropertiesAddHandler extends DefaultAddHandler {
 		return userSession.getUserRole().equalsIgnoreCase("administrator");
 	}
 	
+	@Override
+	public Class<?> getBeanClass() {
+		return Property.class;
+	}
+	
 }

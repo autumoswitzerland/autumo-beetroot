@@ -465,7 +465,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		String clause = "";
 		
-		for (int i = 1; i <= columns.size(); i++) {
+		LOOP: for (int i = 1; i <= columns.size(); i++) {
 			
 			final String col[] = getColumn(i);
 
@@ -495,7 +495,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					clause += "'" + Utils.nowTimeStamp() + "'";
 				else
 					clause += "'" + Utils.nowTimeStamp() + "', ";
+				
+				// continue here with for-loop. otherwise we would get errors!
+				continue LOOP;
 			}
+			
+			val = this.formatSingleValueForDB(val, col[0]);
 			
 			if (columns.size() == i)
 				clause += "'"+val+"'";
@@ -521,6 +526,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		String clause = "";
 		
+		int uid = userSession.getUserId();
+		int dbuid = -1; 
+		boolean currentUser = false;
+		if (columns.containsValue("username") && columns.containsValue("lasttoken")) { // we have a user entity in process
+			dbuid = Integer.valueOf(session.getParms().get("id")).intValue();
+			if (dbuid == uid)
+				currentUser = true;
+		}
+		
 		for (int i = 1; i <= columns.size(); i++) {
 
 			final String col[] = getColumn(i);
@@ -544,12 +558,23 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 			}
 
-			if (col[0].equals("firstname")) {
-				userSession.set("firstname", val);
+			// Only the logged in user must be updated with new session data if data is changed
+			if (currentUser) {
+				if (col[0].equals("username")) {
+					userSession.set("username", val);
+				}
+				if (col[0].equals("role")) {
+					userSession.set("userrole", val);
+				}
+				if (col[0].equals("firstname")) {
+					userSession.set("firstname", val);
+				}
+				if (col[0].equals("lastname")) {
+					userSession.set("lastname", val);
+				}
 			}
-			if (col[0].equals("lastname")) {
-				userSession.set("lastname", val);
-			}
+			
+			val = this.formatSingleValueForDB(val, col[0]);
 			
 			if (columns.size() == i)
 				clause += col[0] + "='"+val+"'";
@@ -559,7 +584,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 
 		// Doesn't matter, if 'modified' is configured in 'colums.cfg' or not
-		// And we assume the column exists as specified by the config!
+		// And we assume the column exists as specified by design!
 		// But we don't update it, if the user choses to modify it by himself (GUI).
 		if (dbAutoMod && clause.indexOf("modified=") != 1) {
 			clause += ", modified='" + Utils.nowTimeStamp() + "'";
@@ -567,7 +592,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		return clause;
 	}
-	
+
 	public HandlerResponse uniqueTest(BeetRootHTTPSession session, String preSql, String operation) throws Exception {
 		
 		final Session userSession = SessionManager.getInstance().findOrCreate(session);
@@ -1939,6 +1964,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				+ "		$('#"+columnName+"').val(\"false\");\n"
 				+ "	}\n"
 				+ "});\n");
+	}
+	
+	/**
+	 * Format single value before update / insert into DB.
+	 * 
+	 * @param val value
+	 * @param columnname column name
+	 * @return formatted value
+	 */
+	public String formatSingleValueForDB(String val, String columnname) {
+		throw new IllegalAccessError("This method should never be called in this context!");
 	}
 	
 }

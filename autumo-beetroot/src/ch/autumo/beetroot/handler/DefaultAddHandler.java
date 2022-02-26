@@ -91,7 +91,10 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		final Statement stmt = conn.createStatement();
 		
 		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity + ";";
-		final ResultSet set = stmt.executeQuery(stmtStr); // only for types, make this better!
+		final ResultSet set = stmt.executeQuery(stmtStr); // call only for types, make this better!
+
+		//final BeanProcessor processor = new BeanProcessor();
+		//final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
 		
 		for (int i = 1; i <= columns().size(); i++) {
 			
@@ -153,7 +156,8 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	}
 	
 	/**
-	 * Extract one single input div with label and input tags.
+	 * Extract one single input div with label and input tags from result set standing at current row.
+	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param set result set
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
@@ -162,13 +166,14 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	public String extractSingleInputDiv(ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
 		return this.extractSingleInputDiv("", set, columnName, guiColName, idx);
 	}
 	
 	/**
-	 * Extract one single input div with label and input tags.
+	 * Extract one single input div with label and input tags from result set standing at current row.
+	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param data repost data
 	 * @param set result set, even when empty, data is taken from the map (retry)
@@ -178,7 +183,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	public String extractSingleInputDiv(Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
 		return this.extractSingleInputDiv(data.get(columnName), set, columnName, guiColName, idx);
 	}
@@ -202,7 +207,6 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			result += "<div class=\"input "+divType+"\">\n";
 		
 		result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n"; 
-		
 		
 		if (isCheck) {
 			
@@ -254,6 +258,11 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		return result;
 	}
 	
+	@Override
+	public String formatSingleValueForDB(String val, String columnname) {
+		return val;
+	}
+	
 	/**
 	 * Get additional mandatory fields of the table
 	 * that are not present and mandatory fields in the
@@ -272,6 +281,16 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	@Override
 	public String getResource() {
 		return "web/html/:lang/"+entity+"/add.html";
+	}
+
+	/**
+	 * Get bean entity class that has been generated trough PLANT, 
+	 * self-written or null (then null in extract calls too).
+	 * 
+	 * @return bean entity class
+	 */
+	public Class<?> getBeanClass() {
+		return null;
 	}
 	
 }

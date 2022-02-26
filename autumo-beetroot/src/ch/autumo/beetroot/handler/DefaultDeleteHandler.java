@@ -67,5 +67,5 @@ public class DefaultDeleteHandler extends BaseHandler {
 	public String getResource() {
 		return null;
 	}
-	
+
 }

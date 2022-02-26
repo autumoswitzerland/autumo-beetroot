@@ -5,8 +5,8 @@ package planted.beetroot.handler.properties;
 
 import java.sql.ResultSet;
 
+import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
-//import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 
 /**
@@ -19,7 +19,10 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String extractSingleTableData(ResultSet set, String columnName, int idx) throws Exception {
+	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+		
+		// in case you want to use a bean
+		//final Property property = (Property) entity;
 		
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
@@ -34,6 +37,11 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 	@Override
 	public boolean hasAccess(Session userSession) {
 		return userSession.getUserRole().equalsIgnoreCase("administrator");
+	}
+	
+	@Override
+	public Class<?> getBeanClass() {
+		return Property.class;
 	}
 	
 }

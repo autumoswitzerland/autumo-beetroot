@@ -34,8 +34,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import org.apache.commons.dbutils.BeanProcessor;
+
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.Entity;
 
 /**
  * Default handler for 'web/html/<entity>/view.html' templates.
@@ -57,11 +60,14 @@ public class DefaultViewHandler extends BaseHandler {
 
 		set.next(); // one record !
 		
+		final BeanProcessor processor = new BeanProcessor();
+		final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
+		
 		for (int i = 1; i <= columns().size(); i++) {
 			
 			final String col[] = getColumn(i);
 			int dbIdx = i + 1; // because of additional id!
-			htmlData += "<tr><th>"+col[1]+"</th>"+extractSingleTableData(set, col[0], dbIdx)+"</tr>\n";		
+			htmlData += "<tr><th>"+col[1]+"</th>"+extractSingleTableData(set, col[0], dbIdx, entity)+"</tr>\n";		
 		}		
 		set.close();
 		stmt.close();
@@ -71,15 +77,17 @@ public class DefaultViewHandler extends BaseHandler {
 	}
 
 	/**
-	 * Extract one single table data field.
+	 * Extract one single table data field from result set standing at current row.
+	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param set database result set pointing to current record
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param idx SQL result set column index
+	 * @param dbIdx SQL result set column index
+	 * @param entity whole entity bean
 	 * @return html data extract <td>...</td>
 	 * @throws Exception
 	 */
-	public String extractSingleTableData(ResultSet set, String columnName, int idx) throws Exception {
+	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		final Object o = set.getObject(idx);
 		
@@ -95,6 +103,16 @@ public class DefaultViewHandler extends BaseHandler {
 	@Override
 	public String getResource() {
 		return "web/html/:lang/"+entity+"/view.html";
+	}
+
+	/**
+	 * Get bean entity class that has been generated trough PLANT, 
+	 * self-written or null (then null in extract calls too).
+	 * 
+	 * @return bean entity class
+	 */
+	public Class<?> getBeanClass() {
+		return null;
 	}
 	
 }

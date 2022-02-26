@@ -32,6 +32,7 @@ package ch.autumo.beetroot.handler.tasks;
 
 import java.sql.ResultSet;
 
+import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 
@@ -47,7 +48,7 @@ public class TasksViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String extractSingleTableData(ResultSet set, String columnName, int idx) throws Exception {
+	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		switch (columnName) {
 		
@@ -73,4 +74,9 @@ public class TasksViewHandler extends DefaultViewHandler {
 		return text.replaceAll("\\{\\$taskName\\}", taskName);
 	}
 	
+	@Override
+	public Class<?> getBeanClass() {
+		return Task.class;
+	}
+
 }

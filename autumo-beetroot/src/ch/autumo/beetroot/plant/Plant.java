@@ -118,8 +118,9 @@ public class Plant {
 		
         //singleEntity = aCmdline.getOptionValue("entity");
         
-        //ConfigurationManager.getInstance().initialize();
-        ConfigurationManager.getInstance().initialize(); //"cfg/beetroot-test.cfg");
+		// ALWAYS CHECK TO FIXME :)
+        ConfigurationManager.getInstance().initialize();
+        //ConfigurationManager.getInstance().initialize("cfg/beetroot-mysql.cfg");
         
 		// Are pw's in config encoded?
 		boolean pwEncoded = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
@@ -174,7 +175,11 @@ public class Plant {
 				System.out.println("At this time CRUD generation is only possible with MySQL and MariaDB.");
 				System.out.println("We suggest setting up one of these databases for development and then");
 				System.out.println("using the generated templates and code for the target database.");
-				return -1; // finish
+				System.out.println("Sorry!");
+				System.out.println("");
+				
+				// finish now!
+				Utils.normalExit();
 			} 
 			/*
 			else if (DatabaseManager.getInstance().isH2Db()) {
@@ -288,11 +293,17 @@ public class Plant {
     	
 		// ---- Java
     	
-    	this.process(new Fertilizer(singleEntity, "gen/java/IndexHandler.java", "src/", "java"));
-    	this.process(new Fertilizer(singleEntity, "gen/java/ViewHandler.java", "src/", "java"));
-    	this.process(new Fertilizer(singleEntity, "gen/java/EditHandler.java", "src/", "java"));
-    	final Fertilizer javaAdd = new Fertilizer(singleEntity, "gen/java/AddHandler.java", "src/", "java");
-    	this.process(javaAdd);
+    	Fertilizer fertilizer = null;
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/IndexHandler.java", "src/", "java");
+    	this.process(fertilizer);
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/ViewHandler.java", "src/", "java");
+    	this.process(fertilizer);
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/EditHandler.java", "src/", "java");
+    	this.process(fertilizer);
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/AddHandler.java", "src/", "java");
+    	this.process(fertilizer);
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/Entity.java", "src/", "java");
+    	this.process(fertilizer);
     	
     	
 		// ---- Router
@@ -300,12 +311,12 @@ public class Plant {
 		System.out.println("");
 		System.out.println("  Add the following lines to your beetRoot Router:\n");
 		System.out.println(
-				  "    new Route(\"/:lang/"+javaAdd.lowerEntityPlural+"\", "+javaAdd.upperEntityPlural+"IndexHandler.class, \""+javaAdd.lowerEntityPlural+"\"),\n"
-				+ "    new Route(\"/:lang/"+javaAdd.lowerEntityPlural+"/index\", "+javaAdd.upperEntityPlural+"IndexHandler.class, \""+javaAdd.lowerEntityPlural+"\"),\n"
-				+ "    new Route(\"/:lang/"+javaAdd.lowerEntityPlural+"/view\", "+javaAdd.upperEntityPlural+"ViewHandler.class, \""+javaAdd.lowerEntityPlural+"\"),\n"
-				+ "    new Route(\"/:lang/"+javaAdd.lowerEntityPlural+"/edit\", "+javaAdd.upperEntityPlural+"EditHandler.class, \""+javaAdd.lowerEntityPlural+"\"),\n"
-				+ "    new Route(\"/:lang/"+javaAdd.lowerEntityPlural+"/add\", "+javaAdd.upperEntityPlural+"AddHandler.class, \""+javaAdd.lowerEntityPlural+"\"),\n"
-				+ "    new Route(\"/:lang/"+javaAdd.lowerEntityPlural+"/delete\", DefaultDeleteHandler.class, \""+javaAdd.lowerEntityPlural+"\")\n"
+				  "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
+				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/index\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
+				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/view\", "+fertilizer.upperEntityPlural+"ViewHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
+				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/edit\", "+fertilizer.upperEntityPlural+"EditHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
+				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/add\", "+fertilizer.upperEntityPlural+"AddHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
+				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/delete\", DefaultDeleteHandler.class, \""+fertilizer.lowerEntityPlural+"\")\n"
 				+ "");
     	
     }
@@ -385,6 +396,9 @@ public class Plant {
 		System.out.println("- New generation has overwriten possible previous generated sources!");
 		System.out.println("");
 		System.out.println("TODO's:");
+		System.out.println("");
+		System.out.println("- Add the routes above to your router!");
+		System.out.println("");
 		System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
 		System.out.println("  default value in the add handler that are not present in the GUI!");
 		System.out.println("");

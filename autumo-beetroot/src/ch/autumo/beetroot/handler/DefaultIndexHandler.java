@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
@@ -166,6 +168,8 @@ public class DefaultIndexHandler extends BaseHandler {
         	
 		int counter = 0;
 		
+		final BeanProcessor processor = new BeanProcessor();
+		
 		// table data
 		while (set.next() && counter < maxRecPerPage) {
 			
@@ -175,6 +179,8 @@ public class DefaultIndexHandler extends BaseHandler {
 			userSession.createIdPair(idr, getEntity());
 			String modifyID = userSession.getModifyId(idr, getEntity());
 			
+			final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
+			
 			// columns
 			htmlData += "<tr>";
 			for (int i = 1; i <= columns().size(); i++) {
@@ -182,7 +188,7 @@ public class DefaultIndexHandler extends BaseHandler {
 				final String cfgLine = columns().get(Integer.valueOf(i));
 				final String params[] = cfgLine.split("=");
 				int dbIdx = i + 1; // because of additional id!
-				htmlData += extractSingleTableData(set, params[0].trim(), dbIdx)+ "\n";
+				htmlData += extractSingleTableData(set, params[0].trim(), dbIdx, entity)+ "\n";
 				
 			}
 			
@@ -242,15 +248,17 @@ public class DefaultIndexHandler extends BaseHandler {
 	}
 	
 	/**
-	 * Extract one single table data field.
+	 * Extract one single table data field from result set standing at current row.
+	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param set database result set pointing to current record
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param idx SQL result set column index
+	 * @param dbIdx SQL result set column index
+	 * @param entity whole entity bean
 	 * @return html data extract <td>...</td>
 	 * @throws Exception
 	 */
-	public String extractSingleTableData(ResultSet set, String columnName, int idx) throws Exception {
+	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		final Object o = set.getObject(idx);
 		
@@ -315,6 +323,16 @@ public class DefaultIndexHandler extends BaseHandler {
 	@Override
 	public  String getResource() {
 		return "web/html/:lang/"+entity+"/index.html";
+	}
+
+	/**
+	 * Get bean entity class that has been generated trough PLANT, 
+	 * self-written or null (then null in extract calls too).
+	 * 
+	 * @return bean entity class
+	 */
+	public Class<?> getBeanClass() {
+		return null;
 	}
 	
 }

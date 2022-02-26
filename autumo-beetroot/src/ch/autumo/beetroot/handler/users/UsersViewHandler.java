@@ -32,6 +32,7 @@ package ch.autumo.beetroot.handler.users;
 
 import java.sql.ResultSet;
 
+import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 
@@ -47,7 +48,7 @@ public class UsersViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String extractSingleTableData(ResultSet set, String columnName, int idx) throws Exception {
+	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		switch (columnName) {
 		
@@ -65,6 +66,11 @@ public class UsersViewHandler extends DefaultViewHandler {
 	@Override
 	public String replaceTemplateVariables(String text) {
 		return text.replaceAll("\\{\\$userName\\}", userName);
+	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return User.class;
 	}
 	
 }

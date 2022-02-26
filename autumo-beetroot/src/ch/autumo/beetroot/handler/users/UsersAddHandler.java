@@ -64,5 +64,10 @@ public class UsersAddHandler extends DefaultAddHandler {
 	    
 		return mand;
 	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return User.class;
+	}
 	
 }

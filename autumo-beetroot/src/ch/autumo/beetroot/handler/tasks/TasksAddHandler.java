@@ -71,5 +71,10 @@ public class TasksAddHandler extends DefaultAddHandler {
 	    
 		return mand;
 	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return Task.class;
+	}
 	
 }

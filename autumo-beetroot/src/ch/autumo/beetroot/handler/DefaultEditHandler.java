@@ -36,9 +36,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Map;
 
+import org.apache.commons.dbutils.BeanProcessor;
+
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
 
@@ -90,11 +93,14 @@ public class DefaultEditHandler extends BaseHandler {
 
 		set.next(); // one record !
 		
+		final BeanProcessor processor = new BeanProcessor();
+		final Entity entity = (Entity) processor.toBean(set, this.getBeanClass());
+		
 		for (int i = 1; i <= columns().size(); i++) {
 			
 			final String col[] = getColumn(i);
 			int dbIdx = i + 1; // because of additional id!
-			htmlData += extractSingleInputDiv(set, col[0], col[1], dbIdx);		
+			htmlData += extractSingleInputDiv(set, entity, col[0], col[1], dbIdx);		
 		}		
 		set.close();
 		stmt.close();
@@ -129,22 +135,26 @@ public class DefaultEditHandler extends BaseHandler {
 	}
 	
 	/**
-	 * Extract one single input div with label and input tags.
+	 * Extract one single input div with label and input tags from result set standing at current row.
+	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param set result set
+	 * @param entity entity bean
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
 	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
 	 * @param idx SQL result set column index
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	public String extractSingleInputDiv(ResultSet set, String columnName, String guiColName, int idx) throws Exception {
-		
-		return this.extractSingleInputDiv(set.getObject(idx).toString().trim(), set, columnName, guiColName, idx, true);
+	private String extractSingleInputDiv(ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
+
+		final String val = this.formatSingleValueForGUI(set.getObject(idx).toString().trim(), columnName, idx, entity);
+		return this.extractSingleInputDiv(val, set, columnName, guiColName, idx, true);
 	}
 	
 	/**
-	 * Extract one single input div with label and input tags.
+	 * Extract one single input div with label and input tags from result set standing at current row.
+	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param data repost data
 	 * @param set result set, even when empty, data is taken from the map (retry)
@@ -154,11 +164,11 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */	
-	public String extractSingleInputDiv(Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
 		return this.extractSingleInputDiv(data.get(columnName), set, columnName, guiColName, idx, false);
 	}
-		
+	
 	private String extractSingleInputDiv(String val, ResultSet set, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
 		
 		String result = "";
@@ -235,9 +245,37 @@ public class DefaultEditHandler extends BaseHandler {
 		return result;
 	}
 	
+	/**
+	 * Format value for GUI.
+	 * 
+	 * @param value value from DB 
+	 * @param columnName DB column name
+	 * @param dbIdx SQL result set column index
+	 * @param entity whole entity bean
+	 * @return formated value for given column-name or DB index 
+	 */
+	public String formatSingleValueForGUI(String value, String columnName, int dbIdx, Entity entity) {
+		return value;
+	}
+	
+	@Override
+	public String formatSingleValueForDB(String val, String columnname) {
+		return val;
+	}
+	
 	@Override
 	public String getResource() {
 		return "web/html/:lang/"+entity+"/edit.html";
+	}
+
+	/**
+	 * Get bean entity class that has been generated trough PLANT, 
+	 * self-written or null (then null in extract calls too).
+	 * 
+	 * @return bean entity class
+	 */
+	public Class<?> getBeanClass() {
+		return null;
 	}
 	
 }

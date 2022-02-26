@@ -49,5 +49,10 @@ public class UsersEditHandler extends DefaultEditHandler {
 	public Class<?> getRedirectHandler() {
 		return UsersIndexHandler.class;
 	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return User.class;
+	}
 	
 }

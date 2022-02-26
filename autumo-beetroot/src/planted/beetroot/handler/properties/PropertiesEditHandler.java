@@ -29,4 +29,9 @@ public class PropertiesEditHandler extends DefaultEditHandler {
 		return userSession.getUserRole().equalsIgnoreCase("administrator");
 	}
 	
+	@Override
+	public Class<?> getBeanClass() {
+		return Property.class;
+	}
+	
 }

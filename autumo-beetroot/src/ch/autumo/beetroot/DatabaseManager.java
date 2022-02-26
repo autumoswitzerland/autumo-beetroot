@@ -52,6 +52,7 @@ public class DatabaseManager {
 	private String url = null;
 	private String user = null;
 	private String pass = null;
+	private String driver = null;
 	
 	private boolean isH2Db = false;
 	private boolean isMysqlDb = false;
@@ -95,16 +96,19 @@ public class DatabaseManager {
 		// Is Postgre db?
 		isPostgreDb = url.startsWith(Constants.JDBC_POSTGRE_DB);
 		
+		
 		if (isMysqlDb)
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			driver = "com.mysql.cj.jdbc.Driver";
 		if (isMariaDb)
-			Class.forName("org.mariadb.jdbc.Driver");
+			driver = "org.mariadb.jdbc.Driver";
 		if (isOracleDb)
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+			driver = "oracle.jdbc.driver.OracleDriver";
 		if (isPostgreDb)
-			Class.forName("org.postgresql.Driver");
+			driver = "org.postgresql.Driver";
 		if (isH2Db)
-			Class.forName("org.h2.Driver");	
+			driver = "org.h2.Driver";	
+
+		Class.forName(driver);	
 		
 		this.url = url;
 		this.user = user;
@@ -240,6 +244,22 @@ public class DatabaseManager {
 		
 		stmt.close();
 		conn.close();
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public String getDriver() {
+		return driver;
 	}
 	
 }
