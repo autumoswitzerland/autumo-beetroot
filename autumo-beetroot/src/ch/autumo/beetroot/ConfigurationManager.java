@@ -223,7 +223,7 @@ public class ConfigurationManager {
 			v = v.trim();
 
 		if (v == null)
-			LOG.debug("Value for key '"+key+"' doesn't exist in beetroot configuration!");
+			LOG.trace("Value for key '"+key+"' doesn't exist in beetroot configuration!");
 		
 		return v;
 	}
@@ -240,7 +240,7 @@ public class ConfigurationManager {
 		String v = generalProps.getProperty(key);
 		
 		if (v == null) {
-			LOG.warn("Value for key '"+key+"' doesn't exist in beetroot configuration!");
+			LOG.trace("Value for key '"+key+"' doesn't exist in beetroot configuration!");
 			return -1;
 		}
 		
@@ -261,7 +261,7 @@ public class ConfigurationManager {
 		if (val == null || val.length() == 0) {
 			
 			if (val == null)
-				LOG.warn("Value for key '"+key+"' doesn't exist in beetroot configuration!");
+				LOG.warn("Value for yes/no key '"+key+"' doesn't exist in beetroot configuration!");
 			
 			return false;
 		}
