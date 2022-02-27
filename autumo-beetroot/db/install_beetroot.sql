@@ -9,12 +9,18 @@
 -----------------------------------------------------------------------------
 
 
+
 -- create database
 
-create database ifacexweb default character set utf8 default collate utf8_bin;
-GRANT ALL PRIVILEGES ON beetroot.* to beetroot@'%' IDENTIFIED BY 'beetroot';
-GRANT ALL PRIVILEGES ON beetroot.* to beetroot@'localhost' IDENTIFIED BY 'beetroot';
+-- MySQL and MariaDB create database syntax:
+--create database ifacexweb default character set utf8 default collate utf8_bin;
+--GRANT ALL PRIVILEGES ON beetroot.* to beetroot@'%' IDENTIFIED BY 'beetroot';
+--GRANT ALL PRIVILEGES ON beetroot.* to beetroot@'localhost' IDENTIFIED BY 'beetroot';
 
+
+
+-- Adjust the subsequent SQL to you database's SQL syntax.
+-- This here works fine with MySQL, MariaAB and H2.
 
 -- create tables
 

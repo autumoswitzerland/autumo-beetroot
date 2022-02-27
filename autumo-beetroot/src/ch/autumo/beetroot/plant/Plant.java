@@ -40,6 +40,8 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
@@ -79,32 +81,25 @@ public class Plant {
 	
 	private Options makeOptions() {
 		final Options options = new Options();
-		//options.addOption(makeOption("source-directory", true, "Source directory to generate Java classes."));
-		//options.addOption(makeOption("entity", false, "Entity to process"));
+		options.addOption(makeOption("config", false, "Optional configuration file path (if it's not default 'cfg/beetroot.cfg')"));
 		return options;
 	}
 	
-	/*
 	private Option makeOption(String argName, boolean required, String desc) {
 		final Option localOption = new Option(argName, true, desc);
 		localOption.setRequired(required);
 		localOption.setArgName(argName);
 		return localOption;
 	}
-	*/
 
-	/*
 	private void usage() {
 		final int width = 80;
-
-		final String usage = "java " + Plant.class.getName() + " <source-directory> <entity>";
+		final String usage = "java "+Plant.class.getName()+" <config>";
 		final HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp(width, usage, null, makeOptions(), null);
-
 		this.printLine();
 		System.out.println("Exit.");
 	}
-	*/
 
 	private void printLine() {
 		System.out.println(getLine());
@@ -116,11 +111,19 @@ public class Plant {
 
 	private void initialize(CommandLine aCmdline) throws Exception {
 		
-        //singleEntity = aCmdline.getOptionValue("entity");
-        
-		// ALWAYS CHECK TO FIXME :)
-        ConfigurationManager.getInstance().initialize();
-        //ConfigurationManager.getInstance().initialize("cfg/beetroot-mysql.cfg");
+		final String argsList[] = aCmdline.getArgs();
+		
+		if (argsList.length > 1) {
+			usage();
+			Utils.normalExit();
+		}
+		
+		
+		if (argsList.length == 1)
+			ConfigurationManager.getInstance().initialize(argsList[0]);
+		else
+			ConfigurationManager.getInstance().initialize();
+
         
 		// Are pw's in config encoded?
 		boolean pwEncoded = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
@@ -216,12 +219,17 @@ public class Plant {
 					System.out.println("  ["+(j+1)+"] = "+tableNames[j]);
 				} 
 				System.out.println("  [all] = All tables !");
+				System.out.println("  [x] = Exit");
 				System.out.print(">");
 
 				val = br.readLine();
 				if (val.trim().equalsIgnoreCase("all")) {
 					d = 1;
 					val = "all";
+				} else if (val.trim().equalsIgnoreCase("x")) {
+					System.out.println("Bye.");
+					System.out.println("");
+					Utils.normalExit();
 				} else {
 					d = Integer.valueOf(val).intValue();
 					val = "one";
@@ -328,7 +336,7 @@ public class Plant {
 
 	public final int run(String[] args) {
 		
-		CommandLine line;
+		CommandLine line = null;
 
 		System.out.println(getDescription());
 		this.printLine();
@@ -338,8 +346,8 @@ public class Plant {
 			line = new DefaultParser().parse(makeOptions(), args);
 		} catch (ParseException exp) {
 			System.err.println("Couldn't read program argument. Reason: " + exp.getMessage());
-			//usage();
-			return -1;
+			usage();
+			Utils.normalExit();
 		}
 
 		try {
@@ -389,25 +397,18 @@ public class Plant {
 		this.printLine();
 		System.out.println("");
 		System.out.println("NOTE:");
-		System.out.println("");
 		System.out.println("- Move generated code to own packages and HTML to the desired (language)");
 		System.out.println("  directories.");
-		System.out.println("");
 		System.out.println("- New generation has overwriten possible previous generated sources!");
 		System.out.println("");
 		System.out.println("TODO's:");
-		System.out.println("");
 		System.out.println("- Add the routes above to your router!");
-		System.out.println("");
 		System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
 		System.out.println("  default value in the add handler that are not present in the GUI!");
-		System.out.println("");
 		System.out.println("- Remove unwanted GUI fields from 'columns.cfg' for the views 'view', 'add'");
 		System.out.println("  and 'edit'.");
-		System.out.println("");
 		System.out.println("- Also Remove unwanted <col span..> tags in the 'index.html'; e.g. if you");
 		System.out.println("  removed standard fields 'id', 'created' and 'modified' from 'columns.cfg'.");
-		System.out.println("");
 		System.out.println("- Add entity to menu or admin menu and overwrite 'hasAccess' method for every");
 		System.out.println("  handler if necessary.");
 		// overwrite method access
