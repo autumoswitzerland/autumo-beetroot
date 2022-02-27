@@ -52,6 +52,8 @@ import org.slf4j.LoggerFactory;
  */
 public class BeetRootServer {
 
+	private static final String DEFAULT_NAME = "beetRoot";
+	
     private static String rootPath = null;
     
     private AdminListener adminListener = null;
@@ -64,7 +66,7 @@ public class BeetRootServer {
 	
 	private boolean pwEncoded = false;
 	
-	private String name = "beetRoot";
+	private String name = DEFAULT_NAME;
 	
     
 	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootServer.class.getName());
@@ -85,9 +87,8 @@ public class BeetRootServer {
 	 * 
 	 * @param params start or stop
 	 */
-	public BeetRootServer(String params[], String name) {
-		this(params);
-		this.name = name;
+	public BeetRootServer(String params[]) {
+		this(params, DEFAULT_NAME);
 	}
 	
 	/**
@@ -95,7 +96,9 @@ public class BeetRootServer {
 	 * 
 	 * @param params start or stop
 	 */
-	public BeetRootServer(String params[]) {
+	public BeetRootServer(String params[], String name) {
+
+		this.name = name;
 		
 		//------------------------------------------------------------------------------
 		
