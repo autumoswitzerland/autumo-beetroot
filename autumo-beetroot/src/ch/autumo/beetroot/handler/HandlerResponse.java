@@ -40,6 +40,8 @@ public class HandlerResponse {
 	public static final int STATE_NOT_OK = 0;
 	public static final int STATE_OK = 1;
 	public static final int STATE_WARNING = 2;
+	
+	//public static final int STATE_RELOAD_OK = 10;
 
 	public static final int TYPE_FORM = 10;
 	public static final int TYPE_FILE_UPLOAD = 20;

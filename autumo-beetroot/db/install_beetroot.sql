@@ -32,6 +32,7 @@ CREATE TABLE users (
     password VARCHAR(255) not NULL,
     email VARCHAR(255) not NULL,
     lasttoken varchar(255) not NULL default 'NONE',
+    settings varchar(1024) default '',
     role VARCHAR(20) not NULL default 'Operator',
     lang VARCHAR(5) not NULL default 'en',
     created DATETIME DEFAULT NOW(),
@@ -71,15 +72,15 @@ CREATE TABLE properties (
 -- init data
 
 -- password is 'beetroot' for admin
-INSERT INTO users (id, username, password, email, lasttoken, role, lang, created, modified) VALUES
-(1, 'admin', 'GCkOkyNLBDYWY9OGy8zybw==', 'beetroot@autumo.ch', 'NONE', 'Administrator', 'en',  '2022-02-02 20:00:00', '2022-02-02 20:00:00');
+INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, created, modified) VALUES
+(1, 'admin', 'GCkOkyNLBDYWY9OGy8zybw==', 'beetroot@autumo.ch', 'NONE', 'theme=dark', 'Administrator', 'en',  '2022-02-02 20:00:00', '2022-02-02 20:00:00');
 
 
 -- sample data
 
 -- password is 'beetroot' for operator
-INSERT INTO users (id, username, password, email, lasttoken, role, lang, created, modified) VALUES
-(2, 'operator', 'GCkOkyNLBDYWY9OGy8zybw==', 'beetroot-op@autumo.ch', 'NONE', 'Operator', 'de',  '2022-02-02 20:00:00', '2022-02-02 20:00:00');
+INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, created, modified) VALUES
+(2, 'operator', 'GCkOkyNLBDYWY9OGy8zybw==', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', 'Operator', 'de',  '2022-02-02 20:00:00', '2022-02-02 20:00:00');
 
 -- See 'https://www.guru99.com/crontab-in-linux-with-examples.html' for understanding cron-like examples
 INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, created, modified) VALUES

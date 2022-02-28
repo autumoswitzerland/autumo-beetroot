@@ -46,7 +46,11 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -95,6 +99,87 @@ public class Utils {
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+	/**
+	 * Load user settings map into user session.
+	 *  
+	 * @param userSession user session
+	 * @return user settings map
+	 * @throws SQLException
+	 */
+	public static Map<String, String> loadUserSettings(Session userSession) throws SQLException {
+
+		Map<String, String> map = userSession.getUserSettings();
+		if (map != null)
+			return map;
+		
+		final Connection conn = DatabaseManager.getInstance().getConnection();
+		final Statement stmt = conn.createStatement();
+		
+		String stmtStr = "SELECT settings FROM users WHERE id="+userSession.getUserId();
+		final ResultSet set = stmt.executeQuery(stmtStr);
+		
+		set.next(); // one record !
+		
+		final String settingsString = set.getString(1);
+
+		set.close();
+		stmt.close();
+		conn.close();
+		
+		if (settingsString == null || settingsString.length() == 0) {
+			map = new HashMap<String, String>();
+			userSession.setUserSettings(map);
+			return map;
+		}
+		
+		final String pairs[] = settingsString.replace(" ", "").trim().split(",");
+		final Map<String, String> settingsMap = new HashMap<String, String>();
+		for (int i = 0; i < pairs.length; i++) {
+			String pair[] = pairs[i].split("=");
+			settingsMap.put(pair[0], pair[1]);
+		}
+		
+		userSession.setUserSettings(settingsMap);
+		return settingsMap;
+	}
+
+	/**
+	 * Store user setting from user session settings.
+	 * 
+	 * @param userSession user session
+	 * @throws SQLException
+	 */
+	public static void storeUserSettings(Session userSession) throws SQLException {
+		
+		final Map<String, String> map = userSession.getUserSettings();
+		if (map == null)
+			return;
+		
+		String settingsStr = "";
+		
+		final Set<String> keys = map.keySet();
+		int i = 1;
+		int s = keys.size();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			String val = map.get(key);
+			if (i == s)
+				settingsStr += (key+"="+val);
+			else
+				settingsStr += (key+"="+val+",");
+			i++;
+		}
+		
+		final Connection conn = DatabaseManager.getInstance().getConnection();
+		final Statement stmt = conn.createStatement();
+		
+		String stmtStr = "UPDATE users SET settings='"+settingsStr+"' WHERE id=" + userSession.getUserId();
+		stmt.executeUpdate(stmtStr);
+		
+		stmt.close();
+		conn.close();
+	}
+	
 	/**
 	 * Select a record of type clz (entity class).
 	 * 

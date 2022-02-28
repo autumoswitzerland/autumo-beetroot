@@ -266,15 +266,23 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    	
 	    	userSession.setUserLang(dbUserLang);
 	    }
-
+	    
+	    
 	    // Are we running in a servlet context?
     	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
-        
+    	
         
 		// web resources except html templates
 		if (uri.contains(".") && !uri.endsWith(".html")) { // Note: template request have no extension at all!
-	    	
-			final boolean isSpecialCss = uri.endsWith("refs.css") || uri.endsWith("default.css")|| uri.endsWith("darktheme.css");
+
+			final String requestedFile = uri.substring(uri.lastIndexOf("/") + 1, uri.length()).toLowerCase();
+			
+			// nothing to serve
+			if (requestedFile.equals("theme-default.css"))
+				return Response.newFixedLengthResponse(Status.OK, "text/css", "");
+			
+			boolean isSpecialCss = requestedFile.equals("refs.css") || requestedFile.equals("default.css");
+			isSpecialCss = isSpecialCss || (requestedFile.contains("theme-") && requestedFile.endsWith(".css"));
 	        
 	    	FileCache fc = null;
 	    	String filePath = null;
@@ -436,6 +444,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 		
         // User logged in to session?
+	    // Settings
 		final String sessionUser = userSession.getUserName();
         if (sessionUser != null) {
         	
@@ -446,6 +455,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     		if (uri.endsWith("/users/login")) {
 	            return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity());
     		}
+    		
+		    try {
+				Utils.loadUserSettings(userSession);
+			} catch (SQLException e) {
+				LOG.error("Couldn't load user settings!", e);
+			}
         }
 		
         // Still not logged in...
@@ -513,6 +528,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             			userSession.createIdPair(dbId, "users");
             			
 			            loggedIn = true;
+			            
+					    try {
+							Utils.loadUserSettings(userSession);
+						} catch (SQLException e) {
+							LOG.error("Couldn't load user settings!", e);
+						}
 			            
 			            try {
 			            	

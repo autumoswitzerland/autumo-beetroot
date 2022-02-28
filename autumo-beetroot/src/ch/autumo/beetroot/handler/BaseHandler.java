@@ -715,7 +715,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			while (sc.hasNextLine()) {
 				
 				String text = sc.nextLine();
-
 				
 				// layout templates and main template
 				if (text.contains("{#head}")) {
@@ -895,6 +894,28 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (text.contains("{$lang}")) {
 					text = text.replaceAll("\\{\\$lang\\}", lang);
 				}				
+				
+				
+				// User settings variables!
+				
+				// theme
+				if (text.contains("{$theme}")) {
+					final String theme = userSession.getUserSetting("theme");
+					if (theme == null)
+						text = text.replaceAll("\\{\\$theme\\}", "dark");
+					else
+						text = text.replaceAll("\\{\\$theme\\}", theme);
+				}				
+				if (text.contains("{$antitheme}")) {
+					final String theme = userSession.getUserSetting("theme");
+					if (theme == null)
+						text = text.replaceAll("\\{\\$antitheme\\}", "default");
+					else
+						if (theme.equals("default"))
+							text = text.replaceAll("\\{\\$antitheme\\}", "dark");
+						else
+							text = text.replaceAll("\\{\\$antitheme\\}", "default");
+				}
 				
 				
 				// add servlet url part?
@@ -1442,12 +1463,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// GET: A R operation, read some data...
 			
 			// read data
-			final HandlerResponse response = this.readData((BeetRootHTTPSession)session, origId);
+			final HandlerResponse response = this.readData((BeetRootHTTPSession) session, origId);
 			
 			
 			// change redirect
 			if (session.getUri().endsWith("/users/change") && response != null)
 				return serveHandler(session, new LogoutHandler(), response);
+
+			// For possible special cases allow no content response
+			if (this.isNoContentResponse())
+				return this.refresh((BeetRootHTTPSession) session, null);
 			
 			
 			if (response != null) {
@@ -1529,6 +1554,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
     }
     
+	/**
+	 * Overwrite this if your handler doesn't have an output.
+	 * A no content response (HTTP 204) with no content will be 
+	 * generated and the current page will be refreshed!
+	 */
+	protected boolean isNoContentResponse() {
+		return false;
+	}
+
 	/**
 	 * Get title for general template engine error.
 	 * 
@@ -1702,6 +1736,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 		}
 		
+		if (msg == null)
+			msg = "";
+		
 		String sn = "";
 		if (insertServletNameInTemplateRefs)
 			sn = servletName+"/";
@@ -1711,7 +1748,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				+ "<html lang=\"en\">\n"
 				+ "<head>\n"
 				+ "	<meta charset=\"utf-8\">\n"
-				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=/"+sn+getDefaultHandlerEntity()+"/index"+msg+"\" />\n"
+				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=/"+userSession.getUserLang()+"/"+sn+getDefaultHandlerEntity()+"/index"+msg+"\" />\n"
 				+ "</head>\n"
 				+ "</html>\n"
 				+ "";
@@ -1827,7 +1864,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Overwrite to get the right re.route/redirect index handler
+	 * Overwrite to get the right re-route/redirect index handler
 	 * after modifying data. It must be of the same entity as the 
 	 * last executing handler!
 	 * 

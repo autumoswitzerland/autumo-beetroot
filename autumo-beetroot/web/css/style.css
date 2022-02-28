@@ -493,6 +493,14 @@ div.message.warning:before {
 	background-color: #0086d3;
 }
 
+.dropdown_theme {
+	width: 50px;
+	position: relative;
+	float: right;
+	height: 40px;
+	margin-top: 6px;
+}
+
 .dropbtn {
 	width: 100px;
 	height: 60px;

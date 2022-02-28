@@ -53,6 +53,10 @@ public class Session implements Serializable {
 	private Map<String, Serializable> data = new ConcurrentHashMap<String, Serializable>();
 	private final String sessionID;
 	
+	// User settings are stored in DB, not serialized in session
+	private transient Map<String, String> settingsMap = null;
+	
+	
 	/**
 	 * New session with given session id '__SESSION_ID__'.
 	 * 
@@ -134,7 +138,7 @@ public class Session implements Serializable {
 	/**
 	 * Set user data.
 	 * 
-	 * @param id user id
+	 * @param id user DB id
 	 * @param name user name
 	 * @param role user role
 	 * @param firstname first name
@@ -150,8 +154,54 @@ public class Session implements Serializable {
 	}
 
 	/**
-	 * Get user id
-	 * @return user id
+	 * Set user settings map.
+	 * @param settingsMap user settings map
+	 */
+	public void setUserSettings(Map<String, String> settingsMap) {
+		this.settingsMap = settingsMap;
+	}
+
+	/**
+	 * Get user settings map.
+	 * @return user settings map
+	 */
+	public Map<String, String> getUserSettings() {
+		return this.settingsMap;
+	}
+
+	/**
+	 * Get one user setting.
+	 * @return user setting
+	 */
+	public String getUserSetting(String key) {
+		
+		if (this.settingsMap == null)
+			return null;
+		
+		return this.settingsMap.get(key);
+	}
+	
+	/**
+	 * Add or update user setting.
+	 * @param key key
+	 * @param value value
+	 */
+	public void addOrUpdateUserSetting(String key, String value) {
+		this.settingsMap.put(key, value);
+	}
+	
+	/**
+	 * Delete user setting.
+	 * @param key key
+	 * @return old value of deleted entry
+	 */
+	public String deleteUserSetting(String key) {
+		return this.settingsMap.remove(key);
+	}
+	
+	/**
+	 * Get user DB id
+	 * @return user DB id
 	 */
 	public Integer getUserId() {
 		return (Integer) this.get("userid");

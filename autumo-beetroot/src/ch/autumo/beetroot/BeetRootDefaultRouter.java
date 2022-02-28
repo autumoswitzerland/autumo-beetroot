@@ -44,6 +44,7 @@ import ch.autumo.beetroot.handler.users.ChangeHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.users.ResetHandler;
+import ch.autumo.beetroot.handler.users.SettingsHandler;
 import ch.autumo.beetroot.handler.users.UsersAddHandler;
 import ch.autumo.beetroot.handler.users.UsersEditHandler;
 import ch.autumo.beetroot.handler.users.UsersIndexHandler;
@@ -106,7 +107,7 @@ public class BeetRootDefaultRouter implements Router {
 			/** Home */
 			new Route("/:lang/home", HomeHandler.class, "home"),
 			new Route("/:lang/home/index", HomeHandler.class, "home"),
-
+			
 			/** Files */
 			new Route("/:lang/files/view", ExampleDownloadHandler.class, "files"),
 			new Route("/:lang/files/add", ExampleUploadHandler.class, "files"),
@@ -130,6 +131,7 @@ public class BeetRootDefaultRouter implements Router {
 			new Route("/:lang/users/logout", LogoutHandler.class, "login"),
 			new Route("/:lang/users/reset", ResetHandler.class, "reset"),
 			new Route("/:lang/users/change", ChangeHandler.class, "change"),	
+			new Route("/:lang/users/settings", SettingsHandler.class, "settings"),
 			
 			new Route("/:lang/properties", PropertiesIndexHandler.class, "properties"),
 		    new Route("/:lang/properties/index", PropertiesIndexHandler.class, "properties"),

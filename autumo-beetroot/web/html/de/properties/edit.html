@@ -1,6 +1,6 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
-		<li class="heading">Actions</li>
+		<li class="heading">Aktionen</li>
 		<li>
 			<form name="post_properties_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/properties/delete?id={$id}">
@@ -9,10 +9,10 @@
 					value="{$csrfToken}" />
 			</form> <a href="/{$lang}/properties/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}??"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.returnValue = false; return false;">Delete
-				Property</a>
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.returnValue = false; return false;">
+				Setting löschen</a>
 		</li>
-		<li><a href="/{$lang}/properties" class="side-nav-item">List Properties</a></li>
+		<li><a href="/{$lang}/properties" class="side-nav-item">Settings auflisten</a></li>
 	</ul>
 </nav>
 
@@ -26,11 +26,11 @@
 					value="{$csrfToken}" />
 			</div>
 			<fieldset>
-				<legend>Edit Property</legend>
+				<legend>Setting editieren</legend>
 				{$data}
 			</fieldset>
-			<a href="/{$lang}/properties/index" class="button right">Cancel</a>
-			<button type="submit">Submit</button>
+			<a href="/{$lang}/properties/index" class="button right">Abbrechen</a>
+			<button type="submit">Absenden</button>
 			<br /> <br /> <br />
 		</form>
 	</div>
