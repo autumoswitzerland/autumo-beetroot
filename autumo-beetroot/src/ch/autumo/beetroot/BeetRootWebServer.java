@@ -260,11 +260,11 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    	if (!userLang.equals(dbUserLang))
 	    		LanguageManager.getInstance().updateLanguage(userLang, userSession);
 	    	
-	    	userSession.set("userlang", userLang);
+	    	userSession.setUserLang(userLang);
 	    	
 	    } else {
 	    	
-	    	userSession.set("userlang", dbUserLang);
+	    	userSession.setUserLang(dbUserLang);
 	    }
 
 	    // Are we running in a servlet context?
@@ -274,7 +274,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		// web resources except html templates
 		if (uri.contains(".") && !uri.endsWith(".html")) { // Note: template request have no extension at all!
 	    	
-			final boolean isSpecialCss = uri.endsWith("refs.css") || uri.endsWith("default.css");
+			final boolean isSpecialCss = uri.endsWith("refs.css") || uri.endsWith("default.css")|| uri.endsWith("darktheme.css");
 	        
 	    	FileCache fc = null;
 	    	String filePath = null;

@@ -35,9 +35,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
@@ -93,6 +95,40 @@ public class Utils {
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+	/**
+	 * Select a record of type clz (entity class).
+	 * 
+	 * @param clz entity class
+	 * @param id DB record id
+	 * @return entity bean
+	 * @throws SQLException
+	 */
+	public static Entity selectRecord(Class<?> clz, int id) throws SQLException {
+		
+		final String c = clz.getName().toLowerCase();
+		String table = c.substring(c.lastIndexOf(".") + 1, c.length());
+		if (table.endsWith("y"))
+			table = (table.substring(0, table.length() - 1)) + "ies";
+		else
+			table += "s";
+		
+		final Connection conn = DatabaseManager.getInstance().getConnection();
+		final Statement stmt = conn.createStatement();
+		
+		String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
+		final ResultSet set = stmt.executeQuery(stmtStr);
+
+		set.next(); // one record !
+		
+		final Entity entity = createBean(clz, set);
+		
+		set.close();
+		stmt.close();
+		conn.close();
+		
+		return entity;
+	}	
+	
 	/**
 	 * Create bean.
 	 * 
@@ -263,6 +299,28 @@ public class Utils {
 		return false;
 	}
 
+	/**
+	 * Get correct DB value for a boolean.
+	 * @param value boolean value
+	 * @return DB boolean value as string
+	 */
+	public static String getBooleanDatabaseMappingValue(boolean value) {
+		
+    	String val = null;
+		if (value) {
+			if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb())
+				val = "1";
+			else
+				val = "true";
+		} else {
+			if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb())
+				val = "0";
+			else 
+				val = "false";
+		}
+		return val;
+	}
+	
 	/**
 	 * Get servlets context's real path.
 	 * 

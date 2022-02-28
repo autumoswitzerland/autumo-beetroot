@@ -42,7 +42,6 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.SessionManager;
 
 /**
  * Default file upload handler for 'web/html/files/add.html' templates.
@@ -61,9 +60,9 @@ public class ExampleUploadHandler extends BaseHandler {
 	}
 
 	@Override
-	public HandlerResponse saveData(BeetRootHTTPSession session, int id) throws Exception {
+	public HandlerResponse saveData(BeetRootHTTPSession session) throws Exception {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 
 		// Original file name
 		String origFileName = session.getParms().get("file");
@@ -101,7 +100,7 @@ public class ExampleUploadHandler extends BaseHandler {
 	}
 
 	@Override
-	public String parse(String line) {
+	public String parse(String line, BeetRootHTTPSession session) {
 
 		int mus = ConfigurationManager.getInstance().getInt("web_max_upload_size");
 		if (mus == -1) {

@@ -30,6 +30,7 @@
  */
 package ch.autumo.beetroot.handler;
 
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 
 /**
@@ -46,7 +47,7 @@ public class Error404Handler extends BaseHandler {
 	}
 
 	@Override
-	public String parse(String line) {
+	public String parse(String line, BeetRootHTTPSession session) {
 
 		if (line.contains("{$title}"))
 			line = line.replace("{$title}", "The requested page doesn't exist. (ERROR 404)");

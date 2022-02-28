@@ -33,6 +33,7 @@ package ch.autumo.beetroot.handler;
 import org.nanohttpd.protocols.http.response.IStatus;
 import org.nanohttpd.protocols.http.response.Status;
 
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 
 
@@ -57,7 +58,7 @@ public class ErrorHandler extends BaseHandler {
 	}
 
 	@Override
-	public String parse(String line) {
+	public String parse(String line, BeetRootHTTPSession session) {
 
 		if (line.contains("{$title}") && title != null && title.length() != 0)
 			line = line.replace("{$title}", this.title);

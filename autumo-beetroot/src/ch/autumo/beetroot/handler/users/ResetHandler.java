@@ -47,7 +47,6 @@ import ch.autumo.beetroot.GUIDGenerator;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Mailer;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
@@ -68,7 +67,7 @@ public class ResetHandler extends BaseHandler {
 	@Override
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		
 		String email = session.getParms().get("email");
 		if (email == null || email.length() == 0) {

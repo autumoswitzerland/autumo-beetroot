@@ -68,7 +68,7 @@ public class Mailer {
 	
 	private static String loadTemplate(String templateName, BeetRootHTTPSession session, String extension) throws Exception {
 		
-		Session userSession = SessionManager.getInstance().findOrCreate(session);
+		Session userSession = session.getUserSession();
 		String file = null;
 		
 		if (userSession == null)

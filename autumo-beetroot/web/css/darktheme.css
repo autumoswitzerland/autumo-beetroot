@@ -1,0 +1,130 @@
+/**
+ * Copyright 2022 autumo GmbH, Michael Gasche.
+ * All Rights Reserved.
+ * 
+ * NOTICE: All information contained herein is, and remains
+ * the property of autumo GmbH The intellectual and technical
+ * concepts contained herein are proprietary to autumo GmbH
+ * and are protected by trade secret or copyright law.
+ * 
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from autumo GmbH.
+ * 
+ */
+
+
+
+
+/**
+ * Dark theme. Remove from 'head.html'-block
+ * if you want to have the bright theme.
+ */
+body {
+	background: url('/img/tiles-back-dark.png');
+}
+.content {
+    background-color: #222222;
+}
+legend { 
+    background-color: #222222 !important;
+    color: #0093E6;
+}
+label {
+    background-color: #222222 !important;
+    color: #07b;
+}
+input {
+    background-color: #333333 !important;
+    border-color: #444444 !important;
+    color: #dddddd !important;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+	caret-color: #dddddd;
+    background-color: #333333 !important;
+	box-shadow: inset 0 1px 2px rgb(51, 51, 51);
+	border-color: #444444 !important;
+	color: #dddddd !important;
+    -webkit-text-fill-color: #dddddd;
+	-webkit-box-shadow: 0 0 0px 1000px #333333 inset;
+  	transition: background-color 5000s ease-in-out 0s;    
+}
+table {
+    background-color: #222222;
+}
+table tr th, table tr td {
+    color: #dddddd;
+}
+table tr {
+    border-bottom: 1px solid #444444;
+}
+#actions-sidebar {
+    background-color: #111111;
+}
+ul.pagination li.active a {
+    color: #444444;
+}
+ul.pagination li  {
+    color: #444444;
+}
+ul.pagination li a {
+    color: #aaaaaa;
+}
+.container {
+    border-bottom: 1px solid #000000 ! important;
+}
+.prev {
+    border: 1px solid #aaaaaa;
+}
+.next {
+    border: 1px solid #aaaaaa;
+}
+p {
+    color: #07b !important;
+}
+.side-nav li.heading {
+    color: #0093E6 !important;
+}
+.side-nav li a:not(.button) {
+    color: #07b;
+}
+a {
+    color: #07b;
+}
+a:hover {
+    color: #2DC7FE !important;
+}
+h1 {
+    color: #dddddd !important;
+}
+
+h3 {
+    color: #0093E6 !important;
+}
+.dropdown-content {
+    background-color: #555555;
+}
+.dropdown-content a {
+    background-color: #555555;
+    color: #cccccc;
+}
+.dropdown-content a:hover {
+    background-color: #666666;
+}
+.menusep {
+    border: 1px solid #222222;
+    border-width: 1px 0 0;
+}
+#servicecontent {
+    background-color: hsla(0, 0%, 15%, 0.6);
+}
+
+

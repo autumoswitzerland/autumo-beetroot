@@ -32,6 +32,7 @@ package ch.autumo.beetroot.handler.tasks;
 
 import java.sql.ResultSet;
 
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
@@ -60,7 +61,7 @@ public class TasksViewHandler extends DefaultViewHandler {
 			case "monthofYear"	: return "<td>"+set.getString(columnName)+"</td>";
 			case "dayofWeek"	: return "<td>"+set.getString(columnName)+"</td>";
 			case "active"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
-			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"redStatus\"></td>" : "<td class=\"greenStatus\"></td>";
+			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"greenStatus\"></td>" : "<td class=\"redStatus\"></td>";
 			case "lastexecuted"	: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			case "created"		: return "<td>" +Utils.getGUIDate(set.getTimestamp(columnName))+ "</td>";
 			case "modified"		: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
@@ -70,7 +71,7 @@ public class TasksViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String text) {
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
 		return text.replaceAll("\\{\\$taskName\\}", taskName);
 	}
 	

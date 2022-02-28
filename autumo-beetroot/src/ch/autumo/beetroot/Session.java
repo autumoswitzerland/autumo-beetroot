@@ -174,6 +174,22 @@ public class Session implements Serializable {
 	}
 
 	/**
+	 * Get user language
+	 * @return user language
+	 */
+	public String getUserLang() {
+		return (String) this.get("userlang");
+	}
+
+	/**
+	 * Set user language
+	 * @param user language (ISO code 2 length)
+	 */
+	public void setUserLang(String lang) {
+		this.set("userlang", lang);
+	}
+	
+	/**
 	 * Add uploaded files info .
 	 * @param files uploaded file info
 	 */

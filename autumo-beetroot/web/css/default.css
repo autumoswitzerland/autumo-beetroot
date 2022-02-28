@@ -15,11 +15,13 @@
 
 
 
+
 /**
  * Customized design, 
  * language additions,
  * Overrides.
  */
+
 
 
 /**
@@ -30,24 +32,22 @@ header {
 	border-bottom: 2px solid #02090e;
 	box-shadow: 1px 1px rgba(0, 0, 0, 0.24);
 }
-
 nav {
 	border-top: 1px solid #0e4e74;
 	margin-top: -1px;
 }
-
 .container {
 	border-bottom: 1px solid #666666;
 }
-
 footer {
 	margin-top: 14px;
 }
 
+
+
 /**
  * Further customization & overrides.
  */
-
 .header {
 	display: table;
 	width:100%;	
@@ -77,4 +77,5 @@ footer {
 .dropdown-content {
 	right: 0px;
 }
+
 

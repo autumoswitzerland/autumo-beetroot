@@ -302,5 +302,34 @@ public class BeetRootHTTPSession extends HTTPSession {
             }
             values.add(part.getSubmittedFileName());
 		}
-    }    
+    }  
+    
+    /**
+     * Get user session for this HTTP session.
+     * 
+     * @return user session
+     */
+    public Session getUserSession() {
+    	return SessionManager.getInstance().findOrCreate(this);
+    }
+    
+    /**
+     * Update one parameter. It is only updated, if a matching value
+     * for this key exists and it's a single value, not a list of 
+     * parameter values. 
+     *  
+     * @param key key
+     * @param value new value
+     */
+    public void updateParameter(String key, String value) {
+    	
+    	List<String> values = this.parms.get(key);
+    	// we only update if there's one value for this key!
+    	if (values != null && values.size() == 1) {
+    		values = new ArrayList<String>();
+    		values.add(value);
+    		this.parms.put(key, values);
+    	}
+    }
+    
 }

@@ -56,6 +56,8 @@ public class HandlerResponse {
 	private int type = TYPE_FORM;
 	private int id = -1;
 
+	private int savedId = -1;
+	
 	public int getId() {
 		return id;
 	}
@@ -66,6 +68,11 @@ public class HandlerResponse {
 
 	public HandlerResponse(int status) {
 		this.status = status;
+	}
+
+	public HandlerResponse(int status, int savedId) {
+		this.status = status;
+		this.savedId = savedId;
 	}
 	
 	public HandlerResponse(int status, String message) {
@@ -157,6 +164,14 @@ public class HandlerResponse {
 
 	public void setDownloadFileMimeType(String downloadFileMimeType) {
 		this.downloadFileMimeType = downloadFileMimeType;
+	}
+
+	public int getSavedId() {
+		return savedId;
+	}
+
+	public void setSavedId(int savedId) {
+		this.savedId = savedId;
 	}
 	
 }

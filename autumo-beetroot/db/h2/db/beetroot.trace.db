@@ -230,3 +230,31 @@ The connection was not closed by the application and is garbage collected [90018
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:622)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:429)
 	... 20 more
+2022-02-28 03:13:07 jdbc[21]: null
+org.h2.message.DbException: Die Datenbank-Verbindung wurde nicht explizit geschlossen (jetzt in der Müllabfuhr)
+The connection was not closed by the application and is garbage collected [90018-200]
+	at org.h2.message.DbException.get(DbException.java:205)
+	at org.h2.message.DbException.get(DbException.java:181)
+	at org.h2.message.DbException.get(DbException.java:170)
+	at org.h2.jdbc.JdbcConnection.closeOld(JdbcConnection.java:245)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:186)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:152)
+	at org.h2.Driver.connect(Driver.java:69)
+	at java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql.DriverManager.getConnection(DriverManager.java:247)
+	at ch.autumo.beetroot.DatabaseManager.getConnection(DatabaseManager.java:126)
+	at ch.autumo.beetroot.DatabaseManager.getLanguage(DatabaseManager.java:209)
+	at ch.autumo.beetroot.LanguageManager.getLanguageFromDb(LanguageManager.java:449)
+	at ch.autumo.beetroot.BeetRootWebServer.serve(BeetRootWebServer.java:256)
+	at ch.autumo.beetroot.BeetRootWebServer.serve(BeetRootWebServer.java:212)
+	at org.nanohttpd.protocols.http.NanoHTTPD$1.handle(NanoHTTPD.java:376)
+	at org.nanohttpd.protocols.http.NanoHTTPD$1.handle(NanoHTTPD.java:372)
+	at org.nanohttpd.protocols.http.NanoHTTPD.handle(NanoHTTPD.java:535)
+	at org.nanohttpd.protocols.http.HTTPSession.execute(HTTPSession.java:425)
+	at ch.autumo.beetroot.BeetRootClientHandler.run(BeetRootClientHandler.java:75)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientConnectionException: Die Datenbank-Verbindung wurde nicht explizit geschlossen (jetzt in der Müllabfuhr)
+The connection was not closed by the application and is garbage collected [90018-200]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:622)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:429)
+	... 20 more

@@ -62,7 +62,7 @@ public class BeetRootServer {
     
 	private int portAdminServer = -1;
 	private int portWebServer = -1;
-	private boolean startWebServer = true;
+	protected boolean startWebServer = true;
 	
 	private boolean pwEncoded = false;
 	
@@ -238,7 +238,10 @@ public class BeetRootServer {
 		}
 	}
 	
-	private void startServer() {
+	/**
+	 * Start server and web server if configured.
+	 */
+	protected void startServer() {
 		
 		LOG.info(name + " server starting...");
 		
@@ -276,11 +279,16 @@ public class BeetRootServer {
 		adminListener = new AdminListener(portAdminServer);
 		new Thread(adminListener).start();
 		LOG.info("Admin listener started on port "+portAdminServer+".");
+
+		this.afterStart();
 		
 		LOG.info(name + " server started.");
 	}
 
-	private void stopServer() {
+	/**
+	 * Stop server and web server if configured.
+	 */
+	protected void stopServer() {
 		
 		this.beforeStop();
 		
@@ -292,6 +300,8 @@ public class BeetRootServer {
 		
 		if (startWebServer)
 			webServer.stop();
+
+		this.afterStop();
 		
 		LOG.info(name + " server stopped.");
 	}
@@ -374,12 +384,26 @@ public class BeetRootServer {
 	 */
 	protected void beforeStart() {
 	}
-	
+
 	/**
 	 * Overwrite do do something after starting the server.
 	 * Handle exceptions by your own!
 	 */
+	protected void afterStart() {
+	}
+	
+	/**
+	 * Overwrite do do something before stopping the server.
+	 * Handle exceptions by your own!
+	 */
 	protected void beforeStop() {
+	}
+
+	/**
+	 * Overwrite do do something after stopping the server.
+	 * Handle exceptions by your own!
+	 */
+	protected void afterStop() {
 	}
 	
 	/**

@@ -75,7 +75,7 @@ public class ChangeHandler extends BaseHandler {
 		
 		if (cancel != null && cancel.length() != 0) {
 			
-			final Session s = SessionManager.getInstance().findOrCreate(session);
+			final Session s = session.getUserSession();
 			userid = ((Integer) s.get("resetid")).intValue();
 			
 			final Connection conn = DatabaseManager.getInstance().getConnection();
@@ -160,7 +160,7 @@ public class ChangeHandler extends BaseHandler {
 					pass = Utils.encodePassword(pass, SecureApplicationHolder.getInstance().getSecApp());
 				};
 				
-				final Session s = SessionManager.getInstance().findOrCreate(session);
+				final Session s = session.getUserSession();
 				userid = ((Integer) s.get("resetid")).intValue();
 				
 				final Connection conn = DatabaseManager.getInstance().getConnection();

@@ -92,6 +92,7 @@ public class DefaultEditHandler extends BaseHandler {
 		set.next(); // one record !
 		
 		final Entity entity = Utils.createBean(getBeanClass(), set);
+		this.prepare(entity);
 		
 		for (int i = 1; i <= columns().size(); i++) {
 			
@@ -129,6 +130,14 @@ public class DefaultEditHandler extends BaseHandler {
 		conn.close();
 		
 		return null;
+	}
+	
+	/**
+	 * Prepare call to to something with the entity bean if necessary.
+	 * 
+	 * @param entity entity bean
+	 */
+	public void prepare(Entity entity) {
 	}
 	
 	/**

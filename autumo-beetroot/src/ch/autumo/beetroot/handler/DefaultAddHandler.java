@@ -31,6 +31,7 @@
 package ch.autumo.beetroot.handler;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -41,6 +42,8 @@ import java.util.Set;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
 
 /**
@@ -103,16 +106,16 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	}
 
 	@Override
-	public HandlerResponse saveData(BeetRootHTTPSession session, int id) throws Exception {
+	public HandlerResponse saveData(BeetRootHTTPSession session) throws Exception {
 		
 		// Unique fields test!
-		final HandlerResponse status = super.uniqueTest(session, "SELECT id FROM "+getEntity()+" WHERE ", "saving");
-		if (status != null) {
-			return status;
+		final HandlerResponse response = super.uniqueTest(session, "SELECT id FROM "+getEntity()+" WHERE ", "saving");
+		if (response != null && response.getStatus() == HandlerResponse.STATE_NOT_OK) {
+			return response;
 		}
 		
 		final Connection conn = DatabaseManager.getInstance().getConnection();
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		
 		// Now save data !
 		String columns = getColumnsForSql();
@@ -141,15 +144,24 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			else
 				values += ", null";
 		}		
-		stmt = conn.createStatement();
 		
-		String stmtStr = "INSERT INTO "+getEntity()+" (" + columns + ") VALUES (" + values + ");";
-		stmt.execute(stmtStr);
+		stmt = conn.prepareStatement("INSERT INTO "+getEntity()+" (" + columns + ") VALUES (" + values + ");", Statement.RETURN_GENERATED_KEYS);
+		stmt.executeUpdate();
+		
+		final ResultSet keySet = stmt.getGeneratedKeys();
+		boolean found = keySet.next();
+		if (!found) {
+			final Session userSession = session.getUserSession();
+			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.savedid", userSession));
+		}
+		
+		int savedId = keySet.getInt(1);
 		
 		stmt.close();
 		conn.close();
 		
-		return null; // ok
+		final HandlerResponse okResponse = new HandlerResponse(HandlerResponse.STATE_OK, savedId);
+		return okResponse; // ok
 	}
 	
 	/**

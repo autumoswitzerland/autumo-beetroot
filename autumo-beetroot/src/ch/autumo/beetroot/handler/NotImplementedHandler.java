@@ -30,6 +30,8 @@
  */
 package ch.autumo.beetroot.handler;
 
+import ch.autumo.beetroot.BeetRootHTTPSession;
+
 /**
  * Default not-implemented handler.
  */
@@ -44,7 +46,7 @@ public class NotImplementedHandler extends BaseHandler {
 	}
 
 	@Override
-	public String parse(String line) {
+	public String parse(String line, BeetRootHTTPSession session) {
 
 		if (line.contains("{$title}"))
 			line = line.replace("{$title}", "There's nothing under this page! Soooo sorry...NOT!");

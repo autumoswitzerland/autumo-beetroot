@@ -181,6 +181,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			String modifyID = userSession.getModifyId(idr, getEntity());
 			
 			final Entity entity = Utils.createBean(getBeanClass(), set, processor);
+			this.prepare(entity);
 			
 			// NOTE: We could deliver the whole bean which could be extracted by the
 			// user with HTML and bean property-tags and waive the 'columns.cfg'-approach,
@@ -255,6 +256,15 @@ public class DefaultIndexHandler extends BaseHandler {
 	}
 	
 	/**
+	 * Prepare call to to something with the current entity bean 
+	 * processed in the list if necessary.
+	 * 
+	 * @param entity entity bean
+	 */
+	public void prepare(Entity entity) {
+	}
+	
+	/**
 	 * Extract one single table data field from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
@@ -284,7 +294,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	@Override
 	public String getPaginator(BeetRootHTTPSession session) {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		final LanguageManager lm = LanguageManager.getInstance();
 		String lang = lm.getLanguage(userSession);
 		

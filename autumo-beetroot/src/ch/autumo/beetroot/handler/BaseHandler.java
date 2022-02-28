@@ -107,6 +107,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private int messageType = MSG_TYPE_INFO;
 	
+	private BeetRootHTTPSession currentSession = null;
 	
 	private StringBuffer checkBoxLogic = new StringBuffer();
 	
@@ -429,7 +430,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		return new String[] {colName, guiColName};
 	}
-
+	
 	/**
 	 * Get SQL fields, e.g. 'col1, col2, col3'.
 	 * 
@@ -522,7 +523,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final boolean dbPwEnc = ConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 		final boolean dbAutoMod = ConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		
 		String clause = "";
 		
@@ -594,9 +595,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return clause;
 	}
 
+	/**
+	 * Check if unique fields are unique.
+	 * 
+	 * @param session sessions
+	 * @param preSql pre-parsed SQL without unique fields
+	 * @param operation saved or updated
+	 * @return response or null, null means success, response's status must be checked!
+	 * @throws Exception
+	 */
 	public HandlerResponse uniqueTest(BeetRootHTTPSession session, String preSql, String operation) throws Exception {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		
 		final Connection conn = DatabaseManager.getInstance().getConnection();
 		Statement stmt = null;
@@ -691,7 +701,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String templateResource = getResource();
 		final StringBuffer sb = new StringBuffer();
 
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
 		String user = userSession.getUserName();
 		String userfull = userSession.getUserFullNameOrUserName();
@@ -758,7 +768,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				} else if (text.contains("{#template}")) {
 				
 					try {
-						this.createTemplateContent(userSession);
+						this.createTemplateContent(userSession, session);
 						
 						if (templateResource.endsWith("index.html")) {
 							parseTemplateHead(buffer, "{$head}");
@@ -801,7 +811,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						}
 						
 						// template specific variables
-						final String res = this.replaceTemplateVariables(text);
+						final String res = this.replaceTemplateVariables(text, session);
 						if (res != null && res.length() != 0)
 							text = res;
 						
@@ -944,7 +954,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session) throws FileNotFoundException {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		final StringBuffer sb = new StringBuffer();
 		
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
@@ -1067,7 +1077,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\">"+langs[i].toUpperCase()+"</a>\n";
 							} else {
 								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\">"+langs[i].toUpperCase()+"</a>\n";
-								entries += "<hr class=\"menusep\"\n>";
+								entries += "<hr class=\"menusep\">\n";
 							}
 						}
 						text = text.replace("{$lang_menu_entries}", entries);
@@ -1081,11 +1091,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					final String userrole = userSession.getUserRole();
 
+					/**
 					// This is only a cosmetic precaution, menus shouldn't
 					// be shown anyways without a logged-in user.
 					if (userrole == null && text.contains("<a href=") || text.contains("<hr")) {
 						text  = " ";
 					}
+					*/
 					
 					if (text.contains("{$adminmenu}")) {
 						
@@ -1130,7 +1142,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		buffer.append(line + "\n");
 	}
 
-	private void createTemplateContent(Session userSession) {
+	private void createTemplateContent(Session userSession, BeetRootHTTPSession session) {
 
 		Scanner sc = null;
 		try {
@@ -1145,7 +1157,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 
 		while (sc.hasNextLine()) {
-			addLine(parse(sc.nextLine()));
+			addLine(parse(sc.nextLine(), session));
 		}
 		
 		sc.close();
@@ -1286,11 +1298,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	@Override
     public final Response get(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session) {
 		
+		this.currentSession = (BeetRootHTTPSession)session;
+		
 		// a new session is created after socket timeout or because of something else (?), that's how it is! 
 		// After that, the obfuscated modify IDs are invalid! We could logout or do some magic.
-		final Session userSession = SessionManager.getInstance().findOrCreate((BeetRootHTTPSession)session);
+		final Session userSession = SessionManager.getInstance().findOrCreate(currentSession);
 		//cookies.set("__SESSION_ID__", cookies.read("__SESSION_ID__"), 1);
 
+		
 		
 		try {
 		
@@ -1354,7 +1369,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					else if (_method == null || _method.length() == 0) { 
 						
 						// add with id -> save
-						HandlerResponse response = this.saveData((BeetRootHTTPSession)session, origId);
+						HandlerResponse response = this.saveData((BeetRootHTTPSession) session);
 						
 						if (response == null || (response.getStatus() == HandlerResponse.STATE_OK && response.getType() == HandlerResponse.TYPE_FORM)) { // Ok in this case
 							
@@ -1375,7 +1390,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							Map<String, String> params = session.getParms();
 							params.put("_method", "RETRY");
 							// NOTICE: special case, don't use this method anywhere else, HTTP method isn't changed here!
-							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage());
+							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage(), MSG_TYPE_ERR);
 						}
 					}
 					else if (_method.equals("PUT")) {  // and password reset
@@ -1399,7 +1414,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							Map<String, String> params = session.getParms();
 							params.put("_method", "RETRY");
 							
-							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage());
+							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage(), MSG_TYPE_ERR);
 						}
 						
 					} else if (_method.equals("POST")) {
@@ -1414,7 +1429,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						}
 						
 						if (response.getStatus() == HandlerResponse.STATE_NOT_OK) {
-							//Not really reachable, only exception could be thrown, e.g. teh record doesn't exist!
+							//Not really reachable, only exception could be thrown, e.g. the record doesn't exist!
 						}
 					}
 					
@@ -1563,6 +1578,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText((BeetRootHTTPSession)session, -1));
 	}
 
+	/*
 	private Response serveHandler(
 			BeetRootHTTPSession session, 
 			String entity, 
@@ -1571,6 +1587,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			String msg) throws Exception {
 		return this.serveHandler(session, entity, handlerClass, newParams, msg, MSG_TYPE_INFO);
 	}
+	*/
 	
 	private Response serveHandler(
 			BeetRootHTTPSession session, 
@@ -1578,7 +1595,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			Class<?> handlerClass, 
 			Map<String, String> newParams, 
 			String msg, int messageType) throws Exception {
-		
+
 		Object obj = construct(session, handlerClass, entity, msg);
 		
 		if (!(obj instanceof BaseHandler)) {
@@ -1598,7 +1615,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private Response serveRedirectHandler(BeetRootHTTPSession session, String msg) throws Exception {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		
 		userSession.removeAllIds(); // important, we need to generate new ones!
 		
@@ -1620,7 +1637,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 	private Object construct(BeetRootHTTPSession session, Class<?> handlerClass, String entity, String msg) throws Exception {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		
 		Constructor<?> constructor = null;
         final Constructor<?> constructors[] = handlerClass.getDeclaredConstructors();
@@ -1669,7 +1686,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private Response refresh(BeetRootHTTPSession session, String msg) {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		
 		if (msg != null && msg.length() !=0 ) {
 			
@@ -1758,8 +1775,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * Used by index and view handlers.
 	 * 
 	 * @param session HTTP session
-	 * @param id db record id &gt; 0 if a single record should be read otehrwise &lt; 0;
-	 * @return response
+	 * @param id db record id &gt; 0 if a single record should be read otherwise &lt; 0;
+	 * @return response or null, null means success, response's status must be checked!
 	 * @throws Exception
 	 */
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
@@ -1771,12 +1788,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * Override for add handlers.
 	 * 
-	 * @param id db record id
 	 * @param session HTTP session
-	 * @return response
+	 * @return response or null, null means success, response's status 
+	 * 			must be checked and must hold the id of the saved record!
 	 * @throws Exception
 	 */
-	public HandlerResponse saveData(BeetRootHTTPSession session, int id) throws Exception {
+	public HandlerResponse saveData(BeetRootHTTPSession session) throws Exception {
 		return null;
 	}
 
@@ -1787,7 +1804,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @param id db record id
 	 * @param session HTTP session
-	 * @return response
+	 * @return response or null, null means success, response's status 
+	 * 			must be checked!
 	 * @throws Exception
 	 */
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
@@ -1801,7 +1819,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @param id db record id
 	 * @param session HTTP session
-	 * @return response
+	 * @return response or null, null means success, response's status must be checked!
 	 * @throws Exception
 	 */
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
@@ -1820,6 +1838,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return DefaultIndexHandler.class;
 	}
 	
+	/**
+	 * Get current HTTP session process.
+	 * 
+	 * @return HTTP session
+	 */
+	final public BeetRootHTTPSession getCurrentSession() {
+		return currentSession;
+	}
+
 	/**
 	 * Get web entity (use plural, e.g. 'tasks', 'users'.
 	 * 
@@ -1871,9 +1898,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * nothing is replaced.
 	 * 
 	 * @param text text to parse and return
+	 * @param session HTTP session
 	 * @return parsed text or <code>null<code>
 	 */
-	public String replaceTemplateVariables(String text) {
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
 		return text;
 	}
 	
@@ -1894,9 +1922,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * standard tags! 
 	 *  
 	 * @param line html line
+	 * @param session HTTP session
 	 * @return new html line or lines.
 	 */
-	public String parse(String line) {
+	public String parse(String line, BeetRootHTTPSession session) {
 		return line;
 	}
 	

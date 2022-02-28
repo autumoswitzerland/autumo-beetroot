@@ -32,6 +32,7 @@ package ch.autumo.beetroot.handler.users;
 
 import java.sql.ResultSet;
 
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
@@ -64,7 +65,7 @@ public class UsersViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String text) {
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
 		return text.replaceAll("\\{\\$userName\\}", userName);
 	}
 

@@ -151,7 +151,7 @@ public class LanguageManager {
 	 */
 	public String translate(String key, Session userSession, Object... arguments) {
 		
-		final String lang = (String) userSession.get("userlang");
+		final String lang = (String) userSession.getUserLang();
 		ResourceBundle bundle = bundles.get(lang);
 		
 		String text = null;
@@ -337,7 +337,7 @@ public class LanguageManager {
 		
 		if (configResource.contains(":lang")) {
 			
-			Object ul = userSession.get("userlang");
+			Object ul = userSession.getUserLang();
 			
 			if (ul == null) {
 				
@@ -346,7 +346,7 @@ public class LanguageManager {
 				
 			} else {
 				
-				lang = userSession.get("userlang").toString();
+				lang = userSession.getUserLang();
 			}
 			
 			if (lang != null && lang.length() != 0)
@@ -419,7 +419,7 @@ public class LanguageManager {
 	
 	public String getLanguage(Session userSession) {
 		
-		String lang = (String) userSession.get("userlang");
+		String lang = (String) userSession.getUserLang();
 		if (lang == null || lang.length() == 0) {
 			
 			//from db
