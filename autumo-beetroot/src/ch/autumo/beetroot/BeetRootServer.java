@@ -249,6 +249,8 @@ public class BeetRootServer {
 		if (startWebServer) {
 			try {
 				
+				LOG.info("Starting internal web server...");
+				
 				webServer = new BeetRootWebServer(portWebServer);
 				
 				final boolean https = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
@@ -298,8 +300,14 @@ public class BeetRootServer {
 			LOG.warn("Coudln't properly close server socket. Ignored.");
 		}
 		
-		if (startWebServer)
+		if (startWebServer) {
+			
+			LOG.info("Stopping internal web server...");
+
 			webServer.stop();
+			
+			LOG.info("Internal web server stopped.");
+		}
 
 		this.afterStop();
 		
