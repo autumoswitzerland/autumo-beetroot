@@ -95,7 +95,9 @@ It is shipped with the following features ready to use:
 - Language management
 - File up- and download
 - Full MIME types control
+- Extendable user settings
 - Password reset mechanism
+- Dark theme and theme support
 - Mailing inclusive mail templates
 - URL routing with language support
 - File caching (resources and templates)
@@ -241,7 +243,7 @@ A word when using MySQL: Due to the GPL license, we don't distribute or create a
 
 Start the CRUD generator with the script `plant.sh` / `plant.bat` and follow the steps!
 
-The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all!
+The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with another database conenction), you can specify that configuration file as an argument in the shell / batch scripts above.
 
 **NOTE**: Entities for beetRoot MUST be named in plural form in the database, e.g.: tasks, users, cities, properties, cars, etc.
 
@@ -545,7 +547,7 @@ Project Link: [https://github.com/autumoswitzerland/autumo/tree/master/autumo-be
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* Thank you CakePHP inspiring me (https://cakephp.org)
+* Inspired by CakePHP (https://cakephp.org)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
