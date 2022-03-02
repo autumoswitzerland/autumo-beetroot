@@ -112,19 +112,30 @@ public class Utils {
 		if (map != null)
 			return map;
 		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null; 
+		String settingsString = null;
 		
-		String stmtStr = "SELECT settings FROM users WHERE id="+userSession.getUserId();
-		final ResultSet set = stmt.executeQuery(stmtStr);
+		try {
+			
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
 		
-		set.next(); // one record !
+			String stmtStr = "SELECT settings FROM users WHERE id="+userSession.getUserId();
+			set = stmt.executeQuery(stmtStr);
+			
+			set.next(); // one record !
+			settingsString = set.getString(1);
 		
-		final String settingsString = set.getString(1);
-
-		set.close();
-		stmt.close();
-		conn.close();
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
 		
 		if (settingsString == null || settingsString.length() == 0) {
 			map = new HashMap<String, String>();
@@ -170,15 +181,78 @@ public class Utils {
 			i++;
 		}
 		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
+		Connection conn = null;
+		Statement stmt = null;
 		
-		String stmtStr = "UPDATE users SET settings='"+settingsStr+"' WHERE id=" + userSession.getUserId();
-		stmt.executeUpdate(stmtStr);
+		try {
+			
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
 		
-		stmt.close();
-		conn.close();
+			String stmtStr = "UPDATE users SET settings='"+settingsStr+"' WHERE id=" + userSession.getUserId();
+			stmt.executeUpdate(stmtStr);
+		
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
 	}
+	
+	/**
+	 * Count rows of type clz (entity class).
+	 * @param clz entity class
+	 * @return amount of rows or -1 if something bad happens
+	 * @throws SQLException
+	 */
+	public static int countRows(Class<?> clz) throws SQLException {
+
+		final String table = classToTable(clz);
+		return countRows(table);
+	}
+	
+	/**
+	 * Count rows of table.
+	 * @param table table DB name
+	 * @return amount of rows or -1 if something bad happens
+	 * @throws SQLException
+	 */
+	public static int countRows(String table) throws SQLException {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		int amount = -1;
+		
+		try {
+			
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			set = stmt.executeQuery("SELECT count(*) FROM " + table);
+			
+			if(!set.next()) {
+				
+				set.close();
+				stmt.close();
+				conn.close();
+				return -1;
+			}
+			
+			amount =  set.getInt(1);
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+
+		return amount;
+	}	
 	
 	/**
 	 * Select a record of type clz (entity class).
@@ -190,6 +264,43 @@ public class Utils {
 	 */
 	public static Entity selectRecord(Class<?> clz, int id) throws SQLException {
 		
+		final String table = classToTable(clz);
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		Entity entity = null;
+		
+		try {
+			
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
+			set = stmt.executeQuery(stmtStr);
+	
+			set.next(); // one record !
+			entity = createBean(clz, set);
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		
+		return entity;
+	}
+	
+	/**
+	 * Class to DB table.
+	 * @param clz class
+	 * @return name of table in DB
+	 */
+	public static String classToTable(Class<?> clz) {
+		
 		final String c = clz.getName().toLowerCase();
 		String table = c.substring(c.lastIndexOf(".") + 1, c.length());
 		if (table.endsWith("y"))
@@ -197,22 +308,9 @@ public class Utils {
 		else
 			table += "s";
 		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
-		
-		String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
-		final ResultSet set = stmt.executeQuery(stmtStr);
-
-		set.next(); // one record !
-		
-		final Entity entity = createBean(clz, set);
-		
-		set.close();
-		stmt.close();
-		conn.close();
-		
-		return entity;
-	}	
+		return table;
+	}
+	
 	
 	/**
 	 * Create bean.

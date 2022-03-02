@@ -28,13 +28,23 @@ body {
 }
 legend { 
     background-color: #222222 !important;
-    color: #0093E6;
+    color: #dddddd;
 }
 label {
     background-color: #222222 !important;
     color: #07b;
 }
 input {
+    background-color: #333333 !important;
+    border-color: #444444 !important;
+    color: #dddddd !important;
+}
+select {
+    background-color: #333333 !important;
+    border-color: #444444 !important;
+    color: #dddddd !important;
+}
+textarea {
     background-color: #333333 !important;
     border-color: #444444 !important;
     color: #dddddd !important;
@@ -57,10 +67,16 @@ select:-webkit-autofill:focus {
 	-webkit-box-shadow: 0 0 0px 1000px #333333 inset;
   	transition: background-color 5000s ease-in-out 0s;    
 }
+div.message {
+    background-color: rgb(114, 206, 232);
+}
 table {
     background-color: #222222;
 }
-table tr th, table tr td {
+table tr th {
+    color: #0093E6 !important;
+}
+table tr td {
     color: #dddddd;
 }
 table tr {
@@ -88,7 +104,7 @@ ul.pagination li a {
     border: 1px solid #aaaaaa;
 }
 p {
-    color: #07b !important;
+    color: #0093E6 !important;
 }
 .side-nav li.heading {
     color: #0093E6 !important;
@@ -97,17 +113,20 @@ p {
     color: #07b;
 }
 a {
-    color: #07b;
+    color: #0093E6;
 }
 a:hover {
     color: #2DC7FE !important;
+}
+.actions {
+    color: #07b;
 }
 h1 {
     color: #dddddd !important;
 }
 
 h3 {
-    color: #0093E6 !important;
+    color: #dddddd !important;
 }
 .dropdown-content {
     background-color: #555555;

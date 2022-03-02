@@ -49,7 +49,7 @@ public class UsersViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		switch (columnName) {
 		

@@ -153,20 +153,26 @@ public class DatabaseManager {
 	 */
 	public static void resetToken(int dbId) throws Exception {
 
-		final Connection conn = instance.getConnection();
+		Connection conn = null;
 		Statement stmt = null;
 		
-		// Now save edited data !
-		stmt = conn.createStatement();
+		try {
+			conn = instance.getConnection();
+			// Now save edited data !
+			stmt = conn.createStatement();
+			
+			String stmtStr = "UPDATE users SET lasttoken='NONE' WHERE id=" + dbId;
+			//int a = 
+			stmt.executeUpdate(stmtStr);
+			
+			//LOG.debug("Token resetted for "+a+" users.");
 		
-		String stmtStr = "UPDATE users SET lasttoken='NONE' WHERE id=" + dbId;
-		//int a = 
-		stmt.executeUpdate(stmtStr);
-		
-		//LOG.debug("Token resetted for "+a+" users.");
-		
-		stmt.close();
-		conn.close();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
 	}
 
 	/**
@@ -179,20 +185,32 @@ public class DatabaseManager {
 	 */
 	public static String getProperty(String name) throws Exception {
 		
-		final Connection conn = instance.getConnection();
+		Connection conn = null;
 		Statement stmt = null;
-		stmt = conn.createStatement();
-		String stmtStr = "SELECT value FROM properties WHERE name='" + name +"'";
-		ResultSet set = stmt.executeQuery(stmtStr);
-		boolean found = set.next();
-		
+		ResultSet set = null; 
 		String value = null;
-		if (found)
-			value = set.getString("value");
+				
+		try {
+
+			conn = instance.getConnection();
+			
+			stmt = conn.createStatement();
+			String stmtStr = "SELECT value FROM properties WHERE name='" + name +"'";
+			set = stmt.executeQuery(stmtStr);
+			boolean found = set.next();
+			
+			if (found)
+				value = set.getString("value");
 		
-		set.close();
-		stmt.close();
-		conn.close();
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
+		
 		return value;
 	}
 	
@@ -206,22 +224,32 @@ public class DatabaseManager {
 
 		String lang = null;
 		
-		final Connection conn = instance.getConnection();
+		Connection conn = null;
 		Statement stmt = null;
+		ResultSet set = null;
 		
-		// Now save edited data !
-		stmt = conn.createStatement();
+		try {
 		
-		String stmtStr = "SELECT lang FROM users WHERE id=" + dbId;
-		ResultSet set = stmt.executeQuery(stmtStr);
+			conn = instance.getConnection();
+			
+			// Now save edited data !
+			stmt = conn.createStatement();
+			
+			String stmtStr = "SELECT lang FROM users WHERE id=" + dbId;
+			set = stmt.executeQuery(stmtStr);
+			
+			if (set.next()) {
+				lang = set.getString("lang");
+			}
 		
-		if (set.next()) {
-			lang = set.getString("lang");
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}
-		
-		set.close();
-		stmt.close();
-		conn.close();
 		
 		return lang;
 	}
@@ -234,16 +262,23 @@ public class DatabaseManager {
 	 */
 	public void updateLanguage(String lang, int dbId) throws Exception {
 		
-		final Connection conn = instance.getConnection();
+		Connection conn = null;
 		Statement stmt = null;
 		
-		stmt = conn.createStatement();
+		try {
+			
+			conn = instance.getConnection();
+			stmt = conn.createStatement();
+			
+			String stmtStr = "UPDATE users SET lang='"+lang+"' WHERE id=" + dbId;
+			stmt.executeUpdate(stmtStr);
 		
-		String stmtStr = "UPDATE users SET lang='"+lang+"' WHERE id=" + dbId;
-		stmt.executeUpdate(stmtStr);
-		
-		stmt.close();
-		conn.close();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
 	}
 
 	public String getUrl() {

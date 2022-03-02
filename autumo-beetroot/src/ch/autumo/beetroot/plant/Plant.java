@@ -163,48 +163,58 @@ public class Plant {
 		} else {
 			
 			List<String> tableList = new ArrayList<String>();
-						
-			final Connection conn = DatabaseManager.getInstance().getConnection();
+
+			Connection conn = null;
+			Statement stmt = null;
 			
-			final Statement stmt = conn.createStatement();
+			try {
+				
+				conn = DatabaseManager.getInstance().getConnection();
+				stmt = conn.createStatement();
 			
-			if (DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isMariaDb()) {
-				ResultSet rs = stmt.executeQuery("SHOW TABLES;");
-				while (rs.next())
-					tableList.add(rs.getString(1));
-				rs.close();
-			} else {
-				System.out.println("NOTE:");
-				System.out.println("At this time CRUD generation is only possible with MySQL and MariaDB.");
-				System.out.println("We suggest setting up one of these databases for development and then");
-				System.out.println("using the generated templates and code for the target database.");
-				System.out.println("Sorry!");
-				System.out.println("");
+				if (DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isMariaDb()) {
+					ResultSet rs = stmt.executeQuery("SHOW TABLES;");
+					while (rs.next())
+						tableList.add(rs.getString(1));
+					rs.close();
+				} else {
+					System.out.println("NOTE:");
+					System.out.println("At this time CRUD generation is only possible with MySQL and MariaDB.");
+					System.out.println("We suggest setting up one of these databases for development and then");
+					System.out.println("using the generated templates and code for the target database.");
+					System.out.println("Sorry!");
+					System.out.println("");
+					
+					// finish now!
+					Utils.normalExit();
+				} 
+				/*
+				else if (DatabaseManager.getInstance().isH2Db()) {
+					ResultSet rs = stmt.executeQuery("SHOW TABLES;");
+					while (rs.next())
+						tableList.add(rs.getString(1));
+					rs.close();
+				} else if (DatabaseManager.getInstance().isPostgreDb()) {
+					
+					ResultSet rs = stmt.executeQuery("\\dt");
+					while (rs.next())
+						tableList.add(rs.getString("name"));
+					rs.close();
+				} else if (DatabaseManager.getInstance().isOracleDb()) {
+					ResultSet rs = stmt.executeQuery("SELECT table_name FROM user_tables;");
+					while (rs.next())
+						tableList.add(rs.getString("table_name"));
+					rs.close();
+				}
+				*/
+			
+			} finally {
 				
-				// finish now!
-				Utils.normalExit();
-			} 
-			/*
-			else if (DatabaseManager.getInstance().isH2Db()) {
-				ResultSet rs = stmt.executeQuery("SHOW TABLES;");
-				while (rs.next())
-					tableList.add(rs.getString(1));
-				rs.close();
-			} else if (DatabaseManager.getInstance().isPostgreDb()) {
-				
-				ResultSet rs = stmt.executeQuery("\\dt");
-				while (rs.next())
-					tableList.add(rs.getString("name"));
-				rs.close();
-			} else if (DatabaseManager.getInstance().isOracleDb()) {
-				ResultSet rs = stmt.executeQuery("SELECT table_name FROM user_tables;");
-				while (rs.next())
-					tableList.add(rs.getString("table_name"));
-				rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
 			}
-			*/
-			stmt.close();
-			conn.close();
 			
 			int size = tableList.size();
 			tableNames = tableList.toArray(new String[size]);
@@ -309,6 +319,8 @@ public class Plant {
     	fertilizer = new Fertilizer(singleEntity, "gen/java/EditHandler.java", "src/", "java");
     	this.process(fertilizer);
     	fertilizer = new Fertilizer(singleEntity, "gen/java/AddHandler.java", "src/", "java");
+    	this.process(fertilizer);
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/DeleteHandler.java", "src/", "java");
     	this.process(fertilizer);
     	fertilizer = new Fertilizer(singleEntity, "gen/java/Entity.java", "src/", "java");
     	this.process(fertilizer);

@@ -76,37 +76,47 @@ public class ResetHandler extends BaseHandler {
 		}
 		
 		email = email.trim();
-		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
-		
-		String stmtStr = "SELECT id FROM users WHERE email='" + email + "'";;
-		final ResultSet set = stmt.executeQuery(stmtStr);
-		boolean found = set.next();
-		
-		if (!found) {
 
-			set.close();
-			stmt.close();
-			conn.close();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		String token = null; 
+				
+		try {
 			
-			LOG.warn("PW reset: User with email '"+email+"' not found in database!");
-			// be silent !
-			//return new HandlerStatus(HandlerStatus.STATE_NOT_OK, "User not found in database!");
-			return new HandlerResponse(HandlerResponse.STATE_NOT_OK);
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+			
+			String stmtStr = "SELECT id FROM users WHERE email='" + email + "'";;
+			set = stmt.executeQuery(stmtStr);
+			boolean found = set.next();
+			
+			if (!found) {
+	
+				set.close();
+				stmt.close();
+				conn.close();
+				
+				LOG.warn("PW reset: User with email '"+email+"' not found in database!");
+				// be silent !
+				//return new HandlerStatus(HandlerStatus.STATE_NOT_OK, "User not found in database!");
+				return new HandlerResponse(HandlerResponse.STATE_NOT_OK);
+			}
+			
+			int userid = set.getInt(1);
+			token = GUIDGenerator.generate();
+			
+			stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
+			stmt.executeUpdate(stmtStr);
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}
-		
-		int userid = set.getInt(1);
-
-		set.close();
-		
-		final String token = GUIDGenerator.generate();
-		
-		stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
-		stmt.executeUpdate(stmtStr);
-		
-		stmt.close();
-		conn.close();
 		
 		String baseUrl = ConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
 		String baseUrlPort = ConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);

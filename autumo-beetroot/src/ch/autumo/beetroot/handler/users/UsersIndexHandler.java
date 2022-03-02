@@ -32,6 +32,7 @@ package ch.autumo.beetroot.handler.users;
 
 import java.sql.ResultSet;
 
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
@@ -54,7 +55,7 @@ public class UsersIndexHandler extends DefaultIndexHandler {
 	}
 	
 	@Override
-	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		switch (columnName) {
 		

@@ -74,8 +74,9 @@ public class LanguageManager {
         if (instance == null) {
         	
         	instance = new LanguageManager();
-        	
         	ClassLoader loader = null;
+        	
+        	// default lang
         	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
         	if (context != null) {
         		
@@ -104,6 +105,7 @@ public class LanguageManager {
             	defaultTrans = ResourceBundle.getBundle("web/lang/lang", new Locale("default"));
         	}
         	
+        	// langs
         	langs = ConfigurationManager.getInstance().getSepValues("web_languages");
         	if (langs.length > 0)
         		defaultLang = langs[0];
@@ -151,7 +153,7 @@ public class LanguageManager {
 	 */
 	public String translate(String key, Session userSession, Object... arguments) {
 		
-		final String lang = (String) userSession.getUserLang();
+		final String lang = userSession.getUserLang();
 		ResourceBundle bundle = bundles.get(lang);
 		
 		String text = null;

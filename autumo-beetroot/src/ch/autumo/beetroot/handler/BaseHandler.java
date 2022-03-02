@@ -47,6 +47,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	protected TreeMap<Integer, String> columns = null;
 	protected String uniqueFields[] = null;
+	protected List<String> transientFields = new ArrayList<String>();
 	protected String entity = null;
 	protected String htmlHead = "";
 	protected String htmlData = "";
@@ -244,10 +246,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		boolean added = false;
 		    		
 		    		// First check for special configurations
+		    		// unique
 		    		if (configPair[0].equals("unique")) {
 		    			
 		    			configPair[1].replace(" ", "");
 		    			uniqueFields = configPair[1].split(",");
+		    			continue LOOP;
+		    		}
+		    		// transient (not store in DB)
+		    		if (configPair[0].equals("transient")) {
+		    			
+		    			configPair[1].replace(" ", "");
+		    			transientFields =  Arrays.asList(configPair[1].split(","));
 		    			continue LOOP;
 		    		}
 		    		
@@ -440,10 +450,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 		String queryfields = "";
 		
-		for (int i = 1; i <= columns.size(); i++) {
+		LOOP: for (int i = 1; i <= columns.size(); i++) {
+			
 			final String cfgLine = columns.get(Integer.valueOf(i));
 			final String params[] = cfgLine.split("=");
 			final String colName = params[0].trim();
+			
+			if (transientFields.contains(colName))
+				continue LOOP;
 			
 			if (columns.size() == i)
 				queryfields += colName;
@@ -452,6 +466,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 		
 		return queryfields;
+	}
+	
+	/**
+	 * Get transient fields
+	 * @return transient fields
+	 */
+	public List<String> getTransientFields() {
+		return this.transientFields;
 	}
 	
 	/**
@@ -470,6 +492,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			final String col[] = getColumn(i);
 
+			if (transientFields.contains(col[0]))
+				continue LOOP;
+			
 			String val = session.getParms().get(col[0]);		
 			
 			val = Utils.escapeValuesForDb(val);
@@ -501,7 +526,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				continue LOOP;
 			}
 			
-			val = this.formatSingleValueForDB(val, col[0]);
+			val = this.formatSingleValueForDB(session, val, col[0]);
 			
 			if (columns.size() == i)
 				clause += "'"+val+"'";
@@ -537,9 +562,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				currentUser = true;
 		}
 		
-		for (int i = 1; i <= columns.size(); i++) {
+		LOOP: for (int i = 1; i <= columns.size(); i++) {
 
 			final String col[] = getColumn(i);
+			
+			if (transientFields.contains(col[0]))
+				continue LOOP;
 			
 			String val = session.getParms().get(col[0]);
 			
@@ -576,7 +604,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 			}
 			
-			val = this.formatSingleValueForDB(val, col[0]);
+			val = this.formatSingleValueForDB(session, val, col[0]);
 			
 			if (columns.size() == i)
 				clause += col[0] + "='"+val+"'";
@@ -608,60 +636,73 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		final Session userSession = session.getUserSession();
 		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
+		Connection conn = null;
 		Statement stmt = null;
+		ResultSet set = null;
 		
-		// Unique fields test!
-		if (uniqueFields.length != 0) {
-			
-			String uniqueText = "";
-			boolean foundOneAtLeast = false;
-			final List<String> foundPairs = new ArrayList<String>();
-			
-			for (int i = 0; i < uniqueFields.length; i++) {
-				
-				String stmtStr = preSql;
-			
-				String val = session.getParms().get(uniqueFields[i]);
-				stmtStr += uniqueFields[i] + "='"+val+"'";
-				stmtStr += ";";
-				stmt = conn.createStatement();
-				// we only need the result set for the column meta data
-				stmt.setFetchSize(1);
-				final ResultSet set = stmt.executeQuery(stmtStr);
-				
-				boolean found = set.next();
-				
-				set.close();
-				stmt.close();
-				
-				if (found) {
-					foundOneAtLeast = true;
-					foundPairs.add(uniqueFields[i] + "='"+val+"'");
-				}
-			}
-			
-			if (foundOneAtLeast) {
-				
-				conn.close();
+		try {
 
-				int i = 1;
-				for (Iterator<String> iterator = foundPairs.iterator(); iterator.hasNext();) {
-					String fp = (String) iterator.next();
-					if (i == foundPairs.size())
-						uniqueText +=  fp;
-					else
-						uniqueText +=  fp+"', ";
-					i++;
+			conn = DatabaseManager.getInstance().getConnection();
+			
+			// Unique fields test!
+			if (uniqueFields.length != 0) {
+				
+				String uniqueText = "";
+				boolean foundOneAtLeast = false;
+				final List<String> foundPairs = new ArrayList<String>();
+				
+				for (int i = 0; i < uniqueFields.length; i++) {
+					
+					String stmtStr = preSql;
+				
+					String val = session.getParms().get(uniqueFields[i]);
+					stmtStr += uniqueFields[i] + "='"+val+"'";
+					stmtStr += ";";
+					stmt = conn.createStatement();
+					// we only need the result set for the column meta data
+					stmt.setFetchSize(1);
+					set = stmt.executeQuery(stmtStr);
+					
+					boolean found = set.next();
+					
+					set.close();
+					stmt.close();
+					
+					if (found) {
+						foundOneAtLeast = true;
+						foundPairs.add(uniqueFields[i] + "='"+val+"'");
+					}
 				}
 				
-				// We have at least one with the same values!
-				LOG.info("Found "+getEntity()+" with same unique value(s) " + uniqueText + "! Not "+operation+" the record.");
-				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.unique", userSession, getEntity(), uniqueText));
+				if (foundOneAtLeast) {
+					
+					conn.close();
+	
+					int i = 1;
+					for (Iterator<String> iterator = foundPairs.iterator(); iterator.hasNext();) {
+						String fp = (String) iterator.next();
+						if (i == foundPairs.size())
+							uniqueText +=  fp;
+						else
+							uniqueText +=  fp+"', ";
+						i++;
+					}
+					
+					// We have at least one with the same values!
+					LOG.info("Found "+getEntity()+" with same unique value(s) " + uniqueText + "! Not "+operation+" the record.");
+					return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.unique", userSession, getEntity(), uniqueText));
+				}
 			}
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}
 		
-		conn.close();
 		return null; // ok !
 	}
 
@@ -918,7 +959,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 				
 				
-				// add servlet url part?
+				// AT THE VERY END: Add servlet URL part?
 				// href="/
 				// src="/
 				// action="/
@@ -1663,8 +1704,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         handler.initialize(session);
 		
 		// read index data
-		handler.readData(session, -1);
-
+        try {
+        	
+        	handler.readData(session, -1);
+        	
+        } catch (Exception ex) {
+        	
+        	LOG.error("*** NOTE *** : You might have forgotten to overwrite a handler, so beetRoot can choose the right redirect handler for an entity!");
+        	LOG.error("    -> This is especially necessary, if you have defined transient colums in 'columns.cfg' !");
+        	
+        	throw ex;
+        }
 		// lang is re-written per redirect script
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));		
 	}
@@ -2019,9 +2069,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Add proper logic for checkboxes.
 	 * 
+	 * @param session HTTP session
 	 * @param columnName column / input name
 	 */
-	protected void addCheckBox(String columnName) {
+	protected void addCheckBox(BeetRootHTTPSession session, String columnName) {
 		
 		checkBoxLogic.append(""
 				+ "$('#cb_"+columnName+"').change(function() {\n"
@@ -2036,11 +2087,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Format single value before update / insert into DB.
 	 * 
+	 * @param session HTTP session
 	 * @param val value
 	 * @param columnname column name
 	 * @return formatted value
 	 */
-	public String formatSingleValueForDB(String val, String columnname) {
+	public String formatSingleValueForDB(BeetRootHTTPSession session, String val, String columnname) {
 		throw new IllegalAccessError("This method should never be called in this context!");
 	}
 	

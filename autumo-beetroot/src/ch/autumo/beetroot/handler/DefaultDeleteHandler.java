@@ -47,18 +47,25 @@ public class DefaultDeleteHandler extends BaseHandler {
 
 	@Override
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
-		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
+
+		Connection conn = null;
 		Statement stmt = null;
 		
-		// Delete data !
-		stmt = conn.createStatement();
+		try {
+			conn = DatabaseManager.getInstance().getConnection();
+			
+			// Delete data !
+			stmt = conn.createStatement();
+			
+			String stmtStr = "DELETE FROM "+getEntity()+" WHERE id=" + id;
+			stmt.executeUpdate(stmtStr);
 		
-		String stmtStr = "DELETE FROM "+getEntity()+" WHERE id=" + id;
-		stmt.executeUpdate(stmtStr);
-		
-		stmt.close();
-		conn.close();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
 		
 		return null;
 	}

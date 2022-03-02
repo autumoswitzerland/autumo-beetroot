@@ -478,12 +478,16 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
                 
             	if (postParamPass != null && postParamPass.length() != 0) {
             		
-            		Connection conn;
+            		Connection conn = null;
+            		Statement stmt = null;
+            		ResultSet rs = null;
+            		
 					try {
 						
 						conn = DatabaseManager.getInstance().getConnection();
-	            		final Statement stmt = conn.createStatement();
-	            		final ResultSet rs = stmt.executeQuery("select id, password, role, firstname, lastname from users where username='"+postParamUsername+"';");
+	            		stmt = conn.createStatement();
+	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname from users where username='"+postParamUsername+"';");
+	            		
 	            		if (rs.next()) {
 	            			dbId = rs.getInt("id");
 	            			dbPass = rs.getString("password");
@@ -491,9 +495,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            			dbFirstName = rs.getString("firstname");
 	            			dbLastName = rs.getString("lastname");
 	            		}
-	            		rs.close();
-	            		stmt.close();
-	            		conn.close();
 	            		
 					} catch (SQLException e) {
 						
@@ -503,6 +504,19 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
 						String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
 						return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+						
+					} finally {
+
+						try {
+							if (rs != null)
+								rs.close();
+							if (stmt != null)
+								stmt.close();
+							if (conn != null)
+								conn.close();
+						} catch (SQLException e) {
+							// no need
+						}
 					}
 					
 					if (dbPwEnc) {

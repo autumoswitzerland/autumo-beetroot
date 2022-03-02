@@ -33,6 +33,7 @@ package ch.autumo.beetroot.handler;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
@@ -113,124 +114,135 @@ public class DefaultIndexHandler extends BaseHandler {
 		final String sortDir = session.getParms().get("direction");
 		
 		final String pg = session.getParms().get("page");
-		if (pg != null && pg.length() != 0)
+		if (pg != null && pg.length() != 0) {
 			try {
 				page = Integer.valueOf(pg).intValue();
 			} catch (Exception e) {
 				LOG.warn("Couldn't parse page number, using page 1!", e);
 				page = 1;
 			}
-		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		
-		String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity;
-		
-		// take care of user data !
-		if (userSession != null && getEntity().equals("users")) {
-			final String username = userSession.getUserName();
-			final String userrole = userSession.getUserRole();
-			if (username != null && username.length() != 0 && (userrole == null || !userrole.equals("Administrator")))
-				stmtStr += " WHERE username='"+username+"'";	
 		}
 		
-		if (sortField != null && sortField.length() != 0)
-			stmtStr += " ORDER BY " + sortField;
-		if (sortDir != null && sortDir.length() != 0)
-			stmtStr += " " + sortDir.toUpperCase();
+		Connection conn = null;
+		Statement stmt = null;
 		
-		stmtStr += ";";
-		
-		final ResultSet set = stmt.executeQuery(stmtStr);
-		
-        if (set.last()) { 
-        	rowCount = set.getRow();
-          	set.beforeFirst();
-        }
-        
-        if (rowCount < maxRecPerPage)
-        	pages = 1;
-        else {
-        	pages = rowCount / maxRecPerPage;
-            if (rowCount % maxRecPerPage > 0)
-            	pages++;
-        }
-        
-        // set before first record of current page!
-        set.absolute((page - 1) * maxRecPerPage);
-        
-        if (rowCount >= maxRecPerPage) {
-        	set.setFetchSize(maxRecPerPage); 
-        }
-		
-        totalShown = maxRecPerPage;
-        if (rowCount < maxRecPerPage)
-        	totalShown = rowCount;
-        	
-		int counter = 0;
-		
-		final BeanProcessor processor = new BeanProcessor();
-		
-		// table data
-		while (set.next() && counter < maxRecPerPage) {
+		try {
+
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			
-			// id
-			int idr = set.getInt("id");
+			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity;
 			
-			userSession.createIdPair(idr, getEntity());
-			String modifyID = userSession.getModifyId(idr, getEntity());
-			
-			final Entity entity = Utils.createBean(getBeanClass(), set, processor);
-			this.prepare(entity);
-			
-			// NOTE: We could deliver the whole bean which could be extracted by the
-			// user with HTML and bean property-tags and waive the 'columns.cfg'-approach,
-			// but then we would do it the way every web-framework does it and we want to
-			// have only the tags {$head} and {$data} that generate the fields and table data
-			// entries in every view.
-			
-			// columns
-			htmlData += "<tr>";
-			for (int i = 1; i <= columns().size(); i++) {
-				
-				final String cfgLine = columns().get(Integer.valueOf(i));
-				final String params[] = cfgLine.split("=");
-				int dbIdx = i + 1; // because of additional id!
-				htmlData += extractSingleTableData(set, params[0].trim(), dbIdx, entity)+ "\n";
-				
+			// take care of user data !
+			if (userSession != null && getEntity().equals("users")) {
+				final String username = userSession.getUserName();
+				final String userrole = userSession.getUserRole();
+				if (username != null && username.length() != 0 && (userrole == null || !userrole.equals("Administrator")))
+					stmtStr += " WHERE username='"+username+"'";	
 			}
 			
-			// Actions !
-			htmlData += "<td class=\"actions\">\n";
-			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/view?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.view", userSession)+"</a>\n";
-			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
-			htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
-			htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
+			if (sortField != null && sortField.length() != 0)
+				stmtStr += " ORDER BY " + sortField;
+			if (sortDir != null && sortDir.length() != 0)
+				stmtStr += " " + sortDir.toUpperCase();
 			
-			if (ConfigurationManager.getInstance().useCsrf()) {
+			stmtStr += ";";
+			
+			final ResultSet set = stmt.executeQuery(stmtStr);
+			
+	        if (set.last()) { 
+	        	rowCount = set.getRow();
+	          	set.beforeFirst();
+	        }
+	        
+	        if (rowCount < maxRecPerPage)
+	        	pages = 1;
+	        else {
+	        	pages = rowCount / maxRecPerPage;
+	            if (rowCount % maxRecPerPage > 0)
+	            	pages++;
+	        }
+	        
+	        // set before first record of current page!
+	        set.absolute((page - 1) * maxRecPerPage);
+	        
+	        if (rowCount >= maxRecPerPage) {
+	        	set.setFetchSize(maxRecPerPage); 
+	        }
+			
+	        totalShown = maxRecPerPage;
+	        if (rowCount < maxRecPerPage)
+	        	totalShown = rowCount;
+	        	
+			int counter = 0;
+			
+			final BeanProcessor processor = new BeanProcessor();
+			
+			// table data
+			while (set.next() && counter < maxRecPerPage) {
 				
-				final String formCsrfToken = userSession.getFormCsrfToken();
-				htmlData += "<input type=\"hidden\" name=\"_csrfToken\" autocomplete=\"off\" value=\""+formCsrfToken+"\"/>\n";
-			}
-			
-			htmlData += "</form>\n";
-			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
-							+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, idr) 
-							+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.returnValue = false; return false;\">"
-							+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
-			htmlData += "</td>\n";
-			htmlData += "</tr>\n";
-			counter++;
+				// id
+				int idr = set.getInt("id");
+				
+				userSession.createIdPair(idr, getEntity());
+				String modifyID = userSession.getModifyId(idr, getEntity());
+				
+				final Entity entity = Utils.createBean(getBeanClass(), set, processor);
+				this.prepare(session, entity);
+				
+				// NOTE: We could deliver the whole bean which could be extracted by the
+				// user with HTML and bean property-tags and waive the 'columns.cfg'-approach,
+				// but then we would do it the way every web-framework does it and we want to
+				// have only the tags {$head} and {$data} that generate the fields and table data
+				// entries in every view.
+				
+				// columns
+				htmlData += "<tr>";
+				for (int i = 1; i <= columns().size(); i++) {
+					
+					final String cfgLine = columns().get(Integer.valueOf(i));
+					final String params[] = cfgLine.split("=");
+					int dbIdx = i + 1; // because of additional id!
+					htmlData += extractSingleTableData(session, set, params[0].trim(), dbIdx, entity)+ "\n";
+					
+				}
+				
+				// Actions !
+				htmlData += "<td class=\"actions\">\n";
+				htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/view?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.view", userSession)+"</a>\n";
+				htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
+				htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
+				htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
+				
+				if (ConfigurationManager.getInstance().useCsrf()) {
+					
+					final String formCsrfToken = userSession.getFormCsrfToken();
+					htmlData += "<input type=\"hidden\" name=\"_csrfToken\" autocomplete=\"off\" value=\""+formCsrfToken+"\"/>\n";
+				}
+				
+				htmlData += "</form>\n";
+				htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
+								+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, idr) 
+								+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.returnValue = false; return false;\">"
+								+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
+				htmlData += "</td>\n";
+				htmlData += "</tr>\n";
+				counter++;
 			
 			/*
 <form name="post_tasks_delete_{$id}" style="display:none;" method="post" action="/tasks/delete?id={$id}">
 <a href="/tasks/delete?id={$id}" class="side-nav-item" data-confirm-message="Wollen Sie # {$dbid} wirklich löschen?" onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.returnValue = false; return false;">Task löschen</a>
 			 */
+			}
+		
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}
 		
-		set.close();
-		stmt.close();
-		conn.close();
+		final List<String> transientFields = super.getTransientFields();
 		
 		// table head
 		for (int i = 1; i <= columns().size(); i++) {
@@ -240,15 +252,29 @@ public class DefaultIndexHandler extends BaseHandler {
 			if (sortField != null && sortField.length() != 0) {
 				
 				if (sortField.equals(col[0])) {
-					if (sortDir != null && sortDir.length() != 0 && sortDir.equals("asc"))
-						htmlHead += "<th><a class=\"asc\" href=\"/"+getEntity()+"?sort="+col[0]+"&amp;direction=desc\">"+col[1]+"</a></th>\n";
-					else if (sortDir != null && sortDir.length() != 0 && sortDir.equals("desc"))
-						htmlHead += "<th><a class=\"desc\" href=\"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+					if (sortDir != null && sortDir.length() != 0 && sortDir.equals("asc")) {
+						if (transientFields.contains(col[0]))
+							htmlHead += "<th>"+col[1]+"</th>\n";
+						else
+							htmlHead += "<th><a class=\"asc\" href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=desc\">"+col[1]+"</a></th>\n";
+					}
+					else if (sortDir != null && sortDir.length() != 0 && sortDir.equals("desc")) {
+						if (transientFields.contains(col[0]))
+							htmlHead += "<th>"+col[1]+"</th>\n";
+						else
+							htmlHead += "<th><a class=\"desc\" href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+					}
 				} else {
-					htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+					if (transientFields.contains(col[0]))
+						htmlHead += "<th>"+col[1]+"</th>\n";
+					else
+						htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
 				}
 			} else {
-				htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+				if (transientFields.contains(col[0]))
+					htmlHead += "<th>"+col[1]+"</th>\n";
+				else
+					htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
 			}
 		}
 		
@@ -259,15 +285,17 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * Prepare call to to something with the current entity bean 
 	 * processed in the list if necessary.
 	 * 
+	 * @param session HTTP session
 	 * @param entity entity bean
 	 */
-	public void prepare(Entity entity) {
+	public void prepare(BeetRootHTTPSession session, Entity entity) {
 	}
 	
 	/**
 	 * Extract one single table data field from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * @param session HTTP session
 	 * @param set database result set pointing to current record
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
 	 * @param dbIdx SQL result set column index
@@ -275,10 +303,14 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * @return html data extract <td>...</td>
 	 * @throws Exception
 	 */
-	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+		
+		if (transientFields.contains(columnName))
+			return "<td></td>"; // only a specific user implementation knows what to do with transient fields
 		
 		final Object o = set.getObject(idx);
 		
+		//TODO
 		String val = null;
 		if (o == null || o.toString().equals("null"))
 			val = "";

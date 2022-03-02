@@ -84,7 +84,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			for (int i = 1; i <= columns().size(); i++) {
 				
 				final String col[] = getColumn(i);
-				htmlData += this.extractSingleInputDiv(params, set, col[0], col[1], i);
+				htmlData += this.extractSingleInputDiv(session, params, set, col[0], col[1], i);
 			}
 			return null;
 		}
@@ -99,7 +99,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		for (int i = 1; i <= columns().size(); i++) {
 			
 			final String col[] = getColumn(i);
-			htmlData += extractSingleInputDiv(set, col[0], col[1], i);
+			htmlData += extractSingleInputDiv(session, set, col[0], col[1], i);
 		}		
 		
 		return null;
@@ -114,51 +114,63 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			return response;
 		}
 		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
+		Connection conn = null;
 		PreparedStatement stmt = null;
+		ResultSet keySet = null;
+		int savedId = -1;
 		
-		// Now save data !
-		String columns = getColumnsForSql();
-		String values = getInsertValues(session);
+		try {
 		
-		final Map<String, Object> mandatory = getAddMandatoryFields();
-		final Set<String> cols = mandatory.keySet();
-		for (Iterator<String> iterator = cols.iterator(); iterator.hasNext();) {
+			conn = DatabaseManager.getInstance().getConnection();
 			
-			final String col = (String) iterator.next();
+			// Now save data !
+			String columns = getColumnsForSql();
+			String values = getInsertValues(session);
 			
-			columns += ", " + col;
-			
-			final Object obj = mandatory.get(col);
-			
-			String val = null;
-			if (obj != null)
-				val = obj.toString();
-			
-			if (val != null) {
-				if (val.equals("NOW()"))
-					values += ", '" + Utils.nowTimeStamp() + "'";
+			final Map<String, Object> mandatory = getAddMandatoryFields();
+			final Set<String> cols = mandatory.keySet();
+			for (Iterator<String> iterator = cols.iterator(); iterator.hasNext();) {
+				
+				final String col = (String) iterator.next();
+				
+				columns += ", " + col;
+				
+				final Object obj = mandatory.get(col);
+				
+				String val = null;
+				if (obj != null)
+					val = obj.toString();
+				
+				if (val != null) {
+					if (val.equals("NOW()"))
+						values += ", '" + Utils.nowTimeStamp() + "'";
+					else
+						values += ", '"+val+"'";
+				}
 				else
-					values += ", '"+val+"'";
+					values += ", null";
+			}		
+			
+			stmt = conn.prepareStatement("INSERT INTO "+getEntity()+" (" + columns + ") VALUES (" + values + ");", Statement.RETURN_GENERATED_KEYS);
+			stmt.executeUpdate();
+			
+			keySet = stmt.getGeneratedKeys();
+			boolean found = keySet.next();
+			if (!found) {
+				final Session userSession = session.getUserSession();
+				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.savedid", userSession));
 			}
-			else
-				values += ", null";
-		}		
+			
+			savedId = keySet.getInt(1);
 		
-		stmt = conn.prepareStatement("INSERT INTO "+getEntity()+" (" + columns + ") VALUES (" + values + ");", Statement.RETURN_GENERATED_KEYS);
-		stmt.executeUpdate();
-		
-		final ResultSet keySet = stmt.getGeneratedKeys();
-		boolean found = keySet.next();
-		if (!found) {
-			final Session userSession = session.getUserSession();
-			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.savedid", userSession));
+		} finally {
+			if (keySet != null)
+				keySet.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}
-		
-		int savedId = keySet.getInt(1);
-		
-		stmt.close();
-		conn.close();
 		
 		final HandlerResponse okResponse = new HandlerResponse(HandlerResponse.STATE_OK, savedId);
 		return okResponse; // ok
@@ -168,6 +180,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * Extract one single input div with label and input tags from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * @param session HTTP session
 	 * @param set result set
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
 	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
@@ -175,15 +188,16 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	private String extractSingleInputDiv(ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
-		return this.extractSingleInputDiv("", set, columnName, guiColName, idx);
+		return this.extractSingleInputDiv(session, "", set, columnName, guiColName, idx);
 	}
 	
 	/**
 	 * Extract one single input div with label and input tags from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * @param session HTTP session
 	 * @param data repost data
 	 * @param set result set, even when empty, data is taken from the map (retry)
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
@@ -192,12 +206,12 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	private String extractSingleInputDiv(Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
-		return this.extractSingleInputDiv(data.get(columnName), set, columnName, guiColName, idx);
+		return this.extractSingleInputDiv(session, data.get(columnName), set, columnName, guiColName, idx);
 	}
 
-	private String extractSingleInputDiv(String val, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
 		String result = "";
 		boolean isCheck = false;
@@ -229,7 +243,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			}
 			
 			// Must !
-			super.addCheckBox(columnName);
+			super.addCheckBox(session, columnName);
 		} 
 		
 		if (!isCheck) {
@@ -268,7 +282,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	}
 	
 	@Override
-	public String formatSingleValueForDB(String val, String columnname) {
+	public String formatSingleValueForDB(BeetRootHTTPSession session, String val, String columnname) {
 		return val;
 	}
 	

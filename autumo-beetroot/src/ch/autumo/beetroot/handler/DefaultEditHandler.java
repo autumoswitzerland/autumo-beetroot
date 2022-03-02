@@ -63,46 +63,61 @@ public class DefaultEditHandler extends BaseHandler {
 		// RETRY case!
 		final Map<String, String> params = session.getParms();
 		final String _method = params.get("_method");
-		if (_method != null && _method.equals("RETRY")) {
-
-			final Connection conn = DatabaseManager.getInstance().getConnection();
-			final Statement stmt = conn.createStatement();
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null; 
+		
+		try {
+		
+			if (_method != null && _method.equals("RETRY")) {
+	
+				conn = DatabaseManager.getInstance().getConnection();
+				stmt = conn.createStatement();
+				
+				// we only need the result set for the column meta data
+				stmt.setFetchSize(1);
+				
+				String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity;
+				set = stmt.executeQuery(stmtStr);
+	
+				for (int i = 1; i <= columns().size(); i++) {
+					
+					final String col[] = getColumn(i);
+					htmlData += this.extractSingleInputDiv(session, params, set, col[0], col[1], i);
+				}
+				stmt.close();
+				conn.close();
+				return null;
+			}
 			
-			// we only need the result set for the column meta data
-			stmt.setFetchSize(1);
+			// NORMAL case: first call case
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
 			
-			String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity;
-			final ResultSet set = stmt.executeQuery(stmtStr);
-
+			String stmtStr = "SELECT id, " + super.getColumnsForSql() + " FROM " + this.entity + " WHERE id=" + id;
+			set = stmt.executeQuery(stmtStr);
+	
+			set.next(); // one record !
+			
+			final Entity entity = Utils.createBean(getBeanClass(), set);
+			this.prepare(session, entity);
+			
 			for (int i = 1; i <= columns().size(); i++) {
 				
 				final String col[] = getColumn(i);
-				htmlData += this.extractSingleInputDiv(params, set, col[0], col[1], i);
+				int dbIdx = i + 1; // because of additional id!
+				htmlData += extractSingleInputDiv(session, set, entity, col[0], col[1], dbIdx);		
 			}
-			return null;
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}
-		
-		// NORMAL case: first call case
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
-		
-		String stmtStr = "SELECT id, " + super.getColumnsForSql() + " FROM " + this.entity + " WHERE id=" + id;
-		final ResultSet set = stmt.executeQuery(stmtStr);
-
-		set.next(); // one record !
-		
-		final Entity entity = Utils.createBean(getBeanClass(), set);
-		this.prepare(entity);
-		
-		for (int i = 1; i <= columns().size(); i++) {
-			
-			final String col[] = getColumn(i);
-			int dbIdx = i + 1; // because of additional id!
-			htmlData += extractSingleInputDiv(set, entity, col[0], col[1], dbIdx);		
-		}		
-		set.close();
-		stmt.close();
-		conn.close();
 		
 		return null;
 	}
@@ -116,18 +131,26 @@ public class DefaultEditHandler extends BaseHandler {
 			status.setId(id);
 			return status;
 		}
-		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
+
+		Connection conn = null;
 		Statement stmt = null;
 		
-		// Now save edited data !
-		stmt = conn.createStatement();
+		try {
 		
-		String stmtStr = "UPDATE "+getEntity()+" SET "+this.getUpdateSetClause(session)+" WHERE id=" + id;
-		stmt.executeUpdate(stmtStr);
+			conn = DatabaseManager.getInstance().getConnection();
+			
+			// Now save edited data !
+			stmt = conn.createStatement();
+			
+			String stmtStr = "UPDATE "+getEntity()+" SET "+this.getUpdateSetClause(session)+" WHERE id=" + id;
+			stmt.executeUpdate(stmtStr);
 		
-		stmt.close();
-		conn.close();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
 		
 		return null;
 	}
@@ -137,13 +160,14 @@ public class DefaultEditHandler extends BaseHandler {
 	 * 
 	 * @param entity entity bean
 	 */
-	public void prepare(Entity entity) {
+	public void prepare(BeetRootHTTPSession session, Entity entity) {
 	}
 	
 	/**
 	 * Extract one single input div with label and input tags from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * @param session HTTP session
 	 * @param set result set
 	 * @param entity entity bean
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
@@ -152,16 +176,17 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	private String extractSingleInputDiv(ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
 
-		final String val = this.formatSingleValueForGUI(set.getObject(idx).toString().trim(), columnName, idx, entity);
-		return this.extractSingleInputDiv(val, set, columnName, guiColName, idx, true);
+		final String val = this.formatSingleValueForGUI(session, set.getObject(idx).toString().trim(), columnName, idx, entity);
+		return this.extractSingleInputDiv(session, val, set, columnName, guiColName, idx, true);
 	}
 	
 	/**
 	 * Extract one single input div with label and input tags from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * @param session HTTP session
 	 * @param data repost data
 	 * @param set result set, even when empty, data is taken from the map (retry)
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
@@ -170,12 +195,12 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */	
-	private String extractSingleInputDiv(Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
 		
-		return this.extractSingleInputDiv(data.get(columnName), set, columnName, guiColName, idx, false);
+		return this.extractSingleInputDiv(session, data.get(columnName), set, columnName, guiColName, idx, false);
 	}
 	
-	private String extractSingleInputDiv(String val, ResultSet set, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSet set, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
 		
 		String result = "";
 		boolean isCheck = false;
@@ -213,7 +238,7 @@ public class DefaultEditHandler extends BaseHandler {
 			}
 			
 			// Must !
-			super.addCheckBox(columnName);
+			super.addCheckBox(session, columnName);
 		} 
 		
 		if (!isCheck) {
@@ -254,18 +279,19 @@ public class DefaultEditHandler extends BaseHandler {
 	/**
 	 * Format value for GUI.
 	 * 
+	 * @param session HTTP session
 	 * @param value value from DB 
 	 * @param columnName DB column name
 	 * @param dbIdx SQL result set column index
 	 * @param entity whole entity bean
 	 * @return formated value for given column-name or DB index 
 	 */
-	public String formatSingleValueForGUI(String value, String columnName, int dbIdx, Entity entity) {
+	public String formatSingleValueForGUI(BeetRootHTTPSession session, String value, String columnName, int dbIdx, Entity entity) {
 		return value;
 	}
 	
 	@Override
-	public String formatSingleValueForDB(String val, String columnname) {
+	public String formatSingleValueForDB(BeetRootHTTPSession session, String val, String columnname) {
 		return val;
 	}
 	

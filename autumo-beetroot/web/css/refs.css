@@ -61,6 +61,24 @@ body {
 	background-size: 30px;
 	background-position: 6px 3px;
 }
+.miniRedStatus {
+	background-image: url('/img/status/miniRedStatus16.png');
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 0px 0px;
+}
+.miniOrangeStatus {
+	background: url('/img/status/miniOrangeStatus16.png');
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 0px 0px;
+}
+.miniGreenStatus {
+	background: url('/img/status/miniGreenStatus16.png');
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 0px 0px;
+}
 
 /**
  * Fonts.

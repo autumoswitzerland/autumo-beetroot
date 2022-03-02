@@ -51,26 +51,35 @@ public class DefaultViewHandler extends BaseHandler {
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		
-		final Connection conn = DatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
+		Connection conn = null;
+		Statement stmt = null;
 		
-		String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity + " WHERE id="+id;
-		final ResultSet set = stmt.executeQuery(stmtStr);
-
-		set.next(); // one record !
+		try {
 		
-		final Entity entity = Utils.createBean(getBeanClass(), set);
-		this.prepare(entity);
-		
-		for (int i = 1; i <= columns().size(); i++) {
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
 			
-			final String col[] = getColumn(i);
-			int dbIdx = i + 1; // because of additional id!
-			htmlData += "<tr><th>"+col[1]+"</th>"+extractSingleTableData(set, col[0], dbIdx, entity)+"</tr>\n";		
-		}		
-		set.close();
-		stmt.close();
-		conn.close();
+			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity + " WHERE id="+id;
+			final ResultSet set = stmt.executeQuery(stmtStr);
+	
+			set.next(); // one record !
+			
+			final Entity entity = Utils.createBean(getBeanClass(), set);
+			this.prepare(session, entity);
+			
+			for (int i = 1; i <= columns().size(); i++) {
+				
+				final String col[] = getColumn(i);
+				int dbIdx = i + 1; // because of additional id!
+				htmlData += "<tr><th>"+col[1]+"</th>"+extractSingleTableData(session, set, col[0], dbIdx, entity)+"</tr>\n";		
+			}		
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
+
 		
 		return null;
 	}
@@ -78,15 +87,17 @@ public class DefaultViewHandler extends BaseHandler {
 	/**
 	 * Prepare call to to something with the entity bean if necessary.
 	 * 
+	 * @param session HTTP session
 	 * @param entity entity bean
 	 */
-	public void prepare(Entity entity) {
+	public void prepare(BeetRootHTTPSession session, Entity entity) {
 	}
 
 	/**
 	 * Extract one single table data field from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * @param session HTTP session
 	 * @param set database result set pointing to current record
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
 	 * @param dbIdx SQL result set column index
@@ -94,7 +105,10 @@ public class DefaultViewHandler extends BaseHandler {
 	 * @return html data extract <td>...</td>
 	 * @throws Exception
 	 */
-	public String extractSingleTableData(ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
+		
+		if (transientFields.contains(columnName))
+			return "<td></td>"; // only a specific user implementation knows what to do with transient fields
 		
 		final Object o = set.getObject(idx);
 		

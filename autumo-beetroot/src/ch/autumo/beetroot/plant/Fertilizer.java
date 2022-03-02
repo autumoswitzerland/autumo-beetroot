@@ -91,11 +91,16 @@ public class Fertilizer {
 		this.outputBaseDir = outputBaseDir;
 		this.type = type.toLowerCase().trim();
 		
-		Connection conn;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		
 		try {
+			
 			conn = DatabaseManager.getInstance().getConnection();
-			final Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("DESC " + dbEntity + ";");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery("DESC " + dbEntity + ";");
+			
 			DBField dbField = null;
 			while (rs.next()) {
 				
@@ -110,11 +115,22 @@ public class Fertilizer {
 				
 				databaseFields.put(name, dbField);
 			}
-			rs.close();
-			stmt.close();
-			conn.close();
+			
 		} catch (SQLException e) {
+			
 			throw new FertilizerException("Couldn't read DB fields for entity '"+dbEntity+"'!", e);
+			
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+				// nothing to do
+			}
 		}
 		
 		fieldNames = databaseFields.keySet();

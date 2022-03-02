@@ -78,14 +78,24 @@ public class ChangeHandler extends BaseHandler {
 			final Session s = session.getUserSession();
 			userid = ((Integer) s.get("resetid")).intValue();
 			
-			final Connection conn = DatabaseManager.getInstance().getConnection();
-			final Statement stmt = conn.createStatement();
+			Connection conn = null;
+			Statement stmt = null;
 			
-			String stmtStr = "UPDATE users SET lasttoken='NONE', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
-			stmt.executeUpdate(stmtStr);
+			try {
+				
+				conn = DatabaseManager.getInstance().getConnection();
+				stmt = conn.createStatement();
 			
-			stmt.close();
-			conn.close();
+				String stmtStr = "UPDATE users SET lasttoken='NONE', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
+				stmt.executeUpdate(stmtStr);
+			
+			} finally {
+				
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			}
 			
 			return new HandlerResponse(HandlerResponse.STATE_WARNING, "Password reset canceled.");
 		}
@@ -94,34 +104,46 @@ public class ChangeHandler extends BaseHandler {
 			
 			token = token.trim();
 			
-			final Connection conn = DatabaseManager.getInstance().getConnection();
-			final Statement stmt = conn.createStatement();
+			Connection conn = null;
+			Statement stmt = null;
+			ResultSet set = null;
+			Date modified = null;
 			
-			
-			LOG.debug("Reset token to lookup in DB: "+token);
-			
-			String stmtStr = "SELECT id, modified FROM users WHERE lasttoken='" + token + "';";
-			
-			final ResultSet set = stmt.executeQuery(stmtStr);
-			boolean found = set.next();
-			
-			if (!found) {
-
-				set.close();
-				stmt.close();
-				conn.close();
+			try {
 				
-				userid = -1;
-				LOG.debug("Invalid token used: "+token);
-				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, "This token is invalid!");
-			}
+				conn = DatabaseManager.getInstance().getConnection();
+				stmt = conn.createStatement();
 			
-			userid = set.getInt(1);
-			final Date modified = set.getTimestamp(2);
+				LOG.debug("Reset token to lookup in DB: "+token);
+				
+				String stmtStr = "SELECT id, modified FROM users WHERE lasttoken='" + token + "';";
+				
+				set = stmt.executeQuery(stmtStr);
+				boolean found = set.next();
+			
+				if (!found) {
+	
+					set.close();
+					stmt.close();
+					conn.close();
+					
+					userid = -1;
+					LOG.debug("Invalid token used: "+token);
+					return new HandlerResponse(HandlerResponse.STATE_NOT_OK, "This token is invalid!");
+				}
+				
+				userid = set.getInt(1);
+				modified = set.getTimestamp(2);
 
-			set.close();
-			stmt.close();
-			conn.close();
+			} finally {
+				
+				if (set != null)
+					set.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			}
 			
 			Calendar cal = Calendar.getInstance(); 
 			cal.setTime(modified); 
@@ -163,14 +185,23 @@ public class ChangeHandler extends BaseHandler {
 				final Session s = session.getUserSession();
 				userid = ((Integer) s.get("resetid")).intValue();
 				
-				final Connection conn = DatabaseManager.getInstance().getConnection();
-				final Statement stmt = conn.createStatement();
+				Connection conn = null;
+				Statement stmt = null;
 				
-				String stmtStr = "UPDATE users SET password='" + pass + "', lasttoken='NONE' WHERE id=" + userid;
-				stmt.executeUpdate(stmtStr);
+				try {
+					conn = DatabaseManager.getInstance().getConnection();
+					stmt = conn.createStatement();
 				
-				stmt.close();
-				conn.close();	
+					String stmtStr = "UPDATE users SET password='" + pass + "', lasttoken='NONE' WHERE id=" + userid;
+					stmt.executeUpdate(stmtStr);
+				
+				} finally {
+					
+					if (stmt != null)
+						stmt.close();
+					if (conn != null)
+						conn.close();
+				}
 				
 				return new HandlerResponse(HandlerResponse.STATE_OK, "Password reset!");
 			}

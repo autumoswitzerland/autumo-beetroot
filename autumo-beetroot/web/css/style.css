@@ -935,7 +935,7 @@ table thead tr {
 table tr th {
 	padding: 0.5625rem 0.625rem;
 	font-size: 0.875rem;
-	color: #146fa6;
+	color: #146fa6 !important;
 	text-align: left;
 	border-bottom: 2px solid #146fa6;
 	vertical-align: bottom;
