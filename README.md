@@ -92,6 +92,7 @@ beetRoot is a rapid Java web-development framework ready to run! If you know [Ca
 It is shipped with the following features ready to use:
 
 - Add, edit, view, list and delete functionality for entities
+- Bean support with transient and unique fields
 - Language management
 - File up- and download
 - Full MIME types control
@@ -271,6 +272,7 @@ Java sources (handlers):
 - src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`EditHandler.java
 - src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`ViewHandler.java
 - src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`IndexHandler.java
+- src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`DeleteHandler.java
 
 Adjust them to your needs (see existing handlers for examples) and more **IMPORTANT**: Move the Java sources to another package! All generated files are overwritten the next time if you re-generate sources for the same entity!
 
@@ -364,7 +366,7 @@ Let's have a look at some routes:
 	new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
 	new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
 	new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
-	new Route("/:lang/tasks/delete", DefaultDeleteHandler.class, "tasks"),
+	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks"),
 
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
