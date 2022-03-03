@@ -6,7 +6,6 @@ package planted.beetroot.handler.properties;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
 /**
@@ -34,15 +33,12 @@ public class PropertiesAddHandler extends DefaultAddHandler {
 		
 		// NOTE: Provide default values for fields that are NOT
 		// nullable and that aren't present in the add GUI!
+		fields.put("name", "<DEFAULT-VALUE>");
+		fields.put("id", "<DEFAULT-VALUE>");
 
 		return fields;
 	}
 
-	@Override
-	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("administrator");
-	}
-	
 	@Override
 	public Class<?> getBeanClass() {
 		return Property.class;

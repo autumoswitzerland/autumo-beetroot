@@ -5,9 +5,9 @@ package planted.beetroot.handler.properties;
 
 import java.sql.ResultSet;
 
+//import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
-import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 
 /**
@@ -23,23 +23,21 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		// in case you want to use a bean
-		//final Property property = (Property) entity;
+		final Property property = (Property) entity;
 		
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
 			// The class 'Utils' provides some helper methods for this.
 			// PS: Customize style for <td> if necessary.
+			case "created": return "<td>" + set.getString(columnName) + "</td>";
 			case "name": return "<td>" + set.getString(columnName) + "</td>";
+			case "modified": return "<td>" + set.getString(columnName) + "</td>";
+			case "id": return "<td>" + set.getString(columnName) + "</td>";
 			case "value": return "<td>" + set.getString(columnName) + "</td>";
 			default: return "<td>"+set.getObject(columnName)+"</td>";
 		}
 	}
 
-	@Override
-	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("administrator");
-	}
-	
 	@Override
 	public Class<?> getBeanClass() {
 		return Property.class;

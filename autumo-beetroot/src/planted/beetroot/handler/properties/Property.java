@@ -11,8 +11,8 @@ import ch.autumo.beetroot.Entity;
 public class Property implements Entity {
 
     private static final long serialVersionUID = 1L;
-    
-	private java.sql.Timestamp created;
+	
+    private java.sql.Timestamp created;
 
     public java.sql.Timestamp getCreated() {
         return created;

@@ -121,10 +121,21 @@ public class ResetHandler extends BaseHandler {
 		String baseUrl = ConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
 		String baseUrlPort = ConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
 		String link = null;
-		if (baseUrlPort != null)
-			link = baseUrl + ":" + baseUrlPort + "/users/change?token=" + token;
-		else
-			link = baseUrl + "/users/change?token=" + token;
+		
+		String lang = userSession.getUserLang();
+		
+		if (baseUrlPort != null) {
+			if (super.insertServletNameInTemplateRefs)
+				link = baseUrl + ":" + baseUrlPort + "/" + super.servletName + "/" + lang + "/users/change?token=" + token;
+			else
+				link = baseUrl + ":" + baseUrlPort + "/" + lang + "/users/change?token=" + token;
+		}
+		else {
+			if (super.insertServletNameInTemplateRefs)
+				link = baseUrl + "/" + super.servletName + "/" + lang + "/users/change?token=" + token;
+			else
+				link = baseUrl + "/" + lang + "/users/change?token=" + token;
+		}
 
 		final Map<String, String> variables = new HashMap<String, String>();
 		

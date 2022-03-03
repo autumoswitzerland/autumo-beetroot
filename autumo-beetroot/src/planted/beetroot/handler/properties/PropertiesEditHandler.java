@@ -3,7 +3,6 @@
  */
 package planted.beetroot.handler.properties;
 
-import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultEditHandler;
 
 /**
@@ -24,11 +23,6 @@ public class PropertiesEditHandler extends DefaultEditHandler {
 		return PropertiesIndexHandler.class;
 	}
 
-	@Override
-	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("administrator");
-	}
-	
 	@Override
 	public Class<?> getBeanClass() {
 		return Property.class;

@@ -336,7 +336,7 @@ public class Plant {
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/view\", "+fertilizer.upperEntityPlural+"ViewHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/edit\", "+fertilizer.upperEntityPlural+"EditHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/add\", "+fertilizer.upperEntityPlural+"AddHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
-				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/delete\", DefaultDeleteHandler.class, \""+fertilizer.lowerEntityPlural+"\")\n"
+				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/delete\", "+fertilizer.upperEntityPlural+"DeleteHandler.class, \""+fertilizer.lowerEntityPlural+"\")\n"
 				+ "");
     	
     }

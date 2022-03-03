@@ -1789,16 +1789,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (msg == null)
 			msg = "";
 		
-		String sn = "";
+		String sn = "/";
 		if (insertServletNameInTemplateRefs)
-			sn = servletName+"/";
+			sn = "/" + servletName + "/";
 		
 		String refreshText = 
 				  "<!DOCTYPE html>\n"
 				+ "<html lang=\"en\">\n"
 				+ "<head>\n"
 				+ "	<meta charset=\"utf-8\">\n"
-				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=/"+userSession.getUserLang()+"/"+sn+getDefaultHandlerEntity()+"/index"+msg+"\" />\n"
+				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + getDefaultHandlerEntity() + "/index"+msg+"\" />\n"
 				+ "</head>\n"
 				+ "</html>\n"
 				+ "";

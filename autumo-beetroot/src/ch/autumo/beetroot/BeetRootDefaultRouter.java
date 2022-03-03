@@ -30,13 +30,13 @@
  */
 package ch.autumo.beetroot;
 
-import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.ExampleDownloadHandler;
 import ch.autumo.beetroot.handler.ExampleUploadHandler;
 import ch.autumo.beetroot.handler.HomeHandler;
 import ch.autumo.beetroot.handler.NotImplementedHandler;
 import ch.autumo.beetroot.handler.tasks.TasksAddHandler;
+import ch.autumo.beetroot.handler.tasks.TasksDeleteHandler;
 import ch.autumo.beetroot.handler.tasks.TasksEditHandler;
 import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
 import ch.autumo.beetroot.handler.tasks.TasksViewHandler;
@@ -46,10 +46,12 @@ import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.users.ResetHandler;
 import ch.autumo.beetroot.handler.users.SettingsHandler;
 import ch.autumo.beetroot.handler.users.UsersAddHandler;
+import ch.autumo.beetroot.handler.users.UsersDeleteHandler;
 import ch.autumo.beetroot.handler.users.UsersEditHandler;
 import ch.autumo.beetroot.handler.users.UsersIndexHandler;
 import ch.autumo.beetroot.handler.users.UsersViewHandler;
 import planted.beetroot.handler.properties.PropertiesAddHandler;
+import planted.beetroot.handler.properties.PropertiesDeleteHandler;
 import planted.beetroot.handler.properties.PropertiesEditHandler;
 import planted.beetroot.handler.properties.PropertiesIndexHandler;
 import planted.beetroot.handler.properties.PropertiesViewHandler;
@@ -118,7 +120,7 @@ public class BeetRootDefaultRouter implements Router {
 			new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
 			new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
 			new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
-			new Route("/:lang/tasks/delete", DefaultDeleteHandler.class, "tasks"),
+			new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks"),
 			
 			/** Users */
 			new Route("/:lang/users", UsersIndexHandler.class, "users"),
@@ -126,7 +128,7 @@ public class BeetRootDefaultRouter implements Router {
 			new Route("/:lang/users/view", UsersViewHandler.class, "users"),
 			new Route("/:lang/users/edit", UsersEditHandler.class, "users"),
 			new Route("/:lang/users/add", UsersAddHandler.class, "users"),
-			new Route("/:lang/users/delete", DefaultDeleteHandler.class, "users"),
+			new Route("/:lang/users/delete", UsersDeleteHandler.class, "users"),
 			new Route("/:lang/users/login", LoginHandler.class, "login"),
 			new Route("/:lang/users/logout", LogoutHandler.class, "login"),
 			new Route("/:lang/users/reset", ResetHandler.class, "reset"),
@@ -138,7 +140,7 @@ public class BeetRootDefaultRouter implements Router {
 		    new Route("/:lang/properties/view", PropertiesViewHandler.class, "properties"),
 		    new Route("/:lang/properties/edit", PropertiesEditHandler.class, "properties"),
 		    new Route("/:lang/properties/add", PropertiesAddHandler.class, "properties"),
-		    new Route("/:lang/properties/delete", DefaultDeleteHandler.class, "properties")
+		    new Route("/:lang/properties/delete", PropertiesDeleteHandler.class, "properties")
 		};
 	}
 	
