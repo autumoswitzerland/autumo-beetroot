@@ -255,7 +255,19 @@ public class DefaultEditHandler extends BaseHandler {
 				}
 				result += "</select>";
 				
-			} else
+			} else if (this.isSelect(columnName)) {
+				
+				final String entries[] = this.getSelectValues(columnName);
+				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
+				for (int i = 0; i < entries.length; i++) {
+					if (val.equals(entries[i]))
+						result += "    <option value=\""+entries[i]+"\" selected>"+entries[i]+"</option>\n";
+					else
+						result += "    <option value=\""+entries[i]+"\">"+entries[i]+"</option>\n";
+				}
+				result += "</select>";				
+				
+			} else {
 			
 				if (nullable == ResultSetMetaData.columnNoNulls) {
 					
@@ -269,13 +281,33 @@ public class DefaultEditHandler extends BaseHandler {
 					result += "<input type=\""+inputType+"\" name=\""+columnName+"\"\n";
 					result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
 				}
+			}
 		}
 		
 		
 		result += "</div>\n";
 		return result;
 	}
+
+	/**
+	 * Is this column a HTML select field?
+	 * 
+	 * @param columnName column name
+	 * @returntruew if so
+	 */
+	protected boolean isSelect(String columnName) {
+		return false;
+	}
 	
+	/**
+	 * Get values for column name
+	 * @param columnName column name
+	 * @return select vaues
+	 */
+	protected String[] getSelectValues(String columnName) {
+		return null;
+	}
+
 	/**
 	 * Format value for GUI.
 	 * 

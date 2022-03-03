@@ -186,7 +186,7 @@ beetRoot can be run within two modes:
 
 2. Servlet-container:
 
-	Throw `beetroot.war` into tomcat `webapps/` and throw `beetroot-jetty.war` into jetty's `webapps/` folder. Fire it up and surf to http://localhost:8080/beetroot. Configure your containers as you wish. We recommend running the beetroot webapp extracted, so any change on the HTML templates, the model configuration (`columns.cfg` for each entity) can be made on-the-fly.
+	Throw `beetroot.war` into tomcat `webapps/` and throw `beetroot-jetty.war` into jetty's `webapps/` folder. Fire it up and surf to http://localhost:8080/beetroot. Configure your containers as you wish. We recommend running the beetroot webapp extracted, so any change on the HTML templates and the model configuration (`columns.cfg` for each entity) can be made on-the-fly.
 
 If you want to keep everything under control use the archive `autumo-beetRoot-web-x.y.z.zip`.
 
