@@ -277,7 +277,8 @@ public class BeetRootHTTPSession extends HTTPSession {
 		try {
 			parts = request.getParts();
 		} catch (Exception e) {
-			throw new ResponseException(Status.INTERNAL_ERROR, "Can't retrieve file upload part(s) from request!");
+			LOG.error("Can't retrieve file upload part(s) from request!", e);
+			throw new ResponseException(Status.INTERNAL_ERROR, "Can't retrieve file upload part(s) from request!", e);
 		}
     	
 		LOOP: for (Part part : parts) {
