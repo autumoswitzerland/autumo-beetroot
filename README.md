@@ -383,7 +383,7 @@ For generated handlers (with the CRUD generator) this is usually not necessary, 
 
 	@Override
 	public  String getResource() {
-		return "web/html/:lang/"+entity+"/index.html";
+	    return "web/html/:lang/"+entity+"/index.html";
 	}
 
 If your handlers need customization, just overwrite this method. As you can see, here the translation of the requested URL takes place and points to the `web/html`-directory structure!
