@@ -288,9 +288,15 @@ We suggest to keep your original generated HTML templates and model configuratio
 
 The model configuration `columns.cfg` does the following for every entity:
 
-- It defines what columns you see for every view (add, edit, view/single-record, index/list).
+- It defines what columns you see for every view (add, edit, view/single-record, index/list). See existing files for sample entities `Task` and/or `User`.
 
-- IMPORTANT: It defines which columns are UNIQUE in the database!
+- It also defines which columns are UNIQUE in the database by defining them with the key `unique`, e.g.:
+
+	`unique=name, path`
+	
+- Furthermore, you can define transient values that are nor read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
+
+	`transient=status`
 
 
 Your TODO's are the following after generating:
@@ -366,7 +372,7 @@ Let's have a look at some routes:
 	new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
 	new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
 	new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
-	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks"),
+	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks")
 
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
