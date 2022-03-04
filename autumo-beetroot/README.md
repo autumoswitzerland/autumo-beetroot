@@ -425,7 +425,7 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 	ch.autumo.beetroot.LEVEL=INFO
 
 
-**NOTE**: All logging levels are set to `INFO? in the beginning!
+**NOTE**: All logging levels are set to `INFO` in the beginning!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
