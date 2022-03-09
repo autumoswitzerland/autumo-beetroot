@@ -179,7 +179,7 @@ public class ChangeHandler extends BaseHandler {
 			if (pass != null && pass.length() != 0) { // && suserid != null && suserid.length() != 0) {
 				
 				if (ConfigurationManager.getInstance().getYesOrNo("db_pw_encoded")) {
-					pass = Utils.encodePassword(pass, SecureApplicationHolder.getInstance().getSecApp());
+					pass = Utils.encode(pass, SecureApplicationHolder.getInstance().getSecApp());
 				};
 				
 				final Session s = session.getUserSession();

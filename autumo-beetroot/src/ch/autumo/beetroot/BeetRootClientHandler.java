@@ -86,7 +86,7 @@ public class BeetRootClientHandler extends ClientHandler {
                 LOG.error("Communication with the client broken, or an bug in the handler code", e);
             }
         } finally {
-        	NanoHTTPD.safeClose(this.nanoAcceptSocket);
+            NanoHTTPD.safeClose(outputStream);
         	NanoHTTPD.safeClose(this.nanoInputStream);
         	NanoHTTPD.safeClose(this.nanoAcceptSocket);
         	

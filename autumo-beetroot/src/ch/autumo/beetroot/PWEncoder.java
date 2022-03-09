@@ -82,7 +82,7 @@ public class PWEncoder {
 		String encoded = null;
 		try {
 				
-			encoded = Utils.encodePassword(data, app);
+			encoded = Utils.encode(data, app);
 				
 		} catch (UtilsException e) {
 			System.err.println("Couldn't encode!");

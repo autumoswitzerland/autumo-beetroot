@@ -697,15 +697,15 @@ public class Utils {
 
 	/**
 	 * 
-	 * Encode password for DB and config. It is the algorithm 3, see 'encoder.sh' from ifaceX.
+	 * Encode data. It is the algorithm 3, see 'encoder.sh' from ifaceX.
 	 * 
-	 * @param pw password
+	 * @param data data
 	 * @param secureApplication secure application
 	 * @return encoded PW
 	 * @throws UtilsException
 	 */
-	public static String encodePassword(String pw, SecureApplication secureApplication) throws UtilsException {
-		return encodeBase64_PBE_MD5_DES(pw, secureApplication);
+	public static String encode(String data, SecureApplication secureApplication) throws UtilsException {
+		return encodeBase64_PBE_MD5_DES(data, secureApplication);
 	}
 	
 	private static String encodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {
@@ -732,15 +732,15 @@ public class Utils {
 
 	/**
 	 * 
-	 * Decode password for DB and config. It is the algorithm 3, see 'encoder.sh' from ifaceX.
+	 * Decode data. It is the algorithm 3, see 'encoder.sh' from ifaceX.
 	 * 
-	 * @param pw password
+	 * @param data data
 	 * @param secureApplication secure application
 	 * @return decoded PW
 	 * @throws UtilsException
 	 */
-	public static String decodePassword(String pw, SecureApplication secureApplication) throws UtilsException {
-		return decodeBase64_PBE_MD5_DES(pw, secureApplication);
+	public static String decode(String data, SecureApplication secureApplication) throws UtilsException {
+		return decodeBase64_PBE_MD5_DES(data, secureApplication);
 	}
 	
 	private static String decodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {

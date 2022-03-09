@@ -42,7 +42,7 @@ public class Constants {
 	/**
 	 * App version.
 	 */
-	protected static final String APP_VERSION = "1.2.0";
+	public static final String APP_VERSION = "1.2.0";
 	
 	/**
 	 * Initialize mime types registry.
@@ -79,6 +79,11 @@ public class Constants {
 	 * Admin server/shutdown port.
 	 */
 	public static final String KEY_ADMIN_PORT = "admin_port";
+
+	/**
+	 * Admin server/shutdown host.
+	 */
+	public static final String KEY_ADMIN_HOST = "admin_host";
 	
 	/**
 	 * Admin server/shutdown port.

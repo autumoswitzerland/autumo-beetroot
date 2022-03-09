@@ -45,17 +45,15 @@ with third parties: All licenses are covered by the license for this product (se
 -	Library:	NanoHTTPD, Nanolets
 	License:	3-Clause BSD License
 	Link:		https://opensource.org/licenses/BSD-3-Clause
-
+	
 -	Library:	Jakarta Activation API
 	License:	Eclipse Distribution License - v 1.0
 	Link:		https://projects.eclipse.org/content/eclipse-distribution-license-1.0-bsd
 
--	Library:	Jakarta Mail API
-	Licenses:	Eclipse Distribution License - v 1.0
-				Eclipse Public License 2.0
+-	Library:	Jakarta Servlet API
+	Licenses:	Eclipse Public License 2.0
 				(Secondary) GNU General Public License, version 2 with the GNU Classpath Exception
-	Links:		https://projects.eclipse.org/content/eclipse-distribution-license-1.0-bsd
-				https://projects.eclipse.org/license/epl-2.0
+	Links:		https://projects.eclipse.org/license/epl-2.0
 				https://projects.eclipse.org/license/secondary-gpl-2.0-cp
 
 -	Library:	The Checker Qualifiers

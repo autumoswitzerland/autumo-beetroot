@@ -500,7 +500,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			val = Utils.escapeValuesForDb(val);
 			
 			if (dbPwEnc && col[0].equals("password")) {
-				val = Utils.encodePassword(val, SecureApplicationHolder.getInstance().getSecApp());
+				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
 			}
 			
 			if (val.equalsIgnoreCase("true")) {
@@ -574,7 +574,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			val = Utils.escapeValuesForDb(val);
 			
 			if (dbPwEnc && col[0].equals("password")) {
-				val = Utils.encodePassword(val, SecureApplicationHolder.getInstance().getSecApp());
+				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
 			}
 			
 			if (val.equalsIgnoreCase("true")) {
@@ -1321,6 +1321,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						filePath = "/" + resource;
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
 					} catch (IOException e1) {
+						LOG.error("No resource has been found for '"+filePath+"' after trying to load it differently! "
+								+ "This will lead to an exception and you quite surely missed to add this resource to you app.");
 						tryFurther = false;
 					}
 				}				

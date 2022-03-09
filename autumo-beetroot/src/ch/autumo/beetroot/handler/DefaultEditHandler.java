@@ -221,7 +221,7 @@ public class DefaultEditHandler extends BaseHandler {
 		// we have to decode the password for edit, even it is obfuscted by stars
 		// -> if the user presses save it would be double-encoded otherwise!
 		if (pwFromDb && inputType.equals("password")) {
-			val = Utils.decodePassword(val, SecureApplicationHolder.getInstance().getSecApp());
+			val = Utils.decode(val, SecureApplicationHolder.getInstance().getSecApp());
 		}
 		
 		result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n"; 

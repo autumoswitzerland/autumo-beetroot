@@ -289,7 +289,7 @@ public class ConfigurationManager {
 		if (v != null)
 			v = v.trim();
 		
-		return Utils.decodePassword(v, app);
+		return Utils.decode(v, app);
 	}
 	
 	/**

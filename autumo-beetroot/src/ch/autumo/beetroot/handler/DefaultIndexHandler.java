@@ -310,7 +310,6 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		final Object o = set.getObject(idx);
 		
-		//TODO
 		String val = null;
 		if (o == null || o.toString().equals("null"))
 			val = "";

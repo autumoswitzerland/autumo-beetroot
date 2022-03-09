@@ -28,45 +28,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
-
-import java.io.IOException;
+package ch.autumo.beetroot.server;
 
 /**
- *
- * Utils exception.
- *
+ * Stop answer - only server-side internally used as a marker interface.
  */
-public class UtilsException extends IOException {
-
-	private static final long serialVersionUID = 1997384039883172508L;
-	
-	private int code;
-	private String rawMessage;
-
-	public UtilsException(String message) {
-		super(message);
-	}
-
-	public UtilsException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public UtilsException(String message, String rawMessage) {
-		super(message);
-		this.rawMessage = rawMessage;
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public String getRawMessage() {
-		return rawMessage;
-	}
-
-	public void setRawMessage(String rawMessage) {
-		this.rawMessage = rawMessage;
-	}
-	
+public class StopAnswer extends ClientAnswer {
 }

@@ -498,7 +498,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            		
 					} catch (SQLException e) {
 						
-						final String err = "Server Internal Error - DB Exception: " + e.getMessage();
+						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
 						LOG.error(err, e);
 						
 						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
@@ -523,7 +523,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						
 						try {
 							
-							postParamPass = Utils.encodePassword(postParamPass, SecureApplicationHolder.getInstance().getSecApp());
+							postParamPass = Utils.encode(postParamPass, SecureApplicationHolder.getInstance().getSecApp());
 							
 						} catch (UtilsException e) {
 							
