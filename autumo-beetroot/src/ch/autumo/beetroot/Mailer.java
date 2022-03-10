@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-import jakarta.servlet.ServletContext;
+
 
 /**
  * Mailer.

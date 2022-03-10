@@ -54,6 +54,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
+
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.IStatus;
@@ -78,7 +80,6 @@ import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import jakarta.activation.MimeType;
-import jakarta.servlet.ServletContext;
 
 /**
  * Base handler.

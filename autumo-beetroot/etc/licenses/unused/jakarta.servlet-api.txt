@@ -1,4 +1,13 @@
 
+
+-	Library:	Jakarta Servlet API
+	Licenses:	Eclipse Public License 2.0
+				(Secondary) GNU General Public License, version 2 with the GNU Classpath Exception
+	Links:		https://projects.eclipse.org/license/epl-2.0
+				https://projects.eclipse.org/license/secondary-gpl-2.0-cp
+
+----
+
 	Eclipse Public License - v 2.0
 
         THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE

@@ -434,7 +434,7 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-**NOTE**: Due to the licenses, we don't distribute or create a dependency to Java Mail implementations behind the Jakarta Mail and Activation API. You have to download them by yourself e.g. through maven-dependencies or here: [Eclipse Jakarta Mail](https://jakarta.ee/specifications/mail).
+**NOTE**: Due to the licenses, we don't distribute or create a dependency to Java Mail implementations behind the Jakarta Mail and Activation API. You have to download them by yourself e.g. through maven-dependencies or here: [Eclipse Jakarta Mail](https://jakarta.ee/specifications/mail). You basically need to add the libraries `jakarta.activation-x.y.z.jar` and `jakarta.mail-x.y.z.jar`.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

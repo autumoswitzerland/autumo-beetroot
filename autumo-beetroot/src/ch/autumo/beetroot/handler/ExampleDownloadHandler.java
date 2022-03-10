@@ -32,13 +32,14 @@ package ch.autumo.beetroot.handler;
 
 import java.io.File;
 
+import javax.servlet.ServletContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import jakarta.servlet.ServletContext;
 
 /**
  * Default file download handler for 'web/html/files/view.html' templates.
