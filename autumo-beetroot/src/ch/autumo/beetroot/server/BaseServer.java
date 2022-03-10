@@ -396,12 +396,12 @@ public abstract class BaseServer {
 			
 		} catch (UnknownHostException e) {
 			
-			LOG.error(command.getServerName() + " admin server cannot be contacted! Host seems to be unknown or cannot be resolved. [UHE]", e);
+			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! Host seems to be unknown or cannot be resolved. [UHE]", e);
 			throw e;
 			
 		} catch (IOException e) {
 			
-			LOG.error(command.getServerName() + " admin server cannot be contacted! PS: Is it really running? [IO]", e);
+			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! PS: Is it really running? [IO]", e);
 			throw e;
 			
 		} finally {
