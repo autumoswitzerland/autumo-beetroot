@@ -180,7 +180,7 @@ then
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail*.jar
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.activation*.jar
-	rm autumo-beetRoot-$VERSION/WEB-INF/lib/javax.servlet*.jar
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet*.jar
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/mysql*.jar
 	cp ../lib/jakarta.activation-api*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
 	
