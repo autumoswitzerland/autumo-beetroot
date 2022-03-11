@@ -80,10 +80,7 @@ public class LanguageManager {
         	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
         	if (context != null) {
         		
-    			String cp = context.getRealPath("/web/lang");
-    			if (!cp.endsWith(Utils.FILE_SEPARATOR))
-    				cp += Utils.FILE_SEPARATOR;
-
+    			final String cp = Utils.getRealPath(context) + "web/lang/";
         		
         		File file = new File(cp);
         		URI uri = file.toURI();

@@ -68,12 +68,8 @@ public class BeetRootServlet extends HttpServlet {
 
 		super.init(config);
 		
-		String webAppRoot = config.getServletContext().getRealPath("/");
-		if (!webAppRoot.endsWith("/")) {
-			webAppRoot += "/";
-		}
-		String webAppRootWithoutSlash = webAppRoot.substring(0, webAppRoot.length() - 1);
-		
+		final String webAppRoot = Utils.getRealPath(config.getServletContext());
+		final String webAppRootWithoutSlash = webAppRoot.substring(0, webAppRoot.length() - 1);
 		
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 		final String configFilePath = config.getInitParameter("beetRootConfig");

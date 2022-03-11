@@ -60,7 +60,7 @@ public class Plant {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(Plant.class.getName());
 
-	public static final String RELEASE = "1.2.0";
+	public static final String RELEASE = Constants.APP_VERSION;
 
 	private static final String CR = Utils.LINE_SEPARATOR;
 	

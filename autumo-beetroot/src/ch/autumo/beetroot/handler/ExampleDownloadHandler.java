@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.Utils;
 
 /**
  * Default file download handler for 'web/html/files/view.html' templates.
@@ -86,7 +87,7 @@ public class ExampleDownloadHandler extends BaseHandler {
 			if (context != null) {
 				// NOTE: This example will not work in jetty; we would 
 				// need to load the resource from the war archive 
-				f = new File(context.getRealPath("/") + requestedFilename);
+				f = new File(Utils.getRealPath(context) + requestedFilename);
 			}
 			else
 				f = new File(requestedFilename);

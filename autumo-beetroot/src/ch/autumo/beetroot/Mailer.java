@@ -85,9 +85,7 @@ public class Mailer {
 		String cp = "";
 		if (context != null) {
 			
-			cp = context.getRealPath("/");
-			if (!cp.endsWith(Utils.FILE_SEPARATOR))
-				cp += Utils.FILE_SEPARATOR;
+			cp = Utils.getRealPath(context);
 
 			f = new File(cp + file);
 			if (!f.exists()) {
