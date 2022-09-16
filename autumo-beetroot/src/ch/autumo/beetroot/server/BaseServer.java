@@ -54,7 +54,6 @@ import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.UtilsException;
-import ch.autumo.beetroot.server.BeetRootServer.Help;
 
 /**
  * Base server.
@@ -118,19 +117,19 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
     	
 		if (params.length == 0 || (params[0].equals("-help") || params[0].equals("-h"))) {
-			System.out.println(Help.TEXT);
+			System.out.println(this.getHelpText());
 			Utils.normalExit();
 		}
 		
 		// check args length
 		if (params.length < 1) {
-			System.out.println(Help.TEXT);
+			System.out.println(this.getHelpText());
 			Utils.normalExit();
 		}
 
 		// check op
 		if (!(params[0].equalsIgnoreCase("start") || params[0].equalsIgnoreCase("stop"))) {
-			System.out.println(Help.TEXT);
+			System.out.println(this.getHelpText());
 			System.out.println("["+ name +"] Valid server operations are 'start' or 'stop'!");
 			System.out.println("");
 			Utils.normalExit();
@@ -257,6 +256,15 @@ public abstract class BaseServer {
 		}		
 	}
 
+	/**
+	 * Get argument help text.
+	 * 
+	 * @return argument help text
+	 */
+	public String getHelpText() {
+		return Help.TEXT;
+	}
+	
 	/**
 	 * Get server name.
 	 * 
@@ -705,6 +713,51 @@ public abstract class BaseServer {
 			}			
 		}
 		
+	}
+
+	/**
+	 * Help class for shell script.
+	 */
+	protected static final class Help {
+		
+		public static final String TEXT =
+				"" 																						+ Utils.LINE_SEPARATOR +
+				"" 																						+ Utils.LINE_SEPARATOR +
+				"beetRoot Server" + Constants.APP_VERSION 												+ Utils.LINE_SEPARATOR +
+				"---------------------" 																+ Utils.LINE_SEPARATOR +
+    			"Usage:"																				+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"  Here's a detailed usage of the java-process, but you should use the server-script" 	+ Utils.LINE_SEPARATOR +
+    			"  in the root-directory, which takes the argument 'start' or 'stop'."					+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"    beetroot.sh start|stop"				 											+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"  Without script - the Java processes:" 												+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"    java -DROOTPATH=\"<root-path>\" \\"												+ Utils.LINE_SEPARATOR +
+    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer start|stop"		+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"      or" 																				+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"    java -DROOTPATH=\"<root-path>\" \\"												+ Utils.LINE_SEPARATOR +
+    			"         -Dlog4j.configuration=file:<log-cfg-path>/server-logging.cfg \\"		 		+ Utils.LINE_SEPARATOR +
+    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer start|stop"		+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"      <root-path>      :  Root directory where ifaceX is installed." 					+ Utils.LINE_SEPARATOR +
+    			"                          Defined in run-script (Variable ROOT)."						+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"      <classpath>      :  The Java classpath."								 			+ Utils.LINE_SEPARATOR +
+    			"                          Is build by the run-script."									+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"  or" 																					+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"    beetroot.sh -help" 																+ Utils.LINE_SEPARATOR +
+    			"    beetroot.sh -h" 																	+ Utils.LINE_SEPARATOR +
+    			"" 																						+ Utils.LINE_SEPARATOR +
+    			"";    	
 	}
 	
 }

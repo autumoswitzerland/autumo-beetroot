@@ -33,9 +33,6 @@ package ch.autumo.beetroot.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.Utils;
-
 /**
  * beetRoot stand-alone server.
  */
@@ -100,51 +97,6 @@ public class BeetRootServer extends BaseServer {
 		
 		// Go !
     	new BeetRootServer(args);
-	}
-	
-	/**
-	 * Help class for shell script.
-	 */
-	protected static final class Help {
-		
-		public static final String TEXT =
-				"" 																						+ Utils.LINE_SEPARATOR +
-				"" 																						+ Utils.LINE_SEPARATOR +
-				"beetRoot Server" + Constants.APP_VERSION 												+ Utils.LINE_SEPARATOR +
-				"---------------------" 																+ Utils.LINE_SEPARATOR +
-    			"Usage:"																				+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"  Here's a detailed usage of the java-process, but you should use the server-script" 	+ Utils.LINE_SEPARATOR +
-    			"  in the root-directory, which takes the argument 'start' or 'stop'."					+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    server.sh start|stop"				 												+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"  Without script - the Java processes:" 												+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    java -DROOTPATH=\"<root-path>\" \\"												+ Utils.LINE_SEPARATOR +
-    			"         -cp \"<classpath>\" ch.autumo.ifacex.Server start|stop"						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"      or" 																				+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    java -DROOTPATH=\"<root-path>\" \\"												+ Utils.LINE_SEPARATOR +
-    			"         -Dlog4j.configuration=file:<log-cfg-path>/server-logging.cfg \\"		 		+ Utils.LINE_SEPARATOR +
-    			"         -cp \"<classpath>\" ch.autumo.ifacex.Server start|stop"						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"      <root-path>      :  Root directory where ifaceX is installed." 					+ Utils.LINE_SEPARATOR +
-    			"                          Defined in run-script (Variable ROOT)."						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"      <classpath>      :  The Java classpath."								 			+ Utils.LINE_SEPARATOR +
-    			"                          Is build by the run-script."									+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"  or" 																					+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    beetroot.sh -help" 																+ Utils.LINE_SEPARATOR +
-    			"    beetroot.sh -h" 																	+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"";    	
 	}
 
 }

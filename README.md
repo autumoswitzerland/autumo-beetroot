@@ -186,6 +186,8 @@ beetRoot can be run within two modes:
 	- The stand-alone server with its resources is packed into `autumo-beetRoot-x.y.z.zip`.
 
 	- Use `beetRoot.sh stop` / `beetRoot.bat stop` to properly stop the stand-alone server.
+	
+	- **NOTE**: Due to the licenses, we don't distribute the Java Servlet API. You have to download this API yourself e.g. through maven-dependencies or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar.
 
 2. Servlet-container:
 
