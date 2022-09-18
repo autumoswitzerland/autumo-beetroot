@@ -324,7 +324,11 @@ public abstract class BaseServer {
 				
 				webServer.start(false);
 				
-				LOG.info("HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
+				if (https)
+					LOG.info("HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
+				else
+					LOG.info("HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
+					
 				if (LOG.isErrorEnabled())
 					System.out.println("["+ name +"] HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
 				
