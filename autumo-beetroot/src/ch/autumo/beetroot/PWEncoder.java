@@ -120,7 +120,7 @@ public class PWEncoder {
 				"Usage:" 																			+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
-				"  pwencoder.sh|.bat \"<password to enncode>\"" 									+ Utils.LINE_SEPARATOR +
+				"  pwencoder.sh|.bat \"<password to encode>\""	 									+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Important notes:" 																	+ Utils.LINE_SEPARATOR +

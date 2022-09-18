@@ -291,6 +291,24 @@ public abstract class BaseServer {
 				if (LOG.isErrorEnabled())
 					System.out.println("["+ name +"] Starting internal web server...");
 				
+				try {
+					Class.forName("javax.servlet.ServletOutputStream");
+				} catch (ClassNotFoundException e1) {
+					LOG.error("Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
+					System.err.println("["+ name +"] Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
+					System.err.println("["+ name +"] Shutting down!");
+					Utils.fatalExit();
+				}
+				
+				try {
+					Class.forName("jakarta.mail.Authenticator");
+				} catch (ClassNotFoundException e1) {
+					LOG.warn("NOTE: It seems you haven't installed Jakarta Mail; you'll not be able to reset your password!");
+					LOG.warn("      Check documentation for installing the Jakarta Mail libs.");
+					//System.out.println("["+ name +"] NOTE: It seems you haven't installed Jakarta Mail; you'll not be able to reset your password!");
+					//System.out.println("["+ name +"]       Check documentation for installing the Jakarta Mail libs.");
+				}				
+				
 				webServer = new BeetRootWebServer(portWebServer);
 				
 				final boolean https = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
