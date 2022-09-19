@@ -393,7 +393,7 @@ public abstract class BaseServer {
 			LOG.error("Send STOP server command failed!", e);
 		}
 	}
-	
+
 	/**
 	 * Send a server command client side.
 	 * 
@@ -402,6 +402,18 @@ public abstract class BaseServer {
 	 * @throws Excpetion
 	 */
 	public static ClientAnswer sendServerCommand(ServerCommand command) throws Exception {
+		return sendServerCommand(command, 5000);
+	}
+	
+	/**
+	 * Send a server command client side.
+	 * 
+	 * @param command server command
+	 * @param command timeout socket timeout in ms
+	 * @return client answer
+	 * @throws Excpetion
+	 */
+	public static ClientAnswer sendServerCommand(ServerCommand command, int timeout) throws Exception {
 		
 		//send signal and end !
 		Socket socket = null;
@@ -410,6 +422,7 @@ public abstract class BaseServer {
 		try {
 			socket = new Socket(command.getHost(), command.getPort());
 			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			socket.setSoTimeout(timeout);
 
 			output.writeInt(command.getDataLength());
 			final PrintWriter writer = new PrintWriter(output, true);
@@ -667,7 +680,7 @@ public abstract class BaseServer {
 	        catch (UtilsException e) {
 	        	
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
-				LOG.error("  -> Either the client's secret key seed is wrong or the server's configuration is set to encode server-client communication, but the client's isn't!");
+				LOG.error("  -> Either the secret key seed doesn't match on both sides or the server's configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
 				return;
 	        }	
