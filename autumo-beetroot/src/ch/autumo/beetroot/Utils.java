@@ -684,9 +684,19 @@ public class Utils {
 	}
 	
 	/**
-	 * Get a timestamp representation that can be stored in db.
+	 * Get a time-stamp representation that can be stored in DB.
 	 * 
-	 * @return timestamp string
+	 * Note that this code returns a 'to_timestamp'-call when you are using
+	 * an Oracle database, hence that value cannot be enclosed with
+	 * apostrophes '...'; in case of Oracle it looks like this:
+	 * 
+	 * "to_timestamp('2022-12-21 23:59:59.999', 'YYYY-MM-DD HH24:MI:SS.FF')"
+	 * 
+	 * and in case of all other databases:
+	 * 
+	 * "2022-12-21 23:59:59.999"
+	 * 
+	 * @return time-stamp a time-stamp representation that works with used DB
 	 */
 	public static String nowTimeStamp() {
 		

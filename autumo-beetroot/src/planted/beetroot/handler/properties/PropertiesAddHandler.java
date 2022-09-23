@@ -34,8 +34,15 @@ public class PropertiesAddHandler extends DefaultAddHandler {
 		// NOTE: Provide default values for fields that are NOT
 		// nullable and that aren't present in the add GUI!
 		
-		// We cannot use 'name' here, since it is used in the GUI!
-		// fields.put("name", "<DEFAULT-VALUE>");
+		// IMPORTANT: Don't put fields here, that are visible in the GUI!
+		
+		// EXAMPLES:
+		// We cannot use 'name' here, since it is used in the GUI, just for 
+		// demonstration:
+		// 		fields.put("name", "<DEFAULT-VALUE>");
+		// Further example with a non-existing field, you can use 
+		// 'NOW()' for time-stamps:
+		// 		fields.put("created", "NOW()");
 
 		return fields;
 	}
