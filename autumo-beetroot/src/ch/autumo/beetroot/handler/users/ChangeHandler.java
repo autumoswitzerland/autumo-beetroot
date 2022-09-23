@@ -120,7 +120,7 @@ public class ChangeHandler extends BaseHandler {
 			
 				LOG.debug("Reset token to lookup in DB: "+token);
 				
-				String stmtStr = "SELECT id, modified FROM users WHERE lasttoken='" + token + "';";
+				String stmtStr = "SELECT id, modified FROM users WHERE lasttoken='" + token + "'";
 				
 				set = stmt.executeQuery(stmtStr);
 				boolean found = set.next();

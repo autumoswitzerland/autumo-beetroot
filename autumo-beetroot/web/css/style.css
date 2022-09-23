@@ -231,7 +231,7 @@ h4 {
 	display: block;
 	max-width: 512px;
 	margin: 0 auto;
-	filter: brightness(90%);
+	filter: brightness(85%);
 	/* background-color: #ffffff; usually on */
 }
 .portfolio-box:hover {

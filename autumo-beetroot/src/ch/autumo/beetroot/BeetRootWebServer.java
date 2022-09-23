@@ -542,13 +542,20 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             			
             			userSession.setUserData(dbId, postParamUsername, dbRole, dbFirstName, dbLastName);
             			userSession.createIdPair(dbId, "users");
+
+					    try {
+	            			dbUserLang = DatabaseManager.getLanguage(dbId);
+	            	    	userSession.setUserLang(dbUserLang);
+						} catch (Exception e) {
+							LOG.error("Couldn't load user language from DB!", e);
+						}
             			
 			            loggedIn = true;
 			            
 					    try {
 							Utils.loadUserSettings(userSession);
 						} catch (SQLException e) {
-							LOG.error("Couldn't load user settings!", e);
+							LOG.error("Couldn't load user settings from DB!", e);
 						}
 			            
 			            try {
