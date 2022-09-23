@@ -33,8 +33,9 @@ public class PropertiesAddHandler extends DefaultAddHandler {
 		
 		// NOTE: Provide default values for fields that are NOT
 		// nullable and that aren't present in the add GUI!
-		fields.put("name", "<DEFAULT-VALUE>");
-		fields.put("id", "<DEFAULT-VALUE>");
+		
+		// We cannot use 'name' here, since it is used in the GUI!
+		// fields.put("name", "<DEFAULT-VALUE>");
 
 		return fields;
 	}

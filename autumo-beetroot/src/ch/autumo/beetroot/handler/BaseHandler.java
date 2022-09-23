@@ -503,26 +503,29 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (dbPwEnc && col[0].equals("password")) {
 				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
 			}
-			
+
+			// Informix wants 't' or 'f'
 			if (val.equalsIgnoreCase("true")) {
-				if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb()) {
-					val = "1";
-				}
+				val = "1";
 			}
 			if (val.equalsIgnoreCase("false")) {
-				if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb()) {
-					val = "0";
-				}
+				val = "0";
 			}
 			
 			// if there's really a column in the GUI that is mapped 
 			// to the db column 'created', overwrite it!
 			if (col[1].equals("created")) {
-				if (columns.size() == i)
-					clause += "'" + Utils.nowTimeStamp() + "'";
-				else
-					clause += "'" + Utils.nowTimeStamp() + "', ";
-				
+				if (DatabaseManager.getInstance().isOracleDb()) {
+					if (columns.size() == i)
+						clause += Utils.nowTimeStamp();
+					else
+						clause += Utils.nowTimeStamp() + ", ";
+				} else {
+					if (columns.size() == i)
+						clause += "'" + Utils.nowTimeStamp() + "'";
+					else
+						clause += "'" + Utils.nowTimeStamp() + "', ";
+				}
 				// continue here with for-loop. otherwise we would get errors!
 				continue LOOP;
 			}
@@ -578,15 +581,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
 			}
 			
+			// Informix wants 't' or 'f'
 			if (val.equalsIgnoreCase("true")) {
-				if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb()) {
-					val = "1";
-				}
+				val = "1";
 			}
 			if (val.equalsIgnoreCase("false")) {
-				if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb()) {
-					val = "0";
-				}
+				val = "0";
 			}
 
 			// Only the logged in user must be updated with new session data if data is changed
@@ -618,7 +618,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// And we assume the column exists as specified by design!
 		// But we don't update it, if the user choses to modify it by himself (GUI).
 		if (dbAutoMod && clause.indexOf("modified=") != 1) {
-			clause += ", modified='" + Utils.nowTimeStamp() + "'";
+			if (DatabaseManager.getInstance().isOracleDb())
+				clause += ", modified=" + Utils.nowTimeStamp() + "";
+			else
+				clause += ", modified='" + Utils.nowTimeStamp() + "'";
 		}
 		
 		return clause;
@@ -658,7 +661,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 					String val = session.getParms().get(uniqueFields[i]);
 					stmtStr += uniqueFields[i] + "='"+val+"'";
-					stmtStr += ";";
+					//NO SEMICOLON
+					//stmtStr += ";";
 					stmt = conn.createStatement();
 					// we only need the result set for the column meta data
 					stmt.setFetchSize(1);

@@ -487,7 +487,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						
 						conn = DatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
-	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname from users where username='"+postParamUsername+"';");
+						//NO SEMICOLON
+	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname from users where username='"+postParamUsername+"'");
 	            		
 	            		if (rs.next()) {
 	            			dbId = rs.getInt("id");

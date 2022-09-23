@@ -106,7 +106,10 @@ public class ResetHandler extends BaseHandler {
 			int userid = set.getInt(1);
 			token = GUIDGenerator.generate();
 			
-			stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
+			if (DatabaseManager.getInstance().isOracleDb())
+				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
+			else
+				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
 			stmt.executeUpdate(stmtStr);
 		
 		} finally {

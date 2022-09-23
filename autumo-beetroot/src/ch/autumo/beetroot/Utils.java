@@ -489,16 +489,12 @@ public class Utils {
 	public static String getBooleanDatabaseMappingValue(boolean value) {
 		
     	String val = null;
+    	
+    	// Informix uses 't' or 'f'
 		if (value) {
-			if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb())
-				val = "1";
-			else
-				val = "true";
+			val = "1";
 		} else {
-			if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb())
-				val = "0";
-			else 
-				val = "false";
+			val = "0";
 		}
 		return val;
 	}
@@ -530,6 +526,7 @@ public class Utils {
 	public static String getHtmlDivType(ResultSetMetaData rsmd, int idx, String columnName) throws SQLException {
 
 		int sqlType = rsmd.getColumnType(idx);
+		int prec = rsmd.getPrecision(idx);
 		
 		String divType = "text";
 		if (Utils.isSqlTextType(sqlType))
@@ -548,9 +545,16 @@ public class Utils {
 			divType = "password";
 		if (columnName.equals("email"))
 			divType = "email";
+
 		if (Utils.isSqlBooelanType(sqlType)) {
 			divType = "checkbox";
 		}		
+		
+		// oracle special case
+		if (DatabaseManager.getInstance().isOracleDb() && Utils.isSqlNumberType(sqlType) && prec == 1) {
+			divType = "checkbox";
+		}
+		
 		return divType;
 		
 		// Unused list:
@@ -580,6 +584,7 @@ public class Utils {
 		// But this is already sufficient for most cases
 		
 		int sqlType = rsmd.getColumnType(idx);
+		int prec = rsmd.getPrecision(idx);
 		
 		String inputType = "text";
 		if (Utils.isSqlTextType(sqlType))
@@ -598,9 +603,16 @@ public class Utils {
 			inputType = "password";
 		if (columnName.equals("email"))
 			inputType = "email";
+		
 		if (Utils.isSqlBooelanType(sqlType)) {
 			inputType = "checkbox";
 		}
+		
+		// oracle special case
+		if (DatabaseManager.getInstance().isOracleDb() && Utils.isSqlNumberType(sqlType) && prec == 1) {
+			inputType = "checkbox";
+		}
+		
 		return inputType;
 		
 		// Full list:
@@ -678,8 +690,17 @@ public class Utils {
 	 */
 	public static String nowTimeStamp() {
 		
+		String ts_str = null;
+		
 		final Timestamp ts = new Timestamp(System.currentTimeMillis());
-		return ts.toLocalDateTime().toString();
+		ts_str = ts.toLocalDateTime().toString();
+
+		if (DatabaseManager.getInstance().isOracleDb()) {
+			ts_str = ts_str.replace("T", " ");
+			ts_str = "to_timestamp('"+ts_str+"', 'YYYY-MM-DD HH24:MI:SS.FF')";
+		}
+		
+		return ts_str;
 	}
     
 	/**

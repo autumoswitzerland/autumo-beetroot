@@ -146,7 +146,8 @@ public class DefaultIndexHandler extends BaseHandler {
 			if (sortDir != null && sortDir.length() != 0)
 				stmtStr += " " + sortDir.toUpperCase();
 			
-			stmtStr += ";";
+			// NO SEMICOLON
+			//stmtStr += ";";
 			
 			final ResultSet set = stmt.executeQuery(stmtStr);
 			

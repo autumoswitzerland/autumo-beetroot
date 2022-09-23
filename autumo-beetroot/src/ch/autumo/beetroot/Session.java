@@ -149,8 +149,10 @@ public class Session implements Serializable {
 		this.set("userid", Integer.valueOf(id));
 		this.set("username", name);
 		this.set("userrole", role);
-		this.set("firstname", firstname);
-		this.set("lastname", lastname);
+		if (firstname != null && firstname.length() != 0)
+			this.set("firstname", firstname);
+		if (lastname != null && lastname.length() != 0)
+			this.set("lastname", lastname);
 	}
 
 	/**

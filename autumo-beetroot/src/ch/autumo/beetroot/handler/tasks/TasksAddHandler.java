@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.autumo.beetroot.DatabaseManager;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
 /**
@@ -66,8 +65,8 @@ public class TasksAddHandler extends DefaultAddHandler {
 			mand.put("laststatus", "true");
 		}
 		mand.put("lastexecuted", null);
-		mand.put("created", Utils.nowTimeStamp());
-		mand.put("modified", Utils.nowTimeStamp());
+		mand.put("created", "NOW()");
+		mand.put("modified", "NOW()");
 	    
 		return mand;
 	}

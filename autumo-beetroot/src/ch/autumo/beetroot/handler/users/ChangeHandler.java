@@ -86,7 +86,11 @@ public class ChangeHandler extends BaseHandler {
 				conn = DatabaseManager.getInstance().getConnection();
 				stmt = conn.createStatement();
 			
-				String stmtStr = "UPDATE users SET lasttoken='NONE', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
+				String stmtStr = null;
+				if (DatabaseManager.getInstance().isOracleDb())
+					stmtStr = "UPDATE users SET lasttoken='NONE', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
+				else
+					stmtStr = "UPDATE users SET lasttoken='NONE', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
 				stmt.executeUpdate(stmtStr);
 			
 			} finally {

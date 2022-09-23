@@ -39,6 +39,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
 import ch.autumo.beetroot.DatabaseManager;
@@ -55,6 +58,8 @@ import ch.autumo.beetroot.Utils;
  */
 public abstract class DefaultAddHandler extends BaseHandler {
 
+	private final static Logger LOG = LoggerFactory.getLogger(DefaultAddHandler.class.getName());
+	
 	public DefaultAddHandler(String entity) {
 		super(entity);
 	}
@@ -93,7 +98,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		final Connection conn = DatabaseManager.getInstance().getConnection();
 		final Statement stmt = conn.createStatement();
 		
-		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity + ";";
+		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
 		final ResultSet set = stmt.executeQuery(stmtStr); // call only for types, make this better!
 		
 		for (int i = 1; i <= columns().size(); i++) {
@@ -116,6 +121,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
+		PreparedStatement stmt2 = null;
 		ResultSet keySet = null;
 		int savedId = -1;
 		
@@ -142,8 +148,12 @@ public abstract class DefaultAddHandler extends BaseHandler {
 					val = obj.toString();
 				
 				if (val != null) {
-					if (val.equals("NOW()"))
-						values += ", '" + Utils.nowTimeStamp() + "'";
+					if (val.equalsIgnoreCase("NOW()")) {
+						if (DatabaseManager.getInstance().isOracleDb())
+							values += ", " + Utils.nowTimeStamp();
+						else
+							values += ", '" + Utils.nowTimeStamp() + "'";
+					}
 					else
 						values += ", '"+val+"'";
 				}
@@ -151,18 +161,39 @@ public abstract class DefaultAddHandler extends BaseHandler {
 					values += ", null";
 			}		
 			
-			stmt = conn.prepareStatement("INSERT INTO "+getEntity()+" (" + columns + ") VALUES (" + values + ");", Statement.RETURN_GENERATED_KEYS);
+			final String entity = getEntity();
+			
+			//NO SEMICOLON
+			stmt = conn.prepareStatement("INSERT INTO "+entity+" (" + columns + ") VALUES (" + values + ")", Statement.RETURN_GENERATED_KEYS);
 			stmt.executeUpdate();
-			
-			keySet = stmt.getGeneratedKeys();
-			boolean found = keySet.next();
-			if (!found) {
-				final Session userSession = session.getUserSession();
-				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.savedid", userSession));
+
+			// Get generated key
+			if (DatabaseManager.getInstance().isOracleDb()) {
+				
+				stmt2 = conn.prepareStatement("select "+entity+"_seq.currval from dual");
+				keySet = stmt2.executeQuery();
+				boolean found = keySet.next();
+				if (!found) {
+					final Session userSession = session.getUserSession();
+					return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.savedid", userSession));
+				}				
+
+				savedId = (int) keySet.getLong(1);
+				
+			} else {
+				
+				keySet = stmt.getGeneratedKeys();
+				boolean found = keySet.next();
+				if (!found) {
+					final Session userSession = session.getUserSession();
+					return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.savedid", userSession));
+				}				
+				
+				savedId = keySet.getInt(1);
 			}
-			
-			savedId = keySet.getInt(1);
 		
+			LOG.debug("Record '"+savedId+"' in '"+entity+"'.");
+			
 		} finally {
 			if (keySet != null)
 				keySet.close();
@@ -233,7 +264,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 		if (isCheck) {
 			
-			if (val.equals("true")) {
+			if (val.equals("true") || val.equals("1")) {
 				result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"true\" checked>\n";
 				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"true\" />";
 			}

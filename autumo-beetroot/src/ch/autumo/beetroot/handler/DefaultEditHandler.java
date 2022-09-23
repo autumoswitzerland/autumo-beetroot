@@ -228,7 +228,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		if (isCheck) {
 			
-			if (val.equals("true")) {
+			if (val.equals("true") || val.equals("1")) {
 				result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"true\" checked>\n";
 				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"true\" />";
 			}

@@ -33,7 +33,6 @@ package ch.autumo.beetroot.handler.users;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
 /**
@@ -59,8 +58,8 @@ public class UsersAddHandler extends DefaultAddHandler {
 		
 		final Map<String, Object> mand = new HashMap<String, Object>();
 		
-		mand.put("created",  Utils.nowTimeStamp());
-		mand.put("modified", Utils.nowTimeStamp());
+		mand.put("created",  "NOW()");
+		mand.put("modified", "NOW()");
 	    
 		return mand;
 	}
