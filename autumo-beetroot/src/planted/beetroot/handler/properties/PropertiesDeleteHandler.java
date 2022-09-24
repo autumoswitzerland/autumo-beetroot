@@ -4,6 +4,7 @@
 package planted.beetroot.handler.properties;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
@@ -31,6 +32,11 @@ public class PropertiesDeleteHandler extends DefaultDeleteHandler {
 		super.deleteData(session, id); // delete it in the database
 		
 		return null; // ok
+	}
+
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
 	
 }

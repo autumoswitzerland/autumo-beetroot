@@ -38,6 +38,7 @@ import java.util.Map;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.SecureApplicationHolder;
@@ -220,7 +221,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		// we have to decode the password for edit, even it is obfuscted by stars
 		// -> if the user presses save it would be double-encoded otherwise!
-		if (pwFromDb && inputType.equals("password")) {
+		if (pwFromDb && inputType.equals("password") && ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC)) {
 			val = Utils.decode(val, SecureApplicationHolder.getInstance().getSecApp());
 		}
 		

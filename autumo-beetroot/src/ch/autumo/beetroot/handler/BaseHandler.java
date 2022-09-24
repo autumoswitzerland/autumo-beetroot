@@ -114,6 +114,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private StringBuffer checkBoxLogic = new StringBuffer();
 	
+	private boolean ifroleactive = false;
+	private boolean ifroleactive_sub = false;
+	private boolean ifroleactive_templ = false;
+	
 	private boolean redirectedMarker = false;
 	//private boolean loginMarker = false;
 
@@ -710,11 +714,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		return null; // ok !
 	}
-
+	
 	/**
 	 * Process handlers to get the whole HTML page.
 	 * 
-	 * @param session Nano session
+	 * @param session beetroot session
 	 * @param origId original DB id
 	 * @return whole parsed HTML page
 	 */
@@ -758,9 +762,37 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			sc = getNewScanner(currRessource);
 
-			while (sc.hasNextLine()) {
+			LOOP: while (sc.hasNextLine()) {
 				
 				String text = sc.nextLine();
+
+				
+				// deal with role-specific sections
+				
+				if (text.contains("$endifrole")) {
+					ifroleactive = false;
+					continue LOOP;
+				}
+				if (ifroleactive)
+					continue LOOP;
+				
+				if (text.contains("$ifrole")) {
+					String strs[] = text.split("=", 2);
+					if (strs.length != 2)
+						continue LOOP;
+					
+					strs[1] = strs[1].replace(";", "");
+					strs[1] = strs[1].replace(":", "");
+					strs[1] = strs[1].replace("}", "");
+					strs[1] = strs[1].replace(" ", "");
+					strs[1] = strs[1].trim();
+					
+					if (!userSession.getUserRole().equals(strs[1]))
+						ifroleactive = true;
+					
+					continue LOOP;
+				}
+					
 				
 				// layout templates and main template
 				if (text.contains("{#head}")) {
@@ -1029,9 +1061,37 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 		Scanner sc = getNewScanner(currRessource);
 		
-		while (sc.hasNextLine()) {
+		LOOP: while (sc.hasNextLine()) {
 			
 			String text = sc.nextLine();
+			
+			
+			// deal with role-specific sections
+			
+			if (text.contains("$endifrole")) {
+				ifroleactive_sub = false;
+				continue LOOP;
+			}
+			if (ifroleactive_sub)
+				continue LOOP;
+			
+			if (text.contains("$ifrole")) {
+				String strs[] = text.split("=", 2);
+				if (strs.length != 2)
+					continue LOOP;
+				
+				strs[1] = strs[1].replace(";", "");
+				strs[1] = strs[1].replace(":", "");
+				strs[1] = strs[1].replace("}", "");
+				strs[1] = strs[1].replace(" ", "");
+				strs[1] = strs[1].trim();
+				
+				if (!userSession.getUserRole().equals(strs[1]))
+					ifroleactive_sub = true;
+				
+				continue LOOP;
+			}
+			
 			
 			switch (type) {
 			
@@ -1168,7 +1228,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					if (text.contains("{$adminmenu}")) {
 						
-						if (userrole != null && userrole.length() != 0 && userrole.equals("Administrator")) {
+						if (userrole != null && userrole.length() != 0 && userrole.equalsIgnoreCase("Administrator")) {
 							String adminMenu = parseAndGetSubResource(text, "web/html/:lang/blocks/adminmenu.html", "{$adminmenu}", session);
 							text = text.replace("{$adminmenu}", adminMenu);
 						}
@@ -1223,8 +1283,38 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			addLine("<h1>"+err+"</h1>");
 		}
 
-		while (sc.hasNextLine()) {
-			addLine(parse(sc.nextLine(), session));
+		LOOP: while (sc.hasNextLine()) {
+			
+			String text = sc.nextLine();
+			
+			// deal with role-specific sections
+			
+			if (text.contains("$endifrole")) {
+				ifroleactive_templ = false;
+				continue LOOP;
+			}
+			if (ifroleactive_templ)
+				continue LOOP;
+			
+			if (text.contains("$ifrole")) {
+				String strs[] = text.split("=", 2);
+				if (strs.length != 2)
+					continue LOOP;
+				
+				strs[1] = strs[1].replace(";", "");
+				strs[1] = strs[1].replace(":", "");
+				strs[1] = strs[1].replace("}", "");
+				strs[1] = strs[1].replace(" ", "");
+				strs[1] = strs[1].trim();
+				
+				if (!userSession.getUserRole().equals(strs[1]))
+					ifroleactive_templ = true;
+				
+				continue LOOP;
+			}
+			
+			
+			addLine(parse(text, session));
 		}
 		
 		sc.close();
@@ -1380,15 +1470,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 			// access control
 			if (!this.hasAccess(userSession)) {
-				
 				Map<String, String> params = session.getParms();
-				return serveHandler((BeetRootHTTPSession)session, 
-									getDefaultHandlerEntity(), 
-									this.getDefaultHandlerClass(), 
-									params, 
-									LanguageManager.getInstance().translate("base.error.noaccess.msg", userSession), 
-									MSG_TYPE_ERR);
+				return serveDefaultRedirectHandler(
+										(BeetRootHTTPSession)session, 
+										params, 
+										LanguageManager.getInstance().translate("base.error.noaccess.msg", userSession), 
+										MSG_TYPE_ERR
+									);
 			}
+
 			
 			final Method method = session.getMethod();
 			int origId = -1;
@@ -1694,6 +1784,38 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         final Response response = responder.get(ur, newParams, (org.nanohttpd.protocols.http.IHTTPSession)session);
 		return response;
 	}
+
+	private Response serveDefaultRedirectHandler(			
+			BeetRootHTTPSession session, 
+			Map<String, String> newParams, 
+			String msg, int messageType) throws Exception {
+		
+		final Session userSession = session.getUserSession();
+		
+		userSession.removeAllIds(); // important, we need to generate new ones!
+		
+		Object obj = construct(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), msg);
+		
+		if (!(obj instanceof BaseHandler)) {
+			return (Response) obj;
+		}
+        
+		final BaseHandler handler = (BaseHandler) obj;
+        handler.initialize(session);
+        handler.setMessageType(messageType);
+		
+		// read index data
+        try {
+        	
+        	handler.readData(session, -1);
+        	
+        } catch (Exception ex) {
+        	LOG.error("*** NOTE *** : You might have forgotten to define a default handler and entioty in teh configuration!");
+        	throw ex;
+        }
+		// lang is re-written per redirect script
+        return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));		
+	}	
 	
 	private Response serveRedirectHandler(BeetRootHTTPSession session, String msg) throws Exception {
 		
@@ -2029,7 +2151,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param userSession user session, possible even
 	 * a temporary session from a not logged in user
 	 * 
-	 * @return true if amenu should be shown
+	 * @return true if a menu should be shown
 	 */
 	public boolean showMenu(Session userSession) {
 		return true;

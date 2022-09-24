@@ -585,8 +585,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					    }
 			            
 						//LOG.debug("Logged in (Form), User: " + postParamUsername);
-						
-						String m = LanguageManager.getInstance().translate("base.info.welcome.msg", userSession, postParamUsername);
+						String m = LanguageManager.getInstance().translate("base.info.welcome.msg", userSession, userSession.getUserFullNameOrUserName());
 						return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), m);
 			            
             		} else {

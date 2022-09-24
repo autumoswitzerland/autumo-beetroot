@@ -3,6 +3,7 @@
 		<li class="heading">Aktionen</li>
 		<li><a href="/{$lang}/users/edit?id={$id}" class="side-nav-item">Benutzer
 				editieren</a></li>
+		{$ifrole=Administrator:}
 		<li>
 			<form name="post_users_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/users/delete?id={$id}">
@@ -14,10 +15,13 @@
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.returnValue = false; return false;">Benutzer
 				löschen</a>
 		</li>
+		{$endifrole;}
 		<li><a href="/{$lang}/users" class="side-nav-item">Benutzer
 				auflisten</a></li>
+		{$ifrole=Administrator:}
 		<li><a href="/{$lang}/users/add" class="side-nav-item">Neuer
 				Benutzer</a></li>
+		{$endifrole;}
 	</ul>
 </nav>
 

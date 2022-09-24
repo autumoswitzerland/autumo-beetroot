@@ -33,6 +33,7 @@ package ch.autumo.beetroot.handler.users;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
 /**
@@ -67,6 +68,11 @@ public class UsersAddHandler extends DefaultAddHandler {
 	@Override
 	public Class<?> getBeanClass() {
 		return User.class;
+	}
+
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
 	
 }

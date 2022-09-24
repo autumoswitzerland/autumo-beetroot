@@ -30,6 +30,7 @@
  */
 package ch.autumo.beetroot.handler.users;
 
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 
 /**
@@ -44,6 +45,11 @@ public class UsersDeleteHandler extends DefaultDeleteHandler {
 	@Override
 	public Class<?> getRedirectHandler() {
 		return UsersIndexHandler.class;
+	}
+
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
 	
 }

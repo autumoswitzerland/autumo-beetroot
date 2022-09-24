@@ -137,7 +137,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			if (userSession != null && getEntity().equals("users")) {
 				final String username = userSession.getUserName();
 				final String userrole = userSession.getUserRole();
-				if (username != null && username.length() != 0 && (userrole == null || !userrole.equals("Administrator")))
+				if (username != null && username.length() != 0 && (userrole == null || !userrole.equalsIgnoreCase("Administrator")))
 					stmtStr += " WHERE username='"+username+"'";	
 			}
 			
@@ -208,26 +208,11 @@ public class DefaultIndexHandler extends BaseHandler {
 					
 				}
 				
-				// Actions !
-				htmlData += "<td class=\"actions\">\n";
-				htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/view?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.view", userSession)+"</a>\n";
-				htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
-				htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
-				htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
+				// generate actions
+				htmlData += this.generateActionsTableData(userSession, getEntity(), modifyID, idr, lang);
 				
-				if (ConfigurationManager.getInstance().useCsrf()) {
-					
-					final String formCsrfToken = userSession.getFormCsrfToken();
-					htmlData += "<input type=\"hidden\" name=\"_csrfToken\" autocomplete=\"off\" value=\""+formCsrfToken+"\"/>\n";
-				}
-				
-				htmlData += "</form>\n";
-				htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
-								+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, idr) 
-								+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.returnValue = false; return false;\">"
-								+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
-				htmlData += "</td>\n";
 				htmlData += "</tr>\n";
+				
 				counter++;
 			
 			/*
@@ -283,8 +268,55 @@ public class DefaultIndexHandler extends BaseHandler {
 	}
 	
 	/**
+	 * Create actions table data. This must return a HTML &lt;td&gt;...&lt;/td&gt; section
+	 * with all actions possible on the index page. the actions possibly returned might 
+	 * depend on the user's role.
+	 * 
+	 * This method is internally called by the {@link #readData(BeetRootHTTPSession, int)}
+	 * method. 
+	 * 
+	 * @param session user session
+	 * @param entity entity string
+	 * @param modifyID obfuscated modify id used action links
+	 * @param dbId internal DB id, don't write it out!
+	 * @param lang user's language
+	 * @return
+	 */
+	public String generateActionsTableData(Session userSession, String entity, String modifyID, int dbId, String lang) {
+		
+		String htmlData ="";
+		
+		// Actions !
+		htmlData += "<td class=\"actions\">\n";
+		// VIEW
+		htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/view?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.view", userSession)+"</a>\n";
+		// EDIT
+		htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
+		// DELETE
+		if (userSession.getUserRole().equalsIgnoreCase("Administrator")) {
+			htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
+			htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
+			if (ConfigurationManager.getInstance().useCsrf()) {
+				
+				final String formCsrfToken = userSession.getFormCsrfToken();
+				htmlData += "<input type=\"hidden\" name=\"_csrfToken\" autocomplete=\"off\" value=\""+formCsrfToken+"\"/>\n";
+			}
+			htmlData += "</form>\n";
+			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
+							+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, dbId) 
+							+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.returnValue = false; return false;\">"
+							+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
+		}
+		
+		htmlData += "</td>\n";
+		return htmlData;
+	}
+	
+	/**
 	 * Prepare call to to something with the current entity bean 
-	 * processed in the list if necessary.
+	 * processed in the list if necessary. Called before all 
+	 * {@link #extractSingleTableData(BeetRootHTTPSession, ResultSet, String, int, Entity)}
+	 * calls.
 	 * 
 	 * @param session HTTP session
 	 * @param entity entity bean

@@ -86,10 +86,10 @@ public class Constants {
 	public static final String KEY_ADMIN_HOST = "admin_host";
 	
 	/**
-	 * Admin server/shutdown port.
+	 * Passwords in configuration encoded?
 	 */
 	public static final String KEY_ADMIN_PW_ENC = "admin_pw_encoded";
-
+	
 	/**
 	 * Web server URL.
 	 */
@@ -207,6 +207,11 @@ public class Constants {
 	
 	// DB specific
 	//------------------------------------------------------------------------------
+	
+	/**
+	 * Passwords in DB encoded?
+	 */
+	public static final String KEY_DB_PW_ENC = "db_pw_encoded";
 	
 	/**
 	 * JDBC H2 db.
