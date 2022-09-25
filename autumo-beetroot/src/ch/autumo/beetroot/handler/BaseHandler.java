@@ -1723,6 +1723,42 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return LanguageManager.getInstance().translate("base.err.template.msg", userSession);
 	}
 
+	/*
+	private Response serveHandler(
+			BeetRootHTTPSession session, 
+			String entity, 
+			Class<?> handlerClass, 
+			Map<String, String> newParams, 
+			String msg) throws Exception {
+		return this.serveHandler(session, entity, handlerClass, newParams, msg, MSG_TYPE_INFO);
+	}
+	*/
+	
+	/** Special case serve; only use with care - retry uses it */
+	private Response serveHandler(
+			BeetRootHTTPSession session, 
+			String entity, 
+			Class<?> handlerClass, 
+			Map<String, String> newParams, 
+			String msg, int messageType) throws Exception {
+
+		Object obj = construct(session, handlerClass, entity, msg);
+		
+		if (!(obj instanceof BaseHandler)) {
+			return (Response) obj;
+		}
+        
+		final BaseHandler handler = (BaseHandler) obj;
+        handler.initialize((BeetRootHTTPSession)session);
+        handler.setMessageType(messageType);
+        
+        final UriResource ur = new UriResource(null, handlerClass, entity);
+        final UriResponder responder = ((UriResponder) handler);
+        
+        final Response response = responder.get(ur, newParams, (org.nanohttpd.protocols.http.IHTTPSession)session);
+		return response;
+	}
+	
 	private Response serveHandler(IHTTPSession session, BaseHandler handler, HandlerResponse stat) throws Exception {
 		
 		if (stat != null) {
@@ -1748,41 +1784,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		handler.initialize((BeetRootHTTPSession)session);
 		
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText((BeetRootHTTPSession)session, -1));
-	}
-
-	/*
-	private Response serveHandler(
-			BeetRootHTTPSession session, 
-			String entity, 
-			Class<?> handlerClass, 
-			Map<String, String> newParams, 
-			String msg) throws Exception {
-		return this.serveHandler(session, entity, handlerClass, newParams, msg, MSG_TYPE_INFO);
-	}
-	*/
-	
-	private Response serveHandler(
-			BeetRootHTTPSession session, 
-			String entity, 
-			Class<?> handlerClass, 
-			Map<String, String> newParams, 
-			String msg, int messageType) throws Exception {
-
-		Object obj = construct(session, handlerClass, entity, msg);
-		
-		if (!(obj instanceof BaseHandler)) {
-			return (Response) obj;
-		}
-        
-		final BaseHandler handler = (BaseHandler) obj;
-        handler.initialize((BeetRootHTTPSession)session);
-        handler.setMessageType(messageType);
-        
-        final UriResource ur = new UriResource(null, handlerClass, entity);
-        final UriResponder responder = ((UriResponder) handler);
-        
-        final Response response = responder.get(ur, newParams, (org.nanohttpd.protocols.http.IHTTPSession)session);
-		return response;
 	}
 
 	private Response serveDefaultRedirectHandler(			
