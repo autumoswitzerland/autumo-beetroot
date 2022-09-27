@@ -35,6 +35,8 @@ CREATE TABLE users (
     settings varchar(1024) default '',
     role VARCHAR(20) not NULL default 'Operator',
     lang VARCHAR(5) not NULL default 'en',
+    two_fa BOOLEAN default false NOT NULL,
+    secretkey VARCHAR(32) default '',
     created DATETIME DEFAULT NOW(),
     modified DATETIME DEFAULT NOW(),
     unique(username),
@@ -73,15 +75,15 @@ CREATE TABLE properties (
 -- NOTE: Passwords can be encrypted in database; see 'beetroot.cfg'
 
 -- initial password is 'beetroot' for admin
-INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, created, modified) VALUES
-(1, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', 'Administrator', 'en',  '2022-02-02 20:00:00', '2022-02-02 20:00:00');
+INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
+(1, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', 'Administrator', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', '2022-02-02 20:00:00', '2022-02-02 20:00:00');
 
 
 -- sample data
 
 -- initial password is 'beetroot' for operator
-INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, created, modified) VALUES
-(2, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', 'Operator', 'de',  '2022-02-02 20:00:00', '2022-02-02 20:00:00');
+INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
+(2, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', 'Operator', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', '2022-02-02 20:00:00', '2022-02-02 20:00:00');
 
 -- See 'https://www.guru99.com/crontab-in-linux-with-examples.html' for understanding cron-like examples
 INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, created, modified) VALUES

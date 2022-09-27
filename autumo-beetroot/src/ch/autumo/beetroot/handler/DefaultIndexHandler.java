@@ -199,13 +199,17 @@ public class DefaultIndexHandler extends BaseHandler {
 				
 				// columns
 				htmlData += "<tr>";
-				for (int i = 1; i <= columns().size(); i++) {
+				LOOP: for (int i = 1; i <= columns().size(); i++) {
 					
 					final String cfgLine = columns().get(Integer.valueOf(i));
 					final String params[] = cfgLine.split("=");
 					int dbIdx = i + 1; // because of additional id!
-					htmlData += extractSingleTableData(session, set, params[0].trim(), dbIdx, entity)+ "\n";
 					
+					final String guiColTitle = params[0].trim();
+					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+						continue LOOP;
+					
+					htmlData += extractSingleTableData(session, set, guiColTitle, dbIdx, entity)+ "\n";
 				}
 				
 				// generate actions

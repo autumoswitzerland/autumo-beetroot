@@ -1,0 +1,8 @@
+
+-	Library:	JCommander - Command line parsing library for Java
+	License:	Apache License, Version 2.0
+	Link:		https://www.apache.org/licenses/LICENSE-2.0
+
+-	Library:	Java Advanced Imaging Image I/O Tools API Core
+	License:	BSD 3-clause License
+	Link:		https://github.com/jai-imageio/jai-imageio-core/blob/master/LICENSE.txt

@@ -3,13 +3,13 @@
 #
 #  Third Party Licenses
 #
-#  autumo beetRoot 1.3.0 - slim & rapid Java web framework
-#  Version: 2.0
+#  autumo beetRoot 1.3.1 - slim & rapid Java web framework
+#  Version: 3.0
 #
 #--------------------------------------------------------------------------------------------------
 #
 #  2022 autumo GmbH
-#  Date: 14.02.2021
+#  Date: 27.09.2022
 #
 ###################################################################################################
 
@@ -45,10 +45,28 @@ with third parties: All licenses are covered by the license for this product (se
 -	Library:	NanoHTTPD, Nanolets
 	License:	3-Clause BSD License
 	Link:		https://opensource.org/licenses/BSD-3-Clause
+
+-	Library:	Jakarta Activation
+	License:	Eclipse Distribution License - v 1.0 / BSD 3-Clause
+	Link:		https://projects.eclipse.org/content/eclipse-distribution-license-1.0-bsd		
 	
 -	Library:	Jakarta Activation API
 	License:	Eclipse Distribution License - v 1.0
 	Link:		https://projects.eclipse.org/content/eclipse-distribution-license-1.0-bsd
+
+-	Library:	Jakarta Mail
+	License:	Eclipse Public License - v 2.0 and
+				(Secondary) GNU General Public License, version 2 with the GNU Classpath Exception
+	Links:		https://projects.eclipse.org/license/epl-2.0
+				https://projects.eclipse.org/license/secondary-gpl-2.0-cp
+
+-	Library:	ZXing Java SE Extensions
+	License:	Apache License, Version 2.0
+	Link:		https://www.apache.org/licenses/LICENSE-2.0
+
+-	Library:	TOTP Library RFC 6283
+	License:	Apache License, Version 2.0
+	Link:		https://www.apache.org/licenses/LICENSE-2.0
 
 -	Library:	The Checker Qualifiers
 	License:	MIT License

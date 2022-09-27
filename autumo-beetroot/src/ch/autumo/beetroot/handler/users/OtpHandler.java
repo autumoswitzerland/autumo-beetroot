@@ -30,51 +30,42 @@
  */
 package ch.autumo.beetroot.handler.users;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
-import ch.autumo.beetroot.handler.DefaultAddHandler;
+import ch.autumo.beetroot.handler.BaseHandler;
 
 /**
- * Users add handler. 
+ * Default OTP handler.
  */
-public class UsersAddHandler extends DefaultAddHandler {
-	
-	public UsersAddHandler(String entity) {
-		super(entity);
-	}
+public class OtpHandler extends BaseHandler {
 
-	public UsersAddHandler(String entity, String errMsg) {
-		super(entity, errMsg);
+	private String entity = null;
+	
+	public OtpHandler() {
+		this.entity = "otp";
 	}
 	
+	public OtpHandler(String entity) {
+		this.entity = entity;
+	}
+	
+	public OtpHandler(String entity, String errMsg) {
+		this.entity = entity;
+		this.addErrorMessage(errMsg);
+	}
+	
 	@Override
-	public Class<?> getRedirectHandler() {
-		return UsersIndexHandler.class;
+	public String getResource() {
+		return "web/html/:lang/users/otp.html";
 	}
 
 	@Override
-	public Map<String, Object> getAddMandatoryFields() {
-		
-		final Map<String, Object> mand = new HashMap<String, Object>();
-		
-		mand.put("created",  "NOW()");
-		mand.put("modified", "NOW()");
-		mand.put("secretkey", Utils.createSecretUserKey());
-	    
-		return mand;
+	public String getEntity() {
+		return entity;
 	}
 
 	@Override
-	public Class<?> getBeanClass() {
-		return User.class;
-	}
-
-	@Override
-	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+	public boolean showMenu(Session userSession) {
+		return false;
 	}
 	
 }

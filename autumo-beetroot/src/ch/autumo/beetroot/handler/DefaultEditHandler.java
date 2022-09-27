@@ -82,10 +82,15 @@ public class DefaultEditHandler extends BaseHandler {
 				String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity;
 				set = stmt.executeQuery(stmtStr);
 	
-				for (int i = 1; i <= columns().size(); i++) {
+				LOOP: for (int i = 1; i <= columns().size(); i++) {
 					
 					final String col[] = getColumn(i);
-					htmlData += this.extractSingleInputDiv(session, params, set, col[0], col[1], i);
+					
+					final String guiColTitle = col[1];
+					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+						continue LOOP;
+					
+					htmlData += this.extractSingleInputDiv(session, params, set, col[0], guiColTitle, i);
 				}
 				stmt.close();
 				conn.close();
@@ -104,11 +109,16 @@ public class DefaultEditHandler extends BaseHandler {
 			final Entity entity = Utils.createBean(getBeanClass(), set);
 			this.prepare(session, entity);
 			
-			for (int i = 1; i <= columns().size(); i++) {
+			LOOP: for (int i = 1; i <= columns().size(); i++) {
 				
 				final String col[] = getColumn(i);
 				int dbIdx = i + 1; // because of additional id!
-				htmlData += extractSingleInputDiv(session, set, entity, col[0], col[1], dbIdx);		
+				
+				final String guiColTitle = col[1];
+				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+					continue LOOP;
+				
+				htmlData += extractSingleInputDiv(session, set, entity, col[0], guiColTitle, dbIdx);		
 			}
 		
 		} finally {

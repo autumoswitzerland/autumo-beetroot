@@ -43,6 +43,7 @@ import ch.autumo.beetroot.handler.tasks.TasksViewHandler;
 import ch.autumo.beetroot.handler.users.ChangeHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
+import ch.autumo.beetroot.handler.users.OtpHandler;
 import ch.autumo.beetroot.handler.users.ResetHandler;
 import ch.autumo.beetroot.handler.users.SettingsHandler;
 import ch.autumo.beetroot.handler.users.UsersAddHandler;
@@ -130,6 +131,7 @@ public class BeetRootDefaultRouter implements Router {
 			new Route("/:lang/users/add", UsersAddHandler.class, "users"),
 			new Route("/:lang/users/delete", UsersDeleteHandler.class, "users"),
 			new Route("/:lang/users/login", LoginHandler.class, "login"),
+			new Route("/:lang/users/otp", OtpHandler.class, "otp"),
 			new Route("/:lang/users/logout", LogoutHandler.class, "login"),
 			new Route("/:lang/users/reset", ResetHandler.class, "reset"),
 			new Route("/:lang/users/change", ChangeHandler.class, "change"),	

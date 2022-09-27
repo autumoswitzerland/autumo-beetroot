@@ -187,7 +187,7 @@ beetRoot can be run within two modes:
 
 	- Use `beetRoot.sh stop` / `beetRoot.bat stop` to properly stop the stand-alone server.
 	
-	- **NOTE**: Due to the licenses, we don't distribute the Java Servlet API. You have to download this API yourself e.g. through maven-dependencies or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar.
+	- **NOTE**: We don't distribute the Java Servlet API. If you run beetRoot as a stand-alone server, you have to download this API yourself e.g. through maven-dependencies or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar.
 
 2. Servlet-container:
 
@@ -439,7 +439,7 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-**NOTE**: Due to the licenses, we don't distribute or create a dependency to Java Mail implementations behind the Jakarta Mail and Activation API. You have to download them by yourself e.g. through maven-dependencies or here: [Eclipse Jakarta Mail](https://jakarta.ee/specifications/mail). You basically need to add the libraries `jakarta.activation-x.y.z.jar` and `jakarta.mail-x.y.z.jar`.
+Check the configuration `cfg/beetroot.cfg` for mailing options.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

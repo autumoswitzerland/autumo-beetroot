@@ -170,11 +170,11 @@ then
 	# copy libs
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
-	rm autumo-beetRoot-$VERSION/lib/jakarta.mail*.jar
-	rm autumo-beetRoot-$VERSION/lib/jakarta.activation*.jar
+	#rm autumo-beetRoot-$VERSION/lib/jakarta.mail*.jar
+	#rm autumo-beetRoot-$VERSION/lib/jakarta.activation*.jar
 	rm autumo-beetRoot-$VERSION/lib/javax.servlet*.jar
+	#cp ../lib/jakarta.activation-api*.jar autumo-beetRoot-$VERSION/lib/
 	rm autumo-beetRoot-$VERSION/lib/mysql*.jar
-	cp ../lib/jakarta.activation-api*.jar autumo-beetRoot-$VERSION/lib/
 	
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/

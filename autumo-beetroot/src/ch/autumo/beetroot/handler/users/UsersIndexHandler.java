@@ -62,6 +62,7 @@ public class UsersIndexHandler extends DefaultIndexHandler {
 			case "username"		: return "<td>" + set.getString(columnName) + "</td>\n";
 			case "email"		: return "<td>" + set.getString(columnName) + "</td>\n";
 			case "role"			: return "<td>" + set.getString(columnName) + "</td>\n";
+			case "two_fa"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
 			case "created"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>\n";
 			case "modified"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>\n";
 			

@@ -61,6 +61,11 @@ public class Constants {
 	 */
 	public static final MimetypesFileTypeMap MIME_TYPES_MAP;
 	
+	/**
+	 * Default length for user key.
+	 */
+	public static final int SECRET_USER_KEY_DEFAILUT_LEN = 20;
+	
 	
 	// Config specific
 	//------------------------------------------------------------------------------
@@ -89,6 +94,21 @@ public class Constants {
 	 * Passwords in configuration encoded?
 	 */
 	public static final String KEY_ADMIN_PW_ENC = "admin_pw_encoded";
+
+	/**
+	 * Prefix for temporary files.
+	 */
+	public static final String KEY_WS_TMP_FILE_PREFIX = "ws_tmp_file_prefix";
+	
+	/**
+	 * Web app name.
+	 */
+	public static final String KEY_WS_APP_NAME = "ws_app_name";
+
+	/**
+	 * Web temporary directory.
+	 */
+	public static final String KEY_WS_TMP_DIR = "ws_tmp_dir";
 	
 	/**
 	 * Web server URL.
@@ -149,7 +169,17 @@ public class Constants {
 	 * Sec key seed key.
 	 */
 	public static final String SEC_KEY_SEED = "secret_key_seed";
+
+	/**
+	 * No show identifier for not showing certain columns and values defined in 'columns.cfg'.
+	 */
+	public static final String GUI_COL_NO_SHOW = "NO_SHOW";
 	
+	/**
+	 * QR image size.
+	 */
+	public static final int QR_IMG_SIZE = 320;
+
 	
 	// SQL specific
 	//------------------------------------------------------------------------------

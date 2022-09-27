@@ -30,6 +30,9 @@
  */
 package ch.autumo.beetroot;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -63,6 +66,7 @@ import ch.autumo.beetroot.handler.ErrorHandler;
 import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
+import ch.autumo.beetroot.handler.users.OtpHandler;
 
 /**
  * autumo ifaceX web server and template engine.
@@ -83,11 +87,24 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     
     private Map<String, String> parsedCss = new ConcurrentHashMap<String, String>();
     
+    private String tmpFilePrefix = "beetrootweb-";
 	
+    
+    /**
+     * Server.
+     * 
+     * @throws Exception
+     */
 	public BeetRootWebServer() throws Exception {
 		this(-1);
 	}
-	
+
+	/**
+	 * Server.
+	 * 
+	 * @param port
+	 * @throws Exception
+	 */
 	public BeetRootWebServer(int port) throws Exception {
 
 		super(port);
@@ -100,6 +117,10 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		servletName = ConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 		if (servletName != null && servletName.length() != 0)
 			insertServletNameInTemplateRefs = true; 
+		
+		tmpFilePrefix = ConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
+		if (tmpFilePrefix == null || tmpFilePrefix.length() == 0)
+			tmpFilePrefix = "beetrootweb-";
 		
 		this.addMappings();
 	}
@@ -278,9 +299,30 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 			final String requestedFile = uri.substring(uri.lastIndexOf("/") + 1, uri.length()).toLowerCase();
 			
-			// nothing to serve
+			// temporary file?
+			if (uri.startsWith("tmp/" + tmpFilePrefix)) {
+				
+				final String tmpDir = Utils.getTemporaryDirectory();
+				
+				final String fullTmpPath = tmpDir + requestedFile;
+				final File f = new File(fullTmpPath);
+				final String mimeType = Constants.MIME_TYPES_MAP.getContentType(requestedFile);
+				try {
+					return Response.newFixedLengthResponse(Status.OK, mimeType, new FileInputStream(f), f.length());
+				} catch (FileNotFoundException e) {
+					final String err = "Couldn't serve temporary file '" + fullTmpPath + "'!";
+					LOG.error(err, e);
+					String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+					String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
+					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+				}
+			}
+			
+			
+			// Theme default CSS: nothing to serve
 			if (requestedFile.equals("theme-default.css"))
 				return Response.newFixedLengthResponse(Status.OK, "text/css", "");
+			
 			
 			boolean isSpecialCss = requestedFile.equals("refs.css") || requestedFile.equals("default.css");
 			isSpecialCss = isSpecialCss || (requestedFile.contains("theme-") && requestedFile.endsWith(".css"));
@@ -390,7 +432,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 		
         
-		// Continue with HTML engie requests !
+		// Continue with HTML engine requests !
 		final Map<String, String> files = new HashMap<String, String>();
 	    final Method method = session.getMethod();
 	    
@@ -439,6 +481,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			
 			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userSession));
 			
+			userSession.deleteAllParameters();
 			userSession.destroy(session.getCookies());
 			
 			return end;
@@ -447,7 +490,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         // User logged in to session?
 	    // Settings
 		final String sessionUser = userSession.getUserName();
-        if (sessionUser != null) {
+        if (sessionUser != null && !userSession.isTwoFaLoginOk()) {
         	
 			//LOG.debug("Logged in (Session), User: " + sessionUser);
 
@@ -463,12 +506,36 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				LOG.error("Couldn't load user settings!", e);
 			}
         }
-		
+
+        
         // Still not logged in...
         if (!loggedIn) {
-        	
+
+    		final String twoFaCode = session.getParms().get("code");
+    		
+        	// 2FA step login: 2nd Step !
+        	if (userSession.isTwoFaLoginOk() && twoFaCode != null && twoFaCode.length() != 0) {
+        		
+        		if (userSession.getInternalTOTPCode().equals(twoFaCode)) {
+        		
+		            loggedIn = true;
+        			userSession.resetTwoFaLogin();
+        			userSession.clearInternalTOTPCode();
+		            
+		            // Finish all necessary steps and give response
+		            return postLogin(session, userSession, userSession.getUserId().intValue(), userSession.getUserName());
+		            
+        		} else {
+        			
+        			userSession.clearUserData();
+        			
+					String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
+					return serverResponse(session, LoginHandler.class, "Login", m);
+        		}
+        		
+        	}        	
         	// login from login page?
-        	if (postParamUsername != null && postParamUsername.length() != 0) {
+        	else if (postParamUsername != null && postParamUsername.length() != 0) {
         	
         		String postParamPass = session.getParms().get("password");
                 int dbId = -1;
@@ -476,6 +543,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
                 String dbRole = null;
                 String dbFirstName = null;
                 String dbLastName = null;
+                String dbEmail = null;
+                String dbSecKey = null;
+                boolean dbTwoFa = false;
                 
             	if (postParamPass != null && postParamPass.length() != 0) {
             		
@@ -488,7 +558,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						conn = DatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
 						//NO SEMICOLON
-	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname from users where username='"+postParamUsername+"'");
+	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname, email, secretkey, two_fa from users where username='"+postParamUsername+"'");
 	            		
 	            		if (rs.next()) {
 	            			dbId = rs.getInt("id");
@@ -496,12 +566,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            			dbRole = rs.getString("role");
 	            			dbFirstName = rs.getString("firstname");
 	            			dbLastName = rs.getString("lastname");
+	            			dbEmail = rs.getString("email");
+	            			dbSecKey = rs.getString("secretkey");
+	            			dbTwoFa = rs.getBoolean("two_fa");
 	            		}
 	            		
 					} catch (SQLException e) {
 						
 						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
 						LOG.error(err, e);
+
+            			userSession.clearUserData();
 						
 						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
 						String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
@@ -532,15 +607,18 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							final String err = "Server Internal Error - Exception: " + e.getMessage();
 							LOG.error(err, e);
 							
+	            			userSession.clearUserData();
+							
 							String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userSession);
 							String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userSession, e.getMessage());
 							return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 						}
 					}
 					
+					// LOGIN
             		if (postParamPass.equals(dbPass)) { 
             			
-            			userSession.setUserData(dbId, postParamUsername, dbRole, dbFirstName, dbLastName);
+            			userSession.setUserData(dbId, postParamUsername, dbRole, dbFirstName, dbLastName, dbEmail, dbSecKey, dbTwoFa);
             			userSession.createIdPair(dbId, "users");
 
 					    try {
@@ -549,46 +627,27 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						} catch (Exception e) {
 							LOG.error("Couldn't load user language from DB!", e);
 						}
+					    
+					    
+					    // 2FA enabled?: 1st Step!
+					    if (dbTwoFa) {
+					    	
+			        		final String genCode = Utils.create6DigitTOTPCode(userSession.getUserSecretKey());
+			        		userSession.setInternalTOTPCode(genCode);
+					    	userSession.setTwoFaLogin(); 
+					    	
+							return serverResponse(session, OtpHandler.class, "2FA Code");
+					    }
             			
+					    
 			            loggedIn = true;
 			            
-					    try {
-							Utils.loadUserSettings(userSession);
-						} catch (SQLException e) {
-							LOG.error("Couldn't load user settings from DB!", e);
-						}
-			            
-			            try {
-			            	
-							DatabaseManager.resetToken(dbId);
-							
-						} catch (Exception e1) {
-							final String err = "Couldn't reset last token for user '"+postParamUsername+"' after login!";
-							LOG.warn(err, e1);
-						}
-			            
-					    // use CSRF tokens ?
-					    if (csrf) {
-					    	try {
-								if (!csrf(session, userSession)) {
-									
-									String t = LanguageManager.getInstance().translate("base.err.csrf.inv.title", userSession);
-									String m = LanguageManager.getInstance().translate("base.err.csrf.inv.msg", userSession);
-									return serverResponse(session, ErrorHandler.class, Status.BAD_REQUEST, t, m);
-								}
-							} catch (UtilsException e) {
-								
-								String t = LanguageManager.getInstance().translate("base.err.csrf.gen.title", userSession);
-								String m = LanguageManager.getInstance().translate("base.err.csrf.gen.msg", userSession, e.getMessage());
-								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);							
-							}
-					    }
-			            
-						//LOG.debug("Logged in (Form), User: " + postParamUsername);
-						String m = LanguageManager.getInstance().translate("base.info.welcome.msg", userSession, userSession.getUserFullNameOrUserName());
-						return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), m);
+			            // Finish all necessary steps and give response
+			            return postLogin(session, userSession, dbId, postParamUsername);
 			            
             		} else {
+            			
+            			userSession.clearUserData();
             			
 						//LOG.debug("Wrong login with user User: " + postParamUsername);
 						// serve login page!
@@ -601,6 +660,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		// Nope, no login after all.
 		if (!loggedIn) {
+			
+			userSession.clearUserData();
 			
 			if (uri.endsWith("/users/reset") || uri.endsWith("/users/change")) {
 				
@@ -637,6 +698,45 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 	}
 
+	private Response postLogin(BeetRootHTTPSession session, Session userSession, int userId, String username) {
+		
+	    try {
+			Utils.loadUserSettings(userSession);
+		} catch (SQLException e) {
+			LOG.error("Couldn't load user settings from DB!", e);
+		}
+        
+        try {
+        	
+			DatabaseManager.resetToken(userId);
+			
+		} catch (Exception e1) {
+			final String err = "Couldn't reset last token for user '"+username+"' after login!";
+			LOG.warn(err, e1);
+		}
+        
+	    // use CSRF tokens ?
+	    if (csrf) {
+	    	try {
+				if (!csrf(session, userSession)) {
+					
+					String t = LanguageManager.getInstance().translate("base.err.csrf.inv.title", userSession);
+					String m = LanguageManager.getInstance().translate("base.err.csrf.inv.msg", userSession);
+					return serverResponse(session, ErrorHandler.class, Status.BAD_REQUEST, t, m);
+				}
+			} catch (UtilsException e) {
+				
+				String t = LanguageManager.getInstance().translate("base.err.csrf.gen.title", userSession);
+				String m = LanguageManager.getInstance().translate("base.err.csrf.gen.msg", userSession, e.getMessage());
+				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);							
+			}
+	    }
+        
+		//LOG.debug("Logged in (Form), User: " + postParamUsername);
+		String m = LanguageManager.getInstance().translate("base.info.welcome.msg", userSession, userSession.getUserFullNameOrUserName());
+		return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), m);		
+	}
+	
 	private boolean csrf(IHTTPSession session, Session userSession) throws UtilsException {
 		
 		// only check relevant POST methods!

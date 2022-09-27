@@ -145,7 +145,7 @@
 		<dependency>
 		    <groupId>commons-codec</groupId>
 		    <artifactId>commons-codec</artifactId>
-		    <version>1.9</version>
+		    <version>1.15</version>
 		    <scope>provided</scope>
 		</dependency>
 
@@ -153,6 +153,27 @@
 		    <groupId>commons-dbutils</groupId>
 		    <artifactId>commons-dbutils</artifactId>
 		    <version>1.7</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>de.taimos</groupId>
+		    <artifactId>totp</artifactId>
+		    <version>1.0</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+		    <version>3.5.0</version>
+		    <scope>provided</scope>
+		</dependency>
+				
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+		    <version>3.5.0</version>
 		    <scope>provided</scope>
 		</dependency>
 
@@ -167,14 +188,14 @@
 		    <groupId>jakarta.mail</groupId>
 		    <artifactId>jakarta.mail-api</artifactId>
 		    <version>2.1.0</version>
-		    <scope>compile</scope>
+		    <scope>provided</scope>
 		</dependency>
 
 		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
 		    <version>4.0.1</version>
-		    <scope>compile</scope>
+		    <scope>provided</scope>
 		</dependency>
 
 		<!--
@@ -214,7 +235,7 @@
 		    <scope>system</scope>
 		    <systemPath>${nanohttpjar}</systemPath>
 		</dependency>
-		
+				
 	</dependencies>
 
 </project>

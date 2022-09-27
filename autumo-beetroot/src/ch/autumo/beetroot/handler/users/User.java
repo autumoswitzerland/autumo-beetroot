@@ -122,6 +122,24 @@ public class User implements Entity {
         this.lastname = lastname;
     }
 
+    private String secretkey;
+    
+    public String getSecretkey() {
+		return secretkey;
+	}
 	
-	
+    public void setSecretkey(String secretkey) {
+		this.secretkey = secretkey;		
+	}
+    
+    private boolean twoFa;
+    
+    public boolean getTwoFa() {
+    	return twoFa;
+    }
+
+    public void setTwoFa(boolean twoFa) {
+    	this.twoFa = twoFa;
+    }
+    
 }

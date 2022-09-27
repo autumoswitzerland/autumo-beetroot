@@ -607,6 +607,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (col[0].equals("lastname")) {
 					userSession.set("lastname", val);
 				}
+				if (col[0].equals("email")) {
+					userSession.set("email", val);
+				}
+				if (col[0].equals("two_fa")) {
+					userSession.set("two_fa", val);
+				}
 			}
 			
 			val = this.formatSingleValueForDB(session, val, col[0]);

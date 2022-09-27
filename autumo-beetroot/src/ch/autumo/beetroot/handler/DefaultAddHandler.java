@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
@@ -86,10 +87,15 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity;
 			final ResultSet set = stmt.executeQuery(stmtStr);
 
-			for (int i = 1; i <= columns().size(); i++) {
+			LOOP: for (int i = 1; i <= columns().size(); i++) {
 				
 				final String col[] = getColumn(i);
-				htmlData += this.extractSingleInputDiv(session, params, set, col[0], col[1], i);
+				
+				final String guiColTitle = col[1];
+				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+					continue LOOP;
+				
+				htmlData += this.extractSingleInputDiv(session, params, set, col[0], guiColTitle, i);
 			}
 			return null;
 		}
@@ -101,10 +107,15 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
 		final ResultSet set = stmt.executeQuery(stmtStr); // call only for types, make this better!
 		
-		for (int i = 1; i <= columns().size(); i++) {
+		LOOP: for (int i = 1; i <= columns().size(); i++) {
 			
 			final String col[] = getColumn(i);
-			htmlData += extractSingleInputDiv(session, set, col[0], col[1], i);
+			
+			final String guiColTitle = col[1];
+			if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+				continue LOOP;
+			
+			htmlData += extractSingleInputDiv(session, set, col[0], guiColTitle, i);
 		}		
 		
 		return null;

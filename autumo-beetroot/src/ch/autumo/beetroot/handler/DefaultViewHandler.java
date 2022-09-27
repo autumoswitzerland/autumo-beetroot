@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
@@ -67,10 +68,15 @@ public class DefaultViewHandler extends BaseHandler {
 			final Entity entity = Utils.createBean(getBeanClass(), set);
 			this.prepare(session, entity);
 			
-			for (int i = 1; i <= columns().size(); i++) {
+			LOOP: for (int i = 1; i <= columns().size(); i++) {
 				
 				final String col[] = getColumn(i);
 				int dbIdx = i + 1; // because of additional id!
+				
+				final String guiColTitle = col[1];
+				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+					continue LOOP;
+				
 				htmlData += "<tr><th>"+col[1]+"</th>"+extractSingleTableData(session, set, col[0], dbIdx, entity)+"</tr>\n";		
 			}		
 		} finally {

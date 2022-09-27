@@ -143,16 +143,48 @@ public class Session implements Serializable {
 	 * @param role user role
 	 * @param firstname first name
 	 * @param lastname last name
+	 * @param email email
+	 * @param secretKey secret key
+	 * @param twoFa 2FA?
 	 */
-	public void setUserData(int id, String name, String role, String firstname, String lastname) {
+	public void setUserData(int id, String name, String role, String firstname, String lastname, String email, String secretKey, boolean twoFa) {
 		
 		this.set("userid", Integer.valueOf(id));
 		this.set("username", name);
 		this.set("userrole", role);
+
 		if (firstname != null && firstname.length() != 0)
 			this.set("firstname", firstname);
 		if (lastname != null && lastname.length() != 0)
 			this.set("lastname", lastname);
+
+		this.set("email", email);
+		this.set("secretkey", secretKey);
+		this.set("two_fa", twoFa ? "1" : "0");
+	}
+	
+	/**
+	 * Clear all user data within session.
+	 */
+	public void clearUserData() {
+		this.remove("userid");
+		this.remove("username");
+		this.remove("userrole");
+		this.remove("firstname");
+		this.remove("lastname");
+		this.remove("email");
+		this.remove("secretkey");
+		this.remove("two_fa");
+		
+		this.remove("two_fa_login");
+		this.remove("_2facode");
+	}
+	
+	/**
+	 * Delete all parameters in this session
+	 */
+	public void deleteAllParameters() {
+		data.clear();
 	}
 
 	/**
@@ -210,7 +242,7 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Get user role
+	 * Get user role.
 	 * @return user role
 	 */
 	public String getUserRole() {
@@ -218,13 +250,37 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Get user name
+	 * Get user name.
 	 * @return user name
 	 */
 	public String getUserName() {
 		return (String) this.get("username");
 	}
 
+	/**
+	 * Get user email.
+	 * @return user email
+	 */
+	public String getUserEmail() {
+		return (String) this.get("email");
+	}
+
+	/**
+	 * Get user secret key.
+	 * @return user secret key
+	 */
+	public String getUserSecretKey() {
+		return (String) this.get("secretkey");
+	}
+	
+	/**
+	 * User has 2FA?
+	 * @return user has 2FA?
+	 */
+	public boolean getUTwoFa() {
+		return this.get("two_fa").equals("1");
+	}
+	
 	/**
 	 * Get user language
 	 * @return user language
@@ -239,6 +295,33 @@ public class Session implements Serializable {
 	 */
 	public void setUserLang(String lang) {
 		this.set("userlang", lang);
+	}
+	
+	/**
+	 * Set 2FA state to <code>true</code>.
+	 */
+	public void setTwoFaLogin() {
+		this.set("two_fa_login", "true");
+	}
+	
+	/**
+	 * Is 2FA state set?
+	 * @return true is so
+	 */
+	public boolean isTwoFaLoginOk() {
+		
+		final Object ok = this.get("two_fa_login");
+		if (ok == null)
+			return false;
+		
+		return new Boolean(ok.toString()).booleanValue();
+	}
+	
+	/**
+	 * Reset 2FA state.
+	 */
+	public void resetTwoFaLogin() {
+		this.remove("two_fa_login");
 	}
 	
 	/**
@@ -351,4 +434,16 @@ public class Session implements Serializable {
 		SessionManager.getInstance().destroy(sessionID, cookies);
 	}
 
+	public void setInternalTOTPCode(String genCode) {
+		data.put("_2facode", genCode);
+	}
+
+	public String getInternalTOTPCode() {
+		return (String) data.get("_2facode");
+	}
+	
+	public void clearInternalTOTPCode() {
+		data.remove("_2facode");
+	}
+	
 }
