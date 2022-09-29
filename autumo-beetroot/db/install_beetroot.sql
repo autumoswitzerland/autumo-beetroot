@@ -103,6 +103,8 @@ INSERT INTO properties (id, name, value) values
 (2,'mail.port', '2500');
 INSERT INTO properties (id, name, value) values
 (3,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
+INSERT INTO properties (id, name, value) values
+(4,'web.json.api.key', 'fed0576ed0d2344be35df5f87e7f0f0c');
 
 
 

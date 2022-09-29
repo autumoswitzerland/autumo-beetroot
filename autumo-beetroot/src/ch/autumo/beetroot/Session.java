@@ -58,7 +58,7 @@ public class Session implements Serializable {
 	
 	
 	/**
-	 * New session with given session id '__SESSION_ID__'.
+	 * New session with given session id '__SESSION_ID__' or what is configured.
 	 * 
 	 * @param sessionID session id
 	 */

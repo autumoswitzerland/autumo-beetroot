@@ -1,5 +1,4 @@
 /**
- * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +39,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -49,17 +46,25 @@ import org.slf4j.LoggerFactory;
  */
 public class SessionManager {
 	
-	protected final static Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
+	//protected final static Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
 	
 	private static SessionManager instance = null;	
 	
 	private static final char[] HEX = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 	private static final File SESSION_DATA = new File(Utils.USER_HOME + Utils.FILE_SEPARATOR +ConfigurationManager.getInstance().getString("ws_user_sessions"));
 	private static final Random RANDOM = new Random();
-	private static final String TOKEN_COOKIE = "__SESSION_ID__";
 	private static final int TOKEN_SIZE = 24;
 	
+	private static final String DEFAULT_TOKEN_COOKIE_NAME = "__SESSION_ID__";
+	private static final int DEFAULT_USER_SESSION_EXPIRATION = 1;
+	
 	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
+	
+	/** Web container session id name / name of the session cookie, some java web containers use 'JSESSIONID' */
+	private static String webContainerSessionIdName = DEFAULT_TOKEN_COOKIE_NAME;
+	/** How many days until the user cookie expires. */
+	private static int userSessionExpirationDays = DEFAULT_USER_SESSION_EXPIRATION;
+    
 	
 	/**
 	 * Access session manager.
@@ -67,9 +72,21 @@ public class SessionManager {
 	 * @return session manager
 	 */
 	public static SessionManager getInstance() {
-        if (instance == null)
+
+		if (instance == null) {
+        	
         	instance = new SessionManager();
  
+	        String idname = ConfigurationManager.getInstance().getString("ws_session_id_name");
+	        if (idname != null && idname.length() != 0)
+	        	webContainerSessionIdName = idname;
+	        
+	        userSessionExpirationDays = ConfigurationManager.getInstance().getInt("ws_session_expiration");
+	        if (userSessionExpirationDays < 1)
+	        	userSessionExpirationDays = DEFAULT_USER_SESSION_EXPIRATION;
+        
+        }
+
         return instance;
     }
 	
@@ -119,15 +136,17 @@ public class SessionManager {
 		final CookieHandler cookies = session.getCookies();
 		
 		String token = null;
-		if (session.getExternalSessionId() != null)
+		
+		if (session.getExternalSessionId() != null) {
 			token = session.getExternalSessionId();
+		}
 		else {
-			token = cookies.read(TOKEN_COOKIE);
+			token = cookies.read(webContainerSessionIdName);
 		}		
+		
 		if (token == null) {
-			
 			token = this.newSessionToken();
-			cookies.set(TOKEN_COOKIE, token, 1); // RODO 1 days! longer/configurable?
+			cookies.set(webContainerSessionIdName, token, userSessionExpirationDays);
 		}
 		
 		if (!sessions.containsKey(token)) {
@@ -140,7 +159,7 @@ public class SessionManager {
 	}
 	
 	/**
-	 * Destroy session, though not deleted in sorage file!
+	 * Destroy session, though not deleted in storage file!
 	 * 
 	 * @param token token to destroy
 	 * @param cookies nano cookie handler
@@ -148,7 +167,7 @@ public class SessionManager {
 	public void destroy(String token, CookieHandler cookies) {
 		
 		sessions.remove(token);
-		cookies.delete(TOKEN_COOKIE);
+		cookies.delete(webContainerSessionIdName);
 	}
 	
 	/**

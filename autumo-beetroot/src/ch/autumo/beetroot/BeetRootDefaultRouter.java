@@ -39,6 +39,7 @@ import ch.autumo.beetroot.handler.tasks.TasksAddHandler;
 import ch.autumo.beetroot.handler.tasks.TasksDeleteHandler;
 import ch.autumo.beetroot.handler.tasks.TasksEditHandler;
 import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
+import ch.autumo.beetroot.handler.tasks.TasksRESTIndexHandler;
 import ch.autumo.beetroot.handler.tasks.TasksViewHandler;
 import ch.autumo.beetroot.handler.users.ChangeHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
@@ -117,6 +118,7 @@ public class BeetRootDefaultRouter implements Router {
 			
 			/** Tasks */
 			new Route("/:lang/tasks", TasksIndexHandler.class, "tasks"),
+			new Route("/:lang/tasks/index.json", TasksRESTIndexHandler.class, "tasks"),
 			new Route("/:lang/tasks/index", TasksIndexHandler.class, "tasks"),
 			new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
 			new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),

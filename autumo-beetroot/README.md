@@ -65,17 +65,18 @@
     <li><a href="#toc_6">Default Database and Schema</a></li>
     <li><a href="#toc_7">CRUD Generator PLANT</a></li>
     <li><a href="#toc_8">Standard HTML Templates</a></li>
-    <li><a href="#toc_9">Routing</a></li>
-    <li><a href="#toc_10">Logging</a></li>
-    <li><a href="#toc_11">Mailing</a></li>
-    <li><a href="#toc_12">Mail Templates</a></li>
-    <li><a href="#toc_13">Java Translations</a></li>
-    <li><a href="#toc_14">Webapp Design and Javascript</a></li>
-    <li><a href="#toc_15">HTTPS</a></li>
-    <li><a href="#toc_16">Roadmap | Backlog</a></li>
-    <li><a href="#toc_17">License</a></li>
-    <li><a href="#toc_18">Contact</a></li>
-    <li><a href="#toc_19">Acknowledgments</a></li>
+    <li><a href="#toc_9">JSON REST API</a></li>
+    <li><a href="#toc_10">Routing</a></li>
+    <li><a href="#toc_11">Logging</a></li>
+    <li><a href="#toc_12">Mailing</a></li>
+    <li><a href="#toc_13">Mail Templates</a></li>
+    <li><a href="#toc_14">Java Translations</a></li>
+    <li><a href="#toc_15">Webapp Design and Javascript</a></li>
+    <li><a href="#toc_16">HTTPS</a></li>
+    <li><a href="#toc_17">Roadmap | Backlog</a></li>
+    <li><a href="#toc_18">License</a></li>
+    <li><a href="#toc_19">Contact</a></li>
+    <li><a href="#toc_20">Acknowledgments</a></li>
   </ol>
 </details>
 <br />
@@ -96,8 +97,9 @@ It is shipped with the following features ready to use:
 - Language management
 - File up- and download
 - Full MIME types control
-- Extendable user settings
+- 2-Factor-Authentication
 - Password reset mechanism
+- Extendable user settings
 - Dark theme and theme support
 - Mailing inclusive mail templates
 - URL routing with language support
@@ -107,6 +109,7 @@ It is shipped with the following features ready to use:
 - HTTPS protocol and TLS for mail if configured
 - User roles & access control on controller level
 - User session are stored when servers are stopped
+- Entities can be served through the JSON REST API
 - Servlet API 4.0 Java EE 8 (prepared for 5.0 Jakarta EE 8)
 - Full CRUD-Generator **PLANT** for views, models and handlers
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
@@ -131,6 +134,7 @@ Enjoy!
 * [Log4j2](https://logging.apache.org/log4j/2.x)
 * [Checker Framework Qualifiers](https://checkerframework.org)
 * [Jakarta Mail API](https://eclipse-ee4j.github.io/mail)
+* [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
 * [normalize.css](https://necolas.github.io/normalize.css)
 
@@ -144,7 +148,7 @@ Enjoy!
 1. **`autumo-beetRoot-x.y.z.zip`**: Stand-alone server version with all files for every distribution.
 2. **`autumo-beetRoot-web-x.y.z.zip`**: General web-app version.
 3. **`beetroot.war`**: Tomcat version.
-4. **`beetroot-jetty.war`**: Jetty version. 
+4. **`beetroot-jetty.war`**: Jetty version (for demo purposes only). 
 
 Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
@@ -293,7 +297,9 @@ We suggest to keep your original generated HTML templates and model configuratio
 
 The model configuration `columns.cfg` does the following for every entity:
 
-- It defines what columns you see for every view (add, edit, view/single-record, index/list). See existing files for sample entities `Task` and/or `User`.
+- It defines what columns you see for every view (add, edit, view/single-record, index/list) and defines a value for the field name. See existing files for sample entities `Task` and/or `User`. E.g.:
+
+	`adbfield=GUI Name for that Field`
 
 - It also defines which columns are UNIQUE in the database by defining them with the key `unique`, e.g.:
 
@@ -302,6 +308,10 @@ The model configuration `columns.cfg` does the following for every entity:
 - Furthermore, you can define transient values that are nor read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
 
 	`transient=status`
+
+- If you want to load a value from a database field into the entity bean to use it in a handler, but you do not want it to be displayed in the GUI, define the constant 'NO_SHOW' as the GUI field name, for example:
+
+	`secretkey=NO_SHOW`
 
 
 Your TODO's are the following after generating:
@@ -356,6 +366,63 @@ The following template variables are always parsed and you can use them as many 
 
 
 
+<!-- JSON REST API -->
+## JSON REST API
+
+beetRoot comes with an "out-of-the-box" JSON REST API that serves any entity from the application. The API uses an API key that is defined within the "Settings" by the key `web.json.api.key`. The API key name itself can be changed in the beetRoot configuration `cfg/beetroot.cfg`.
+
+A REST API call looks like this:
+
+- `http://localhost:8778/tasks/index.json?apiKey=c56950c47cc9f055a17395d6bf94222d&sort=id&direction=desc&page=1`
+
+Example Answer:
+
+	{
+	    "tasks": [
+	        {
+	            "id": "5",
+	            "name": "Task 5",
+	            "active": "false",
+	            "laststatus": "false"
+	        },
+	        {
+	            "id": "4",
+	            "name": "Task 4",
+	            "active": "false",
+	            "laststatus": "true"
+	        }   
+	    ],
+	    "paginator": {
+	        "itemsPerPage": 2,
+	        "itemsTotal": 2,
+	        "lastPage": 1,
+	    }    
+	}
+
+As you can see, you can iterate with the `paginator` object through pages with your REST calls - the same way as you would navigate within an HTML `index` page.
+
+JSON templates can be handled like HTML templates: Put them into the directory `web/html/..`. No user languages are used in any way by using this API. Therefore, you can dismiss the HTML template language directories and place the template, e.g. for entity `tasks`, directly here `web/html/tasks/index.json`; it looks like this:
+
+	{
+    	"tasks": [
+	{$data}    
+    	],
+	{$paginator}    
+	}
+
+Also, you can create an own `columns.cfg` in this directory, for example looking like this:
+
+	list_json.id=is
+	list_json.name=name
+	list_json.active=active
+	list_json.laststatus=laststatus
+
+It never has been easier using a REST API!
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
 <!-- ROUTING -->
 ## Routing
 
@@ -373,8 +440,9 @@ Let's have a look at some routes:
 	
 	/** Tasks */
 	new Route("/:lang/tasks", TasksIndexHandler.class, "tasks"),
+	new Route("/:lang/tasks/index.json", TasksRESTIndexHandler.class, "tasks"),
 	new Route("/:lang/tasks/index", TasksIndexHandler.class, "tasks"),
-	new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
+	new Route("/:lang/tasks/view", TasksViexwHandler.class, "tasks"),
 	new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
 	new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
 	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks")
@@ -411,7 +479,7 @@ beetRoot handles every pre-url-path / servlet-name-path by its own, if configure
 
 
 
-<!-- ROUTING -->
+<!-- LOGGING -->
 ## Logging
 
 beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default configuration `cfg/logging.xml` (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
@@ -439,7 +507,9 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-Check the configuration `cfg/beetroot.cfg` for mailing options.
+Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). By default, Jakrata is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration;
+
+Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwitten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

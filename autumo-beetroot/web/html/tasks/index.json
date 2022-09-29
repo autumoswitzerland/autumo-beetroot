@@ -1,0 +1,6 @@
+{
+    "tasks": [
+{$data}    
+    ],
+{$paginator}    
+}

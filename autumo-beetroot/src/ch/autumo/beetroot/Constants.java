@@ -81,6 +81,11 @@ public class Constants {
 	public static final String GENERAL_SRV_CFG_FILE = "beetroot.cfg";
 
 	/**
+	 * JSON extension.
+	 */
+	public static final String JSON_EXT = ".json";
+	
+	/**
 	 * Admin server/shutdown port.
 	 */
 	public static final String KEY_ADMIN_PORT = "admin_port";
@@ -212,6 +217,11 @@ public class Constants {
     
 	// Mail specific
 	//------------------------------------------------------------------------------
+    
+    /**
+     * Mail transport protocol.
+     */
+    public static final String MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";
     
     /**
      * Mail host key.

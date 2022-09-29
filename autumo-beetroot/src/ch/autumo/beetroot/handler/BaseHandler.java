@@ -157,6 +157,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		else
 			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
 
+		// Special case JSON: overwrite languages, not needed!
+		if (session.getUri().endsWith(Constants.JSON_EXT))
+			res = "web/html/"+entity+"/columns.cfg";
+		
     	FileCache fc = null;
 		String prePath = "";
     	String filePath = null;
@@ -275,7 +279,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			    		templateResource = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
 			    		
 			    		switch (templateResource) {
-	
+
+			    			case "index.json":
+			    				
+				    			if (configPair[0].startsWith("list_json.")) {
+				    				
+				    				newCfgLine = configPair[0].substring(10, configPair[0].length()) + "=" + configPair[1];
+				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
+				    		    	added = true;
+				    			}
+				    			break;
+			    		
 			    			case "index.html":
 			    				
 				    			if (configPair[0].startsWith("list.")) {
@@ -722,6 +736,61 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
+	 * Process JSON templates.
+	 * 
+	 * @param session beetRoot session
+	 * @return result
+	 */
+	private String processJSON(BeetRootHTTPSession session) {
+		
+		final String currRessource =  this.getResource();
+
+		// prepare text buffer
+		final StringBuffer sb = new StringBuffer();
+		
+		// process JSON templates
+		Scanner sc = null;
+		try {
+			sc = getNewScanner(currRessource);
+			while (sc.hasNextLine()) {
+				
+				String text = sc.nextLine();
+				
+				// custom parse?
+				text = parse(text, session);
+				
+				// template specific variables
+				final String res = this.replaceTemplateVariables(text, session);
+				if (res != null && res.length() != 0)
+					text = res;
+
+				sb.append(text + "\n");
+				
+				parseTemplateData(sb, "{$data}");
+				parsePaginator(sb, "{$paginator}", session);
+			}
+			
+		} catch (FileNotFoundException e) {
+			
+			final String err = "Web resource '" + currRessource + "' not found!";
+			LOG.error(err, e);
+			return "NOTFOUND:" + currRessource;
+			
+		} catch (Exception ex) {
+			
+			final String err = "Web resource '" + currRessource + "' parsing error!";
+			LOG.error(err, ex);
+			return "PARERROR:" + currRessource + ":" + ex.getMessage();
+			
+		} finally {
+			if (sc!= null)
+				sc.close();
+		}
+		
+		return sb.toString();			
+	}
+	
+	/**
 	 * Process handlers to get the whole HTML page.
 	 * 
 	 * @param session beetroot session
@@ -729,6 +798,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @return whole parsed HTML page
 	 */
 	public String getText(BeetRootHTTPSession session, int origId) throws Exception {
+
+		// Special case: JSON REST
+		if (session.getUri().endsWith(Constants.JSON_EXT)) {
+			return this.processJSON(session);
+		}
 		
 		// leftover messages?
 		String msg = session.getParms().get("msg");
@@ -752,17 +826,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			} else 
 				this.addWarningMessage(msg);
 		}
-		
-		// process templates
-		String templateResource = getResource();
-		final StringBuffer sb = new StringBuffer();
 
 		final Session userSession = session.getUserSession();
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
 		String user = userSession.getUserName();
 		String userfull = userSession.getUserFullNameOrUserName();
 		String currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/layout.html", userSession);
+		String templateResource = getResource();
 		
+		// prepare text buffer
+		final StringBuffer sb = new StringBuffer();
+		
+		// process templates
 		Scanner sc = null;
 		try {
 			

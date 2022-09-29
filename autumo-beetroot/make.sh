@@ -150,7 +150,6 @@ then
 
 	cp ../cfg/logging-dist.xml autumo-beetRoot-$VERSION/cfg/logging.xml
 	
-	
 	cp ../cfg/logging-web.xml autumo-beetRoot-web-$VERSION/logging.xml
 
 
@@ -170,6 +169,7 @@ then
 	# copy libs
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
+	rm autumo-beetRoot-$VERSION/lib/jakarta.mail-api*.jar
 	#rm autumo-beetRoot-$VERSION/lib/jakarta.mail*.jar
 	#rm autumo-beetRoot-$VERSION/lib/jakarta.activation*.jar
 	rm autumo-beetRoot-$VERSION/lib/javax.servlet*.jar
@@ -276,7 +276,6 @@ then
 	zip -r "autumo-beetRoot-web-${VERSION}.zip" autumo-beetRoot-web-${VERSION} \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
-
 
 
 	cd autumo-beetRoot-web-${VERSION}

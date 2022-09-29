@@ -243,16 +243,41 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 */
 	public Response serve(BeetRootHTTPSession session, HttpServletRequest request) {
 
-		boolean loggedIn = false;
-		
-		final String dir = "web/";
 		String uri = Utils.normalizeUri(session.getUri());
-		//String uri = session.getUri();
-
 		
 		// servlet magic :)
 		if (insertServletNameInTemplateRefs && uri.startsWith(servletName+"/")) {
 			uri = uri.replaceFirst(servletName+"/", "");
+		}
+
+		
+		// JSON
+		if (uri.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
+			
+			final String apiKeyName = ConfigurationManager.getInstance().getString("web_json_api_key_name");
+			final String apiKey = session.getParms().get(apiKeyName);
+			String dbApiKey = null;
+			try {
+				dbApiKey = DatabaseManager.getProperty("web.json.api.key");
+			} catch (Exception e) {
+				LOG.warn("Couldn't read property from DB!", e);
+				String t = LanguageManager.getInstance().translate("base.err.srv.db.title", LanguageManager.DEFAULT_LANG);
+				String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", LanguageManager.DEFAULT_LANG, e.getMessage());
+				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+			}
+			
+			if (dbApiKey != null)
+				dbApiKey = dbApiKey.trim();
+			
+			if (dbApiKey != null && apiKey!= null && dbApiKey.equals(apiKey)) {
+				return this.serveAtLast((BeetRootHTTPSession)session);
+			}
+			else {
+				LOG.warn("JSON API (URI: '"+uri+"'): Access with wrong JSON API Key!");
+				String t = LanguageManager.getInstance().translate("base.err.srv.io.title", LanguageManager.DEFAULT_LANG);
+				String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", LanguageManager.DEFAULT_LANG, "Disperse, nothing to see here!");
+				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+			}
 		}
 		
 		
@@ -290,10 +315,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    }
 	    
 	    
+		boolean loggedIn = false;
+		final String dir = "web/";
+	    
 	    // Are we running in a servlet context?
     	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
     	
-        
+    	
 		// web resources except html templates
 		if (uri.contains(".") && !uri.endsWith(".html")) { // Note: template request have no extension at all!
 

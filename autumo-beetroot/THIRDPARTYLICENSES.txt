@@ -84,12 +84,12 @@ with third parties: All licenses are covered by the license for this product (se
 
 -	Library:	PostgreSQL
 	License:	The PostgreSQL License (PostgreSQL)
-	Link:		https://www.postgresql.org/about/licence/
+	Link:		https://www.postgresql.org/about/licence
 
 -	Library:	MariaDB Connector/J
 	License:	GNU Lesser General Public License (LGPLv2.1)
 	Links:		https://opensource.org/licenses/LGPL-2.1
-				https://mariadb.com/kb/en/licensing-faq/
+				https://mariadb.com/kb/en/licensing-faq
 
 
 NOTE: All specific licenses of the third-party-software distributed within this product above can be

@@ -45,11 +45,11 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.GUIDGenerator;
 import ch.autumo.beetroot.LanguageManager;
-import ch.autumo.beetroot.Mailer;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
+import ch.autumo.beetroot.mailing.MailerFactory;
 
 /**
  * Default login handler.
@@ -148,7 +148,7 @@ public class ResetHandler extends BaseHandler {
 		variables.put("message", LanguageManager.getInstance().translate("base.mail.reset.msg", userSession));
 		variables.put("link", link);
 		
-		Mailer.mail(new String[] {email}, LanguageManager.getInstance().translate("base.mail.reset.title", userSession), variables, "reset", session);
+		MailerFactory.getInstance().mail(new String[] {email}, LanguageManager.getInstance().translate("base.mail.reset.title", userSession), variables, "reset", session);
 		
 		return new HandlerResponse(HandlerResponse.STATE_OK, "Mail sent!");
 	}

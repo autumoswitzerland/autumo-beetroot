@@ -104,9 +104,9 @@ public class UsersViewHandler extends DefaultViewHandler {
 			absPath = Utils.createQRCode(barCode, Constants.QR_IMG_SIZE, Constants.QR_IMG_SIZE);
 			tempFileName = absPath.substring(absPath.lastIndexOf(Utils.FILE_SEPARATOR) + 1, absPath.length());
 			
-			final String altText = LanguageManager.getInstance().translate("base.2fa.alt.text", SessionManager.getInstance().findOrCreate(session));			
+			final String title = LanguageManager.getInstance().translate("base.2fa.title.text", SessionManager.getInstance().findOrCreate(session));			
 			
-			return "<img src=\"/tmp/"+tempFileName+"\" alt=\""+altText+"\">";
+			return "<img src=\"/tmp/"+tempFileName+"\" title=\""+title+"\">";
 			
 		} catch (UtilsException e) {
 			

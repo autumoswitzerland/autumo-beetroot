@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.mailing;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,8 +36,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -48,27 +46,90 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.mail.Authenticator;
-import jakarta.mail.BodyPart;
-import jakarta.mail.Message;
-import jakarta.mail.Multipart;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeBodyPart;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
-
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.SecureApplicationHolder;
+import ch.autumo.beetroot.Session;
+import ch.autumo.beetroot.Utils;
 
 /**
- * Mailer.
+ * Abstract mailer class.
  */
-public class Mailer {
+public abstract class AbstractMailer implements Mailer {
 
-	private final static Logger LOG = LoggerFactory.getLogger(Mailer.class.getName());
-
+	private final static Logger LOG = LoggerFactory.getLogger(AbstractMailer.class.getName());
 	
-	private static String loadTemplate(String templateName, BeetRootHTTPSession session, String extension) throws Exception {
+	protected String mailformats[] = null;
+	protected boolean auth = false;
+	protected boolean tlsEnable = false;
+	
+	protected int port = -1;
+	protected String portStr = null;
+	protected String host = null;
+	
+	protected boolean pwEncoded = false;
+	protected String user = null;
+	protected String password = null;
+	
+	protected String from = null;
+	
+	
+	protected Properties getProperties() throws Exception {
+
+		final Properties props = System.getProperties();
+		
+		mailformats = ConfigurationManager.getInstance().getSepValues("mail_formats");
+		if (mailformats.length < 1)
+			throw new IllegalArgumentException("At least one email format must be defined in configuration!");
+
+		auth = ConfigurationManager.getInstance().getYesOrNo("mail_auth");
+		tlsEnable = ConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
+		
+		portStr = DatabaseManager.getProperty("mail.port");
+		if (portStr != null)
+			port = Integer.valueOf(portStr).intValue();
+		if (port < 0) {
+			port = ConfigurationManager.getInstance().getInt("mail_port");
+			if (port == -1) {
+				LOG.warn("Using mail port 25.");
+				port = 25;
+			}
+		}
+		   
+		host = DatabaseManager.getProperty("mail.host");
+		host = (host == null || host.length() == 0) ? ConfigurationManager.getInstance().getString("mail_host") : host; 
+
+		pwEncoded = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
+		user = ConfigurationManager.getInstance().getString("mail_user");
+		password = pwEncoded
+				? ConfigurationManager.getInstance().getDecodedString("mail_password",
+						SecureApplicationHolder.getInstance().getSecApp())
+				: ConfigurationManager.getInstance().getString("mail_password");
+
+		from = DatabaseManager.getProperty("mail.mailer");
+		from = (from == null || from.length() == 0) ? ConfigurationManager.getInstance().getString("mail_from") : from; 
+		
+		
+		props.put(Constants.MAIL_TRANSPORT_PROTOCOL, "smtp");
+		props.put(Constants.MAIL_SMTP_HOST_KEY, host);
+		props.put(Constants.MAIL_SMTP_PORT_KEY, "" + port);
+		props.put(Constants.MAIL_SMTP_AUTH_KEY, Boolean.valueOf(auth).toString());
+
+		if (tlsEnable) {
+			props.put(Constants.MAIL_SMTP_TLS_ENABLE_KEY, Boolean.valueOf(tlsEnable).toString());
+			// Use the following if you need SSL
+			props.put("mail.smtp.socketFactory.port", port);
+			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+			props.put("mail.smtp.socketFactory.fallback", "false");
+		}		
+		
+		return props;
+	}
+	
+	protected String loadTemplate(String templateName, BeetRootHTTPSession session, String extension) throws Exception {
 		
 		Session userSession = session.getUserSession();
 		String file = null;
@@ -157,7 +218,7 @@ public class Mailer {
 		return sb.toString();
 	}
 	
-	private static String replaceAllVariables(String template, Map<String, String> variables, String extension) {
+	protected String replaceAllVariables(String template, Map<String, String> variables, String extension) {
 		
 		String baseUrl = ConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
 		String baseUrlPort = ConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
@@ -166,7 +227,7 @@ public class Mailer {
 		if (baseUrlPort != null)
 			base = baseUrl + ":" + baseUrlPort;
 		else
-			base = baseUrl;
+			base = baseUrl ;
 
 		String servletName = null;
 		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
@@ -183,7 +244,7 @@ public class Mailer {
 				template = template.replaceAll("\\{\\$ws_url\\}", base);
 		}
 		
-		Set<String> names = variables.keySet();
+		final Set<String> names = variables.keySet();
 		
 		for (Iterator<String> iterator = names.iterator(); iterator.hasNext();) {
 			
@@ -198,112 +259,8 @@ public class Mailer {
 	}
 	
 	/**
-	 * Mail. Only HTML templates are supported atm.
-	 * 
-	 * @param to email receiver addresses
-	 * @param variables variables to parse in templates
-	 * @param templateName template name
-	 * @param session HTTP session
-	 * @throws Exception
+	 * @see {@link Mailer#mail(String[], String, Map, String, BeetRootHTTPSession)}
 	 */
-	public static void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {
-
-		final String mailformats[] = ConfigurationManager.getInstance().getSepValues("mail_formats");
-		if (mailformats.length < 1)
-			throw new IllegalArgumentException("At least one email format must be defined in configuration!");
-		
-		final Properties props = System.getProperties();
-
-		boolean auth = ConfigurationManager.getInstance().getYesOrNo("mail_auth");
-		boolean tlsEnable = ConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
-		
-		int port = -1;
-		String portStr = DatabaseManager.getProperty("mail.port");
-		if (portStr != null)
-			port = Integer.valueOf(portStr).intValue();
-		if (port < 0) {
-			port = ConfigurationManager.getInstance().getInt("mail_port");
-			if (port == -1) {
-				LOG.warn("Using mail port 25.");
-				port = 25;
-			}
-		}
-		   
-		String host = DatabaseManager.getProperty("mail.host");
-		host = host == null ? ConfigurationManager.getInstance().getString("mail_host") : host; 
-
-		props.put(Constants.MAIL_SMTP_HOST_KEY, host);
-		props.put(Constants.MAIL_SMTP_PORT_KEY, "" + port);
-		props.put(Constants.MAIL_SMTP_AUTH_KEY, Boolean.valueOf(auth).toString());
-
-		if (tlsEnable) {
-			props.put(Constants.MAIL_SMTP_TLS_ENABLE_KEY, Boolean.valueOf(tlsEnable).toString());
-			// Use the following if you need SSL
-			props.put("mail.smtp.socketFactory.port", port);
-			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-			props.put("mail.smtp.socketFactory.fallback", "false");
-		}
-		jakarta.mail.Session mailSession = null;
-
-		boolean pwEncoded = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
-
-		final String u = ConfigurationManager.getInstance().getString("mail_user");
-		final String p = pwEncoded
-				? ConfigurationManager.getInstance().getDecodedString("mail_password",
-						SecureApplicationHolder.getInstance().getSecApp())
-				: ConfigurationManager.getInstance().getString("mail_password");
-
-		if (auth) {
-			mailSession = jakarta.mail.Session.getInstance(props, new Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(u, p);
-				}
-			});
-		}
-		else {
-			mailSession = jakarta.mail.Session.getDefaultInstance(props);
-		}
-
-		final MimeMessage message = new MimeMessage(mailSession);
-		
-		String from = DatabaseManager.getProperty("mail.mailer");
-		from = from == null ? ConfigurationManager.getInstance().getString("mail_from") : from; 
-		
-		message.setFrom(new InternetAddress(from));
-
-		// process receivers
-		for (int i = 0; i < to.length; i++) {
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to[i]));
-			LOG.info("Sending mail to '"+to[i]+"'.");
-		}
-
-		message.setSubject(subject);
-
-		final Multipart multipart = new MimeMultipart();
-		
-		// txt must be first always !
-		Arrays.sort(mailformats, Collections.reverseOrder());
-		
-		BodyPart messageBodyPart = null;
-		for (int i = 0; i < mailformats.length; i++) {
-			
-			String template = loadTemplate(templateName, session, mailformats[i]);		
-			template = replaceAllVariables(template, variables, mailformats[i]);
-			
-			messageBodyPart = new MimeBodyPart();
-			if (mailformats[i].toLowerCase().equals("html"))
-				messageBodyPart.setContent(template, "text/html");
-			else
-				messageBodyPart.setText(template);
-			
-			multipart.addBodyPart(messageBodyPart);
-		}
-		
-		message.setContent(multipart);
-		message.saveChanges();
-
-		// Send message
-		Transport.send(message);
-	}
+	public abstract void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception;
 
 }
