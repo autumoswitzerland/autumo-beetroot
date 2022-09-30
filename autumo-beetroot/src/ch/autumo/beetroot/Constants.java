@@ -64,7 +64,7 @@ public class Constants {
 	/**
 	 * Default length for user key.
 	 */
-	public static final int SECRET_USER_KEY_DEFAILUT_LEN = 20;
+	public static final int SECRET_USER_KEY_DEFAULT_LEN = 20;
 	
 	
 	// Config specific

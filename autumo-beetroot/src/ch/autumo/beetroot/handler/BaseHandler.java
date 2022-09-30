@@ -1686,6 +1686,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 			}
 			
+			
 			// GET: A R operation, read some data...
 			
 			// read data
@@ -1696,6 +1697,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (session.getUri().endsWith("/users/change") && response != null)
 				return serveHandler(session, new LogoutHandler(), response);
 
+			// For possible special cases allow no content response, but route somewhere specific
+			final String route = this.isNoContentResponseButRoute(userSession);
+			if (route != null && route.length() != 0)
+				return this.refreshRoute((BeetRootHTTPSession) session, route, null);
+			
 			// For possible special cases allow no content response
 			if (this.isNoContentResponse())
 				return this.refresh((BeetRootHTTPSession) session, null);
@@ -1782,8 +1788,25 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
     
 	/**
 	 * Overwrite this if your handler doesn't have an output.
+	 * 
+	 * When a new route (e.g. 'users/index') is returned, that new
+	 * route is loaded by a script refresh. If <code>null</code> is
+	 * returned, nothing happens. 
+	 * 
+	 * @param userSession user session
+	 * @return <code>null</code> or a new route
+	 */
+	protected String isNoContentResponseButRoute(Session userSession) {
+		return null;
+	}
+	
+	/**
+	 * Overwrite this if your handler doesn't have an output.
 	 * A no content response (HTTP 204) with no content will be 
 	 * generated and the current page will be refreshed!
+	 * 
+	 * @return <code>true</code> if a script refresh on the
+	 * 		default index handler should be made.
 	 */
 	protected boolean isNoContentResponse() {
 		return false;
@@ -1985,8 +2008,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         
         return handler;
 	}
-	
-	private Response refresh(BeetRootHTTPSession session, String msg) {
+
+	private Response refreshRoute(BeetRootHTTPSession session, String route, String msg) {
+		
+		if (route.startsWith("/"))
+			route = route.substring(1, route.length());
 		
 		final Session userSession = session.getUserSession();
 		
@@ -1995,12 +2021,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			try {
 				
 				msg = URLEncoder.encode(msg, StandardCharsets.UTF_8.toString());
-				msg = "?msg="+msg+"&sev=w";
+				if (msg.contains("?"))
+					msg = "&msg="+msg+"&sev=w";
+				else
+					msg = "?msg="+msg+"&sev=w";
 				
 			} catch (UnsupportedEncodingException e) {
 				
 				// zzz....
-				msg = "?msg="+LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession)+"&sev=w";
+				if (msg.contains("?"))
+					msg = "&msg="+LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession)+"&sev=w";
+				else
+					msg = "?msg="+LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession)+"&sev=w";
 			}
 		}
 		
@@ -2016,12 +2048,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				+ "<html lang=\"en\">\n"
 				+ "<head>\n"
 				+ "	<meta charset=\"utf-8\">\n"
-				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + getDefaultHandlerEntity() + "/index"+msg+"\" />\n"
+				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + route + msg + "\" />\n"
 				+ "</head>\n"
 				+ "</html>\n"
 				+ "";
 		
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), refreshText);
+	}
+	
+	private Response refresh(BeetRootHTTPSession session, String msg) {
+		
+		return this.refreshRoute(session, getDefaultHandlerEntity() + "/index", msg);
 	}
 	
 	private String getDefaultHandlerEntity() {

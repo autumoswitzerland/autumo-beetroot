@@ -135,13 +135,41 @@ public class Utils {
 	}
 	
 	/**
+	 * Update secret user key.
+	 * 
+	 * @param userId DB user id
+	 * @param newSecretUserKey new secret user key
+	 * @throws SQLException
+	 */
+	public static void updateSecretUserKey(int userId, String newSecretUserKey) throws SQLException {
+		
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try {
+			
+			conn = DatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = "UPDATE users SET secretkey='"+newSecretUserKey+"' WHERE id=" + userId;
+			stmt.executeUpdate(stmtStr);
+		
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}		
+	}
+	
+	/**
 	 * Generate a secret user key with specific length.
 	 * Note: Only initially for every user once!
 	 * 
 	 * @return secret user key
 	 */
 	public static String createSecretUserKey() {
-		return generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAILUT_LEN);
+		return generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAULT_LEN);
 	}		
 	
 	/**

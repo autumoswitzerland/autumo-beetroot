@@ -44,6 +44,7 @@ import ch.autumo.beetroot.handler.tasks.TasksViewHandler;
 import ch.autumo.beetroot.handler.users.ChangeHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
+import ch.autumo.beetroot.handler.users.NewQRCodeHandler;
 import ch.autumo.beetroot.handler.users.OtpHandler;
 import ch.autumo.beetroot.handler.users.ResetHandler;
 import ch.autumo.beetroot.handler.users.SettingsHandler;
@@ -118,12 +119,12 @@ public class BeetRootDefaultRouter implements Router {
 			
 			/** Tasks */
 			new Route("/:lang/tasks", TasksIndexHandler.class, "tasks"),
-			new Route("/:lang/tasks/index.json", TasksRESTIndexHandler.class, "tasks"),
 			new Route("/:lang/tasks/index", TasksIndexHandler.class, "tasks"),
 			new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
 			new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
 			new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
 			new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks"),
+			new Route("/:lang/tasks/index.json", TasksRESTIndexHandler.class, "tasks"),
 			
 			/** Users */
 			new Route("/:lang/users", UsersIndexHandler.class, "users"),
@@ -138,6 +139,7 @@ public class BeetRootDefaultRouter implements Router {
 			new Route("/:lang/users/reset", ResetHandler.class, "reset"),
 			new Route("/:lang/users/change", ChangeHandler.class, "change"),	
 			new Route("/:lang/users/settings", SettingsHandler.class, "settings"),
+			new Route("/:lang/users/newqrcode", NewQRCodeHandler.class, "users"),
 			
 			new Route("/:lang/properties", PropertiesIndexHandler.class, "properties"),
 		    new Route("/:lang/properties/index", PropertiesIndexHandler.class, "properties"),

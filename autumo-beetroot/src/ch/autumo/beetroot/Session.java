@@ -68,9 +68,9 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Crate a new ID pair. Remove old ID's if a apir si found associated to
+	 * Crate a new ID pair. Remove old ID's if a pair is found associated to
 	 * the original ID given. 2 ID pairs are 2 ID key/value pairs.
-	 * Modify ID is the protected web gui id.
+	 * Modify ID is the protected web GUI id.
 	 * 
 	 * @param origId original id (database id)
 	 * @param entity entity
@@ -102,7 +102,8 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Remove an ID pair by given modify ID and entity
+	 * Remove an ID pair by given modify ID and entity.
+	 * 
 	 * @param modifyId modify ID
 	 * @param entity entity
 	 */
@@ -434,14 +435,27 @@ public class Session implements Serializable {
 		SessionManager.getInstance().destroy(sessionID, cookies);
 	}
 
+	/**
+	 * Set internal generated 2FA code.
+	 * 
+	 * @param genCode generated 2FA code
+	 */
 	public void setInternalTOTPCode(String genCode) {
 		data.put("_2facode", genCode);
 	}
 
+	/**
+	 * Get internal generated 2FA code.
+	 * 
+	 * @return internal generated 2FA code
+	 */
 	public String getInternalTOTPCode() {
 		return (String) data.get("_2facode");
 	}
 	
+	/**
+	 * Delete internal generated 2FA code from session.
+	 */
 	public void clearInternalTOTPCode() {
 		data.remove("_2facode");
 	}
