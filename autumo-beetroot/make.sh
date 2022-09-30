@@ -64,6 +64,7 @@ then
 
 	rm beetroot.war
 	rm beetroot-jetty.war
+	rm beetroot-weblogic.zip
 	
 	exit 1
 fi
@@ -310,9 +311,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	sed -i '' 's/mail_implementation=.*/mail_implementation=javax/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	sed -i '' 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Pack it
-	zip -r "beetroot-weblogic.zip" autumo-beetRoot-web-${VERSION}/ \
+	mkdir beetroot/
+	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/ 
+	zip -r "beetroot-weblogic.zip" beetroot/ \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
+	rm -fR beetroot/
 
 
 	# -- 3. Jetty
