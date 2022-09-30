@@ -107,6 +107,16 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 				page = 1;
 			}
 		}
+
+		final String fs = session.getParms().get("fetchsize");
+		if (fs != null && fs.length() != 0) {
+			try {
+				maxRecPerPage = Integer.valueOf(fs).intValue();
+			} catch (Exception e) {
+				LOG.warn("Couldn't parse fetch size number, using fetch size '"+maxRecPerPage+"'!", e);
+			}
+		}
+		
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -246,7 +256,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 		json += "    \"paginator\": {\n";            
 		json += "        \"itemsPerPage\": "+totalShown+",\n";            
 		json += "        \"itemsTotal\": "+rowCount+",\n";            
-		json += "        \"lastPage\": "+pages+",\n";            
+		json += "        \"lastPage\": "+pages+"\n";            
 		json += "    }";            
 		return json;
 	}

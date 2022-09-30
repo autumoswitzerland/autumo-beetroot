@@ -270,7 +270,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				dbApiKey = dbApiKey.trim();
 			
 			if (dbApiKey != null && apiKey!= null && dbApiKey.equals(apiKey)) {
-				return this.serveAtLast((BeetRootHTTPSession)session);
+				return this.serveAtLast((BeetRootHTTPSession)session); // All good!
 			}
 			else {
 				LOG.warn("JSON API (URI: '"+uri+"'): Access with wrong JSON API Key!");

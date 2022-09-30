@@ -151,15 +151,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		Session userSession = SessionManager.getInstance().findOrCreate(session);
 		String res = null;
-		
-		if (userSession == null)
-			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
-		else
-			res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
 
 		// Special case JSON: overwrite languages, not needed!
-		if (session.getUri().endsWith(Constants.JSON_EXT))
+		if (session.getUri().endsWith(Constants.JSON_EXT)) {
 			res = "web/html/"+entity+"/columns.cfg";
+		} else {
+			if (userSession == null)
+				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
+			else
+				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
+		}
 		
     	FileCache fc = null;
 		String prePath = "";
@@ -188,11 +189,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			tryFurther = false;
 			
 			LOG.trace("Resource '" + res + "' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
-			if (userSession == null)
-				res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
-			else
-				res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
-
+			
+			// Special case JSON: overwrite languages, not needed!
+			if (session.getUri().endsWith(Constants.JSON_EXT)) {
+				res = "web/html/"+entity+"/columns.cfg";
+			} else {
+				if (userSession == null)
+					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
+				else
+					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
+			}
+			
 			try {
 				filePath = prePath + res;
 				fc = FileCacheManager.getInstance().findOrCreate(filePath);
