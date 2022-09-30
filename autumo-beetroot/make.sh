@@ -77,6 +77,11 @@ if [ "$1" = "create" ]
 then
 
 
+# -----------------------------
+# ---- Create unique secret key
+# -----------------------------
+HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
+
 
 # -----------------------------
 # ---- Pack & copy libs
@@ -260,6 +265,9 @@ then
 	echo "-> Create PRODUCT..."
 
 
+	# -- Replace unique secret key (seed)
+	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" autumo-beetRoot-${VERSION}/cfg/beetroot.cfg
+
 	# create archive
 	zip -r "autumo-beetRoot-${VERSION}.zip" autumo-beetRoot-${VERSION} \
 		-x "*/.DS_Store" \
@@ -270,6 +278,8 @@ then
 	cd autumo-beetRoot-web-${VERSION}
 	# add servlet context variable to db url
 	sed -i '' 's|db_url=.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
+	# -- Replace unique secret key (seed)
+	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
 	cd ..
 
 	# create archive
@@ -278,6 +288,9 @@ then
 		-x "*/__MACOSX"
 
 
+	# -- BUILD container products
+
+	# -- 1. Tomcat
 	cd autumo-beetRoot-web-${VERSION}
 	# change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=8080/' beetroot.cfg
@@ -288,12 +301,31 @@ then
 	cd ..
 
 
+	# -- 2. WebLogic
+	cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
+	cp ../cfg/logging-web-weblogic.xml autumo-beetRoot-web-${VERSION}/logging.xml
+	# change port (used for email templates)
+	sed -i '' 's/ws_port=.*/ws_port=7001/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	# Use Javax for mailing
+	sed -i '' 's/mail_implementation=.*/mail_implementation=javax/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	sed -i '' 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	# Pack it
+	zip -r "beetroot-weblogic.zip" autumo-beetRoot-web-${VERSION}/ \
+		-x "*/.DS_Store" \
+		-x "*/__MACOSX"
+
+
+	# -- 3. Jetty
+	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml
 	cp ../lib/ext/slf4j-simple* autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	rm -f autumo-beetRoot-web-$VERSION/logging.xml
 	rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
-	
+	# no AUTO_SERVER=TRUE switch
+	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/ifacex;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	# change port (used for email templates)
+	sed -i '' 's/ws_port=.*/ws_port=8080/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	cd autumo-beetRoot-web-${VERSION}
 	jar --create --file "beetroot-jetty.war" *
 	mv *.war ../

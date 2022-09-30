@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
+
+	<description>beetRoot</description>
+
+	<servlet-descriptor>
+		<servlet-name>beetroot</servlet-name>
+	</servlet-descriptor>
+ 
+	<session-descriptor>
+		<cookie-name>__SESSION_ID__</cookie-name>
+	    <persistent-store-type>memory</persistent-store-type>
+	    <sharing-enabled>true</sharing-enabled>
+		<debug-enabled>false</debug-enabled>
+	</session-descriptor>
+
+</weblogic-web-app>
