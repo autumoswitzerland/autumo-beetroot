@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
 
@@ -74,6 +75,18 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 		}
 	}
 
+	@Override
+	public boolean deleteAllowed(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
+			userSession.getUserRole().equalsIgnoreCase("Operator");
+	}
+
+	@Override
+	public boolean changeAllowed(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
+			userSession.getUserRole().equalsIgnoreCase("Operator");
+	}
+	
 	@Override
 	public Class<?> getBeanClass() {
 		return Task.class;

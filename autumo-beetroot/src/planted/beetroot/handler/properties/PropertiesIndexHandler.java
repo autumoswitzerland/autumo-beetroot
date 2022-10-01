@@ -51,5 +51,10 @@ public class PropertiesIndexHandler extends DefaultIndexHandler {
 	public Class<?> getBeanClass() {
 		return Property.class;
 	}
+
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+	}
 	
 }

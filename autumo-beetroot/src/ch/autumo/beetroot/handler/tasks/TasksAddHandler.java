@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
 /**
@@ -74,6 +75,12 @@ public class TasksAddHandler extends DefaultAddHandler {
 	@Override
 	public Class<?> getBeanClass() {
 		return Task.class;
+	}
+	
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
+				userSession.getUserRole().equalsIgnoreCase("Operator");
 	}
 	
 }

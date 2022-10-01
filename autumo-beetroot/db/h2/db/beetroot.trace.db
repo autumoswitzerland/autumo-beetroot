@@ -38,3 +38,23 @@ Feature not supported: "getFunctions" [50100-200]
 	at net.sourceforge.squirrel_sql.client.session.Session$1.run(Session.java:253)
 	at net.sourceforge.squirrel_sql.fw.util.TaskExecuter.run(TaskExecuter.java:82)
 	at java.base/java.lang.Thread.run(Thread.java:830)
+2022-10-01 15:56:05 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLFeatureNotSupportedException: Dieses Feature wird nicht unterstützt: "getFunctions"
+Feature not supported: "getFunctions" [50100-200]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:507)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:429)
+	at org.h2.message.DbException.get(DbException.java:205)
+	at org.h2.message.DbException.get(DbException.java:181)
+	at org.h2.message.DbException.getUnsupportedException(DbException.java:269)
+	at org.h2.message.TraceObject.unsupported(TraceObject.java:398)
+	at org.h2.jdbc.JdbcDatabaseMetaData.getFunctions(JdbcDatabaseMetaData.java:3273)
+	at net.sourceforge.squirrel_sql.fw.sql.databasemetadata.ProcedureAndFunctionMetaData._getFunctionInfos(ProcedureAndFunctionMetaData.java:109)
+	at net.sourceforge.squirrel_sql.fw.sql.databasemetadata.ProcedureAndFunctionMetaData.getFunctionInfos(ProcedureAndFunctionMetaData.java:95)
+	at net.sourceforge.squirrel_sql.fw.sql.databasemetadata.SQLDatabaseMetaData.getProcedures(SQLDatabaseMetaData.java:744)
+	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.privateLoadStoredProcedures(SchemaInfo.java:531)
+	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.loadStoredProcedures(SchemaInfo.java:367)
+	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.privateLoadAll(SchemaInfo.java:305)
+	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.initialLoad(SchemaInfo.java:181)
+	at net.sourceforge.squirrel_sql.client.session.Session$1.run(Session.java:253)
+	at net.sourceforge.squirrel_sql.fw.util.TaskExecuter.run(TaskExecuter.java:82)
+	at java.base/java.lang.Thread.run(Thread.java:830)

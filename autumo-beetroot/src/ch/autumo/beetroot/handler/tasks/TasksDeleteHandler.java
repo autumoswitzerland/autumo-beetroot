@@ -30,6 +30,7 @@
  */
 package ch.autumo.beetroot.handler.tasks;
 
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 
 /**
@@ -44,6 +45,12 @@ public class TasksDeleteHandler extends DefaultDeleteHandler {
 	@Override
 	public Class<?> getRedirectHandler() {
 		return TasksIndexHandler.class;
+	}
+
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
+				userSession.getUserRole().equalsIgnoreCase("Operator");
 	}
 	
 }

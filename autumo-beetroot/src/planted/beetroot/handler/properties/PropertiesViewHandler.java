@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 //import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 
 /**
@@ -41,6 +42,11 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 	@Override
 	public Class<?> getBeanClass() {
 		return Property.class;
+	}
+
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
 	
 }

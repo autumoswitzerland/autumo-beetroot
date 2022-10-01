@@ -1000,11 +1000,9 @@ public class Utils {
 	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
 	
-	/*
 	public static void main(String[] args) {
-		System.out.println(generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAILUT_LEN));
+		System.out.println(generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAULT_LEN));
 		//System.out.println(create6DigitTOTPCode("userseckey"));
 	}
-	*/
 	
 }

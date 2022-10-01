@@ -58,4 +58,9 @@ public class NewQRCodeHandler extends BaseHandler {
 		return this.entity;
 	}
 
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+	}
+	
 }

@@ -1,6 +1,8 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
 		<li class="heading">Aktionen</li>
+		{$ifrole=Controller:}
+		{$ifrole=Administrator:}
 		<li><a href="/{$lang}/tasks/edit?id={$id}" class="side-nav-item">Task
 				editieren</a></li>
 		<li>
@@ -14,10 +16,16 @@
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.returnValue = false; return false;">Task
 				löschen</a>
 		</li>
+		{$endifrole;}
+		{$endifrole;}
 		<li><a href="/{$lang}/tasks" class="side-nav-item">Tasks
 				auflisten</a></li>
+		{$ifrole=Controller:}
+		{$ifrole=Administrator:}
 		<li><a href="/{$lang}/tasks/add" class="side-nav-item">Neuer
 				Task</a></li>
+		{$endifrole;}
+		{$endifrole;}
 	</ul>
 </nav>
 

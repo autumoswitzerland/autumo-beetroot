@@ -295,9 +295,10 @@ public class DefaultIndexHandler extends BaseHandler {
 		// VIEW
 		htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/view?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.view", userSession)+"</a>\n";
 		// EDIT
-		htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
+		if (this.changeAllowed(userSession))
+			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
 		// DELETE
-		if (userSession.getUserRole().equalsIgnoreCase("Administrator")) {
+		if (this.deleteAllowed(userSession)) {
 			htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
 			htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
 			if (ConfigurationManager.getInstance().useCsrf()) {
@@ -314,6 +315,26 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		htmlData += "</td>\n";
 		return htmlData;
+	}
+	
+	/**
+	 * Determine if change actions are shown on index page.
+	 * 
+	 * @param session user session
+	 * @return true or false
+	 */
+	public boolean changeAllowed(Session userSession) {
+		return true;
+	}
+
+	/**
+	 * Determine if delete actions are shown on index page.
+	 * 
+	 * @param session user session
+	 * @return true or false
+	 */
+	public boolean deleteAllowed(Session userSession) {
+		return true;
 	}
 	
 	/**

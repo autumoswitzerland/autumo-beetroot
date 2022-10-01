@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
 
@@ -71,8 +72,13 @@ public class UsersIndexHandler extends DefaultIndexHandler {
 	}
 
 	@Override
+	public boolean deleteAllowed(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+	}
+	
+	@Override
 	public Class<?> getBeanClass() {
 		return User.class;
 	}
-
+	
 }

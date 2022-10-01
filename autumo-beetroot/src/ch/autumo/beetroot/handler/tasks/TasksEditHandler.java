@@ -30,6 +30,7 @@
  */
 package ch.autumo.beetroot.handler.tasks;
 
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultEditHandler;
 
 /**
@@ -53,6 +54,12 @@ public class TasksEditHandler extends DefaultEditHandler {
 	@Override
 	public Class<?> getBeanClass() {
 		return Task.class;
+	}
+	
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
+				userSession.getUserRole().equalsIgnoreCase("Operator");
 	}
 	
 }
