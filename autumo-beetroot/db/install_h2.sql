@@ -1,28 +1,14 @@
 -----------------------------------------------------------------------------
 -- (c) 2022 by autumo GmbH
 -----------------------------------------------------------------------------
--- PROJECT:     autumo-products
--- FILE:        db/install_beetroot.sql
+-- PROJECT:     autumo-beetroot
+-- FILE:        db/install_h2.sql
 -----------------------------------------------------------------------------
 -- WHEN         WHO                             DESCRIPTION
--- 06-Feb-2022  Michael Gasche                  -
+-- 01-Oct-2022  Michael Gasche                  -
 -----------------------------------------------------------------------------
 
 
-
--- create database
-
--- MySQL and MariaDB create database syntax:
---create database ifacexweb default character set utf8 default collate utf8_bin;
---GRANT ALL PRIVILEGES ON beetroot.* to beetroot@'%' IDENTIFIED BY 'beetroot';
---GRANT ALL PRIVILEGES ON beetroot.* to beetroot@'localhost' IDENTIFIED BY 'beetroot';
-
-
-
--- Adjust the subsequent SQL to you database's SQL syntax.
--- This here works fine with MySQL, MariaAB and H2.
-
--- create tables
 
 CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
