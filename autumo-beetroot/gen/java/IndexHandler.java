@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 //import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
 
 /**

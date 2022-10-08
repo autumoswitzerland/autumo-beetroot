@@ -1,8 +1,7 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
 		<li class="heading">Actions</li>
-		{$ifrole=Controller:}
-		{$ifrole=Administrator:}
+		{$ifrole=Administrator,Operator:}
 		<li><a href="/{$lang}/tasks/edit?id={$id}" class="side-nav-item">Edit
 				Task</a></li>
 		<li>
@@ -17,14 +16,11 @@
 				Task</a>
 		</li>
 		{$endifrole;}
-		{$endifrole;}
 		<li><a href="/{$lang}/tasks" class="side-nav-item">List Tasks</a>
 		</li>
-		{$ifrole=Controller:}
-		{$ifrole=Administrator:}
+		{$ifrole=Administrator,Operator:}
 		<li><a href="/{$lang}/tasks/add" class="side-nav-item">New
 				Task</a></li>
-		{$endifrole;}
 		{$endifrole;}
 	</ul>
 </nav>

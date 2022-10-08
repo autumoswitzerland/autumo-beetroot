@@ -60,14 +60,15 @@ public class UsersIndexHandler extends DefaultIndexHandler {
 		
 		switch (columnName) {
 		
-			case "username"		: return "<td>" + set.getString(columnName) + "</td>\n";
-			case "email"		: return "<td>" + set.getString(columnName) + "</td>\n";
-			case "role"			: return "<td>" + set.getString(columnName) + "</td>\n";
-			case "two_fa"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
-			case "created"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>\n";
-			case "modified"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>\n";
+			case "username"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "email"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "role"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			
-			default				: return "<td>" + set.getObject(columnName) + "</td>\n";
+			case "two_fa"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
+			case "created"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>";
+			case "modified"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>";
+			
+			default				: return "<td>" + set.getObject(columnName) + "</td>";
 		}		
 	}
 

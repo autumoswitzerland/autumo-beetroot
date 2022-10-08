@@ -60,12 +60,13 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 		
 		switch (columnName) {
 		
-			case "name"			: return "<td>" + set.getString(columnName) + "</td>";
-			case "minute"		: return "<td>" + set.getString(columnName) + "</td>";
-			case "hour"			: return "<td>" + set.getString(columnName) + "</td>";
-			case "dayofmonth"	: return "<td>" + set.getString(columnName) + "</td>";
-			case "monthofYear"	: return "<td>" + set.getString(columnName) + "</td>";
-			case "dayofWeek"	: return "<td>" + set.getString(columnName) + "</td>";
+			case "name"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "minute"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "hour"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "dayofmonth"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "monthofYear"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "dayofWeek"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			
 			case "active"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
 			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"greenStatus\"></td>" : "<td class=\"redStatus\"></td>";
 			case "lastexecuted"	: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";

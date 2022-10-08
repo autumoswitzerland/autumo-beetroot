@@ -66,8 +66,10 @@ public class UsersViewHandler extends DefaultViewHandler {
 		
 			case "username"		: userName = set.getString(columnName); 
 								  return "<td>"+userName+"</td>";
-			case "email"		: return "<td>"+set.getString(columnName)+"</td>";
-			case "role"			: return "<td>"+set.getString(columnName)+"</td>";
+								  
+			case "email"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "role"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			
 			case "two_fa"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
 			case "created"		: return "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			case "modified"		: return "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";

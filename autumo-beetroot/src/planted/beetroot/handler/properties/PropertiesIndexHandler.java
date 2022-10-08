@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
+import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
 
 /**
@@ -38,12 +39,12 @@ public class PropertiesIndexHandler extends DefaultIndexHandler {
 			// Note: Return a UI presentable value for each field.
 			// The class 'Utils' provides some helper methods for this.
 			// PS: Customize style for <td> if necessary.
-			case "created": return "<td>" + set.getString(columnName) + "</td>";
-			case "name": return "<td>" + set.getString(columnName) + "</td>";
-			case "modified": return "<td>" + set.getString(columnName) + "</td>";
-			case "id": return "<td>" + set.getString(columnName) + "</td>";
-			case "value": return "<td>" + set.getString(columnName) + "</td>";
-			default: return "<td>" + set.getObject(columnName) + "</td>";
+			case "created": return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "name": return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "modified": return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "id": return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "value": return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			default: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 		}
 	}
 

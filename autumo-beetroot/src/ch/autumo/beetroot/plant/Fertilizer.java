@@ -325,9 +325,9 @@ public class Fertilizer {
 							c++;
 							final String name = iterator.next();
 							if (c == amountOfFields)
-								cols += "			case \""+name+"\": return \"<td>\" + set.getString(columnName) + \"</td>\";";
+								cols += "			case \""+name+"\": return \"<td>\" + Utils.getValue(set, columnName) + \"</td>\";";
 							else
-								cols += "			case \""+name+"\": return \"<td>\" + set.getString(columnName) + \"</td>\";\n";
+								cols += "			case \""+name+"\": return \"<td>\" + Utils.getValue(set, columnName) + \"</td>\";\n";
 						}
 						text = text.replace("##columns##", cols);
 					}

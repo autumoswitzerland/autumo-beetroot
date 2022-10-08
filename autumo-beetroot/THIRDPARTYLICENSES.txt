@@ -27,6 +27,7 @@ with third parties: All licenses are covered by the license for this product (se
 				- Codec
 				- DBUtils
 				- Io
+				- Text
 	License:	Apache License, Version 2.0
 	Link:		https://www.apache.org/licenses/LICENSE-2.0
 

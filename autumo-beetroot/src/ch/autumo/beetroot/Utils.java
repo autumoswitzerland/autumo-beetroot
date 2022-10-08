@@ -76,8 +76,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
+import ch.autumo.commons.utils.TextUtils;
 import de.taimos.totp.TOTP;
-
 
 
 /**
@@ -111,7 +111,7 @@ public class Utils {
      * System-specific separator.
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
+	
 	
 	/**
 	 * Get temporary directory.
@@ -132,6 +132,23 @@ public class Utils {
 			dir += FILE_SEPARATOR;
 		
 		return dir;
+	}
+
+	/**
+	 * Access resulkt set value and HTML escape it.
+	 * 
+	 * @param set result set
+	 * @param dbColumnName db column name
+	 * @return escaped db value
+	 * @throws SQLException
+	 */
+	public static String getValue(ResultSet set, String dbColumnName) throws SQLException {
+
+		String v = set.getString(dbColumnName);
+		if (v != null && v.length() != 0)
+			return TextUtils.escapeHtml(v);
+		
+		return v;
 	}
 	
 	/**

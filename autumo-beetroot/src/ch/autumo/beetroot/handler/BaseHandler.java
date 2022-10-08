@@ -462,7 +462,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final String cfgLine = columns.get(Integer.valueOf(idx));
 		final String params[] = cfgLine.split("=");
 		final String colName = params[0].trim();
-		final String guiColName = params[1];
+		String guiColName = params[1];
+		
+		// We don't want this! We leave full control to 'columns.cfg'
+		//guiColName = TextUtils.escapeHtml(guiColName);
 		
 		return new String[] {colName, guiColName};
 	}
@@ -865,17 +868,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					continue LOOP;
 				
 				if (text.contains("$ifrole")) {
-					String strs[] = text.split("=", 2);
-					if (strs.length != 2)
-						continue LOOP;
-					
-					strs[1] = strs[1].replace(";", "");
-					strs[1] = strs[1].replace(":", "");
-					strs[1] = strs[1].replace("}", "");
-					strs[1] = strs[1].replace(" ", "");
-					strs[1] = strs[1].trim();
-					
-					if (!userSession.getUserRole().equals(strs[1]))
+					final List<String> roles = this.getRolesFromTemplate(text);
+					if (!roles.contains(userSession.getUserRole()))
 						ifroleactive = true;
 					
 					continue LOOP;
@@ -1164,17 +1158,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				continue LOOP;
 			
 			if (text.contains("$ifrole")) {
-				String strs[] = text.split("=", 2);
-				if (strs.length != 2)
-					continue LOOP;
-				
-				strs[1] = strs[1].replace(";", "");
-				strs[1] = strs[1].replace(":", "");
-				strs[1] = strs[1].replace("}", "");
-				strs[1] = strs[1].replace(" ", "");
-				strs[1] = strs[1].trim();
-				
-				if (!userSession.getUserRole().equals(strs[1]))
+				final List<String> roles = this.getRolesFromTemplate(text);
+				if (!roles.contains(userSession.getUserRole()))
 					ifroleactive_sub = true;
 				
 				continue LOOP;
@@ -1385,17 +1370,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				continue LOOP;
 			
 			if (text.contains("$ifrole")) {
-				String strs[] = text.split("=", 2);
-				if (strs.length != 2)
-					continue LOOP;
-				
-				strs[1] = strs[1].replace(";", "");
-				strs[1] = strs[1].replace(":", "");
-				strs[1] = strs[1].replace("}", "");
-				strs[1] = strs[1].replace(" ", "");
-				strs[1] = strs[1].trim();
-				
-				if (!userSession.getUserRole().equals(strs[1]))
+				final List<String> roles = this.getRolesFromTemplate(text);
+				if (!roles.contains(userSession.getUserRole()))
 					ifroleactive_templ = true;
 				
 				continue LOOP;
@@ -1834,6 +1810,28 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return LanguageManager.getInstance().translate("base.err.template.msg", userSession);
 	}
 
+	/**
+	 * Get roles from template.
+	 * 
+	 * @param roleLine text line within template with roles
+	 * @return all roles
+	 */
+	private List<String> getRolesFromTemplate(String roleLine) {
+		
+		String strs[] = roleLine.split("=", 2);
+		if (strs.length != 2)
+			return Arrays.asList(new String[] {});
+		
+		strs[1] = strs[1].replaceAll(";", "");
+		strs[1] = strs[1].replaceAll(":", "");
+		strs[1] = strs[1].replaceAll("}", "");
+		strs[1] = strs[1].replaceAll(" ", "");
+		strs[1] = strs[1].trim();
+		
+		final String roles[] = strs[1].split(","); 		
+		return Arrays.asList(roles);
+	}
+	
 	/*
 	private Response serveHandler(
 			BeetRootHTTPSession session, 
