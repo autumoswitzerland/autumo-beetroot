@@ -67,6 +67,7 @@ import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.dbutils.BeanProcessor;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -76,7 +77,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
-import ch.autumo.commons.utils.TextUtils;
 import de.taimos.totp.TOTP;
 
 
@@ -146,11 +146,21 @@ public class Utils {
 
 		String v = set.getString(dbColumnName);
 		if (v != null && v.length() != 0)
-			return TextUtils.escapeHtml(v);
+			return escapeHtml(v);
 		
 		return v;
 	}
 	
+    /**
+     * HTML escape value.
+     * 
+     * @param value to escape
+     * @return value escaped value
+     */
+    public static String escapeHtml(String value) {
+    	return StringEscapeUtils.escapeHtml4(value);
+    }
+    
 	/**
 	 * Update secret user key.
 	 * 

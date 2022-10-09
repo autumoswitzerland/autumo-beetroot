@@ -39,7 +39,6 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.DatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
-import ch.autumo.commons.utils.TextUtils;
 
 /**
  * Default handler for 'web/html/<entity>/view.html' templates.
@@ -125,7 +124,7 @@ public class DefaultViewHandler extends BaseHandler {
 		else
 			val = o.toString();
 		
-		val = TextUtils.escapeHtml(val);
+		val = Utils.escapeHtml(val);
 		
 		return "<td>" + val + "</td>";
 	}

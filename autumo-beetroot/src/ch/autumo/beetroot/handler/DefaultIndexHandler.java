@@ -48,7 +48,6 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.Utils;
-import ch.autumo.commons.utils.TextUtils;
 
 /**
  * Default handler for 'web/html/<entity>/index.html' templates.
@@ -375,7 +374,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		else
 			val = o.toString();
 		
-		val = TextUtils.escapeHtml(val);
+		val = Utils.escapeHtml(val);
 		
 		return "<td>" + val + "</td>";
 	}

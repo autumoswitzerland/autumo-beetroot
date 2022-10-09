@@ -36,4 +36,17 @@ import java.io.Serializable;
  * Marker interface for all entities.
  */
 public interface Entity extends Serializable {
+	
+	/**
+	 * Get id.
+	 * @return id
+	 */
+    public int getId();
+
+    /**
+     * Set id.
+     * @param id
+     */
+    public void setId(int id);	
+	
 }
