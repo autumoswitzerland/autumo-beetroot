@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+  beetRoot Web configuration for Jetty
+  Version: 2.0 - 2022 autumo GmbH
+ -->
+
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
   		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee

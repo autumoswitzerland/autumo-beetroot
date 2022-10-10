@@ -30,7 +30,7 @@
 			
 			<!-- Max 10 files will be created everyday -->
 			<DefaultRolloverStrategy max="10">
-				<Delete basePath="${basePathr}" maxDepth="10">
+				<Delete basePath="${basePath}" maxDepth="10">
 					<!-- Delete all files older than 30 days -->
 					<IfLastModified age="30d" />
 				</Delete>

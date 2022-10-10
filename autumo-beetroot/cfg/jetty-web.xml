@@ -1,6 +1,11 @@
 <?xml version="1.0"  encoding="UTF-8"?>
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
 
+<!-- 
+  beetRoot Specific Web configuration for Jetty
+  Version: 2.0 - 2022 autumo GmbH
+ -->
+
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
 	<Set name="contextPath">/beetroot</Set>
 </Configure>

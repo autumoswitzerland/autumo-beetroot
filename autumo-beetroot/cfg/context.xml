@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+  beetRoot Specific Web configuration for Tomcat
+  Version: 2.0 - 2022 autumo GmbH
+ -->
+
 <Context>
   <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
                    sameSiteCookies="strict" />

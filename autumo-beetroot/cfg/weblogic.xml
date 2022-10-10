@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 
+  beetRoot Specific Web configuration for WebLogic
+  Version: 2.0 - 2022 autumo GmbH
+ -->
+
 <weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
 
 	<description>beetRoot</description>
