@@ -46,5 +46,5 @@ CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 java \
 	-DROOTPATH="${ROOT}" \
 	-Djdk.tls.client.protocols=TLSv1.2 \
-	-cp "${CLASSPATH}" ch.autumo.beetroot.BeetRootServer $* &
+	-cp "${CLASSPATH}" ch.autumo.beetroot.server.BeetRootServer $* &
 

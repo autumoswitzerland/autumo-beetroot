@@ -3,7 +3,7 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.0
+#  Version: 4.1
 #
 #  Notes:
 #   -
@@ -11,7 +11,7 @@
 #------------------------------------------------------------------------------
 #
 #  Copyright 2022 autumo GmbH
-#  Date: 11.02.2022
+#  Date: 10.10.2022
 #
 ###############################################################################
 
@@ -176,19 +176,10 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
 	rm autumo-beetRoot-$VERSION/lib/jakarta.mail-api*.jar
-	#rm autumo-beetRoot-$VERSION/lib/jakarta.mail*.jar
-	#rm autumo-beetRoot-$VERSION/lib/jakarta.activation*.jar
-	rm autumo-beetRoot-$VERSION/lib/javax.servlet*.jar
-	#cp ../lib/jakarta.activation-api*.jar autumo-beetRoot-$VERSION/lib/
-	rm autumo-beetRoot-$VERSION/lib/mysql*.jar
 	
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail*.jar
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.activation*.jar
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet*.jar
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/mysql*.jar
-	cp ../lib/jakarta.activation-api*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail-api*.jar
 	
 	
 	echo "-> Signing libs..."

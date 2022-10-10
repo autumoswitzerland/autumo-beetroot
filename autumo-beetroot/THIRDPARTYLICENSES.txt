@@ -1,5 +1,5 @@
 
-###################################################################################################
+#--------------------------------------------------------------------------------------------------
 #
 #  Third Party Licenses
 #
@@ -11,7 +11,7 @@
 #  2022 autumo GmbH
 #  Date: 27.09.2022
 #
-###################################################################################################
+#--------------------------------------------------------------------------------------------------
 
 
 
@@ -60,6 +60,11 @@ with third parties: All licenses are covered by the license for this product (se
 				(Secondary) GNU General Public License, version 2 with the GNU Classpath Exception
 	Links:		https://projects.eclipse.org/license/epl-2.0
 				https://projects.eclipse.org/license/secondary-gpl-2.0-cp
+
+-	Library:	Javax Servlet API
+	License:	CDDL 1.0 with Classpath Exception
+	Link:		https://javaee.github.io/servlet-spec/LICENSE
+				See: 3.5. Distribution of Executable Versions.
 
 -	Library:	ZXing Java SE Extensions
 	License:	Apache License, Version 2.0

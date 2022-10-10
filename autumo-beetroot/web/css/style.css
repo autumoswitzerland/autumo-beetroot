@@ -30,9 +30,6 @@ header .header-title {
 	padding-left: 80px
 }
 
-nav {
-}
-
 .container {
 	overflow: hidden;
 	padding-bottom: 30px;
@@ -390,7 +387,6 @@ div.message {
 	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.4rem !important;
 	font-weight: 100 !important;
-	height: 57px;
 	padding-left: 0px;
 }
 
