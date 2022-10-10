@@ -77,7 +77,7 @@ public class LanguageManager {
         	ClassLoader loader = null;
         	
         	// default lang
-        	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+        	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
         	if (context != null) {
         		
     			final String cp = Utils.getRealPath(context) + "web/lang/";
@@ -103,7 +103,7 @@ public class LanguageManager {
         	}
         	
         	// langs
-        	langs = ConfigurationManager.getInstance().getSepValues("web_languages");
+        	langs = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
         	if (langs.length > 0)
         		defaultLang = langs[0];
         	
@@ -445,7 +445,7 @@ public class LanguageManager {
 			
 			try {
 				
-				lang = DatabaseManager.getLanguage(uid.intValue());
+				lang = BeetRootDatabaseManager.getLanguage(uid.intValue());
 				
 			} catch (Exception e) {
 				
@@ -470,7 +470,7 @@ public class LanguageManager {
 		if (uid != null) {
 		
 			try {
-				DatabaseManager.getInstance().updateLanguage(newLanguage, uid.intValue());
+				BeetRootDatabaseManager.getInstance().updateLanguage(newLanguage, uid.intValue());
 			} catch (Exception e) {
 				
 				LOG.warn("Cannot update user language with id '"+uid.toString()+"'!");

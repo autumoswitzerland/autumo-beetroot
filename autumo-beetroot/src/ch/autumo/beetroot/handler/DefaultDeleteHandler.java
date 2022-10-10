@@ -34,7 +34,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 
 /**
  * Default delete handler.
@@ -52,7 +52,7 @@ public class DefaultDeleteHandler extends BaseHandler {
 		Statement stmt = null;
 		
 		try {
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			
 			// Delete data !
 			stmt = conn.createStatement();

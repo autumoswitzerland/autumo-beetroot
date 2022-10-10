@@ -45,7 +45,7 @@ import org.nanohttpd.protocols.http.response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Utils;
 
 /**
@@ -57,7 +57,7 @@ public class FileCache  {
 	
 	// file buffer size
 	static {
-		int kBytes = ConfigurationManager.getInstance().getInt("ws_file_cache_size");
+		int kBytes = BeetRootConfigurationManager.getInstance().getInt("ws_file_cache_size");
 		
 		if (kBytes == -1) {
 			LOG.warn("Using 100 kBytes for file cache size.");

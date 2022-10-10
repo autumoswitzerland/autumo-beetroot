@@ -58,7 +58,7 @@ public class PWEncoder {
 
 		// Must !
 		try {
-			ConfigurationManager.getInstance().initialize();
+			BeetRootConfigurationManager.getInstance().initialize();
 		} catch (Exception e) {
 			System.err.println("Couldn't initialize configuration 'cfg/beetroot.cfg' !");
 			System.err.println("ERROR: " + e.getMessage());

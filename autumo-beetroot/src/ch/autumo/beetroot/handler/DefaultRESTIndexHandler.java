@@ -39,9 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 
@@ -70,7 +70,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 		
 		final String err = "Couldn't read max records per page, using 20.'";
 		try {
-			maxRecPerPage = ConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
+			maxRecPerPage = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
 			if (maxRecPerPage == -1) {
 				maxRecPerPage = 20;
 				LOG.warn(err);
@@ -123,7 +123,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 		
 		try {
 
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			
 			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity;

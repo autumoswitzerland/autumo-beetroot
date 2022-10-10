@@ -68,9 +68,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
@@ -137,7 +137,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void initialize(BeetRootHTTPSession session) {
 		
-		servletName = ConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 		if (servletName != null && servletName.length() != 0)
 			insertServletNameInTemplateRefs = true; 
 		
@@ -166,7 +166,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String prePath = "";
     	String filePath = null;
     	boolean tryFurther = false;
-		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 
     	if (context != null)
     		prePath = Utils.getRealPath(context);
@@ -513,7 +513,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public String getInsertValues(BeetRootHTTPSession session) throws Exception {
 		
-		final boolean dbPwEnc = ConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
+		final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 		
 		String clause = "";
 		
@@ -543,7 +543,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// if there's really a column in the GUI that is mapped 
 			// to the db column 'created', overwrite it!
 			if (col[1].equals("created")) {
-				if (DatabaseManager.getInstance().isOracleDb()) {
+				if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 					if (columns.size() == i)
 						clause += Utils.nowTimeStamp();
 					else
@@ -577,8 +577,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public String getUpdateSetClause(BeetRootHTTPSession session) throws Exception {
 
-		final boolean dbPwEnc = ConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
-		final boolean dbAutoMod = ConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
+		final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
+		final boolean dbAutoMod = BeetRootConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
 		
 		final Session userSession = session.getUserSession();
 		
@@ -652,7 +652,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// And we assume the column exists as specified by design!
 		// But we don't update it, if the user choses to modify it by himself (GUI).
 		if (dbAutoMod && clause.indexOf("modified=") != 1) {
-			if (DatabaseManager.getInstance().isOracleDb())
+			if (BeetRootDatabaseManager.getInstance().isOracleDb())
 				clause += ", modified=" + Utils.nowTimeStamp() + "";
 			else
 				clause += ", modified='" + Utils.nowTimeStamp() + "'";
@@ -680,7 +680,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		try {
 
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			
 			// Unique fields test!
 			if (uniqueFields.length != 0) {
@@ -1427,7 +1427,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
     	String filePath = null;
     	FileCache fc = null;
     	boolean tryFurther = false;
-		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
     	if (context != null)
     		prePath = Utils.getRealPath(context);
 		
@@ -2063,7 +2063,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		String entity;
 		try {
-			entity = ConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_ENTITY);
+			entity = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_ENTITY);
 			return entity;
 		} catch (Exception e) {
 	    	LOG.warn("Couldn't load default handler entity!", e);
@@ -2075,7 +2075,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		String clz;
 		try {
-			clz = ConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_HANDLER);
+			clz = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_HANDLER);
 			return Class.forName(clz);
 		} catch (Exception e) {
 	    	LOG.warn("Couldn't load default handler class!", e);

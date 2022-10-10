@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
@@ -83,11 +83,11 @@ public class ChangeHandler extends BaseHandler {
 			
 			try {
 				
-				conn = DatabaseManager.getInstance().getConnection();
+				conn = BeetRootDatabaseManager.getInstance().getConnection();
 				stmt = conn.createStatement();
 			
 				String stmtStr = null;
-				if (DatabaseManager.getInstance().isOracleDb())
+				if (BeetRootDatabaseManager.getInstance().isOracleDb())
 					stmtStr = "UPDATE users SET lasttoken='NONE', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
 				else
 					stmtStr = "UPDATE users SET lasttoken='NONE', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
@@ -115,7 +115,7 @@ public class ChangeHandler extends BaseHandler {
 			
 			try {
 				
-				conn = DatabaseManager.getInstance().getConnection();
+				conn = BeetRootDatabaseManager.getInstance().getConnection();
 				stmt = conn.createStatement();
 			
 				LOG.debug("Reset token to lookup in DB: "+token);
@@ -159,7 +159,7 @@ public class ChangeHandler extends BaseHandler {
 				
 				LOG.debug("Invalid token used: "+token);
 				
-				DatabaseManager.resetToken(userid);
+				BeetRootDatabaseManager.resetToken(userid);
 
 				userid = -1;
 				
@@ -182,7 +182,7 @@ public class ChangeHandler extends BaseHandler {
 		try {
 			if (pass != null && pass.length() != 0) { // && suserid != null && suserid.length() != 0) {
 				
-				if (ConfigurationManager.getInstance().getYesOrNo("db_pw_encoded")) {
+				if (BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded")) {
 					pass = Utils.encode(pass, SecureApplicationHolder.getInstance().getSecApp());
 				};
 				
@@ -193,7 +193,7 @@ public class ChangeHandler extends BaseHandler {
 				Statement stmt = null;
 				
 				try {
-					conn = DatabaseManager.getInstance().getConnection();
+					conn = BeetRootDatabaseManager.getInstance().getConnection();
 					stmt = conn.createStatement();
 				
 					String stmtStr = "UPDATE users SET password='" + pass + "', lasttoken='NONE' WHERE id=" + userid;

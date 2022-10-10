@@ -47,7 +47,7 @@ public class SecureApplicationHolder {
 	
 	private SecureApplicationHolder() {
 		
-		secKey = ConfigurationManager.getInstance().getString(Constants.SEC_KEY_SEED);
+		secKey = BeetRootConfigurationManager.getInstance().getString(Constants.SEC_KEY_SEED);
 		
 		if (secKey == null || secKey.length() == 0)
 			throw new SecurityException("No security key seed has been defined! See configurations!");

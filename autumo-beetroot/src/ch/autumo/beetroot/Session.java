@@ -32,6 +32,7 @@ package ch.autumo.beetroot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,8 @@ public class Session implements Serializable {
 	// User settings are stored in DB, not serialized in session
 	private transient Map<String, String> settingsMap = null;
 	
+	private final Date created;
+	private long sessionRefreshTime;
 	
 	/**
 	 * New session with given session id '__SESSION_ID__' or what is configured.
@@ -65,6 +68,33 @@ public class Session implements Serializable {
 	public Session(String sessionID) {
 		
 		this.sessionID = sessionID;
+		this.sessionRefreshTime = System.currentTimeMillis();
+		this.created = new Date(this.sessionRefreshTime);
+	}
+	
+	/**
+	 * Date and time when the session has been created.
+	 * 
+	 * @return creation date/time
+	 */
+	public Date getCreated() {
+		return this.created;
+	}
+	
+	/**
+	 * Refresh session to save from timeout.
+	 */
+	public void refresh() {
+		this.sessionRefreshTime = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Checks if this session is older than the timeout.
+	 * 
+	 * @return true if so
+	 */
+	public boolean isOlderThanSessionTimeout() {
+		return this.sessionRefreshTime + SessionManager.getInstance().getSessionTimeoutInMillis() < System.currentTimeMillis();
 	}
 	
 	/**
@@ -431,7 +461,6 @@ public class Session implements Serializable {
 	 * @param cookies cookie handler
 	 */
 	public void destroy(CookieHandler cookies) {
-		
 		SessionManager.getInstance().destroy(sessionID, cookies);
 	}
 

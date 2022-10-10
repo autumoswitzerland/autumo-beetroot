@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 
@@ -102,7 +102,7 @@ public class ExampleUploadHandler extends BaseHandler {
 	@Override
 	public String parse(String line, BeetRootHTTPSession session) {
 
-		int mus = ConfigurationManager.getInstance().getInt("web_max_upload_size");
+		int mus = BeetRootConfigurationManager.getInstance().getInt("web_max_upload_size");
 		if (mus == -1) {
 			mus = 32;
 			LOG.warn("Using 32 MB for max. upload file size.");

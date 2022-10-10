@@ -43,9 +43,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
@@ -78,7 +78,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		final String _method = params.get("_method");
 		if (_method != null && _method.equals("RETRY")) {
 
-			final Connection conn = DatabaseManager.getInstance().getConnection();
+			final Connection conn = BeetRootDatabaseManager.getInstance().getConnection();
 			final Statement stmt = conn.createStatement();
 			
 			// we only need the result set for the column meta data
@@ -101,7 +101,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		}
 		
 		// NORMAL case: first call case
-		final Connection conn = DatabaseManager.getInstance().getConnection();
+		final Connection conn = BeetRootDatabaseManager.getInstance().getConnection();
 		final Statement stmt = conn.createStatement();
 		
 		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
@@ -138,7 +138,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 		try {
 		
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			
 			// Now save data !
 			String columns = getColumnsForSql();
@@ -160,7 +160,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 				
 				if (val != null) {
 					if (val.equalsIgnoreCase("NOW()")) {
-						if (DatabaseManager.getInstance().isOracleDb())
+						if (BeetRootDatabaseManager.getInstance().isOracleDb())
 							values += ", " + Utils.nowTimeStamp();
 						else
 							values += ", '" + Utils.nowTimeStamp() + "'";
@@ -179,7 +179,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			stmt.executeUpdate();
 
 			// Get generated key
-			if (DatabaseManager.getInstance().isOracleDb()) {
+			if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 				
 				stmt2 = conn.prepareStatement("select "+entity+"_seq.currval from dual");
 				keySet = stmt2.executeQuery();
@@ -292,7 +292,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 			if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 				
-				final String roles[] = ConfigurationManager.getInstance().getAppRoles();
+				final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 				for (int i = 0; i < roles.length; i++) {
 					if (val.equals(roles[i]))

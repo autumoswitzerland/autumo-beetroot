@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -51,12 +52,13 @@ public class SessionManager {
 	private static SessionManager instance = null;	
 	
 	private static final char[] HEX = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-	private static final File SESSION_DATA = new File(Utils.USER_HOME + Utils.FILE_SEPARATOR +ConfigurationManager.getInstance().getString("ws_user_sessions"));
+	private static final File SESSION_DATA = new File(Utils.USER_HOME + Utils.FILE_SEPARATOR +BeetRootConfigurationManager.getInstance().getString("ws_user_sessions"));
 	private static final Random RANDOM = new Random();
 	private static final int TOKEN_SIZE = 24;
 	
 	private static final String DEFAULT_TOKEN_COOKIE_NAME = "__SESSION_ID__";
-	private static final int DEFAULT_USER_SESSION_EXPIRATION = 1;
+	private static final int DEFAULT_USER_SESSION_EXPIRATION = 1; // days
+	private static final int DEFAULT_USER_SESSION_TIMEOUT = 1800; // seconds
 	
 	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 	
@@ -64,7 +66,11 @@ public class SessionManager {
 	private static String webContainerSessionIdName = DEFAULT_TOKEN_COOKIE_NAME;
 	/** How many days until the user cookie expires. */
 	private static int userSessionExpirationDays = DEFAULT_USER_SESSION_EXPIRATION;
+	/** Session timeout. */
+	private static int userSessionTimeout = DEFAULT_USER_SESSION_TIMEOUT;
     
+	private static long sessionTimeoutInMillis = -1;
+	
 	
 	/**
 	 * Access session manager.
@@ -77,14 +83,19 @@ public class SessionManager {
         	
         	instance = new SessionManager();
  
-	        String idname = ConfigurationManager.getInstance().getString("ws_session_id_name");
+	        String idname = BeetRootConfigurationManager.getInstance().getString("ws_session_id_name");
 	        if (idname != null && idname.length() != 0)
 	        	webContainerSessionIdName = idname;
 	        
-	        userSessionExpirationDays = ConfigurationManager.getInstance().getInt("ws_session_expiration");
+	        userSessionExpirationDays = BeetRootConfigurationManager.getInstance().getInt("ws_session_expiration");
 	        if (userSessionExpirationDays < 1)
 	        	userSessionExpirationDays = DEFAULT_USER_SESSION_EXPIRATION;
         
+	        userSessionTimeout = BeetRootConfigurationManager.getInstance().getInt("ws_session_timeout");
+	        if (userSessionTimeout < 600)
+	        	userSessionTimeout = 600;
+	        
+	        sessionTimeoutInMillis = userSessionTimeout * 1000;
         }
 
         return instance;
@@ -165,7 +176,6 @@ public class SessionManager {
 	 * @param cookies nano cookie handler
 	 */
 	public void destroy(String token, CookieHandler cookies) {
-		
 		sessions.remove(token);
 		cookies.delete(webContainerSessionIdName);
 	}
@@ -196,6 +206,15 @@ public class SessionManager {
 		final FileOutputStream output = new FileOutputStream(SESSION_DATA);
 		new ObjectOutputStream(output).writeObject(sessions);
 		output.close();
+	}
+	
+	/**
+	 * Get timeout in millis.
+	 * 
+	 * @return timeout in millis
+	 */
+	protected long getSessionTimeoutInMillis() {
+		return sessionTimeoutInMillis;
 	}
 	
 }

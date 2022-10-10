@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 
 /**
@@ -56,7 +56,7 @@ public class FileCacheManager {
 
 	// file buffer size
 	static {
-		int mBytes = ConfigurationManager.getInstance().getInt("ws_cache_size");
+		int mBytes = BeetRootConfigurationManager.getInstance().getInt("ws_cache_size");
 		
 		if (mBytes == -1) {
 			LOG.warn("Using 2 MBytes for max. cache size.");

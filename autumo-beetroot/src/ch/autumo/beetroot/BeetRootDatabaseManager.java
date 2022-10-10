@@ -43,11 +43,11 @@ import org.slf4j.LoggerFactory;
  * Database manager.
  * Supported databases: H2, MySQL, MariaDB, Oracle, PostgreSQL.
  */
-public class DatabaseManager {
+public class BeetRootDatabaseManager {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(DatabaseManager.class.getName());
+	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootDatabaseManager.class.getName());
 	
-	private static DatabaseManager instance = null;	
+	private static BeetRootDatabaseManager instance = null;	
 	
 	private String url = null;
 	private String user = null;
@@ -65,14 +65,14 @@ public class DatabaseManager {
 	 * 
 	 * @return DB manager
 	 */
-	public static DatabaseManager getInstance() {
+	public static BeetRootDatabaseManager getInstance() {
         if (instance == null)
-        	instance = new DatabaseManager();
+        	instance = new BeetRootDatabaseManager();
  
         return instance;
     }
 
-	private DatabaseManager() {
+	private BeetRootDatabaseManager() {
 	}
 	
 	/**

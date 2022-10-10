@@ -48,9 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootWebServer;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.UtilsException;
@@ -155,7 +155,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 		
 		// Read general config
-		final ConfigurationManager configMan = ConfigurationManager.getInstance();
+		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
 		// Must !
 		try {
 			configMan.initialize();
@@ -227,7 +227,7 @@ public abstract class BaseServer {
 		
 		// DB conn manager
 		try {
-			DatabaseManager.getInstance().initialize(
+			BeetRootDatabaseManager.getInstance().initialize(
 					configMan.getString("db_url"),
 					configMan.getString("db_user"),
 					pwEncoded ? 
@@ -311,13 +311,13 @@ public abstract class BaseServer {
 				
 				webServer = new BeetRootWebServer(portWebServer);
 				
-				final boolean https = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
+				final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 				if (https) {
-					final String keystoreFile = ConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
+					final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
 					
 					final String keystorepw = pwEncoded ? 
-							ConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-								ConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
+							BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
+								BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
 					
 					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
 				}

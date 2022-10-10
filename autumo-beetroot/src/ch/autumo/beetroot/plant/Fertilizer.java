@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Utils;
 
 /**
@@ -97,7 +97,7 @@ public class Fertilizer {
 		
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("DESC " + dbEntity + ";");
 			

@@ -47,9 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
@@ -81,36 +81,36 @@ public abstract class AbstractMailer implements Mailer {
 
 		final Properties props = System.getProperties();
 		
-		mailformats = ConfigurationManager.getInstance().getSepValues("mail_formats");
+		mailformats = BeetRootConfigurationManager.getInstance().getSepValues("mail_formats");
 		if (mailformats.length < 1)
 			throw new IllegalArgumentException("At least one email format must be defined in configuration!");
 
-		auth = ConfigurationManager.getInstance().getYesOrNo("mail_auth");
-		tlsEnable = ConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
+		auth = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_auth");
+		tlsEnable = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
 		
-		portStr = DatabaseManager.getProperty("mail.port");
+		portStr = BeetRootDatabaseManager.getProperty("mail.port");
 		if (portStr != null)
 			port = Integer.valueOf(portStr).intValue();
 		if (port < 0) {
-			port = ConfigurationManager.getInstance().getInt("mail_port");
+			port = BeetRootConfigurationManager.getInstance().getInt("mail_port");
 			if (port == -1) {
 				LOG.warn("Using mail port 25.");
 				port = 25;
 			}
 		}
 		   
-		host = DatabaseManager.getProperty("mail.host");
-		host = (host == null || host.length() == 0) ? ConfigurationManager.getInstance().getString("mail_host") : host; 
+		host = BeetRootDatabaseManager.getProperty("mail.host");
+		host = (host == null || host.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_host") : host; 
 
-		pwEncoded = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
-		user = ConfigurationManager.getInstance().getString("mail_user");
+		pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
+		user = BeetRootConfigurationManager.getInstance().getString("mail_user");
 		password = pwEncoded
-				? ConfigurationManager.getInstance().getDecodedString("mail_password",
+				? BeetRootConfigurationManager.getInstance().getDecodedString("mail_password",
 						SecureApplicationHolder.getInstance().getSecApp())
-				: ConfigurationManager.getInstance().getString("mail_password");
+				: BeetRootConfigurationManager.getInstance().getString("mail_password");
 
-		from = DatabaseManager.getProperty("mail.mailer");
-		from = (from == null || from.length() == 0) ? ConfigurationManager.getInstance().getString("mail_from") : from; 
+		from = BeetRootDatabaseManager.getProperty("mail.mailer");
+		from = (from == null || from.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
 		
 		
 		props.put(Constants.MAIL_TRANSPORT_PROTOCOL, "smtp");
@@ -139,7 +139,7 @@ public abstract class AbstractMailer implements Mailer {
 		else
 			file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
 
-		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		File f = null;	
 		InputStream is = null;
 		boolean streamIt = false;
@@ -220,8 +220,8 @@ public abstract class AbstractMailer implements Mailer {
 	
 	protected String replaceAllVariables(String template, Map<String, String> variables, String extension) {
 		
-		String baseUrl = ConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
-		String baseUrlPort = ConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
+		String baseUrl = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
+		String baseUrlPort = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
 		
 		String base = null;
 		if (baseUrlPort != null)
@@ -230,9 +230,9 @@ public abstract class AbstractMailer implements Mailer {
 			base = baseUrl ;
 
 		String servletName = null;
-		final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		if (context != null) {
-			servletName = ConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+			servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 			if (servletName != null) {
 				base += ("/" + servletName);
 			}

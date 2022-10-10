@@ -37,9 +37,9 @@ import java.sql.Statement;
 import java.util.Map;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
@@ -73,7 +73,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 			if (_method != null && _method.equals("RETRY")) {
 	
-				conn = DatabaseManager.getInstance().getConnection();
+				conn = BeetRootDatabaseManager.getInstance().getConnection();
 				stmt = conn.createStatement();
 				
 				// we only need the result set for the column meta data
@@ -98,7 +98,7 @@ public class DefaultEditHandler extends BaseHandler {
 			}
 			
 			// NORMAL case: first call case
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			
 			String stmtStr = "SELECT id, " + super.getColumnsForSql() + " FROM " + this.entity + " WHERE id=" + id;
@@ -148,7 +148,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		try {
 		
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			
 			// Now save edited data !
 			stmt = conn.createStatement();
@@ -231,7 +231,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		// we have to decode the password for edit, even it is obfuscted by stars
 		// -> if the user presses save it would be double-encoded otherwise!
-		if (pwFromDb && inputType.equals("password") && ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC)) {
+		if (pwFromDb && inputType.equals("password") && BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC)) {
 			val = Utils.decode(val, SecureApplicationHolder.getInstance().getSecApp());
 		}
 		
@@ -256,7 +256,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 			if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 				
-				final String roles[] = ConfigurationManager.getInstance().getAppRoles();
+				final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 				for (int i = 0; i < roles.length; i++) {
 					if (val.equals(roles[i]))

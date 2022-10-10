@@ -40,9 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
@@ -74,7 +74,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		final String err = "Couldn't read max records per page, using 20.'";
 		try {
-			maxRecPerPage = ConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
+			maxRecPerPage = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
 			if (maxRecPerPage == -1) {
 				maxRecPerPage = 20;
 				LOG.warn(err);
@@ -128,7 +128,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		try {
 
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			
 			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity;
@@ -301,7 +301,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		if (this.deleteAllowed(userSession)) {
 			htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
 			htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
-			if (ConfigurationManager.getInstance().useCsrf()) {
+			if (BeetRootConfigurationManager.getInstance().useCsrf()) {
 				
 				final String formCsrfToken = userSession.getFormCsrfToken();
 				htmlData += "<input type=\"hidden\" name=\"_csrfToken\" autocomplete=\"off\" value=\""+formCsrfToken+"\"/>\n";

@@ -46,13 +46,13 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Config manager.
+ * Configuration manager.
  */
-public class ConfigurationManager {
+public class BeetRootConfigurationManager {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(ConfigurationManager.class.getName());
+	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootConfigurationManager.class.getName());
 	
-	private static ConfigurationManager manager = null;
+	private static BeetRootConfigurationManager manager = null;
 	private static String rootPath = null;
 
 	private static boolean isInitialized = false;
@@ -73,7 +73,7 @@ public class ConfigurationManager {
     		rootPath += Utils.FILE_SEPARATOR;
     }
 	
-	private ConfigurationManager() {
+	private BeetRootConfigurationManager() {
 	}
 	
 	/**
@@ -81,10 +81,10 @@ public class ConfigurationManager {
 	 * 
 	 * @return manager
 	 */
-	public static ConfigurationManager getInstance() {
+	public static BeetRootConfigurationManager getInstance() {
 		
 		if (manager == null) {
-			manager = new ConfigurationManager();
+			manager = new BeetRootConfigurationManager();
 		}
 		return manager;
 	}

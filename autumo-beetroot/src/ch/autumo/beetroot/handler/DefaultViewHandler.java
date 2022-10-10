@@ -36,7 +36,7 @@ import java.sql.Statement;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Utils;
 
@@ -57,7 +57,7 @@ public class DefaultViewHandler extends BaseHandler {
 		
 		try {
 		
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			
 			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity + " WHERE id="+id;

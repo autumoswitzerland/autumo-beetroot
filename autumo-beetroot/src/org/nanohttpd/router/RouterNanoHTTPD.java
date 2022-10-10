@@ -60,7 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.LanguageManager;
 
 /**
@@ -629,7 +629,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             this.routePrioritizer = new DefaultRoutePrioritizer();
             
             /** patched: autumo-beetroot */
-    		servletName = ConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+    		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
     		if (servletName != null && servletName.length() != 0)
     			insertServletNameInTemplateRefs = true; 
         }

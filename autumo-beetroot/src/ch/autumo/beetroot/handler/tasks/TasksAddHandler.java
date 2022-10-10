@@ -33,7 +33,7 @@ package ch.autumo.beetroot.handler.tasks;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
@@ -60,7 +60,7 @@ public class TasksAddHandler extends DefaultAddHandler {
 		
 		final Map<String, Object> mand = new HashMap<String, Object>();
 		
-		if (DatabaseManager.getInstance().isMariaDb() || DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isOracleDb()) {
+		if (BeetRootDatabaseManager.getInstance().isMariaDb() || BeetRootDatabaseManager.getInstance().isMysqlDb() || BeetRootDatabaseManager.getInstance().isOracleDb()) {
 			mand.put("laststatus", "1");
 		} else {
 			mand.put("laststatus", "true");

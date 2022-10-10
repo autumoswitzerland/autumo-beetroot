@@ -28,36 +28,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.mailing;
-
-import ch.autumo.beetroot.BeetRootConfigurationManager;
+package ch.autumo.beetroot;
 
 /**
- * Mailer factory.
+ * Entities that don't need an id. The bean id is handled
+ * in a customized way.
  */
-public class MailerFactory {
+public class CustomIdentityEntity implements Entity {
 
-	private static Mailer mailer;
-	
-	/**
-	 * Get mailer (jakarta ir javax).
-	 * @return mailer
-	 * @throws Exception
-	 */
-	public static Mailer getInstance() throws Exception {
-		
-		if (mailer == null) {
-			final String impl = BeetRootConfigurationManager.getInstance().getString("mail_implementation");
-			if (impl == null || impl.length() == 0)
-				mailer = new JakartaMailer();
-			else if (impl.equalsIgnoreCase("jakarta"))
-				mailer = new JakartaMailer();
-			else if (impl.equalsIgnoreCase("javax"))
-				mailer = new JavaxMailer();
-			else
-				mailer = new JakartaMailer();
-		}
-		
-		return mailer;
-	}	
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public int getId() {
+		return -1;
+	}
+
+	@Override
+	public void setId(int id) {
+	}
+
 }

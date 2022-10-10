@@ -78,7 +78,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	private Class<?> defaultHandlerClass = TasksIndexHandler.class;
 	private String defaultHandlerEntity = "tasks";
 	
-	private boolean dbPwEnc = ConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
+	private boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 	
 	private boolean csrf = true;
 
@@ -109,16 +109,16 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		super(port);
 		
-		csrf = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKNES);
+		csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKNES);
 		if (csrf)
 	    	LOG.info("CSRF activated!");
-		ConfigurationManager.getInstance().setCsrf(csrf);
+		BeetRootConfigurationManager.getInstance().setCsrf(csrf);
 		
-		servletName = ConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 		if (servletName != null && servletName.length() != 0)
 			insertServletNameInTemplateRefs = true; 
 		
-		tmpFilePrefix = ConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
+		tmpFilePrefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
 		if (tmpFilePrefix == null || tmpFilePrefix.length() == 0)
 			tmpFilePrefix = "beetrootweb-";
 		
@@ -165,7 +165,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 		try {
 			
-	        timeout = ConfigurationManager.getInstance().getInt("ws_connection_timeout");
+	        timeout = BeetRootConfigurationManager.getInstance().getInt("ws_connection_timeout");
 	        
 	        if (timeout == -1) {
 	        	
@@ -254,11 +254,11 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		// JSON
 		if (uri.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
 			
-			final String apiKeyName = ConfigurationManager.getInstance().getString("web_json_api_key_name");
+			final String apiKeyName = BeetRootConfigurationManager.getInstance().getString("web_json_api_key_name");
 			final String apiKey = session.getParms().get(apiKeyName);
 			String dbApiKey = null;
 			try {
-				dbApiKey = DatabaseManager.getProperty("web.json.api.key");
+				dbApiKey = BeetRootDatabaseManager.getProperty("web.json.api.key");
 			} catch (Exception e) {
 				LOG.warn("Couldn't read property from DB!", e);
 				String t = LanguageManager.getInstance().translate("base.err.srv.db.title", LanguageManager.DEFAULT_LANG);
@@ -290,7 +290,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    	
 	    } catch (Exception e) {
 	    	
-	    	String langs = ConfigurationManager.getInstance().getString("web_languages");
+	    	String langs = BeetRootConfigurationManager.getInstance().getString("web_languages");
 	    	
 			LOG.warn("Language(s) '"+langs+"' has/have been configured, but the translations are missing!");
 			String t = LanguageManager.getInstance().translate("base.err.lang.title", LanguageManager.DEFAULT_LANG);
@@ -319,7 +319,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		final String dir = "web/";
 	    
 	    // Are we running in a servlet context?
-    	final ServletContext context = ConfigurationManager.getInstance().getServletContext();
+    	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
     	
     	
 		// web resources except html templates
@@ -499,6 +499,27 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    
 		final String postParamUsername = session.getParms().get("username");
 	    	    
+		
+		// Within the ifaceX server, we have to take care of user session timeouts
+		// In servlet containers this is done by the container
+		if (context == null && userSession.isOlderThanSessionTimeout() ) {
+			
+			loggedIn = false;
+			session.getParameters().clear();
+			session.getHeaders().put("Connection", "close");
+			
+			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userSession));
+			
+			userSession.deleteAllParameters();
+			userSession.destroy(session.getCookies());
+			
+			return end;
+		}
+		
+		// No session timeout happened, but a request has been made, so refresh the session!
+		if (context == null)
+			userSession.refresh();
+		
 	    // logout
 		if (uri.endsWith("/users/logout")) {
 			
@@ -583,7 +604,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             		
 					try {
 						
-						conn = DatabaseManager.getInstance().getConnection();
+						conn = BeetRootDatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
 						//NO SEMICOLON
 	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname, email, secretkey, two_fa from users where username='"+postParamUsername+"'");
@@ -650,7 +671,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             			userSession.createIdPair(dbId, "users");
 
 					    try {
-	            			dbUserLang = DatabaseManager.getLanguage(dbId);
+	            			dbUserLang = BeetRootDatabaseManager.getLanguage(dbId);
 	            	    	userSession.setUserLang(dbUserLang);
 						} catch (Exception e) {
 							LOG.error("Couldn't load user language from DB!", e);
@@ -736,7 +757,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         
         try {
         	
-			DatabaseManager.resetToken(userId);
+			BeetRootDatabaseManager.resetToken(userId);
 			
 		} catch (Exception e1) {
 			final String err = "Couldn't reset last token for user '"+username+"' after login!";
@@ -875,7 +896,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		String handler;
 		try {
-			handler = ConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_HANDLER);
+			handler = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_HANDLER);
 			return Class.forName(handler);
 		} catch (Exception e) {
 	    	LOG.warn("Couldn't load default handler class sessions, using tasks handler!", e);
@@ -894,7 +915,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 		String entity;
 		try {
-			entity = ConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_ENTITY);
+			entity = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_ENTITY);
 			return entity;
 		} catch (Exception e) {
 	    	LOG.warn("Couldn't load default handler class sessions, using tasks handler!", e);
@@ -941,7 +962,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	public void addMappings() {
 		
 		Router router = null; 
-		final String webRouter = ConfigurationManager.getInstance().getString("web_router");
+		final String webRouter = BeetRootConfigurationManager.getInstance().getString("web_router");
 		try {
 			final Class<?> clz = Class.forName(webRouter);
 			router = (Router) clz.getDeclaredConstructor().newInstance();

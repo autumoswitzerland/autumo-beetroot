@@ -73,7 +73,7 @@ public class BeetRootHTTPSession extends HTTPSession {
 	
 	static {
 		
-		int kBytes = ConfigurationManager.getInstance().getInt("ws_response_buffer_size");
+		int kBytes = BeetRootConfigurationManager.getInstance().getInt("ws_response_buffer_size");
 		if (kBytes == -1) {
 			LOG.warn("Using 16 kBytes for response buffer size.");
 			kBytes = 16;
@@ -82,7 +82,7 @@ public class BeetRootHTTPSession extends HTTPSession {
 		RESPONSE_BUFFER_SIZE = kBytes * 1024;
 		System.setProperty("ch.autumo.beetroot.respDownBufSizeKB", "" + kBytes);
 		
-		int kBytesDown = ConfigurationManager.getInstance().getInt("ws_response_download_buffer_size");
+		int kBytesDown = BeetRootConfigurationManager.getInstance().getInt("ws_response_download_buffer_size");
 		if (kBytesDown == -1) {
 			LOG.warn("Using 8 kBytes for response download buffer size.");
 			kBytesDown = 8;

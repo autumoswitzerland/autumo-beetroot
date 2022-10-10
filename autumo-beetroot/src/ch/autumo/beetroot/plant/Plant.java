@@ -47,9 +47,9 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
 
@@ -120,19 +120,19 @@ public class Plant {
 		
 		
 		if (argsList.length == 1)
-			ConfigurationManager.getInstance().initialize(argsList[0]);
+			BeetRootConfigurationManager.getInstance().initialize(argsList[0]);
 		else
-			ConfigurationManager.getInstance().initialize();
+			BeetRootConfigurationManager.getInstance().initialize();
 
         
 		// Are pw's in config encoded?
-		boolean pwEncoded = ConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
+		boolean pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
 		// DB connection manager
-		DatabaseManager.getInstance().initialize(
-				ConfigurationManager.getInstance().getString("db_url"),
-				ConfigurationManager.getInstance().getString("db_user"),
+		BeetRootDatabaseManager.getInstance().initialize(
+				BeetRootConfigurationManager.getInstance().getString("db_url"),
+				BeetRootConfigurationManager.getInstance().getString("db_user"),
 				pwEncoded ? 
-						ConfigurationManager.getInstance().getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : ConfigurationManager.getInstance().getString("db_password")
+						BeetRootConfigurationManager.getInstance().getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : BeetRootConfigurationManager.getInstance().getString("db_password")
 			);
 	}
 
@@ -169,10 +169,10 @@ public class Plant {
 			
 			try {
 				
-				conn = DatabaseManager.getInstance().getConnection();
+				conn = BeetRootDatabaseManager.getInstance().getConnection();
 				stmt = conn.createStatement();
 			
-				if (DatabaseManager.getInstance().isMysqlDb() || DatabaseManager.getInstance().isMariaDb()) {
+				if (BeetRootDatabaseManager.getInstance().isMysqlDb() || BeetRootDatabaseManager.getInstance().isMariaDb()) {
 					ResultSet rs = stmt.executeQuery("SHOW TABLES;");
 					while (rs.next())
 						tableList.add(rs.getString(1));

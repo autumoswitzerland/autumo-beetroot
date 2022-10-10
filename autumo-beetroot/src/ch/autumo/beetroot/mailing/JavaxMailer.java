@@ -52,8 +52,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 
 /**
  * Javax Mailer.
@@ -68,9 +68,9 @@ public class JavaxMailer extends AbstractMailer {
 		final Properties props = super.getProperties();
 		props.put("mail.from", from);
 		
-		String msname = DatabaseManager.getProperty("mail.session.name");
+		String msname = BeetRootDatabaseManager.getProperty("mail.session.name");
 		if (msname == null || msname.length() == 0) {
-			msname = ConfigurationManager.getInstance().getString("mail_session_name");
+			msname = BeetRootConfigurationManager.getInstance().getString("mail_session_name");
 			if (msname == null || msname.length() == 0)
 				msname = "beetRootMailSession";
 		}
@@ -90,8 +90,8 @@ public class JavaxMailer extends AbstractMailer {
 
 		final MimeMessage message = new MimeMessage(mailSession);
 		
-		String from = DatabaseManager.getProperty("mail.mailer");
-		from = from == null ? ConfigurationManager.getInstance().getString("mail_from") : from; 
+		String from = BeetRootDatabaseManager.getProperty("mail.mailer");
+		from = from == null ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
 		
 		message.setFrom(new InternetAddress(from));
 

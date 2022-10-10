@@ -40,9 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.ConfigurationManager;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.DatabaseManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.GUIDGenerator;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
@@ -84,7 +84,7 @@ public class ResetHandler extends BaseHandler {
 				
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			
 			String stmtStr = "SELECT id FROM users WHERE email='" + email + "'";;
@@ -106,7 +106,7 @@ public class ResetHandler extends BaseHandler {
 			int userid = set.getInt(1);
 			token = GUIDGenerator.generate();
 			
-			if (DatabaseManager.getInstance().isOracleDb())
+			if (BeetRootDatabaseManager.getInstance().isOracleDb())
 				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
 			else
 				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
@@ -121,8 +121,8 @@ public class ResetHandler extends BaseHandler {
 				conn.close();
 		}
 		
-		String baseUrl = ConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
-		String baseUrlPort = ConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
+		String baseUrl = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
+		String baseUrlPort = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
 		String link = null;
 		
 		String lang = userSession.getUserLang();

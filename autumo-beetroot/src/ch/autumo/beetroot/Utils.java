@@ -120,7 +120,7 @@ public class Utils {
 	 */
 	public static String getTemporaryDirectory() {
 
-		String dir = ConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_DIR);
+		String dir = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_DIR);
 		
 		if (dir != null && dir.length() == 0)
 			dir = System.getProperty("java.io.tmpdir");
@@ -135,7 +135,7 @@ public class Utils {
 	}
 
 	/**
-	 * Access resulkt set value and HTML escape it.
+	 * Access result set value and HTML escape it.
 	 * 
 	 * @param set result set
 	 * @param dbColumnName db column name
@@ -175,7 +175,7 @@ public class Utils {
 		
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 		
 			String stmtStr = "UPDATE users SET secretkey='"+newSecretUserKey+"' WHERE id=" + userId;
@@ -239,7 +239,7 @@ public class Utils {
 	 */
 	public static String getGoogleAuthenticatorBarCode(String secretUserKey, String email) throws UtilsException  {
 	    try {
-	    	final String issuer = ConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME); // app name !
+	    	final String issuer = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME); // app name !
 	        return "otpauth://totp/"
 	                + URLEncoder.encode(issuer + ":" + email, "UTF-8").replace("+", "%20")
 	                + "?secret=" + URLEncoder.encode(secretUserKey, "UTF-8").replace("+", "%20")
@@ -270,7 +270,7 @@ public class Utils {
 		File png = null;
 		String absPath = null;
 		
-		String prefix = ConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
+		String prefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
 		if (prefix == null || prefix.length() == 0)
 			prefix = "beetrootweb-";
 		
@@ -309,7 +309,7 @@ public class Utils {
 		
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 		
 			String stmtStr = "SELECT settings FROM users WHERE id="+userSession.getUserId();
@@ -376,7 +376,7 @@ public class Utils {
 		
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 		
 			String stmtStr = "UPDATE users SET settings='"+settingsStr+"' WHERE id=" + userSession.getUserId();
@@ -417,7 +417,7 @@ public class Utils {
 		
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 		
 			set = stmt.executeQuery("SELECT count(*) FROM " + table);
@@ -463,7 +463,7 @@ public class Utils {
 		
 		try {
 			
-			conn = DatabaseManager.getInstance().getConnection();
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 		
 			String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
@@ -556,7 +556,7 @@ public class Utils {
 	public static boolean isMimeTypeText(String mimeType) {
 		
 		if (mimeTextList == null)
-			mimeTextList = ConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_text");
+			mimeTextList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_text");
 		return mimeTextList.contains(mimeType);
 	}
 
@@ -568,7 +568,7 @@ public class Utils {
 	 */
 	public static boolean isMimeTypeOctet(String mimeType) {
 		if (mimeOctetList == null)
-			mimeOctetList = ConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_octet");
+			mimeOctetList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_octet");
 		return mimeOctetList.contains(mimeType);
 	}
 	
@@ -580,7 +580,7 @@ public class Utils {
 	 */
 	public static boolean isMimeTypeArchive(String mimeType) {
 		if (mimeArchiveList == null)
-			mimeArchiveList = ConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_archive");
+			mimeArchiveList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_archive");
 		return mimeArchiveList.contains(mimeType);
 	}
 	
@@ -742,7 +742,7 @@ public class Utils {
 		}		
 		
 		// oracle special case
-		if (DatabaseManager.getInstance().isOracleDb() && Utils.isSqlNumberType(sqlType) && prec == 1) {
+		if (BeetRootDatabaseManager.getInstance().isOracleDb() && Utils.isSqlNumberType(sqlType) && prec == 1) {
 			divType = "checkbox";
 		}
 		
@@ -800,7 +800,7 @@ public class Utils {
 		}
 		
 		// oracle special case
-		if (DatabaseManager.getInstance().isOracleDb() && Utils.isSqlNumberType(sqlType) && prec == 1) {
+		if (BeetRootDatabaseManager.getInstance().isOracleDb() && Utils.isSqlNumberType(sqlType) && prec == 1) {
 			inputType = "checkbox";
 		}
 		
@@ -896,7 +896,7 @@ public class Utils {
 		final Timestamp ts = new Timestamp(System.currentTimeMillis());
 		ts_str = ts.toLocalDateTime().toString();
 
-		if (DatabaseManager.getInstance().isOracleDb()) {
+		if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 			ts_str = ts_str.replace("T", " ");
 			ts_str = "to_timestamp('"+ts_str+"', 'YYYY-MM-DD HH24:MI:SS.FF')";
 		}

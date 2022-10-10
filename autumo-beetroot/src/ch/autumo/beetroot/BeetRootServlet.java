@@ -93,7 +93,7 @@ public class BeetRootServlet extends HttpServlet {
 		}
 		
 		// Read general config
-		final ConfigurationManager configMan = ConfigurationManager.getInstance();
+		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
 		try {
 			
 			configMan.initializeWithFullPath(webAppRoot + configFilePath, getServletContext());
@@ -114,7 +114,7 @@ public class BeetRootServlet extends HttpServlet {
 		
 		// DB connection manager
 		try {
-			DatabaseManager.getInstance().initialize(
+			BeetRootDatabaseManager.getInstance().initialize(
 					dbUrl,
 					configMan.getString("db_user"),
 					pwEncoded ? 
