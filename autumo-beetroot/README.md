@@ -507,7 +507,7 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). By default, Jakrata is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration;
+Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). By default, Jakrata is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration.
 
 Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwitten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
 
