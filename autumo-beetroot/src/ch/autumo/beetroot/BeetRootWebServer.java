@@ -81,7 +81,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	private boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 	
 	private boolean csrf = true;
-
+	
     private boolean insertServletNameInTemplateRefs = false;
     private String servletName = null;
     
@@ -109,7 +109,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		super(port);
 		
-		csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKNES);
+		csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS);
 		if (csrf)
 	    	LOG.info("CSRF activated!");
 		BeetRootConfigurationManager.getInstance().setCsrf(csrf);
@@ -122,9 +122,43 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		if (tmpFilePrefix == null || tmpFilePrefix.length() == 0)
 			tmpFilePrefix = "beetrootweb-";
 		
+		// routes
 		this.addMappings();
+		
+		// init any otehr module
+		this.initModules(BeetRootConfigurationManager.getInstance().getServletContext() != null, BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
 	}
 
+	/**
+	 * Initialze modules, etc.
+	 * 
+	 * @param isWithinServlet is within servlet?
+	 * @param fullConfigBasePath dull path where config file is located
+	 * @throws Exception
+	 */
+	private void initModules(boolean isWithinServlet, String fullConfigBasePath) throws Exception {
+		
+		Initializer initializer = null;
+		final String clz = BeetRootConfigurationManager.getInstance().getString("ws_init_class");
+		if (clz != null && clz.length() != 0) {
+			Class<?> clazz = Class.forName(clz);
+			Constructor<?> constructor = null;
+			final Constructor<?> constructors[] = clazz.getDeclaredConstructors();
+			int ip = 0;
+			for (int i = 0; i < constructors.length; i++) {
+				int pc = constructors[i].getParameterCount();
+				if (pc == ip) {
+					constructor = constructors[i];
+					break;
+				}
+			}
+            constructor.setAccessible(true);
+            initializer = (Initializer) constructor.newInstance();
+            
+            initializer.initModules(isWithinServlet, fullConfigBasePath);
+		}
+	}
+	
 	@Override
     protected ClientHandler createClientHandler(final Socket finalAccept, final InputStream inputStream) {
         return new BeetRootClientHandler(this, inputStream, finalAccept);
@@ -242,7 +276,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * @return response response
 	 */
 	public Response serve(BeetRootHTTPSession session, HttpServletRequest request) {
-
+		
 		String uri = Utils.normalizeUri(session.getUri());
 		
 		// servlet magic :)
@@ -315,12 +349,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    }
 	    
 	    
-		boolean loggedIn = false;
-		final String dir = "web/";
-	    
 	    // Are we running in a servlet context?
     	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
+
     	
+		boolean loggedIn = false;
+		final String dir = "web/";
     	
 		// web resources except html templates
 		if (uri.contains(".") && !uri.endsWith(".html")) { // Note: template request have no extension at all!

@@ -143,7 +143,7 @@ public class Constants {
 	/**
 	 * Use CSRF tokens?
 	 */
-	public static final String KEY_WS_USE_CSRF_TOKNES = "ws_use_csrf_tokens";
+	public static final String KEY_WS_USE_CSRF_TOKENS = "ws_use_csrf_tokens";
 	
 	/**
 	 * Web server password.

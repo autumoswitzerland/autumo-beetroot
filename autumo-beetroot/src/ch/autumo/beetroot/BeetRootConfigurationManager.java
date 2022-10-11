@@ -59,6 +59,8 @@ public class BeetRootConfigurationManager {
 	
 	private ServletContext servletContext = null;
 	
+	private String fullConfigBasePath = null;
+	
 	private Properties generalProps = null;
 	private boolean csrf = true;
 	
@@ -107,7 +109,7 @@ public class BeetRootConfigurationManager {
 	 */
 	public void initializeWithFullPath(String absolutePath, ServletContext servletContext) throws Exception {
 		
-		this.initializeInt(absolutePath);
+		this.initializeWithFullPath(absolutePath);
 		
 		this.servletContext = servletContext;
 	}
@@ -119,7 +121,7 @@ public class BeetRootConfigurationManager {
 	 * @throws Exception
 	 */
 	public void initialize(String relativePath) throws Exception {
-		this.initializeInt(rootPath + relativePath);
+		this.initializeWithFullPath(rootPath + relativePath);
 	}
 	
 	/**
@@ -128,16 +130,16 @@ public class BeetRootConfigurationManager {
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
-		this.initializeInt(rootPath + Constants.CONFIG_PATH + Constants.GENERAL_SRV_CFG_FILE);
+		this.initializeWithFullPath(rootPath + Constants.CONFIG_PATH + Constants.GENERAL_SRV_CFG_FILE);
 	}
 	
 	/**
-	 * Customized initialization with specific config file.
+	 * Customized initialization with specific full config file path.
 	 * 
-	 * @param configFilePath full path to specific config file
+	 * @param configFilePath full path to specific full config file path
 	 * @throws Exception
 	 */
-	public synchronized void initializeInt(String configFilePath) throws Exception {
+	private synchronized void initializeWithFullPath(String configFilePath) throws Exception {
 		
 		if (isInitialized) {
 			
@@ -169,6 +171,11 @@ public class BeetRootConfigurationManager {
 		generalProps = new Properties();
 		// read general config
 		final String file = configFilePath;
+		
+		// Get path only
+		final File f = new File(file);
+		fullConfigBasePath = f.getParent();
+		
 		try {
 			
 			generalProps.load(new FileInputStream(file));
@@ -180,6 +187,15 @@ public class BeetRootConfigurationManager {
 		}
 		
 		isInitialized = true;
+	}
+	
+	/**
+	 * Returns the full base path, where the base configuration is.
+	 * 
+	 * @return nase path
+	 */
+	public String getFullConfigBasePath() {
+		return fullConfigBasePath;
 	}
 	
 	/**
