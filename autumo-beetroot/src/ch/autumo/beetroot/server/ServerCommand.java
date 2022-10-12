@@ -43,8 +43,6 @@ public class ServerCommand extends AbstractMessage {
 	private String serverName = null;
 	private String host = null;
 	private int port = -1;
-	
-	private String secKey = null;
 
 	private ServerCommand() {
 	}
@@ -54,15 +52,6 @@ public class ServerCommand extends AbstractMessage {
 		this.serverName = serverName;
 		this.host = host;
 		this.port = port;
-		this.secKey = SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey();
-	}
-	
-	public ServerCommand(String serverName, String host, int port, String secKey, String command) {
-		super(command);
-		this.serverName = serverName;
-		this.host = host;
-		this.port = port;
-		this.secKey = secKey;
 	}
 
 	public ServerCommand(String serverName, String host, int port, String command, String entity, int id) {
@@ -70,19 +59,18 @@ public class ServerCommand extends AbstractMessage {
 		this.serverName = serverName;
 		this.host = host;
 		this.port = port;
-		this.secKey = SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey();
 		this.entity = entity;
 		this.id = id;
 	}
-	
-	public ServerCommand(String serverName, String host, int port, String secKey, String command, String entity, int id) {
+
+	public ServerCommand(String serverName, String host, int port, String command, String entity, int id, String domain) {
 		super(command);
 		this.serverName = serverName;
 		this.host = host;
 		this.port = port;
-		this.secKey = secKey;
 		this.entity = entity;
 		this.id = id;
+		this.domain = domain;
 	}
 	
 	public String getServerName() {
@@ -97,17 +85,13 @@ public class ServerCommand extends AbstractMessage {
 		return port;
 	}
 	
-	public String getSecKey() {
-		return secKey;
-	}
-	
 	public String getCommand() {
 		return message;
 	}
 
 	@Override
 	public String getTransferString() throws IOException {
-		final String ts = serverName + MSG_PART_SEPARATOR +  secKey + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id;
+		final String ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + domain;
 		if (ENCRYPT)
 			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
@@ -130,10 +114,10 @@ public class ServerCommand extends AbstractMessage {
 		
 		final String parts [] = transferString.split(MSG_PART_SEPARATOR);
 		command.serverName = parts[0];
-		command.secKey = parts[1];
-		command.message = parts[2];
-		command.entity = parts[3];
-		command.id = Integer.valueOf(parts[4]).intValue();
+		command.message = parts[1];
+		command.entity = parts[2];
+		command.id = Integer.valueOf(parts[3]).intValue();
+		command.domain = parts[4];
 		
 		return command;
 	}

@@ -55,6 +55,7 @@ public abstract class AbstractMessage {
 	
 	protected String message = "null";
 	protected String entity = "null";
+	protected String domain = "null";
 	protected int id = 0;
 
 	
@@ -71,6 +72,10 @@ public abstract class AbstractMessage {
 	
 	public int getId() {
 		return id;
+	}
+
+	public String getDomain() {
+		return domain;
 	}
 	
 	/**

@@ -39,24 +39,14 @@ import org.slf4j.LoggerFactory;
 public class BeetRootServer extends BaseServer {
 	
 	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootServer.class.getName());
-
-	/**
-	 * Create an beetRoot server.
-	 * 
-	 * @param params start or stop
-	 */
-	public BeetRootServer(String params[]) {
-		super(params, "beetRoot");
-	}
 	
 	/**
 	 * Create an beetRoot server.
 	 * 
 	 * @param params start or stop
 	 */
-	public BeetRootServer(String params[], String name) {
-
-		super(params, name);
+	public BeetRootServer(String params[]) {
+		super(params);
 	}
 
 	/**

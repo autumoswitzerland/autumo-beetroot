@@ -67,10 +67,10 @@ import org.nanohttpd.router.RouterNanoHTTPD.UriResponder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
@@ -145,13 +145,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (entity == null || entity.length() == 0)
 			return;
 		
+		final String uri = session.getUri();
+		// nothing to do!
+		if (uri.endsWith(Constants.SEARCH_PAGE) || uri.contains(Constants.USER_SETTINGS_URL_PART))
+			return;
+		
 		this.columns = new TreeMap<Integer, String>();
 		
 		final List<String> fallBackList = new ArrayList<String>();
 		
 		Session userSession = SessionManager.getInstance().findOrCreate(session);
 		String res = null;
-
+		
 		// Special case JSON: overwrite languages, not needed!
 		if (session.getUri().endsWith(Constants.JSON_EXT)) {
 			res = "web/html/"+entity+"/columns.cfg";
@@ -230,7 +235,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
 					} catch (IOException e1) {
 						LOG.debug("Resource '"+res+"' doesn't exist, no columns used!");
-						
 						return; // !
 					}
 				}			
@@ -296,7 +300,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				    		    	added = true;
 				    			}
 				    			break;
-			    		
+				    			
 			    			case "index.html":
 			    				
 				    			if (configPair[0].startsWith("list.")) {
@@ -932,6 +936,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						if (templateResource.endsWith("index.html")) {
 							parseTemplateHead(buffer, "{$head}");
 							parsePaginator(buffer, "{$paginator}", session); // if any, only index!
+						}
+						if (templateResource.endsWith("search.html")) {
+							parseTemplateHead(buffer, "{$head}");
 						}
 						parseTemplateData(buffer, "{$data}");
 						
@@ -1577,6 +1584,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					final String _method = session.getParms().get("_method");
 					final String upMethod = urlParams.get("_method");
 					final boolean retryCall = upMethod != null && upMethod.length() != 0 && upMethod.equals("RETRY");
+					final boolean requestCall = _method != null && _method.length() != 0 && _method.equals("REQUEST");
 					
 					if (retryCall) {
 						
@@ -1588,6 +1596,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							
 						// create a new ID pair, id somehow the orig has been lost, shouldn't happen actually!
 						userSession.createIdPair(origId, getEntity());
+					}
+					else if (requestCall) {
+						// we simply let the code run further till handler read function
+						// -> used for reads that need a post form
 					}
 					else if (_method == null || _method.length() == 0) { 
 						
@@ -1657,7 +1669,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					}
 					
 					// Soooo important !!!
-					if (!retryCall)
+					if (!retryCall && !requestCall) // special cases that need the right id in the readData-method!
 						origId = -1;
 				}
 			}

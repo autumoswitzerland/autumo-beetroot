@@ -39,10 +39,10 @@ import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
@@ -284,7 +284,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * @param modifyID obfuscated modify id used action links
 	 * @param dbId internal DB id, don't write it out!
 	 * @param lang user's language
-	 * @return
+	 * @return HTML data 
 	 */
 	public String generateActionsTableData(Session userSession, String entity, String modifyID, int dbId, String lang) {
 		
@@ -313,10 +313,28 @@ public class DefaultIndexHandler extends BaseHandler {
 							+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
 		}
 		
+		final String addHtml = this.addAdditionalActions(userSession, entity, modifyID, dbId, lang);
+		if (addHtml != null && addHtml.length() !=0)
+			htmlData += addHtml;
+		
 		htmlData += "</td>\n";
 		return htmlData;
 	}
 	
+	/**
+	 * Add additional actions.
+	 *
+	 * @param session user session
+	 * @param entity entity string
+	 * @param modifyID obfuscated modify id used action links
+	 * @param dbId internal DB id, don't write it out!
+	 * @param lang user's language
+	 * @return HTML data or null
+	 */	
+	public String addAdditionalActions(Session userSession, String entity, String modifyID, int dbId, String lang) {
+		return null;
+	}
+
 	/**
 	 * Determine if change actions are shown on index page.
 	 * 

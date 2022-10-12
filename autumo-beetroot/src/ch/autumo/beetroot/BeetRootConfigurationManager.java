@@ -101,6 +101,16 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
+	 * Return true, if this configuration manager runs within a servlet
+	 * otherwise false.
+	 * 
+	 * @return true is is within servlet context
+	 */
+	public boolean runsWithinServletContext() {
+		return servletContext != null;
+	}
+	
+	/**
 	 * Initialize with absolute path.
 	 * 
 	 * @param absolutePath absolute path

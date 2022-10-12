@@ -32,25 +32,21 @@ package ch.autumo.beetroot.server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootWebServer;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootWebServer;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.UtilsException;
@@ -61,9 +57,6 @@ import ch.autumo.beetroot.UtilsException;
 public abstract class BaseServer {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
-	
-	/** Stop command */
-	protected final static String STOP_COMMAND = "STOP";
 	
 	private static String rootPath = null;
 
@@ -90,24 +83,13 @@ public abstract class BaseServer {
     	if (!rootPath.endsWith(Utils.FILE_SEPARATOR))
     		rootPath += Utils.FILE_SEPARATOR;
     }
-	
-	/**
-	 * Create a base server.
-	 * 
-	 * @param params start or stop
-	 */
-	private BaseServer(String name) {
-		this.name = name;
-	}
 		
 	/**
 	 * Create a base server.
 	 * 
 	 * @param params start or stop
 	 */
-	public BaseServer(String params[], String name) {
-		
-		this(name);
+	public BaseServer(String params[]) {
 		
 		//------------------------------------------------------------------------------
 		
@@ -130,7 +112,7 @@ public abstract class BaseServer {
 		// check op
 		if (!(params[0].equalsIgnoreCase("start") || params[0].equalsIgnoreCase("stop"))) {
 			System.out.println(this.getHelpText());
-			System.out.println("["+ name +"] Valid server operations are 'start' or 'stop'!");
+			System.out.println("Valid server operations are 'start' or 'stop'!");
 			System.out.println("");
 			Utils.normalExit();
 		}
@@ -138,7 +120,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
     	
     	if (rootPath == null || rootPath.length() == 0) {
-			System.err.println("["+ name +"] ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
+			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
 			Utils.fatalExit();
     	}
 	    	
@@ -148,7 +130,7 @@ public abstract class BaseServer {
 	    
 		final File dir = new File(rootPath);
 		if (!dir.exists() || !dir.isDirectory()) {
-			System.err.println("["+ name +"] ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
+			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
 			Utils.fatalExit();
 		}		
 		
@@ -160,11 +142,13 @@ public abstract class BaseServer {
 		try {
 			configMan.initialize();
 		} catch (Exception e) {
-			System.err.println("["+ name +"] Configuration initialization failed !");
+			System.err.println("Configuration initialization failed !");
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
 
+		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
+		
 		//------------------------------------------------------------------------------
 		
 		// configure logging
@@ -388,169 +372,11 @@ public abstract class BaseServer {
 	
 	private void sendStopServer() {
 		try {
-			sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, STOP_COMMAND));
+			Communicator.sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, Communicator.STOP_COMMAND));
 		} catch (Exception e) {
 			LOG.error("Send STOP server command failed!", e);
 		}
 	}
-
-	/**
-	 * Send a server command client side.
-	 * 
-	 * @param command server command
-	 * @return client answer
-	 * @throws Excpetion
-	 */
-	public static ClientAnswer sendServerCommand(ServerCommand command) throws Exception {
-		return sendServerCommand(command, 5000);
-	}
-	
-	/**
-	 * Send a server command client side.
-	 * 
-	 * @param command server command
-	 * @param command timeout socket timeout in ms
-	 * @return client answer
-	 * @throws Excpetion
-	 */
-	public static ClientAnswer sendServerCommand(ServerCommand command, int timeout) throws Exception {
-		
-		//send signal and end !
-		Socket socket = null;
-		DataOutputStream output = null;
-		DataInputStream input = null;
-		try {
-			socket = new Socket(command.getHost(), command.getPort());
-			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-			socket.setSoTimeout(timeout);
-
-			output.writeInt(command.getDataLength());
-			final PrintWriter writer = new PrintWriter(output, true);
-			writer.println(command.getTransferString());
-			
-			LOG.trace("Server command '"+command.getCommand()+"' sent!");
-			writer.flush();
-			
-			if (command.getCommand().equals(STOP_COMMAND)) {
-				// we cannot expect an answer, because the server is already down
-				return new StopAnswer();
-			} else {
-				// read answer
-				input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-				return readAnswer(input);
-			}
-			
-		} catch (UnknownHostException e) {
-			
-			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! Host seems to be unknown or cannot be resolved. [UHE]", e);
-			throw e;
-			
-		} catch (IOException e) {
-			
-			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! PS: Is it really running? [IO]", e);
-			throw e;
-			
-		} finally {
-			
-			safeClose(input);
-			safeClose(output);
-			safeClose(socket);
-		}
-	}
-	
-	/**
-	 * Write/send client answer from server to client.
-	 * 
-	 * @param client asnwer
-	 * @param out output stream
-	 * @throws Excpetion
-	 */
-	private static void writeAnswer(ClientAnswer answer, DataOutputStream out) throws IOException {
-		
-		out.writeInt(answer.getDataLength());
-		final PrintWriter writer = new PrintWriter(out, true);
-		writer.println(answer.getTransferString());
-		
-		LOG.trace("Server command '"+answer.getAnswer()+"' sent!");
-		writer.flush();			
-	}
-
-	/**
-	 * Read an answer from the server client side.
-	 * 
-	 * @param in input stream
-	 * @return client answer or null, if answer received was invalid
-	 * @throws IOException
-	 */
-	public static ClientAnswer readAnswer(DataInputStream in) throws IOException {
-	    return ClientAnswer.parse(read(in));
-	}
-	
-	/**
-	 * Read a server command server side.
-	 * 
-	 * @param in input stream
-	 * @return server command or null, if command received was invalid
-	 * @throws IOException
-	 */
-	private static ServerCommand readCommand(DataInputStream in) throws IOException {
-	    return ServerCommand.parse(read(in));
-	}
-	
-	private static String read(DataInputStream in) throws IOException {
-		
-		final int length = in.readInt();
-		
-		if (length > 256) {
-			// prevent other requests, max length should not be longer than 128 bytes
-			return null; 
-		}
-		
-		final byte[] messageByte = new byte[length];
-	    boolean end = false;
-	    final StringBuilder dataString = new StringBuilder(length);
-	    int totalBytesRead = 0;
-	    
-	    while (!end) {
-	    	
-	        int currentBytesRead = in.read(messageByte);
-	        totalBytesRead = currentBytesRead + totalBytesRead;
-	        if(totalBytesRead <= length) {
-	            dataString.append(new String(messageByte, 0, currentBytesRead, StandardCharsets.UTF_8));
-	        } else {
-	            dataString.append(new String(messageByte, 0, length - totalBytesRead + currentBytesRead, StandardCharsets.UTF_8));
-	        }
-	        
-	        if (dataString.length() >= length) {
-	            end = true;
-	        }
-	    }
-	    
-	    return dataString.toString();
-	}	
-	
-	/**
-	 * Safe close for closeable object  (e.g. stream, socket).
-	 * 
-	 * @param closeable closeable object
-	 */
-    protected static final void safeClose(Object closeable) {
-        try {
-            if (closeable != null) {
-                if (closeable instanceof Closeable) {
-                    ((Closeable) closeable).close();
-                } else if (closeable instanceof Socket) {
-                    ((Socket) closeable).close();
-                } else if (closeable instanceof ServerSocket) {
-                    ((ServerSocket) closeable).close();
-                } else {
-                    throw new IllegalArgumentException("Unknown object to close!");
-                }
-            }
-        } catch (IOException e) {
-            LOG.error("Could not close stream or socket!", e);
-        }
-    }
     
 	/**
 	 * This method is called when a server command has been received.
@@ -562,7 +388,7 @@ public abstract class BaseServer {
 	public ClientAnswer processServerCommand(ServerCommand command) {
 		
 		// shutdown
-		if (command.getCommand().equals("STOP")) {
+		if (command.getCommand().equals(Communicator.STOP_COMMAND)) {
 			return new StopAnswer();
 		}
 		
@@ -609,7 +435,10 @@ public abstract class BaseServer {
 			
 			this.listenerPort = listenerPort;
 			
+			//final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
+			// communication is encrypted through the app
 			try {
+				//serverSocket = socketFactory.createServerSocket(this.listenerPort);
 				serverSocket = new ServerSocket(this.listenerPort);
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
@@ -642,7 +471,7 @@ public abstract class BaseServer {
             } 
 		
 			// loop has been broken by STOP command.
-        	safeClose(serverSocket);
+			Communicator.safeClose(serverSocket);
 			
 			// shutdown server
 			stopServer();
@@ -675,7 +504,7 @@ public abstract class BaseServer {
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
 				// server command from client received
-				command = readCommand(in);
+				command = Communicator.readCommand(in);
 	        } 
 	        catch (UtilsException e) {
 	        	
@@ -694,23 +523,26 @@ public abstract class BaseServer {
 			// 0. invalid server command?
 			if (command == null) {
 				LOG.error("Server command: received command is too long, command is ignored!");
-	        	safeClose(in);
+				Communicator.safeClose(in);
 				return;
 			}
 			// 1. correct server name?
 			final String serverName = command.getServerName();
 			if (!serverName.equals(BaseServer.this.getServerName())) {
 				LOG.error("Server command: Wrong server name received, command is ignored!");
-	        	safeClose(in);
+				Communicator.safeClose(in);
 				return;
 			}
+			// -> not a good idea
+			/*
 			// 2. sec-key
 			final String secKey = command.getSecKey();
 			if (!secKey.equals(SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey())) {
 				LOG.error("Server command: Wrong security key received, command is ignored!");
-	        	safeClose(in);
+				Communicator.safeClose(in);
 				return;
 			}
+			*/
 			
 			// execute command
 			final ClientAnswer answer = BaseServer.this.processServerCommand(command);
@@ -725,8 +557,8 @@ public abstract class BaseServer {
 				// only escape of this loop
 				BaseServer.this.serverStop = true;
 				
-	        	safeClose(in);
-	        	safeClose(serverSocket);
+				Communicator.safeClose(in);
+				Communicator.safeClose(serverSocket);
 	        	
 				return;
 			}
@@ -736,7 +568,7 @@ public abstract class BaseServer {
 			try {
 
 				 out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-				 writeAnswer(answer, out);
+				 Communicator.writeAnswer(answer, out);
 			
 			} catch (IOException e) {
 	        	
@@ -745,9 +577,9 @@ public abstract class BaseServer {
 				
 	        } finally {
 	        	
-	        	safeClose(in);
-	        	safeClose(out);
-	        	safeClose(clientSocket);
+	        	Communicator.safeClose(in);
+	        	Communicator.safeClose(out);
+	        	Communicator.safeClose(clientSocket);
 			}			
 		}
 		

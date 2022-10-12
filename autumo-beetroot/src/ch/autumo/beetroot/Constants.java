@@ -84,6 +84,16 @@ public class Constants {
 	 * JSON extension.
 	 */
 	public static final String JSON_EXT = ".json";
+
+	/**
+	 * Search page.
+	 */
+	public static final String SEARCH_PAGE = "search.html";
+	
+	/**
+	 * User settings url part.
+	 */
+	public static final String USER_SETTINGS_URL_PART = "users/settings";
 	
 	/**
 	 * Admin server/shutdown port.
