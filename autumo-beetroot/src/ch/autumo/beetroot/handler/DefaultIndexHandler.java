@@ -213,16 +213,11 @@ public class DefaultIndexHandler extends BaseHandler {
 				}
 				
 				// generate actions
-				htmlData += this.generateActionsTableData(userSession, getEntity(), modifyID, idr, lang);
+				htmlData += this.generateActionsTableData(userSession, getEntity(), entity, modifyID, idr, lang);
 				
 				htmlData += "</tr>\n";
 				
 				counter++;
-			
-			/*
-<form name="post_tasks_delete_{$id}" style="display:none;" method="post" action="/tasks/delete?id={$id}">
-<a href="/tasks/delete?id={$id}" class="side-nav-item" data-confirm-message="Wollen Sie # {$dbid} wirklich löschen?" onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.returnValue = false; return false;">Task löschen</a>
-			 */
 			}
 		
 		} finally {
@@ -281,22 +276,26 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * 
 	 * @param session user session
 	 * @param entity entity string
+	 * @param entityObj entity object
 	 * @param modifyID obfuscated modify id used action links
 	 * @param dbId internal DB id, don't write it out!
 	 * @param lang user's language
 	 * @return HTML data 
 	 */
-	public String generateActionsTableData(Session userSession, String entity, String modifyID, int dbId, String lang) {
+	public String generateActionsTableData(Session userSession, String entity, Entity entityObj, String modifyID, int dbId, String lang) {
 		
 		String htmlData ="";
 		
 		// Actions !
 		htmlData += "<td class=\"actions\">\n";
+		
 		// VIEW
 		htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/view?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.view", userSession)+"</a>\n";
+		
 		// EDIT
 		if (this.changeAllowed(userSession))
 			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/edit?id="+modifyID+"\">"+LanguageManager.getInstance().translate("base.name.edit", userSession)+"</a>\n";
+		
 		// DELETE
 		if (this.deleteAllowed(userSession)) {
 			htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
@@ -308,7 +307,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			}
 			htmlData += "</form>\n";
 			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
-							+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, dbId) 
+							+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, this.getDeleteName(entityObj)) 
 							+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.returnValue = false; return false;\">"
 							+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
 		}
@@ -319,6 +318,16 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		htmlData += "</td>\n";
 		return htmlData;
+	}
+	
+	/**
+	 * Get the name/id that should be shown in
+	 * the delete confirmation dialog.
+	 * 
+	 * @return id/name of delete object
+	 */
+	public String getDeleteName(Entity entityObj) {
+		return "" + entityObj.getId();
 	}
 	
 	/**

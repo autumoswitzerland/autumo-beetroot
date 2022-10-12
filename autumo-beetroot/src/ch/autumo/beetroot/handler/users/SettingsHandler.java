@@ -17,16 +17,16 @@ package ch.autumo.beetroot.handler.users;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
-import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
+import ch.autumo.beetroot.handler.NoContentAndConfigHandler;
 
 /**
  * Settings handler.
  */
-public class SettingsHandler extends BaseHandler {
+public class SettingsHandler extends NoContentAndConfigHandler {
 
 	public SettingsHandler(String entity) {
-		this.entity = entity;
+		super(entity);
 	}
 	
 	@Override
@@ -35,10 +35,8 @@ public class SettingsHandler extends BaseHandler {
 		final Session userSession = session.getUserSession();
 		boolean somethingChanged = false;
 	
-		String key = null;
-		
 		// theme
-		key = session.getParms().get("theme");
+		String key = session.getParms().get("theme");
 		if (key != null && key.length() != 0) {
 			if (!key.equals(userSession.getUserSetting("theme"))) {
 				userSession.addOrUpdateUserSetting("theme", key);
@@ -49,18 +47,6 @@ public class SettingsHandler extends BaseHandler {
 		if (somethingChanged)
 			Utils.storeUserSettings(userSession);
 		
-		return null;
-	}
-	
-	@Override
-	protected boolean isNoContentResponse() {
-		// This site doesn't generate an output
-		return true;
-	}
-
-	@Override
-	public String getResource() {
-		// since no output is created, no resource is necessary
 		return null;
 	}
 

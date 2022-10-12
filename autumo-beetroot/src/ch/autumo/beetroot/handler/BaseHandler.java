@@ -82,7 +82,7 @@ import ch.autumo.beetroot.handler.users.LogoutHandler;
 import jakarta.activation.MimeType;
 
 /**
- * Base handler.
+ * Base handler - The "Heart" of beetRoot.
  */
 public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
@@ -145,9 +145,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (entity == null || entity.length() == 0)
 			return;
 		
-		final String uri = session.getUri();
 		// nothing to do!
-		if (uri.endsWith(Constants.SEARCH_PAGE) || uri.contains(Constants.USER_SETTINGS_URL_PART))
+		if (this.hasNoColumnsConfig())
 			return;
 		
 		this.columns = new TreeMap<Integer, String>();
@@ -1085,7 +1084,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 				
 				
-				// AT THE VERY END: Add servlet URL part?
+				// AT THE VERY END: Add servlet URL part.
 				// href="/
 				// src="/
 				// action="/
@@ -1536,7 +1535,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		//cookies.set("__SESSION_ID__", cookies.read("__SESSION_ID__"), 1);
 
 		
-		
 		try {
 		
 			// access control
@@ -1570,6 +1568,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 			}
 		
+			
+			// ======== A. HTTP Posts ========
+			
 			// working...
 			if (Method.POST.equals(method)) { 
 				
@@ -1586,6 +1587,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					final boolean retryCall = upMethod != null && upMethod.length() != 0 && upMethod.equals("RETRY");
 					final boolean requestCall = _method != null && _method.length() != 0 && _method.equals("REQUEST");
 					
+					
+					// ======== 1. Retry call test =================
+					
 					if (retryCall) {
 						
 						// Failed 'add'; do nothing and read the formular again
@@ -1596,12 +1600,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							
 						// create a new ID pair, id somehow the orig has been lost, shouldn't happen actually!
 						userSession.createIdPair(origId, getEntity());
-					}
-					else if (requestCall) {
+
+						
+					// ======== 2. Request call test ================
+						
+					} else if (requestCall) {
+						
 						// we simply let the code run further till handler read function
 						// -> used for reads that need a post form
-					}
-					else if (_method == null || _method.length() == 0) { 
+
+						
+					// ======== 3. Main HTTP: No method (save) ======
+						
+					} else if (_method == null || _method.length() == 0) { 
 						
 						// add with id -> save
 						HandlerResponse response = this.saveData((BeetRootHTTPSession) session);
@@ -1627,8 +1638,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							// NOTICE: special case, don't use this method anywhere else, HTTP method isn't changed here!
 							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage(), MSG_TYPE_ERR);
 						}
-					}
-					else if (_method.equals("PUT")) {  // and password reset
+
+						
+					// ======== 4. Main HTTP: PUT (update) ==========
+						
+					} else if (_method.equals("PUT")) {  // and password reset
 						
 						// edit with id -> update
 						HandlerResponse response = this.updateData((BeetRootHTTPSession)session, origId);
@@ -1640,7 +1654,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 						if (response == null || response.getStatus() == HandlerResponse.STATE_OK) {// Ok in this case
 							
-							String m = LanguageManager.getInstance().translate("base.info.updated", userSession, origId, getUpperCaseEntity());
+							//String m = LanguageManager.getInstance().translate("base.info.updated", userSession, origId, getUpperCaseEntity());
+							String m = LanguageManager.getInstance().translate("base.info.updated", userSession, getUpperCaseEntity());
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 						
@@ -1651,6 +1666,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							
 							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage(), MSG_TYPE_ERR);
 						}
+
+						
+					// ======== 5. Main HTTP: POST (delete) ========
 						
 					} else if (_method.equals("POST")) {
 						
@@ -1659,7 +1677,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 						if (response == null || response.getStatus() == HandlerResponse.STATE_OK) { // Ok in this case
 							
-							String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, origId, getUpperCaseEntity());
+							//String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, origId, getUpperCaseEntity());
+							String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, getUpperCaseEntity());
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 						
@@ -1675,11 +1694,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 			
 			
-			// GET: A R operation, read some data...
+			// ======== B. HTTP Get (read) ========
 			
 			// read data
 			final HandlerResponse response = this.readData((BeetRootHTTPSession) session, origId);
 			
+			
+			// ======== C. Handler Response Handling ======
 			
 			// change redirect
 			if (session.getUri().endsWith("/users/change") && response != null)
@@ -1694,7 +1715,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (this.isNoContentResponse())
 				return this.refresh((BeetRootHTTPSession) session, null);
 			
-			
+			// Add flash messages
 			if (response != null) {
 				switch (response.getStatus()) {
 					case HandlerResponse.STATE_OK:
@@ -1711,8 +1732,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 			}
 			
-			
-			// is it a download?
+			// Download handling
 			if (response != null && response.getType() == HandlerResponse.TYPE_FILE_DOWNLOAD) {
 				
 				final File file = response.getDownloadFile();
@@ -1729,7 +1749,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 			
 			
-			//HTML
+			// ======== D. Get HTML: Parse templates ======
+			
 			String getHtml = getText((BeetRootHTTPSession)session, origId);
 			
 			// Template error !
@@ -1747,6 +1768,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
 				return serveHandler(session, new ErrorHandler(Status.NOT_FOUND, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
 			}
+
+			
+			// ======== E. Create final response ==========
 			
 	        return Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
         
@@ -1801,6 +1825,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 	/**
+	 * Overwrite this if your handler has no columns config
+	 * configuration.
+	 * 
+	 * @return <code>true</code> if no columns configuration must
+	 * 		be read
+	 */
+	protected boolean hasNoColumnsConfig() {
+		return false;
+	}
+	
+	/**
 	 * Get title for general template engine error.
 	 * 
 	 * @param userSession user session
@@ -1843,17 +1878,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final String roles[] = strs[1].split(","); 		
 		return Arrays.asList(roles);
 	}
-	
-	/*
-	private Response serveHandler(
-			BeetRootHTTPSession session, 
-			String entity, 
-			Class<?> handlerClass, 
-			Map<String, String> newParams, 
-			String msg) throws Exception {
-		return this.serveHandler(session, entity, handlerClass, newParams, msg, MSG_TYPE_INFO);
-	}
-	*/
 	
 	/** Special case serve; only use with care - retry uses it */
 	private Response serveHandler(
@@ -2325,9 +2349,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 	/**
 	 * Get web resource file as it lies on the file system 
-	 * relatively to the started serevr process.
+	 * relatively to the started server process.
 	 * 
-	 * @return web ressource
+	 * @return web resource
 	 */
 	public abstract String getResource();
 
