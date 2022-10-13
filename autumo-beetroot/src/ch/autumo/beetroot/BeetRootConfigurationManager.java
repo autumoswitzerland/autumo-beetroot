@@ -185,6 +185,8 @@ public class BeetRootConfigurationManager {
 		// Get path only
 		final File f = new File(file);
 		fullConfigBasePath = f.getParent();
+		if (!fullConfigBasePath.endsWith(Utils.FILE_SEPARATOR))
+			fullConfigBasePath += Utils.FILE_SEPARATOR;
 		
 		try {
 			

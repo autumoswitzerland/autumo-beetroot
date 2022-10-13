@@ -877,7 +877,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					continue LOOP;
 				}
-					
+
 				
 				// layout templates and main template
 				if (text.contains("{#head}")) {
@@ -1084,13 +1084,24 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 				
 				
-				// AT THE VERY END: Add servlet URL part.
+				// Add servlet URL part.
 				// href="/
 				// src="/
 				// action="/
-				if (insertServletNameInTemplateRefs)
-					text = text.replaceAll("href=\\\"", "href=\"/"+servletName).replaceAll("src=\\\"", "src=\"/"+servletName).replaceAll("action=\\\"", "action=\"/"+servletName);;
-				
+				if (insertServletNameInTemplateRefs) {
+					// NOTE: this only handles one occurrence, if there is another link without
+					// 'http' or 'https' on the same line it is not handled yet :(
+					// But external links should be on one line without any other references
+					text = text.replaceAll("href=\\\"", "href=\"/"+servletName);
+					text = text.replaceAll("src=\\\"", "src=\"/"+servletName);
+					text = text.replaceAll("action=\\\"", "action=\"/"+servletName);
+					
+					// hack: we have to re-replace http and https links....
+					text = text.replaceAll("href=\\\"/"+servletName+"http", "href=\"http");
+					text = text.replaceAll("src=\\\"/"+servletName+"http", "src=\"http");
+					text = text.replaceAll("action=\\\"/"+servletName+"http", "action=\"http");
+				}
+
 				
 				sb.append(text + "\n");
 			}
@@ -1114,7 +1125,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		return sb.toString();		
 	}
-
+	
 	private void parseTemplateHead(StringBuffer template, String variable) {
 		
 		final int idx = template.indexOf(variable);
@@ -1170,7 +1181,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				continue LOOP;
 			}
-			
+
 			
 			switch (type) {
 			
@@ -1382,7 +1393,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				continue LOOP;
 			}
-			
 			
 			addLine(parse(text, session));
 		}

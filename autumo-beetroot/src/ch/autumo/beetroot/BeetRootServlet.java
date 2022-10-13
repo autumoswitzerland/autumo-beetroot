@@ -69,7 +69,11 @@ public class BeetRootServlet extends HttpServlet {
 		super.init(config);
 		
 		final String webAppRoot = Utils.getRealPath(config.getServletContext());
-		final String webAppRootWithoutSlash = webAppRoot.substring(0, webAppRoot.length() - 1);
+		
+		String webAppRootWithoutSlash = webAppRoot;
+		if (webAppRoot.endsWith(Utils.FILE_SEPARATOR))
+			webAppRootWithoutSlash = webAppRoot.substring(0, webAppRoot.length() - 1);
+		
 		
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 		final String configFilePath = config.getInitParameter("beetRootConfig");
@@ -80,16 +84,12 @@ public class BeetRootServlet extends HttpServlet {
 			// configure logging
 			final String logCfgFile = config.getInitParameter("beetRootLogConfig");
 			try {
-				
 				Utils.configureLog4j2(webAppRoot + logCfgFile);
-				
 			} catch (IOException ioex) {
 				
 				LOG.error("Logging configuration initialization failed !", ioex);
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
-			
-			//jakarta.mail.util.StreamProvider
 		}
 		
 		// Read general config
@@ -138,6 +138,7 @@ public class BeetRootServlet extends HttpServlet {
 		} catch (Exception e) {
 			
 			LOG.error("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
+			throw new ServletException("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
 		}
 		
 		beetRootWebServer = (BeetRootWebServer) beetRootService;

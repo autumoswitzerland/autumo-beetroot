@@ -109,31 +109,39 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		super(port);
 		
-		csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS);
-		if (csrf)
-	    	LOG.info("CSRF activated!");
-		BeetRootConfigurationManager.getInstance().setCsrf(csrf);
-		
-		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
-		if (servletName != null && servletName.length() != 0)
-			insertServletNameInTemplateRefs = true; 
-		
-		tmpFilePrefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
-		if (tmpFilePrefix == null || tmpFilePrefix.length() == 0)
-			tmpFilePrefix = "beetrootweb-";
-		
-		// routes
-		this.addMappings();
-		
-		// init any otehr module
-		this.initModules(BeetRootConfigurationManager.getInstance().getServletContext() != null, BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
+		try {
+			
+			csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS);
+			if (csrf)
+		    	LOG.info("CSRF activated!");
+			BeetRootConfigurationManager.getInstance().setCsrf(csrf);
+			
+			servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+			if (servletName != null && servletName.length() != 0)
+				insertServletNameInTemplateRefs = true; 
+			
+			tmpFilePrefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
+			if (tmpFilePrefix == null || tmpFilePrefix.length() == 0)
+				tmpFilePrefix = "beetrootweb-";
+			
+			// routes
+			this.addMappings();
+			
+			// init any otehr module
+			this.initModules(BeetRootConfigurationManager.getInstance().getServletContext() != null, BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
+			
+		} catch (Exception ex) {
+			
+			LOG.error("Couldn't initialize beetRoot Server or Service!", ex);
+			throw ex;
+		}
 	}
 
 	/**
-	 * Initialze modules, etc.
+	 * Initialize modules, etc.
 	 * 
 	 * @param isWithinServlet is within servlet?
-	 * @param fullConfigBasePath dull path where config file is located
+	 * @param fullConfigBasePath full path where configuration files are located
 	 * @throws Exception
 	 */
 	private void initModules(boolean isWithinServlet, String fullConfigBasePath) throws Exception {
