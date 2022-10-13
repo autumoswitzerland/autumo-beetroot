@@ -1096,10 +1096,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					text = text.replaceAll("src=\\\"", "src=\"/"+servletName);
 					text = text.replaceAll("action=\\\"", "action=\"/"+servletName);
 					
-					// hack: we have to re-replace http and https links....
-					text = text.replaceAll("href=\\\"/"+servletName+"http", "href=\"http");
-					text = text.replaceAll("src=\\\"/"+servletName+"http", "src=\"http");
-					text = text.replaceAll("action=\\\"/"+servletName+"http", "action=\"http");
+					if (this.hasExternalLinks()) {
+						// hack: we have to re-replace http and https links....
+						text = text.replaceAll("href=\\\"/"+servletName+"http", "href=\"http");
+						text = text.replaceAll("src=\\\"/"+servletName+"http", "src=\"http");
+						text = text.replaceAll("action=\\\"/"+servletName+"http", "action=\"http");
+					}
 				}
 
 				
@@ -1124,6 +1126,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 		
 		return sb.toString();		
+	}
+
+	/**
+	 * Overwrite if this handler serves templates with external
+	 * links (starting with 'http' or 'https').
+	 * 
+	 * @return true if   
+	 */
+	public boolean hasExternalLinks() {
+		return false;
 	}
 	
 	private void parseTemplateHead(StringBuffer template, String variable) {
