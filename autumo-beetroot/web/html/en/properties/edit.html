@@ -9,7 +9,7 @@
 					value="{$csrfToken}" />
 			</form> <a href="/{$lang}/properties/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}??"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.returnValue = false; return false;">Delete
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.preventDefault();">Delete
 				Setting</a>
 		</li>
 		<li><a href="/{$lang}/properties" class="side-nav-item">List Settings</a></li>

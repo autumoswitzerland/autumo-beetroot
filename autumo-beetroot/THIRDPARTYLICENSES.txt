@@ -66,6 +66,10 @@ with third parties: All licenses are covered by the license for this product (se
 	Link:		https://javaee.github.io/servlet-spec/LICENSE
 				See: 3.5. Distribution of Executable Versions.
 
+-	Library:	jsoup: Java HTML Parser
+	License:	MIT License
+	Link:		https://github.com/jhy/jsoup/blob/master/LICENSE
+
 -	Library:	ZXing Java SE Extensions
 	License:	Apache License, Version 2.0
 	Link:		https://www.apache.org/licenses/LICENSE-2.0

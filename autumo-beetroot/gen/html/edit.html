@@ -9,7 +9,7 @@
 					value="{$csrfToken}" />
 			</form> <a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}??"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_##entitynameplural##_delete_{$id}.submit(); } event.returnValue = false; return false;">Delete
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_##entitynameplural##_delete_{$id}.submit(); } event.preventDefault();">Delete
 				##Entityname##</a>
 		</li>
 		<li><a href="/{$lang}/##entitynameplural##" class="side-nav-item">List ##Entitynameplural##</a></li>

@@ -283,8 +283,8 @@ public class DefaultEditHandler extends BaseHandler {
 				if (nullable == ResultSetMetaData.columnNoNulls) {
 					
 					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";
-					result += "    data-validity-message=\"This field cannot be left empty\" oninvalid=\"this.setCustomValidity(&#039;&#039;); if (!this.value) this.setCustomValidity(this.dataset.validityMessage)\"\n";
-					result += "    oninput=\"this.setCustomValidity(&#039;&#039;)\"\n"; 
+					result += "    data-validity-message=\"This field cannot be left empty\" oninvalid=\"this.setCustomValidity(''); if (!this.value) this.setCustomValidity(this.dataset.validityMessage)\"\n";
+					result += "    oninput=\"this.setCustomValidity('')\"\n"; 
 					result += "    id=\""+columnName+"\" aria-required=\"true\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
 					
 				} else {

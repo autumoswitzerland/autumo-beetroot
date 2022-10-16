@@ -50,11 +50,13 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -70,6 +72,13 @@ import org.apache.commons.dbutils.BeanProcessor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+import org.jsoup.safety.Safelist;
+import org.jsoup.select.Elements;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -704,6 +713,86 @@ public class Utils {
 		
 		return cp;
 	}
+
+	/**
+	 * Remove unnecessary HTML tags, but preserve line-breaks.
+	 * 
+	 * @param html the input HTML
+	 * @param prettyPrint use pretty-print?
+	 * @return prepared HTML
+	 */
+	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint) {
+		return prepareHtmlWithLineBreaks(html, prettyPrint, null, (String[]) null);
+	}
+	
+	/**
+	 * Remove unnecessary HTML tags, but preserve line-breaks.
+	 * 
+	 * @param html the input HTML
+	 * @param prettyPrint use pretty-print?
+	 * @param addTags additional tags that should be kept if any
+	 * @return prepared HTML
+	 */
+	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint, String... addTags) {
+		return prepareHtmlWithLineBreaks(html, prettyPrint, null, addTags);
+	}
+
+	/**
+	 * Remove unnecessary HTML tags, but preserve line-breaks.
+	 * 
+	 * @param html the input HTML
+	 * @param prettyPrint use pretty-print?
+	 * @param replaceTags tags to replace if any
+	 * @return prepared HTML
+	 */
+	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint, List<SimpleEntry<String, String>> replacements) {
+		return prepareHtmlWithLineBreaks(html, prettyPrint, replacements, (String[]) null);
+	}
+	
+	/**
+	 * Remove unnecessary HTML tags, but preserve line-breaks.
+	 * 
+	 * @param html the input HTML
+	 * @param prettyPrint use pretty-print?
+	 * @param addTags additional tags that should be kept if any
+	 * @param replaceTags tags to replace if any
+	 * @return prepared HTML
+	 */
+	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint, List<SimpleEntry<String, String>> replacements, String... addTags) {
+		
+		final Document jsoupDoc = Jsoup.parse(html);
+		final Document.OutputSettings outputSettings = new Document.OutputSettings();
+		outputSettings.prettyPrint(prettyPrint);
+		jsoupDoc.outputSettings(outputSettings);
+		
+		if (replacements!= null && replacements.size() > 0) {
+			for (Iterator<SimpleEntry<String, String>> iterator = replacements.iterator(); iterator.hasNext();) {
+				
+				final SimpleEntry<String, String> simpleEntry = iterator.next();
+				final Elements elements= jsoupDoc.getElementsByTag(simpleEntry.getKey());
+				
+				for (Iterator<Element> iterator2 = elements.iterator(); iterator2.hasNext();) {
+					final Element element = iterator2.next();
+					final Node c = element.childNode(0);
+					final Element newElement = new Element(Tag.valueOf(simpleEntry.getValue()), "");
+					newElement.append(c.toString());
+					element.replaceWith(newElement);
+				}
+			}
+		}
+		
+		jsoupDoc.select("br").before("\\n");
+		jsoupDoc.select("p").before("\\n");
+		
+		String out = jsoupDoc.html().replaceAll("\\\\n", "\n");
+		String strWithNewLines = null;
+		if (addTags != null && addTags.length > 0)
+			strWithNewLines = Jsoup.clean(out, "", Safelist.basic().addTags(addTags), outputSettings);
+		else
+			strWithNewLines = Jsoup.clean(out, "", Safelist.basic(), outputSettings);
+		
+		return strWithNewLines;
+	}
 	
 	/**
 	 * Determine HTML div field type for SQL data type.
@@ -1003,6 +1092,36 @@ public class Utils {
 	public static void exit(int code) {
 		System.exit(code);
 	}
+	
+	/**
+	 * Get readable duration.
+	 * 
+	 * @param durationInMilliseconds duration in ms
+	 * @param printUpTo The maximum timeunit that should be printed
+	 * @return readable duration
+	 */
+	public static String getReadableDuration(long durationInMilliseconds, TimeUnit printUpTo) {
+		
+		long dy = TimeUnit.MILLISECONDS.toDays(durationInMilliseconds);
+		long allHours = TimeUnit.MILLISECONDS.toHours(durationInMilliseconds);
+		long allMinutes = TimeUnit.MILLISECONDS.toMinutes(durationInMilliseconds);
+		long allSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMilliseconds);
+		long allMilliSeconds = TimeUnit.MILLISECONDS.toMillis(durationInMilliseconds);
+		
+		final long hr = allHours - TimeUnit.DAYS.toHours(dy);
+		final long min = allMinutes - TimeUnit.HOURS.toMinutes(allHours);
+		final long sec = allSeconds - TimeUnit.MINUTES.toSeconds(allMinutes);
+		final long ms = allMilliSeconds - TimeUnit.SECONDS.toMillis(allSeconds);
+		
+		switch (printUpTo) {
+			case DAYS: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
+			case HOURS: return String.format("%d Hours %d Minutes %d Seconds %d Milliseconds", hr, min, sec, ms);
+			case MINUTES: return String.format("%d Minutes %d Seconds %d Milliseconds", min, sec, ms);
+			case SECONDS: return String.format("%d Seconds %d Milliseconds", sec, ms);
+			case MILLISECONDS: return String.format("%d Milliseconds", ms);
+			default: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
+		}
+	}	
 	
 	public static String bytesToHex(byte[] bytes) {
 	    char[] hexChars = new char[bytes.length * 2];

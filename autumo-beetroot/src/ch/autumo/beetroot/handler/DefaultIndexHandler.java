@@ -308,7 +308,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			htmlData += "</form>\n";
 			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
 							+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, this.getDeleteName(entityObj)) 
-							+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.returnValue = false; return false;\">"
+							+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.preventDefault();\">"
 							+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
 		}
 		
@@ -422,7 +422,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			options += "				<li class=\"first\"><a href=\"/"+lang+"/"+getEntity()+"/index?page=1\">&lt;&lt; first</a></li>\n";            
 		
 		if (page == 1)
-			options += "				<li class=\"prev disabled\"><a href=\"\" onclick=\"return false;\">&lt; previous</a></li>\n";
+			options += "				<li class=\"prev disabled\"><a href=\"\" onclick=\"event.preventDefault();\">&lt; previous</a></li>\n";
 		else if (page > 1)
 			options += "				<li class=\"prev\"><a rel=\"prev\" href=\"/"+lang+"/"+getEntity()+"/index?page="+(page-1)+"\">&lt; previous</a></li>\n";            
 		
@@ -437,7 +437,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		
 		if (page == pages)
-			options += "				<li class=\"next disabled\"><a href=\"\" onclick=\"return false;\">next &gt;</a></li>\n";
+			options += "				<li class=\"next disabled\"><a href=\"\" onclick=\"event.preventDefault();\">next &gt;</a></li>\n";
 		else if (page < pages)
 			options += "				<li class=\"next\"><a rel=\"next\" href=\"/"+lang+"/"+getEntity()+"/index?page="+(page+1)+"\">next &gt;</a></li>\n";            
 

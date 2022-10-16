@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
@@ -88,6 +90,45 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
+	// link reference patterns
+	private static Pattern PATTERN_HREF = Pattern.compile("href=\\\"");
+	private static Pattern PATTERN_SRC = Pattern.compile("src=\\\"");
+	private static Pattern PATTERN_ACTION = Pattern.compile("action=\\\"");
+	private static Pattern PATTERN_LOCATION = Pattern.compile("location='");
+
+	// link reference reverse patterns
+	private static Pattern PATTERN_HREF_REV;
+	private static Pattern PATTERN_SRC_REV;
+	private static Pattern PATTERN_ACTION_REV;
+	private static Pattern PATTERN_LOCATION_REV;
+	
+	// Get text patterns
+	private static Pattern PATTERN_ID = Pattern.compile("\\{\\$id\\}");
+	private static Pattern PATTERN_DBID = Pattern.compile("\\{\\$dbid\\}");
+	private static Pattern PATTERN_CSRF_TOKEN = Pattern.compile("\\{\\$csrfToken\\}");
+	private static Pattern PATTERN_TITLE = Pattern.compile("\\{\\$title\\}");
+	private static Pattern PATTERN_USER = Pattern.compile("\\{\\$user\\}");
+	private static Pattern PATTERN_USERFULL = Pattern.compile("\\{\\$userfull\\}");
+	private static Pattern PATTERN_LANG = Pattern.compile("\\{\\$lang\\}");
+	private static Pattern PATTERN_THEME = Pattern.compile("\\{\\$theme\\}");
+	private static Pattern PATTERN_ANTITHEME = Pattern.compile("\\{\\$antitheme\\}");
+	
+	// sub-resource patterns
+	private static Pattern PATTERN_REDIRECT_INDEX = Pattern.compile("\\{\\$redirectIndex\\}");
+	//private static Pattern PATTERN_CHECK_BOX_LOGIC = Pattern.compile("\\{\\$checkBoxLogic\\}");
+	private static Pattern PATTERN_SEVERITY = Pattern.compile("\\{\\$severity\\}");
+	private static Pattern PATTERN_MESSAGE = Pattern.compile("\\{\\$message\\}");
+	private static Pattern PATTERN_USERINFO = Pattern.compile("\\{\\$userinfo\\}");
+	private static Pattern PATTERN_LANG_MENU_ENTRIES = Pattern.compile("\\{\\$lang_menu_entries\\}");
+	//private static Pattern PATTERN_ADMIN_MENU = Pattern.compile("\\{\\$adminmenu\\}");
+	//private static Pattern PATTERN_LOGIN_OR_LOGOUT = Pattern.compile("\\{\\$loginorlogout\\}");
+	
+	// Additional patterns
+	private static Pattern PATTERN_SEMICOLON = Pattern.compile(";");
+	private static Pattern PATTERN_COLON = Pattern.compile(":");
+	private static Pattern PATTERN_RIGHT_CURLY_BRACKET = Pattern.compile("}");
+	private static Pattern PATTERN_SPACE = Pattern.compile(" ");
+	
 	public static final int MSG_TYPE_INFO = 0;
 	public static final int MSG_TYPE_WARN = 1;
 	public static final int MSG_TYPE_ERR = -1;
@@ -121,6 +162,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private boolean redirectedMarker = false;
 	//private boolean loginMarker = false;
 
+	// start time
+	private long baseHandlerStart = 0;
+	// measure duration time?
+	@SuppressWarnings("unused")
+	private boolean measureDuration = false;
+	
 	
 	public BaseHandler() {
 	}
@@ -137,9 +184,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void initialize(BeetRootHTTPSession session) {
 		
+		// if (measureDuration) baseHandlerStart  = System.currentTimeMillis();
+		
 		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
-		if (servletName != null && servletName.length() != 0)
-			insertServletNameInTemplateRefs = true; 
+		
+		if (servletName != null && servletName.length() != 0) {
+			
+			insertServletNameInTemplateRefs = true;
+			
+			PATTERN_HREF_REV = Pattern.compile("href=\\\"/"+servletName+"http");
+			PATTERN_SRC_REV = Pattern.compile("src=\\\"/"+servletName+"http");
+			PATTERN_ACTION_REV = Pattern.compile("action=\\\"/"+servletName+"http");
+			PATTERN_LOCATION_REV = Pattern.compile("location='/"+servletName+"http");
+		}
 		
 		// nothing to do!
 		if (entity == null || entity.length() == 0)
@@ -843,7 +900,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final Session userSession = session.getUserSession();
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
 		String user = userSession.getUserName();
+		if (user != null && user.indexOf("$") > 0)
+			user = user.replace("$", "\\$");
 		String userfull = userSession.getUserFullNameOrUserName();
+		if (userfull != null && userfull.indexOf("$") > 0)
+			userfull = userfull.replace("$", "\\$");
 		String currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/layout.html", userSession);
 		String templateResource = getResource();
 		
@@ -950,7 +1011,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 								final String formCsrfToken = userSession.getFormCsrfToken();
 								
 								if (formCsrfToken != null && formCsrfToken.length() != 0)
-									text = text.replaceAll("\\{\\$csrfToken\\}", formCsrfToken);
+									text = PATTERN_CSRF_TOKEN.matcher(text).replaceAll(formCsrfToken);
 							}
 						}
 						
@@ -965,14 +1026,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							if (modifyID == null) {
 								userSession.createIdPair(origId, getEntity());
 							}
-							
-							text = text.replaceAll("\\{\\$id\\}", "" + modifyID);
-							text = text.replaceAll("\\{\\$dbid\\}", "" + origId);
-						}
-
-						// language
-						if (text.contains("{$lang}")) {
-							text = text.replaceAll("\\{\\$lang\\}", lang);
+							text = PATTERN_ID.matcher(text).replaceAll("" + modifyID);
+							text = PATTERN_DBID.matcher(text).replaceAll("" + origId);
 						}
 						
 						// template specific variables
@@ -999,66 +1054,28 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/script.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#script}", session);
 					
-				} else if (text.contains("{$redirectIndex}")) {
-					
-					//URL rewrite
-					if (redirectedMarker) {
-						if (insertServletNameInTemplateRefs)
-							text = text.replace("{$redirectIndex}", "window.history.pushState({}, document.title, \"/"+servletName+"/"+lang+"/"+getEntity()+"/index\");");
-						else
-							text = text.replace("{$redirectIndex}", "window.history.pushState({}, document.title, \"/"+lang+"/"+getEntity()+"/index\");");
-					}
-					/** Unused
-					else {
-						if (loginMarker)
-							text = text.replace("{$redirectIndex}", "window.history.pushState({}, document.title, \"/\" + \"users/login\");");
-						else
-							text = text.replace("{$redirectIndex}", " ");
-					}
-					*/
-					
-					//loginMarker = false;
-					redirectedMarker = false;
-					
-				} else if (text.contains("{$checkBoxLogic}")) {
-					
-					if (checkBoxLogic.length() > 0) {
-						text = text.replace("{$checkBoxLogic}", checkBoxLogic.toString());
-					} else {
-						text = text.replace("{$checkBoxLogic}", " ");
-					}
-					checkBoxLogic = new StringBuffer();
 				}
-				
+					
 				
 				// General variables!
 				
 				// title
 				if (text.contains("{$title}"))
-					text = text.replaceAll("\\{\\$title\\}", getUpperCaseEntity());
-
-				// CSRF token
-				if (text.contains("{$csrfToken}")) {
-					
-					final String formCsrfToken = userSession.getFormCsrfToken();
-					if (formCsrfToken != null && formCsrfToken.length() != 0) {
-						text = text.replaceAll("\\{\\$csrfToken\\}", formCsrfToken);
-					}
-				}
+					text = PATTERN_TITLE.matcher(text).replaceAll(getUpperCaseEntity());
 
 				// user
 				if (user != null && text.contains("{$user}")) {
-					text = text.replaceAll("\\{\\$user\\}", user);
+					text = PATTERN_USER.matcher(text).replaceAll(user);
 				}
 
 				// user full
 				if (userfull != null && text.contains("{$userfull}")) {
-					text = text.replaceAll("\\{\\$userfull\\}", userfull);
+					text = PATTERN_USERFULL.matcher(text).replaceAll(userfull);
 				}
 				
 				// language
 				if (text.contains("{$lang}")) {
-					text = text.replaceAll("\\{\\$lang\\}", lang);
+					text = PATTERN_LANG.matcher(text).replaceAll(lang);
 				}				
 				
 				
@@ -1068,39 +1085,39 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (text.contains("{$theme}")) {
 					final String theme = userSession.getUserSetting("theme");
 					if (theme == null)
-						text = text.replaceAll("\\{\\$theme\\}", "dark");
+						text = PATTERN_THEME.matcher(text).replaceAll("dark");
 					else
-						text = text.replaceAll("\\{\\$theme\\}", theme);
+						text = PATTERN_THEME.matcher(text).replaceAll(theme);
 				}				
 				if (text.contains("{$antitheme}")) {
 					final String theme = userSession.getUserSetting("theme");
 					if (theme == null)
-						text = text.replaceAll("\\{\\$antitheme\\}", "default");
+						text = PATTERN_ANTITHEME.matcher(text).replaceAll("default");
 					else
 						if (theme.equals("default"))
-							text = text.replaceAll("\\{\\$antitheme\\}", "dark");
+							text = PATTERN_ANTITHEME.matcher(text).replaceAll("dark");
 						else
-							text = text.replaceAll("\\{\\$antitheme\\}", "default");
+							text = PATTERN_ANTITHEME.matcher(text).replaceAll("default");
 				}
 				
 				
 				// Add servlet URL part.
-				// href="/
-				// src="/
-				// action="/
+				// - href="
+				// - src="
+				// - action="
+				// - location='
 				if (insertServletNameInTemplateRefs) {
-					// NOTE: this only handles one occurrence, if there is another link without
-					// 'http' or 'https' on the same line it is not handled yet :(
-					// But external links should be on one line without any other references
-					text = text.replaceAll("href=\\\"", "href=\"/"+servletName);
-					text = text.replaceAll("src=\\\"", "src=\"/"+servletName);
-					text = text.replaceAll("action=\\\"", "action=\"/"+servletName);
-					
+					// repeat only the following part:
+					text = PATTERN_HREF.matcher(text).replaceAll("href=\"/"+servletName);
+					text = PATTERN_SRC.matcher(text).replaceAll("src=\"/"+servletName);
+					text = PATTERN_ACTION.matcher(text).replaceAll("action=\"/"+servletName);
+					text = PATTERN_LOCATION.matcher(text).replaceAll("location='/"+servletName);
 					if (this.hasExternalLinks()) {
 						// hack: we have to re-replace http and https links....
-						text = text.replaceAll("href=\\\"/"+servletName+"http", "href=\"http");
-						text = text.replaceAll("src=\\\"/"+servletName+"http", "src=\"http");
-						text = text.replaceAll("action=\\\"/"+servletName+"http", "action=\"http");
+						text = PATTERN_HREF_REV.matcher(text).replaceAll("href=\"http");
+						text = PATTERN_SRC_REV.matcher(text).replaceAll("src=\"http");
+						text = PATTERN_ACTION_REV.matcher(text).replaceAll("action=\"http");
+						text = PATTERN_LOCATION_REV.matcher(text).replaceAll("location='http");
 					}
 				}
 
@@ -1199,8 +1216,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 				case "{#head}":
 
-					if (text.contains("{$title}"))
-						text = text.replace("{$title}", getUpperCaseEntity());
+					// DONE in overal method
+					//if (text.contains("{$title}"))
+					//	text = text.replace("{$title}", getUpperCaseEntity());
 					break;
 
 				case "{#message}":
@@ -1208,20 +1226,20 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (text.contains("{$severity}")) {
 						
 						if (this.hasSuccessMessage())
-							text = text.replace("{$severity}", "success");
+							text = PATTERN_SEVERITY.matcher(text).replaceFirst("success");
 						else if (this.hasWarningMessage())
-							text = text.replace("{$severity}", "warning");
+							text = PATTERN_SEVERITY.matcher(text).replaceFirst("warning");
 						else if (this.hasErrorMessage())
-							text = text.replace("{$severity}", "error");
+							text = PATTERN_SEVERITY.matcher(text).replaceFirst("error");
 					}
 					
 					if (text.contains("{$message}")) {
 						if (this.hasSuccessMessage())
-							text = text.replace("{$message}", this.successMessage);
+							text = PATTERN_MESSAGE.matcher(text).replaceFirst(this.successMessage);
 						else if (this.hasWarningMessage())
-							text = text.replace("{$message}", this.warningMessage);
+							text = PATTERN_MESSAGE.matcher(text).replaceFirst(this.warningMessage);
 						else if (this.hasErrorMessage())
-							text = text.replace("{$message}", this.errorMessage);
+							text = PATTERN_MESSAGE.matcher(text).replaceFirst(this.errorMessage);
 						
 						this.successMessage = null;
 						this.warningMessage = null;
@@ -1242,16 +1260,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 								userSession.createIdPair(uid, "users");
 							}
 
-							final String user = userSession.getUserFullNameOrUserName();
-							
-							text = text.replace("{$userinfo}", 
+							String user = userSession.getUserFullNameOrUserName();
+							if (user != null && user.indexOf("$") > 0)
+								user = user.replace("$", "\\$");
+							text = PATTERN_USERINFO.matcher(text).replaceFirst(
 									LanguageManager.getInstance().translate("base.name.user", userSession)
 									+ ": <a class=\"hideprint\" href=\"/"+lang+"/users/view?id="
 									+ userSession.getModifyId(uid, "users")+"\" rel=\"nofollow\">" 
 									+ user + "</a> | ");
 						} else {
 							
-							text = text.replace("{$userinfo}", " ");
+							text = PATTERN_USERINFO.matcher(text).replaceFirst(" ");
 						}
 					}
 					
@@ -1264,31 +1283,23 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						//URL rewrite
 						if (redirectedMarker) {
 							if (insertServletNameInTemplateRefs)
-								text = text.replace("{$redirectIndex}", "window.history.pushState({}, document.title, \"/"+servletName+"/"+lang+"/"+getEntity()+"/index\");");
+								text = PATTERN_REDIRECT_INDEX.matcher(text).replaceFirst("window.history.pushState({}, document.title, \"/"+servletName+"/"+lang+"/"+getEntity()+"/index\");");
 							else
-								text = text.replace("{$redirectIndex}", "window.history.pushState({}, document.title, \"/"+lang+"/"+getEntity()+"/index\");");
+								text = PATTERN_REDIRECT_INDEX.matcher(text).replaceFirst("window.history.pushState({}, document.title, \"/"+lang+"/"+getEntity()+"/index\");");
 						} else {
-							text = text.replace("{$redirectIndex}", " ");
+							text = PATTERN_REDIRECT_INDEX.matcher(text).replaceFirst(" ");
 						}
 						redirectedMarker = false;
-		
-						/** Unused
-						else {
-							if (loginMarker)
-								text = text.replace("{$redirectIndex}", "window.history.pushState({}, document.title, \"/\" + \"users/login\");");
-							else
-								text = text.replace("{$redirectIndex}", " ");
-						}
-						loginMarker = false;
-						*/
 					} 
 					
 					if (text.contains("{$checkBoxLogic}")) {
 						
 						if (checkBoxLogic.length() > 0) {
 							text = text.replace("{$checkBoxLogic}", checkBoxLogic.toString());
+							//text = PATTERN_CHECK_BOX_LOGIC.matcher(text).replaceFirst(checkBoxLogic.toString());
 						} else {
 							text = text.replace("{$checkBoxLogic}", " ");
+							//text = PATTERN_CHECK_BOX_LOGIC.matcher(text).replaceFirst(" ");
 						}
 						checkBoxLogic = new StringBuffer();
 					}
@@ -1309,9 +1320,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 								entries += "<hr class=\"menusep\">\n";
 							}
 						}
-						text = text.replace("{$lang_menu_entries}", entries);
+						text = PATTERN_LANG_MENU_ENTRIES.matcher(text).replaceFirst(entries);
 					} else {
-						text = text.replace("{$lang_menu_entries}", " ");
+						text = PATTERN_LANG_MENU_ENTRIES.matcher(text).replaceFirst(" ");
 					}
 					
 					break;
@@ -1333,28 +1344,32 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						if (userrole != null && userrole.length() != 0 && userrole.equalsIgnoreCase("Administrator")) {
 							String adminMenu = parseAndGetSubResource(text, "web/html/:lang/blocks/adminmenu.html", "{$adminmenu}", session);
 							text = text.replace("{$adminmenu}", adminMenu);
+							//text = PATTERN_ADMIN_MENU.matcher(text).replaceFirst(adminMenu);
 						}
 						else
 							text = text.replace("{$adminmenu}", " ");
+							//text = PATTERN_ADMIN_MENU.matcher(text).replaceFirst(" ");
 					}
 					
 					// Show login or logout?
 					if (text.contains("{$loginorlogout}")) {
 						if (userrole != null)
 							text = text.replace("{$loginorlogout}", "<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
+							//text = PATTERN_LOGIN_OR_LOGOUT.matcher(text).replaceFirst("<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
 						else
 							text = text.replace("{$loginorlogout}", "<a href=\"/{$lang}/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
+							//text = PATTERN_LOGIN_OR_LOGOUT.matcher(text).replaceFirst("<a href=\"/{$lang}/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
 					}
 					
 					break;
 					
-				case "{$adminmenu}":
-					
+				
+				case "{#adminmenu}":
 					// we need to to nada, just all liens should be added, that's all!
 					break;
+				
 					
 				default:
-					
 					break;
 			}
 			
@@ -1363,6 +1378,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 		sc.close();
 		
+		// PATTERN ?
 		return origText.replace(type, sb.toString());
 	}
 
@@ -1642,6 +1658,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						if (response == null || (response.getStatus() == HandlerResponse.STATE_OK && response.getType() == HandlerResponse.TYPE_FORM)) { // Ok in this case
 							
 							String m = LanguageManager.getInstance().translate("base.info.saved", userSession, getUpperCaseEntity());
+							
+							//if (measureDuration) this.processTime();
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 
@@ -1678,6 +1696,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							
 							//String m = LanguageManager.getInstance().translate("base.info.updated", userSession, origId, getUpperCaseEntity());
 							String m = LanguageManager.getInstance().translate("base.info.updated", userSession, getUpperCaseEntity());
+							
+							//if (measureDuration) this.processTime();
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 						
@@ -1701,6 +1721,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							
 							//String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, origId, getUpperCaseEntity());
 							String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, getUpperCaseEntity());
+							
+							// if (measureDuration) this.processTime();
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 						
@@ -1794,6 +1816,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// ======== E. Create final response ==========
 			
+			//if (measureDuration) this.processTime();
 	        return Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
         
 		} catch (Exception e) {
@@ -1819,7 +1842,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}			
 		}
     }
-    
+	
 	/**
 	 * Overwrite this if your handler doesn't have an output.
 	 * 
@@ -1891,10 +1914,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (strs.length != 2)
 			return Arrays.asList(new String[] {});
 		
-		strs[1] = strs[1].replaceAll(";", "");
-		strs[1] = strs[1].replaceAll(":", "");
-		strs[1] = strs[1].replaceAll("}", "");
-		strs[1] = strs[1].replaceAll(" ", "");
+		strs[1] = PATTERN_SEMICOLON.matcher(strs[1]).replaceAll("");
+		strs[1] = PATTERN_COLON.matcher(strs[1]).replaceAll("");
+		strs[1] = PATTERN_RIGHT_CURLY_BRACKET.matcher(strs[1]).replaceAll("");
+		strs[1] = PATTERN_SPACE.matcher(strs[1]).replaceAll("");
 		strs[1] = strs[1].trim();
 		
 		final String roles[] = strs[1].split(","); 		
@@ -2141,6 +2164,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 	}
 	
+	@SuppressWarnings("unused")
+	private void processTime() {
+		// stop stop-watch and measure
+		final long ifaceXEnd = System.currentTimeMillis();
+		final long duration = ifaceXEnd - baseHandlerStart;
+		final String durStr = "BEETROOT handler process time: " + Utils.getReadableDuration(duration, TimeUnit.HOURS);
+		LOG.info(durStr);
+	}
+	
 	/** Unused atm */
 	protected void loginMarker(boolean redirectLogin) {
 		//this.loginMarker = redirectLogin;
@@ -2346,7 +2378,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void addSuccessMessage(String message) {
 		
-		this.successMessage = message;
+		this.successMessage = message.replace("$", "\\$");
 	}
 
 	/**
@@ -2356,7 +2388,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void addWarningMessage(String message) {
 		
-		this.warningMessage = message;
+		this.warningMessage = message.replace("$", "\\$");;
 	}
 	
 	/**
@@ -2366,7 +2398,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void addErrorMessage(String message) {
 		
-		this.errorMessage = message;
+		this.errorMessage = message.replace("$", "\\$");;
 	}
 
 	/**

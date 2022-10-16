@@ -12,7 +12,7 @@
 					value="{$csrfToken}" />
 			</form> <a href="/{$lang}/tasks/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}?"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.returnValue = false; return false;">Delete
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.preventDefault();">Delete
 				Task</a>
 		</li>
 		{$endifrole;}
