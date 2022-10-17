@@ -352,6 +352,7 @@ public class LanguageManager {
 				res = configResource.replace(":lang", lang);
 			else
 				res = configResource.replace(":lang/", "");
+			
 		}
 		
 		return res;

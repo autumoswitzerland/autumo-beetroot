@@ -49,5 +49,10 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 	public boolean hasAccess(Session userSession) {
 		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
+
+	@Override
+	public String getTitle(Session userSession) {
+		return "Settings";
+	}
 	
 }

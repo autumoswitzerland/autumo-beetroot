@@ -112,6 +112,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static Pattern PATTERN_LANG = Pattern.compile("\\{\\$lang\\}");
 	private static Pattern PATTERN_THEME = Pattern.compile("\\{\\$theme\\}");
 	private static Pattern PATTERN_ANTITHEME = Pattern.compile("\\{\\$antitheme\\}");
+	private static Pattern PATTERN_REFRESH = Pattern.compile("\\{\\$refreshTime\\}");
 	
 	// sub-resource patterns
 	private static Pattern PATTERN_REDIRECT_INDEX = Pattern.compile("\\{\\$redirectIndex\\}");
@@ -905,7 +906,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String userfull = userSession.getUserFullNameOrUserName();
 		if (userfull != null && userfull.indexOf("$") > 0)
 			userfull = userfull.replace("$", "\\$");
-		String currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/layout.html", userSession);
+		String currRessource = LanguageManager.getInstance().getBlockResource(this.getLayout(userSession), userSession);
 		String templateResource = getResource();
 		
 		// prepare text buffer
@@ -1061,7 +1062,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				// title
 				if (text.contains("{$title}"))
-					text = PATTERN_TITLE.matcher(text).replaceAll(getUpperCaseEntity());
+					text = PATTERN_TITLE.matcher(text).replaceAll(this.getTitle(userSession));
 
 				// user
 				if (user != null && text.contains("{$user}")) {
@@ -1098,6 +1099,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							text = PATTERN_ANTITHEME.matcher(text).replaceAll("dark");
 						else
 							text = PATTERN_ANTITHEME.matcher(text).replaceAll("default");
+				}
+				
+				// a refresh time if needed!
+				if (text.contains("{$refreshTime}")) {
+					final String time = BeetRootDatabaseManager.getProperty("refresh.time");
+					//final String time = (String) userSession.get("refreshTime");
+					if (time == null)
+						text = PATTERN_REFRESH.matcher(text).replaceFirst(""+Constants.DEFAULT_REFRESH_TIME);
+					else
+						text = PATTERN_REFRESH.matcher(text).replaceFirst(time);
 				}
 				
 				
@@ -1146,6 +1157,30 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 	/**
+	 * Overwrite if you want to have a special layout 
+	 * for this handler.
+	 * 
+	 * @return layout file path; example:
+	 * 			'web/html/:lang/blocks/mylayout.html'
+	 */
+	public String getLayout(Session userSession) {
+		// default layout
+		return "web/html/:lang/blocks/layout.html";
+	}
+
+	/** 
+	 * Page title show left above the navigation area.
+	 * If not overwritten, the entities nahe is shown
+	 * starting with an upper-case letter!
+	 * 
+	 * @param userSession user session
+	 * @return page title
+	 */
+	public String getTitle(Session userSession) {
+		return getUpperCaseEntity();		
+	}
+
+	/**
 	 * Overwrite if this handler serves templates with external
 	 * links (starting with 'http' or 'https').
 	 * 
@@ -1154,6 +1189,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public boolean hasExternalLinks() {
 		return false;
 	}
+	
 	
 	private void parseTemplateHead(StringBuffer template, String variable) {
 		

@@ -6,6 +6,7 @@ package planted.beetroot.handler.properties;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
@@ -56,6 +57,11 @@ public class PropertiesAddHandler extends DefaultAddHandler {
 	@Override
 	public boolean hasAccess(Session userSession) {
 		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+	}
+
+	@Override
+	public String getTitle(Session userSession) {
+		return "Settings";
 	}
 	
 }

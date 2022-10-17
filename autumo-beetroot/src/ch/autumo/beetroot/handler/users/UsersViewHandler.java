@@ -39,6 +39,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.UtilsException;
@@ -116,6 +117,11 @@ public class UsersViewHandler extends DefaultViewHandler {
 		}
 		
 		return "notfound.png";
+	}
+
+	@Override
+	public String getTitle(Session userSession) {
+		return LanguageManager.getInstance().translate("base.name.users", userSession);
 	}
 	
 }

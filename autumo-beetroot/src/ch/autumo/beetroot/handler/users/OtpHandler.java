@@ -41,7 +41,7 @@ public class OtpHandler extends BaseHandler {
 	private String entity = null;
 	
 	public OtpHandler() {
-		this.entity = "otp";
+		this.entity = "2FA Code";
 	}
 	
 	public OtpHandler(String entity) {

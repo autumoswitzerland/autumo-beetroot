@@ -287,5 +287,17 @@ public class Constants {
 	 * Postgre db.
 	 */
 	public static String JDBC_POSTGRE_DB = "jdbc:postgresql";	
+
+	
+	
+	// Other
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * If there's a refresh time (tag: {$refreshTime}), this is the
+	 * default value in seconds.
+	 */
+	public static final int DEFAULT_REFRESH_TIME = 60;
+
 	
 }

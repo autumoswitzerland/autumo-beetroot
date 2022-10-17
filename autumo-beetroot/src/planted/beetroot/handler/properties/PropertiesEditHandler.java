@@ -34,4 +34,9 @@ public class PropertiesEditHandler extends DefaultEditHandler {
 		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
 	
+	@Override
+	public String getTitle(Session userSession) {
+		return "Settings";
+	}
+	
 }

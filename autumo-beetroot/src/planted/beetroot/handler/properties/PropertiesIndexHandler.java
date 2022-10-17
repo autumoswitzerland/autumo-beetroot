@@ -58,4 +58,9 @@ public class PropertiesIndexHandler extends DefaultIndexHandler {
 		return userSession.getUserRole().equalsIgnoreCase("Administrator");
 	}
 	
+	@Override
+	public String getTitle(Session userSession) {
+		return "Settings";
+	}
+	
 }
