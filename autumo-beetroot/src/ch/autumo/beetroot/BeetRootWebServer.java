@@ -150,16 +150,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		final String clz = BeetRootConfigurationManager.getInstance().getString("ws_init_class");
 		if (clz != null && clz.length() != 0) {
 			Class<?> clazz = Class.forName(clz);
-			Constructor<?> constructor = null;
-			final Constructor<?> constructors[] = clazz.getDeclaredConstructors();
-			int ip = 0;
-			for (int i = 0; i < constructors.length; i++) {
-				int pc = constructors[i].getParameterCount();
-				if (pc == ip) {
-					constructor = constructors[i];
-					break;
-				}
-			}
+			final Constructor<?> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             initializer = (Initializer) constructor.newInstance();
             

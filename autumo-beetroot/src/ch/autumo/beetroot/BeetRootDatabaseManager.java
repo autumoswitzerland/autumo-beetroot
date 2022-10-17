@@ -181,9 +181,9 @@ public class BeetRootDatabaseManager {
 	 * 
 	 * @param name name/key
 	 * @return value for name/key
-	 * @throws Exception
+	 * @throws SQLException
 	 */
-	public static String getProperty(String name) throws Exception {
+	public static String getProperty(String name) throws SQLException {
 		
 		Connection conn = null;
 		Statement stmt = null;

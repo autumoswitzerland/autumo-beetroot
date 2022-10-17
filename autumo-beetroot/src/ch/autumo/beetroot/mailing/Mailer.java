@@ -31,6 +31,7 @@
 package ch.autumo.beetroot.mailing;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 
@@ -40,12 +41,17 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 public interface Mailer {
 
 	/**
+	 * Email address regex pattern.
+	 */
+	public static final Pattern EMAIL_PATTERN = Pattern.compile("^(.+)@(\\S+)$");	
+	
+	/**
 	 * Mail. HTML + TXT templates are served.
 	 * 
 	 * @param to email receiver addresses
 	 * @param variables variables to parse in templates
 	 * @param templateName template name
-	 * @param session HTTP session
+	 * @param session HTTP session or null if not called within a servlet context
 	 * @throws Exception
 	 */
 	public void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception;

@@ -28,27 +28,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.handler;
+package ch.autumo.beetroot.sms;
+
+import java.lang.reflect.Constructor;
+
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 
 /**
- * Handler that has no content output, no web resource.
- * 
- * The default index will be loaded.
+ * SMS Messenger factory.
  */
-public abstract class NoContentHandler extends BaseHandler {
+public class MessengerFactory {
 
-	public NoContentHandler(String entity) {
-		super(entity);
-	}	
+	private static Messenger messenger;
 	
-	@Override
-	protected final boolean isNoContentResponse() {
-		return true;
+	/**
+	 * Get configured SMS messenger implementation
+	 * 
+	 * @return SMS messenger
+	 * @throws Exception
+	 */
+	public static Messenger getInstance() throws Exception {
+		
+		if (messenger == null) {
+			
+			final String impl = BeetRootConfigurationManager.getInstance().getString("sms_implementation");
+			if (impl == null || impl.length() == 0) {
+				throw new RuntimeException("No SMS implementation defined!");
+			}
+			
+	        final Constructor<?> constructor = Class.forName(impl).getDeclaredConstructor();
+	        constructor.setAccessible(true);
+	        messenger = (Messenger) constructor.newInstance();
+	        messenger.init();
+		}
+		
+		return messenger;
 	}
 	
-	@Override
-	public final String getResource() {
-		return null;
-	}
-
 }

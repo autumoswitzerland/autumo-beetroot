@@ -46,10 +46,10 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
@@ -131,13 +131,22 @@ public abstract class AbstractMailer implements Mailer {
 	
 	protected String loadTemplate(String templateName, BeetRootHTTPSession session, String extension) throws Exception {
 		
-		Session userSession = session.getUserSession();
+		Session userSession = null;
+		if (session != null)
+			userSession = session.getUserSession();
+		
 		String file = null;
 		
-		if (userSession == null)
-			file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Utils.normalizeUri(session.getUri()));
-		else
-			file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
+		if (session == null) {
+			file = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/:lang/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
+		} else {
+			if (userSession == null)
+				file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Utils.normalizeUri(session.getUri()));
+			else
+				file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
+			
+		}
+		
 
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		File f = null;	
@@ -162,10 +171,14 @@ public abstract class AbstractMailer implements Mailer {
 			streamIt = false;
 			
 			LOG.warn("Resource '"+file+"' doesn't exist, looking up with default language '"+LanguageManager.DEFAULT_LANG+"'!");
-			if (userSession == null)
-				file = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, session.getUri());
-			else
-				file = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, userSession);
+			if (session == null) {
+				file = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
+			} else {
+				if (userSession == null)
+					file = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, session.getUri());
+				else
+					file = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, userSession);
+			}
 
 			if (context != null) {
 				
@@ -183,7 +196,11 @@ public abstract class AbstractMailer implements Mailer {
 				streamIt = false;
 				
 				LOG.warn("Resource '"+file+"' doesn't exist, trying with NO language!");
-				file = LanguageManager.getInstance().getResourceWithoutLang("web/"+extension+"/email/"+templateName+"."+extension, session.getUri());
+				if (session == null) {
+					file = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/email/"+templateName+"."+extension, LanguageManager.DEFAULT_LANG);
+				} else {
+					file = LanguageManager.getInstance().getResourceWithoutLang("web/"+extension+"/email/"+templateName+"."+extension, session.getUri());
+				}
 				
 				if (context != null) {
 					

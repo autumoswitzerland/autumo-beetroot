@@ -163,6 +163,13 @@
 		</dependency>
 		
 		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.13</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		<dependency>
 		    <groupId>org.jsoup</groupId>
 		    <artifactId>jsoup</artifactId>
 		    <version>1.15.3</version>
@@ -187,6 +194,13 @@
 		    <groupId>com.google.zxing</groupId>
 		    <artifactId>javase</artifactId>
 		    <version>3.5.0</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.twilio.sdk</groupId>
+		    <artifactId>twilio</artifactId>
+		    <version>9.0.1</version>
 		    <scope>provided</scope>
 		</dependency>
 

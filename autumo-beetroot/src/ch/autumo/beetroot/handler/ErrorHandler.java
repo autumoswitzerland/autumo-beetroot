@@ -58,7 +58,7 @@ public class ErrorHandler extends BaseHandler {
 	}
 
 	@Override
-	public String parse(String line, BeetRootHTTPSession session) {
+	public String replaceTemplateVariables(String line, BeetRootHTTPSession session) {
 
 		if (line.contains("{$title}") && title != null && title.length() != 0)
 			line = line.replace("{$title}", this.title);

@@ -48,6 +48,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static Pattern PATTERN_LANG = Pattern.compile("\\{\\$lang\\}");
 	private static Pattern PATTERN_THEME = Pattern.compile("\\{\\$theme\\}");
 	private static Pattern PATTERN_ANTITHEME = Pattern.compile("\\{\\$antitheme\\}");
-	private static Pattern PATTERN_REFRESH = Pattern.compile("\\{\\$refreshTime\\}");
 	
 	// sub-resource patterns
 	private static Pattern PATTERN_REDIRECT_INDEX = Pattern.compile("\\{\\$redirectIndex\\}");
@@ -137,6 +137,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private StringBuffer buffer = new StringBuffer();
 	
 	protected TreeMap<Integer, String> columns = null;
+	protected Map<String, String> initialValues = null;
 	protected String uniqueFields[] = null;
 	protected List<String> transientFields = new ArrayList<String>();
 	protected String entity = null;
@@ -208,6 +209,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			return;
 		
 		this.columns = new TreeMap<Integer, String>();
+		this.initialValues = new HashMap<String, String>();
 		
 		final List<String> fallBackList = new ArrayList<String>();
 		
@@ -394,6 +396,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				    				
 				    				newCfgLine = configPair[0].substring(4, configPair[0].length()) + "=" + configPair[1];
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
+				    		    	added = true;
+				    		    	
+				    			} else if (configPair[0].startsWith("init.")) { // initial values set in add template :)
+				    				
+				    		    	initialValues.put(configPair[0].substring(5, configPair[0].length()), configPair[1]);
 				    		    	added = true;
 				    			}
 				    			break;
@@ -827,8 +834,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				String text = sc.nextLine();
 				
-				// custom parse?
-				text = parse(text, session);
+				//text = this.preParse(text, session);
 				
 				// template specific variables
 				final String res = this.replaceTemplateVariables(text, session);
@@ -1101,15 +1107,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							text = PATTERN_ANTITHEME.matcher(text).replaceAll("default");
 				}
 				
-				// a refresh time if needed!
-				if (text.contains("{$refreshTime}")) {
-					final String time = BeetRootDatabaseManager.getProperty("refresh.time");
-					//final String time = (String) userSession.get("refreshTime");
-					if (time == null)
-						text = PATTERN_REFRESH.matcher(text).replaceFirst(""+Constants.DEFAULT_REFRESH_TIME);
-					else
-						text = PATTERN_REFRESH.matcher(text).replaceFirst(time);
-				}
+				
+				// replace further overall variables!
+				text = this.replaceVariables(text, session);
 				
 				
 				// Add servlet URL part.
@@ -1228,10 +1228,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		LOOP: while (sc.hasNextLine()) {
 			
 			String text = sc.nextLine();
-			
+
+			//text = this.preParse(text, session);
 			
 			// deal with role-specific sections
-			
 			if (text.contains("$endifrole")) {
 				ifroleactive_sub = false;
 				continue LOOP;
@@ -1458,7 +1458,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				continue LOOP;
 			}
 			
-			addLine(parse(text, session));
+			//addLine(this.preParse(text, session));
+			addLine(text);
 		}
 		
 		sc.close();
@@ -1576,6 +1577,33 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		} catch (IOException e) {
 			throw new FileNotFoundException("File/resource '"+fc.getFullPath()+"' not found! Exception: " + e.getMessage());
 		}				
+	}
+	
+	/**
+	 * Return size of initial value list for add template.
+	 * 
+	 * @return initial values size
+	 */
+	protected int initValuesSize() {
+		return initialValues.size();
+	}
+	
+	/**
+	 * Holds initial add values from 'columns.cfg'.
+	 * Example
+	 * 
+	 * init.colName1=0
+	 * init.colName2=Change this!
+	 * 
+	 * @param colName column name
+	 * @return initial value for add template
+	 */
+	protected String initialValue(String colName) {
+		String initVal = (String) initialValues.get(colName);
+		if (initVal == null)
+			initVal ="";
+		
+		return initVal;
 	}
 	
 	@Override
@@ -2359,6 +2387,22 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 	/**
+	 * Pre-parse one HTML line of a template.
+	 * 
+	 * Note: This method is called before the engine replaces
+	 * standard other tags! 
+	 *  
+	 * @param line html line
+	 * @param session HTTP session
+	 * @return new html line or lines.
+	 */
+	/* not used atm
+	public String preParse(String line, BeetRootHTTPSession session) {
+		return line;
+	}
+	*/
+	
+	/**
 	 * Replace some more variables in template.
 	 * Returning <code>null<code> is valid, then 
 	 * nothing is replaced.
@@ -2372,6 +2416,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
+	 * Replace some more variables within the whole page.
+	 * Returning <code>null<code> is valid, then 
+	 * nothing is replaced.
+	 * 
+	 * @param text text to parse and return
+	 * @param session HTTP session
+	 * @return parsed text or <code>null<code>
+	 */
+	public String replaceVariables(String text, BeetRootHTTPSession session) {
+		return text;
+	}
+	
+	/**
 	 * Get paginator html code. Must only be implemented by index handlers
 	 * and is only called if there's a {$paginator} tag in a template.
 	 * @param session HTTP session  
@@ -2379,20 +2436,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public String getPaginator(BeetRootHTTPSession session) {
 		throw new IllegalStateException("This method should not be called without a routed index template handler!");
-	}
-	
-	/**
-	 * Parse one html line from templates (customization).
-	 * 
-	 * Note: This method is called before the engine replaces
-	 * standard tags! 
-	 *  
-	 * @param line html line
-	 * @param session HTTP session
-	 * @return new html line or lines.
-	 */
-	public String parse(String line, BeetRootHTTPSession session) {
-		return line;
 	}
 	
 	/**

@@ -42,10 +42,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.Utils;
@@ -105,7 +105,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		final Statement stmt = conn.createStatement();
 		
 		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
-		final ResultSet set = stmt.executeQuery(stmtStr); // call only for types, make this better!
+		final ResultSet set = stmt.executeQuery(stmtStr); // NOTE: call only for types, make this better!
 		
 		LOOP: for (int i = 1; i <= columns().size(); i++) {
 			
@@ -262,6 +262,19 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		final String divType = Utils.getHtmlDivType(rsmd, idx, columnName);
 		if (inputType == "checkbox")
 			isCheck = true;
+		
+		
+		// Initial values!
+		// If this method is entered the first time - hence, not a RETRY case-
+		// the value is always empty "". Therefore, we can use initial values if
+		// configured in 'columns.cfg'
+		if (super.initValuesSize() > 0) {
+			// we have at least one!
+			String initVal = super.initialValue(columnName);
+			if (initVal != null && initVal.length() > 0)
+				val = initVal;
+		}
+		
 		
 		int nullable = rsmd.isNullable(idx);
 		int precision = rsmd.getPrecision(idx);

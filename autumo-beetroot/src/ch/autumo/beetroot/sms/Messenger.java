@@ -28,27 +28,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.handler;
+package ch.autumo.beetroot.sms;
+
+import java.util.regex.Pattern;
 
 /**
- * Handler that has no content output, no web resource.
- * 
- * The default index will be loaded.
+ * SMS messenger interface.
  */
-public abstract class NoContentHandler extends BaseHandler {
+public interface Messenger {
 
-	public NoContentHandler(String entity) {
-		super(entity);
-	}	
+	/**
+	 * International phone number pattern without spaces, brackets or hyphens.
+	 * Example: +41991119911
+	 */
+	public static final Pattern INTL_PHONE_NUMBER_PATTERN = Pattern.compile("^(\\+\\d{1,3}( )?)?\\d{10}$");
 	
-	@Override
-	protected final boolean isNoContentResponse() {
-		return true;
-	}
+	/**
+	 * Initialize.
+	 * 
+	 * @throws Exception
+	 */
+	public void init() throws Exception;
 	
-	@Override
-	public final String getResource() {
-		return null;
-	}
-
+	/**
+	 * Send SMS.
+	 * 
+	 * @param toNumber to phone number
+	 * @param text text
+	 * @throws Exception
+	 */
+	public void sms(String toNumber, String text) throws Exception;
+	
 }

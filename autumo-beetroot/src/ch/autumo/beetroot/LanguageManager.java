@@ -288,7 +288,7 @@ public class LanguageManager {
 	 * Used when user is not logged in.
 	 * 
 	 * @param configResource language template/resource
-	 * @param lang öanguage code
+	 * @param lang language code
 	 * @return web resource
 	 */
 	public String getResourceByLang(String configResource, String lang) {

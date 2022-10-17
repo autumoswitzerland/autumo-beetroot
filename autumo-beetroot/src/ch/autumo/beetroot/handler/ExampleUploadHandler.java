@@ -38,8 +38,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 
@@ -100,7 +100,7 @@ public class ExampleUploadHandler extends BaseHandler {
 	}
 
 	@Override
-	public String parse(String line, BeetRootHTTPSession session) {
+	public String replaceTemplateVariables(String line, BeetRootHTTPSession session) {
 
 		int mus = BeetRootConfigurationManager.getInstance().getInt("web_max_upload_size");
 		if (mus == -1) {
