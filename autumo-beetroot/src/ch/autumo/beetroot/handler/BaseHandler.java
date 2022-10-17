@@ -2457,7 +2457,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void addSuccessMessage(String message) {
 		
-		this.successMessage = message.replace("$", "\\$");
+		if (message != null)
+			this.successMessage = message.replace("$", "\\$");
+		else
+			this.successMessage = null;
 	}
 
 	/**
@@ -2467,7 +2470,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void addWarningMessage(String message) {
 		
-		this.warningMessage = message.replace("$", "\\$");;
+		if (message != null)
+			this.warningMessage = message.replace("$", "\\$");
+		else
+			this.warningMessage = null;
 	}
 	
 	/**
@@ -2477,7 +2483,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void addErrorMessage(String message) {
 		
-		this.errorMessage = message.replace("$", "\\$");;
+		if (message != null)
+			this.errorMessage = message.replace("$", "\\$");
+		else
+			this.errorMessage = null;
 	}
 
 	/**

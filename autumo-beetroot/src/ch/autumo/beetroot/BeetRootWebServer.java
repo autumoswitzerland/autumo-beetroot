@@ -381,13 +381,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			
 			
 			// Theme default CSS: nothing to serve
-			if (requestedFile.equals("theme-default.css"))
+			if (requestedFile.equals("theme-default.css")) // virtual CSS one could say...
 				return Response.newFixedLengthResponse(Status.OK, "text/css", "");
 			
 			
+			// We force-cache these CSS, because we want to change URLs within these cached CSSs
+			// --> servlet-magic within servlet container!
+			// base.css and jquery-ui.min.css are not cached!
 			boolean isSpecialCss = requestedFile.equals("refs.css") || requestedFile.equals("default.css");
 			isSpecialCss = isSpecialCss || (requestedFile.contains("theme-") && requestedFile.endsWith(".css"));
 	        
+			
 	    	FileCache fc = null;
 	    	String filePath = null;
 	    	boolean isResource = false;
