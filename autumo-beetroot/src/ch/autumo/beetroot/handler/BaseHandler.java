@@ -553,8 +553,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			final String params[] = cfgLine.split("=");
 			final String colName = params[0].trim();
 			
-			if (transientFields.contains(colName))
+			if (transientFields.contains(colName)) {
+				// NOTE: if the transient field is the last column
+				// in 'columns.cfg' we must remove the ", " from the query !!!
+				if (columns.size() == i) {
+					queryfields = queryfields.substring(0, queryfields.length() - 2) +" ";
+				}
 				continue LOOP;
+			}
 			
 			if (columns.size() == i)
 				queryfields += colName;
