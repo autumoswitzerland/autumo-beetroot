@@ -102,7 +102,7 @@ public class BeetRootDatabaseManager {
 		if (isMariaDb)
 			driver = "org.mariadb.jdbc.Driver";
 		if (isOracleDb)
-			driver = "oracle.jdbc.driver.OracleDriver";
+			driver = "oracle.jdbc.OracleDriver";
 		if (isPostgreDb)
 			driver = "org.postgresql.Driver";
 		if (isH2Db)
@@ -175,6 +175,46 @@ public class BeetRootDatabaseManager {
 		}
 	}
 
+	/**
+	 * Count amount of records of an entity / table in database.
+	 * 
+	 * @param entity entity
+	 * @return amount of records
+	 * @throws SQLException
+	 */
+	public int countRecords(String entity) throws SQLException {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null; 
+		int amount = -1;
+				
+		try {
+
+			String stmtStr = "SELECT count(1) AS amount FROM " + entity;
+			
+			conn = instance.getConnection();
+			stmt = conn.createStatement();
+			set = stmt.executeQuery(stmtStr);
+			boolean found = set.next();
+			
+			if (found)
+				amount = set.getInt("amount");
+			else
+				amount = 0;
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}
+		
+		return amount;		
+	}
+	
 	/**
 	 * Get property value from database (table 'properties').
 	 * If the value isn't found, null is returned.
@@ -296,5 +336,12 @@ public class BeetRootDatabaseManager {
 	public String getDriver() {
 		return driver;
 	}
+
+	/*
+	public static void main(String[] args) throws Exception {
+		BeetRootDatabaseManager.getInstance().initialize("jdbc:oracle:thin:@localhost:1521/orcl", "ifacex", "***");
+		System.err.println("ERR: "+BeetRootDatabaseManager.getInstance().countRecords("tasks"));
+	}
+	*/
 	
 }

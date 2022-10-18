@@ -129,6 +129,12 @@ public class DefaultIndexHandler extends BaseHandler {
 		try {
 
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			
+			// NOTE: TYPE_SCROLL_INSENSITIVE is very slow with Oracle Developer Database.
+			// Even when the logic is changed to use ROWNUM with the BETWEEN keyword to select
+			// records in a specific range. It seems cursors are slowed down, maybe it's a
+			// limitation/feature of the Oracle database that comes with the Developer VM;
+			// this is usually peanuts for Oracle databases.
 			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			
 			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity;
