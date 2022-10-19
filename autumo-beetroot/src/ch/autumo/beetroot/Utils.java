@@ -1078,7 +1078,19 @@ public class Utils {
      * Exit console program, due to unprocessable error.
      */
 	public static void fatalExit() {
-		exit(-1);
+		exit(1);
+	}
+    /**
+     * Exit console program, due to an error.
+     */
+	public static void errorExit() {
+		exit(1);
+	}
+    /**
+     * Exit because of invalid argument use.
+     */
+	public static void invalidArgumentsExit() {
+		exit(128);
 	}
     /**
      * Exit console program, due desired end.

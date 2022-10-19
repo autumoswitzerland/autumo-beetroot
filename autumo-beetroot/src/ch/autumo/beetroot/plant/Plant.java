@@ -115,7 +115,7 @@ public class Plant {
 		
 		if (argsList.length > 1) {
 			usage();
-			Utils.normalExit();
+			Utils.invalidArgumentsExit();
 		}
 		
 		
@@ -182,7 +182,6 @@ public class Plant {
 					System.out.println("At this time CRUD generation is only possible with MySQL and MariaDB.");
 					System.out.println("We suggest setting up one of these databases for development and then");
 					System.out.println("using the generated templates and code for the target database.");
-					System.out.println("Sorry!");
 					System.out.println("");
 					
 					// finish now!
@@ -359,7 +358,7 @@ public class Plant {
 		} catch (ParseException exp) {
 			System.err.println("Couldn't read program argument. Reason: " + exp.getMessage());
 			usage();
-			Utils.normalExit();
+			Utils.invalidArgumentsExit();
 		}
 
 		try {

@@ -47,7 +47,7 @@ public class PWEncoder {
 		if (args.length != 1) {
 
 			System.out.println(Help.TEXT);
-			Utils.normalExit();
+			Utils.invalidArgumentsExit();
 		}
 		
 		if (args[0].equals("-help") || args[0].equals("-h")) {

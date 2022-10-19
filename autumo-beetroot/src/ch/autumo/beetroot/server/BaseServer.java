@@ -106,7 +106,7 @@ public abstract class BaseServer {
 		// check args length
 		if (params.length < 1) {
 			System.out.println(this.getHelpText());
-			Utils.normalExit();
+			Utils.invalidArgumentsExit();
 		}
 
 		// check op
@@ -114,14 +114,14 @@ public abstract class BaseServer {
 			System.out.println(this.getHelpText());
 			System.out.println("Valid server operations are 'start' or 'stop'!");
 			System.out.println("");
-			Utils.normalExit();
+			Utils.invalidArgumentsExit();
 		}
 		
 		//------------------------------------------------------------------------------
     	
     	if (rootPath == null || rootPath.length() == 0) {
 			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
-			Utils.fatalExit();
+			Utils.invalidArgumentsExit();
     	}
 	    	
 		// check root path
@@ -131,7 +131,7 @@ public abstract class BaseServer {
 		final File dir = new File(rootPath);
 		if (!dir.exists() || !dir.isDirectory()) {
 			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
-			Utils.fatalExit();
+			Utils.invalidArgumentsExit();
 		}		
 		
 		//------------------------------------------------------------------------------
