@@ -1,15 +1,16 @@
 echo OFF
 REM ------------------------------------------------------------------------------
 REM 
-REM   beetRoot PW Encoder
+REM   PLANT - beetRoot CRUD generator
 REM   Version: 1.0
 REM 
 REM ------------------------------------------------------------------------------
 
 
 REM 
-REM  TODO: ROOT path
+REM  ROOT path
 REM 
+cd ..
 set ROOT=%CD%
 
 
@@ -24,5 +25,5 @@ set CLASSPATH=%ROOT%/lib/*
 REM 
 REM  Encode
 REM 
-java -DROOTPATH="%ROOT%" -classpath "%CLASSPATH%" ch.autumo.beetroot.PWEncoder %*
+java -DROOTPATH="%ROOT%" -classpath "%CLASSPATH%" ch.autumo.beetroot.plant.Plant %*
 

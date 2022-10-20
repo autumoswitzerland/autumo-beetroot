@@ -3,7 +3,7 @@
 
 #------------------------------------------------------------------------------
 #
-#  beetRoot PW Encoder
+#  PLANT - beetRoot CRUD generator
 #  Version: 1.0
 #
 #------------------------------------------------------------------------------
@@ -11,8 +11,9 @@
 
 
 #
-# ROOT path: Current directory
+# ROOT path
 #
+cd ..
 ROOT=.
 
 
@@ -45,5 +46,5 @@ CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 #
 java \
 	-cp "${CLASSPATH}" \
-	ch.autumo.beetroot.PWEncoder $*
+	ch.autumo.beetroot.plant.Plant $*
 

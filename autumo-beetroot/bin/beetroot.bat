@@ -1,15 +1,16 @@
 echo OFF
 REM ------------------------------------------------------------------------------
 REM 
-REM   PLANT - beetRoot CRUD generator
+REM   beetRoot Server
 REM   Version: 1.0
 REM 
 REM ------------------------------------------------------------------------------
 
 
 REM 
-REM  TODO: ROOT path
+REM  ROOT path
 REM 
+cd ..
 set ROOT=%CD%
 
 
@@ -17,12 +18,12 @@ set ROOT=%CD%
 REM 
 REM  Build the classpath
 REM 
-set CLASSPATH=%ROOT%/lib/*
+set CLASSPATH=%ROOT%;%ROOT%/web;%ROOT%/lib/*
 
 
 
 REM 
-REM  Encode
+REM  Run : run.bat <ifx-base-path> <proc-mode>
 REM 
-java -DROOTPATH="%ROOT%" -classpath "%CLASSPATH%" ch.autumo.beetroot.plant.Plant %*
+java -DROOTPATH="%ROOT%" -Djdk.tls.client.protocols=TLSv1.2 -classpath "%CLASSPATH%" ch.autumo.beetrootserver.server.BeetRootServer %*
 

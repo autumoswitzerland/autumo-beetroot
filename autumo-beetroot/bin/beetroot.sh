@@ -3,7 +3,7 @@
 
 #------------------------------------------------------------------------------
 #
-#  PLANT - beetRoot CRUD generator
+#  beetRoot Server
 #  Version: 1.0
 #
 #------------------------------------------------------------------------------
@@ -11,15 +11,16 @@
 
 
 #
-# ROOT path: Current directory
+# ROOT path
 #
+cd ..
 ROOT=.
 
 
 #
 # Base classpath
 #
-CLASSPATH=${ROOT}
+CLASSPATH=${ROOT}:web/
 
 
 #
@@ -29,21 +30,22 @@ COUNT=0
 LIB_CLASSPATH=
 for i in `ls ${ROOT}/lib/*.jar`
 do
-	if [ $COUNT -eq 0 ]; then
-		LIB_CLASSPATH=${i}
-	else
-		LIB_CLASSPATH=${LIB_CLASSPATH}:${i}
-	fi
-COUNT=$((c+1))	
+    if [ $COUNT -eq 0 ]; then
+            LIB_CLASSPATH=${i}
+    else
+            LIB_CLASSPATH=${LIB_CLASSPATH}:${i}
+    fi
+COUNT=$((c+1))
 done
 CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 
 
 
 #
-# Encode 
+# Run : server.sh start|stop
 #
 java \
-	-cp "${CLASSPATH}" \
-	ch.autumo.beetroot.plant.Plant $*
+	-DROOTPATH="${ROOT}" \
+	-Djdk.tls.client.protocols=TLSv1.2 \
+	-cp "${CLASSPATH}" ch.autumo.beetroot.server.BeetRootServer $* &
 

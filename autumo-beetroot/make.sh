@@ -229,14 +229,16 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	
 # --------- Copy scripts
 
-	cp ../pwencoder.sh autumo-beetRoot-$VERSION/.
-	cp ../pwencoder.bat autumo-beetRoot-$VERSION/.
+	mkdir autumo-beetRoot-$VERSION/bin
 
-	cp ../beetroot.sh autumo-beetRoot-$VERSION/.
-	cp ../beetroot.bat autumo-beetRoot-$VERSION/.
+	cp ../bin/pwencoder.sh autumo-beetRoot-$VERSION/bin
+	cp ../bin/pwencoder.bat autumo-beetRoot-$VERSION/bin
 
-	cp ../plant.sh autumo-beetRoot-$VERSION/.
-	cp ../plant.bat autumo-beetRoot-$VERSION/.
+	cp ../bin/beetroot.sh autumo-beetRoot-$VERSION/bin
+	cp ../bin/beetroot.bat autumo-beetRoot-$VERSION/bin
+
+	cp ../bin/plant.sh autumo-beetRoot-$VERSION/bin
+	cp ../bin/plant.bat autumo-beetRoot-$VERSION/bin
 
 
 # --------- Copy infos
