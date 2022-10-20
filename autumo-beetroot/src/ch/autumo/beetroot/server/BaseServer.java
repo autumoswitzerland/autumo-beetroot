@@ -230,12 +230,20 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
+		
 		// OPERATION
 		final String operation = params[0];
+		
 		if (operation.equalsIgnoreCase("start")) {
+			
 			this.startServer();
-		}
-		else if (operation.equalsIgnoreCase("stop")) {
+			
+			// SHUTDOWN HOOK (Ctrl-C)
+			final Runtime runtime = Runtime.getRuntime();    
+			runtime.addShutdownHook(this.getShutDownHook());    
+			
+		} else if (operation.equalsIgnoreCase("stop")) {
+			
 			this.sendStopServer();
 		}		
 	}
@@ -368,6 +376,25 @@ public abstract class BaseServer {
 		LOG.info(name + " server stopped.");
 		if (LOG.isErrorEnabled())
 			System.out.println("["+ name +"] Server stopped.");
+	}
+
+	/**
+	 * OS shutdown hook. Don't overwrite this, unless you know
+	 * exactly what you are doing. This implementation calls
+	 * all methods necessary to properly stop the server.
+	 * 
+	 * @return thread for runtime shutdown hook.
+	 */
+	protected Thread getShutDownHook() {
+		return new Thread() {
+			@Override
+			public void run() {
+				// loop has been broken by STOP command.
+				Communicator.safeClose(serverSocket);
+				// shutdown server
+				stopServer();
+			}
+		};
 	}
 	
 	private void sendStopServer() {
@@ -586,6 +613,8 @@ public abstract class BaseServer {
 		
 	}
 
+	
+	
 	/**
 	 * Help class for shell script.
 	 */

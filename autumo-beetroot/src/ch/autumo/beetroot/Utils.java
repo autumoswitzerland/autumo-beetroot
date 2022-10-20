@@ -943,6 +943,10 @@ public class Utils {
 		if (q != -1) {
 			value = value.replaceAll("'", "''");
 		}
+		q = value.indexOf("\\");
+		if (q != -1) {
+			value = value.replace("\\", "\\\\");
+		}
 		return value;
 	}
 

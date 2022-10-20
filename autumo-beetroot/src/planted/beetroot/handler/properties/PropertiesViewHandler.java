@@ -17,6 +17,8 @@ import ch.autumo.beetroot.handler.DefaultViewHandler;
  */
 public class PropertiesViewHandler extends DefaultViewHandler {
 	
+	private Property property = null;
+	
 	public PropertiesViewHandler(String entity) {
 		super(entity);
 	}
@@ -25,7 +27,7 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		// in case you want to use a bean
-		final Property property = (Property) entity;
+		property = (Property) entity;
 		
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
@@ -38,6 +40,21 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 			case "value": return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			default: return "<td>"+ Utils.getValue(set, columnName) +"</td>";
 		}
+	}
+
+	/**
+	 * This works because we only have one record in the 'view.html' template,
+	 * otherwise we would have to overwrite the prepare-method. Within the 'index.html'
+	 * this would be necessary (1-n records); the method used would be the following:
+	 * {@link ch.autumo.beetroot.handler.DefaultIndexHandler#prepare(BeetRootHTTPSession, Entity)
+	 */
+	@Override
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+		
+		if (text.contains("{$propName}"))
+			text = text.replaceAll("\\{\\$propName\\}", property.getName());
+		
+		return text;
 	}
 
 	@Override
