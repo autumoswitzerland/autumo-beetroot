@@ -10,10 +10,7 @@ REM ----------------------------------------------------------------------------
 REM 
 REM  ROOT path
 REM 
-cd ..
-set ROOT=%CD%
-
-
+for %%d in (%~dp0..) do set ROOT=%%~fd
 
 REM 
 REM  Build the classpath

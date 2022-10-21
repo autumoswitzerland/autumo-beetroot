@@ -13,15 +13,12 @@
 #
 # ROOT path
 #
-cd ..
-ROOT=.
-
+ROOT="$(dirname "`pwd`")"
 
 #
 # Base classpath
 #
 CLASSPATH=${ROOT}
-
 
 #
 # Dynamically build the classpath
@@ -45,6 +42,7 @@ CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 # Encode 
 #
 java \
+	-DROOTPATH="${ROOT}" \
 	-cp "${CLASSPATH}" \
 	ch.autumo.beetroot.plant.Plant $*
 
