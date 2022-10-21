@@ -137,6 +137,7 @@ Enjoy!
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
 * [normalize.css](https://necolas.github.io/normalize.css)
+* ...and some more; see [THIRDPARTYLICENSES.txt](https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/THIRDPARTYLICENSES.txt)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -178,6 +179,8 @@ beetRoot can be run within two modes:
 
 <!-- RUNNING -->
 ## Running
+
+All batch files and shell scripts are located in the `bin` directory.
 
 1. Stand-alone usage:
 
@@ -253,7 +256,7 @@ A word when using MySQL: Due to the GPL license, we don't distribute or create a
 
 Start the CRUD generator with the script `plant.sh` / `plant.bat` and follow the steps!
 
-The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with another database conenction), you can specify that configuration file as an argument in the shell / batch scripts above.
+The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with another database conenction), you can specify that configuration file as an argument in the shell / batch scripts above. PLANT supports the MySsql/MariaDB database at the moment; use such a DB during the app development and change to your desired target DB for production.
 
 **NOTE**: Entities for beetRoot MUST be named in plural form in the database, e.g.: tasks, users, cities, properties, cars, etc.
 
@@ -292,7 +295,7 @@ The HTML templates & model configuration are usually moved/copied to a language 
 - web/html/`{entity-plural-name}`/fr/*.html|columns.cfg
 - etc.
 
-We suggest to keep your original generated HTML templates and model configuration, they serve as a fallback scenario when the user request a language that is not present!
+We suggest to backup your original generated HTML templates and model configuration, they serve as a fallback scenario when the user request a language that is not present!
 
 
 The model configuration `columns.cfg` does the following for every entity:
@@ -305,18 +308,22 @@ The model configuration `columns.cfg` does the following for every entity:
 
 	`unique=name, path`
 	
-- Furthermore, you can define transient values that are nor read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
-
-	`transient=status`
-
 - If you want to load a value from a database field into the entity bean to use it in a handler, but you do not want it to be displayed in the GUI, define the constant 'NO_SHOW' as the GUI field name, for example:
 
 	`secretkey=NO_SHOW`
 
+- Furthermore, you can manually define transient values that are nor read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
+
+	`transient=status`
+
+- Last, you can manually specify default values with the `init`-prefix that should be shown in the `add.html`-template when a new record is created, e.g:
+
+	`init.threshold=3`<br>
+	`init.counter=0`
 
 Your TODO's are the following after generating:
 
-- Adjust mandatory fields in java add handler: only the mandatory fields need a default value in the add handler that are not present in the GUI!
+- Add mandatory (DB: not nullable) fields in the `add`-handler: only the mandatory fields need a default value in the add handler that are not present in the GUI! See all `Properties` handlers for more information.
 
 - Remove unwanted GUI fields from `columns.cfg` for the views `view`, `add` and `edit`.
 		
@@ -347,10 +354,11 @@ The following standard HTML templates are present, which can be customized too o
 		b) If not found, try the default language; this is the one that is first defined in the configuration, see parameter `web_languages`.
 		c) If still not found, use the templates by omitting the language code, respectively the language directory in the `web/html`-directory structure.
 	 
+E.g.: the Englisch `index.html` for the entity `tasks` is here: `web/html/en/tasks/index.html`. If this resource is not available, then `web/html/tasks/index.html` is looked up. The same applies for `colums.cfg` resources.
 	  
 **NOTE**: Valid for templates and any other HTMLs file that are added to the `web/html`-directory structure:
 
-- The relative URL (without Host, Port and Servlet name) requested by the web-app user is translated not 1-to-1 by the directory structure, but through Routing! See next chapter!
+- The relative URL (without Host, Port and Servlet name) requested by the web-app user is translated not 1-to-1 by the directory structure, but through **Routing** chapter!
 
 The following template variables are always parsed and you can use them as many times as you want:
 
@@ -405,12 +413,12 @@ JSON templates can be handled like HTML templates: Put them into the directory `
 
 	{
     	"tasks": [
-	{$data}    
+			{$data}    
     	],
-	{$paginator}    
+			{$paginator}    
 	}
 
-Also, you can create an own `columns.cfg` in this directory, for example looking like this:
+Also, you can create an own `columns.cfg` that is specific for the JSON request in this directory, for example looking like this:
 
 	list_json.id=is
 	list_json.name=name
@@ -522,16 +530,16 @@ Mail templates are here and follow the same lookup-patterns as for HTML template
 
 HTML format:
 
-  - web/html/email
   - web/html/en/email
   - web/html/de/email
+  - web/html/email
   - etc.
 
 Text format:
 
-  - txt/html/email
   - txt/html/en/email
   - txt/html/de/email
+  - txt/html/email
   - etc.
   
 beetRoot can send both HTML and text emails. Formats are configured with the parameter `mail_formats`. 
@@ -578,7 +586,11 @@ A few words about existing stylesheets:
 
   - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet context correctly.
 
+  - `web/css/jquery-ui.min.css`: Better tooltips.
+
   - `web/css/default.css`: Your default web-app styles and designs.
+
+  - `web/css/theme-dark.css`: The default dark theme; you can add your own themes by naming it `theme-yourname.css` and HTTP-request it through the users' settings handler.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -598,8 +610,8 @@ If you configure beetRoot to run with the HTTPS protocol (configuration paramete
 <!-- ROADMAP -->
 ## Roadmap | Backlog
 
-- [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 - [Add SQLLite DB Connectivity](https://www.sqlite.org)
+- [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 
 See also the [open issues](https://github.com/autumoswitzerland/autumo/issues) for a full list of proposed features (and known issues).
 
