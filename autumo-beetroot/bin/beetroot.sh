@@ -14,11 +14,12 @@
 # ROOT path
 #
 ROOT="$(dirname "`pwd`")"
+cd ..
 
 #
 # Base classpath
 #
-CLASSPATH=${ROOT}:web/
+CLASSPATH=${ROOT}:${ROOT}/web
 
 #
 # Dynamically build the classpath
