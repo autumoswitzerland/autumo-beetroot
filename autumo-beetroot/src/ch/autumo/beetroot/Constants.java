@@ -42,7 +42,7 @@ public class Constants {
 	/**
 	 * App version.
 	 */
-	public static final String APP_VERSION = "1.3.0";
+	public static final String APP_VERSION = "1.3.2";
 	
 	/**
 	 * Initialize mime types registry.

@@ -271,7 +271,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	cd autumo-beetRoot-web-${VERSION}
 	# add servlet context variable to db url
-	sed -i '' 's|db_url=.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
+	sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
 	cd ..
@@ -320,7 +320,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	rm -f autumo-beetRoot-web-$VERSION/logging.xml
 	rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
 	# no AUTO_SERVER=TRUE switch
-	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/ifacex;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=8080/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	cd autumo-beetRoot-web-${VERSION}
