@@ -91,11 +91,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
-	// link reference patterns
-	private static Pattern PATTERN_HREF = Pattern.compile("href=\\\"");
-	private static Pattern PATTERN_SRC = Pattern.compile("src=\\\"");
-	private static Pattern PATTERN_ACTION = Pattern.compile("action=\\\"");
-	private static Pattern PATTERN_LOCATION = Pattern.compile("location='");
+	// link reference patterns 
+	private static Pattern PATTERN_HREF = Pattern.compile("href=\\\"(?!#.*)(?!\\{.*)");
+	private static Pattern PATTERN_SRC = Pattern.compile("src=\\\"(?!#.*)(?!\\{.*)");
+	private static Pattern PATTERN_ACTION = Pattern.compile("action=\\\"(?!#.*)(?!\\{.*)");
+	private static Pattern PATTERN_LOCATION = Pattern.compile("location='(?!#.*)(?!\\{.*)");
 
 	// link reference reverse patterns
 	private static Pattern PATTERN_HREF_REV;
@@ -1893,6 +1893,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 			// The framework user might have messed up things!
 			String res = getResource();
+			if (res == null)
+				res = session.getUri();
+			
 			final String err1 = getTemplateEngineErrorTitle(userSession, res); 
 			final String err2 = err1 + "<br><br>" + getTemplateEngineErrorMessage(userSession, res); 
 			
