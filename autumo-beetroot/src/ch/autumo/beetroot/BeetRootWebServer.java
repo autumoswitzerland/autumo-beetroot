@@ -53,6 +53,7 @@ import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
+import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 import org.nanohttpd.protocols.http.threading.IAsyncRunner;
 import org.nanohttpd.router.RouterNanoHTTPD;
 import org.slf4j.Logger;
@@ -267,6 +268,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		return this.serve((BeetRootHTTPSession) session, null);
 	}
 	
+	@Override
+	public ITempFileManager newTempFileManager() {
+		return this.getTempFileManagerFactory().create();
+	}
+
+	@Override
+	public void destroy() {
+		// Clear cache
+		FileCacheManager.getInstance().clear();
+	}
+
 	/**
 	 * Main serve method for the beetroot-engine in a servlet context
 	 * 
@@ -928,7 +940,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * 
 	 * @return default handler class
 	 */
-	@Override
 	public Class<?> getDefaultHandlerClass() {
 
 		String handler;
@@ -947,7 +958,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * 
 	 * @return default handler entity
 	 */
-	@Override
 	public String getDefaultHandlerEntity() {
 		
 		String entity;
@@ -963,14 +973,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	/**
 	 * Last call before the routed website is served.
 	 * At this point, templates have been parsed and compiled.
-	 * Overwrite this methid, if you still need to do something.
+	 * Overwrite this method, if you still need to do something.
 	 * In any case and at the end, it must call
 	 * {@link RouterNanoHTTPD#serve(IHTTPSession)}
 	 *  
 	 * @param session HTTP sessiom
 	 * @return response
 	 */
-	@Override
 	public Response serveAtLast(BeetRootHTTPSession session) {
         return super.serve(session);
 	}
@@ -995,7 +1004,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * @return default handler class
 	 * @throws ClassNotFoundException 
 	 */
-	@Override
 	public void addMappings() {
 		
 		Router router = null; 

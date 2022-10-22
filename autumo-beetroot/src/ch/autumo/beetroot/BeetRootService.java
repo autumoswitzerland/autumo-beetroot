@@ -30,49 +30,24 @@
  */
 package ch.autumo.beetroot;
 
-import org.nanohttpd.protocols.http.IHTTPSession;
-import org.nanohttpd.protocols.http.response.Response;
-import org.nanohttpd.router.RouterNanoHTTPD;
+import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 
 /**
- * Beetroot service.
+ * BeetRoot service for servlet context.
  */
 public interface BeetRootService {
 
 	/**
-	 * Get default handler class. 
-	 * Overwrite for customization.
+	 * Get a new temporary file manager.
 	 * 
-	 * @return default handler class
+	 * @return new temporary file manager
 	 */
-	Class<?> getDefaultHandlerClass();
+	public ITempFileManager newTempFileManager();
 
 	/**
-	 * Get default handler entity. 
-	 * Overwrite for customization.
-	 * 
-	 * @return default handler entity
+	 * Cleanup method. Close what needs to be closed
+	 * and free resources.
 	 */
-	String getDefaultHandlerEntity();
-
-	/**
-	 * Last call before the routed website is served.
-	 * At this point, templates have been parsed and compiled.
-	 * Overwrite this methid, if you still need to do something.
-	 * In any case and at the end, it must call
-	 * {@link RouterNanoHTTPD#serve(IHTTPSession)}
-	 *  
-	 * @param session HTTP sessiom
-	 * @return response
-	 */
-	Response serveAtLast(BeetRootHTTPSession session);
-
-	/**
-	 * Add mappings respectively set web routes. 
-	 * Overwrite for customization.
-	 * 
-	 * @return default handler class
-	 */
-	void addMappings();
+	public void destroy();
 
 }

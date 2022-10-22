@@ -107,7 +107,8 @@ public class BeetRootHTTPSession extends HTTPSession {
     public BeetRootHTTPSession(NanoHTTPD httpd, ITempFileManager tempFileManager, InputStream inputStream, OutputStream outputStream, InetAddress inetAddress) {
     	super(httpd, tempFileManager, inputStream, outputStream, inetAddress);
     }
-	
+
+    
     /**
      * Constructor used for external servlet containers.
      * 
@@ -127,14 +128,13 @@ public class BeetRootHTTPSession extends HTTPSession {
     
     /**
      * Provide a method for executing the request and response for the HTTP body only
-     * from the servlet context in this nano session.
-     * 
-     * Note: autumo, MG: patched for beetroot.
+     * from the servlet context in this nano/beetRoot session.
      * 
      * @throws IOException
      */
-    public void executeForServlet(BeetRootWebServer externalBeetrootServer, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void executeForServlet(BeetRootService beetRootService, HttpServletRequest request, HttpServletResponse response) throws IOException {
     	
+        final BeetRootWebServer externalBeetrootServer = (BeetRootWebServer) beetRootService;
         Response r = null;
     	
     	try {
