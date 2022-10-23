@@ -73,6 +73,9 @@ public abstract class BaseServer {
 	
 	protected String name = null;
 	
+	private int serverTimeout = -1;
+	
+	
 	static {
     	
     	rootPath = System.getProperty("ROOTPATH");
@@ -174,6 +177,11 @@ public abstract class BaseServer {
 
 		//------------------------------------------------------------------------------
 
+		// read some undocumented settings if available
+		serverTimeout = configMan.getInt("server_timeout"); // in ms !
+		
+		//------------------------------------------------------------------------------
+	
 		// Are pw's in config encoded?
 		pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
 		
@@ -467,6 +475,9 @@ public abstract class BaseServer {
 			try {
 				//serverSocket = socketFactory.createServerSocket(this.listenerPort);
 				serverSocket = new ServerSocket(this.listenerPort);
+				if (serverTimeout > 0)
+					serverSocket.setSoTimeout(serverTimeout);
+					
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
 				System.err.println("["+ name +"] Admin server listener cannot be created on port '" + this.listenerPort + "'!");
@@ -493,8 +504,16 @@ public abstract class BaseServer {
 		        catch (IOException e) {
 		        	
 		        	if (!BaseServer.this.serverStop)
-		        		LOG.error("Admin server listener failed! We recommend to restart the server!", e);
-		        }
+		        		LOG.error("Admin server connection listener failed! We recommend to restart the server!", e);
+		        	
+		        } finally {
+	                try {
+	                    if (serverSocket != null)
+	                        serverSocket.close();
+	                } catch (IOException ioe) {
+	                    // nada to do !
+	                }
+	            }				
             } 
 		
 			// loop has been broken by STOP command.

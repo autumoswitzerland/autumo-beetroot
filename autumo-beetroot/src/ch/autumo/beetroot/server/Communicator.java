@@ -37,13 +37,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 
 /**
  * Client/Server communication
@@ -57,6 +61,12 @@ public class Communicator {
 
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
+	
+	private static int clientTimeout = -1;
+	static {
+		// read some undocumented settings if available
+		clientTimeout = BeetRootConfigurationManager.getInstance().getInt("client_timeout"); // in ms !
+	}	
 	
 	
 	// Client-side
@@ -88,7 +98,18 @@ public class Communicator {
 		DataOutputStream output = null;
 		DataInputStream input = null;
 		try {
-			socket = new Socket(command.getHost(), command.getPort());
+			
+			if (clientTimeout > 0) {
+				
+				socket = new Socket(); 
+				final SocketAddress socketAddress = new InetSocketAddress(command.getHost(), command.getPort()); 
+				socket.connect(socketAddress, clientTimeout);
+				
+			} else {
+				
+				socket = new Socket(command.getHost(), command.getPort());
+			}
+			
 			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			socket.setSoTimeout(timeout);
 

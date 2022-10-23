@@ -255,7 +255,13 @@ public class LanguageManager {
 		
 		String lang = null;
 		for (int i = 0; i < langs.length; i++) {
-			if (uri.startsWith(langs[i]+"/") || uri.startsWith(langs[i])) {
+			
+			if (BeetRootConfigurationManager.getInstance().runsWithinServletContext()) {
+				final String servlet = BeetRootConfigurationManager.getInstance().getServletName();
+				if (uri.startsWith(servlet+"/"+langs[i]+"/") || uri.startsWith(servlet+"/"+langs[i]))
+					lang = langs[i];
+			} else {
+				if (uri.startsWith(langs[i]+"/") || uri.startsWith(langs[i]))
 					lang = langs[i];
 			}
 		}
@@ -276,8 +282,10 @@ public class LanguageManager {
 		String res = configResource;
 		
 		if (configResource.contains(":lang")) {
-			
-			res = configResource.replace(":lang", lang);
+			if (lang != null)
+				res = configResource.replace(":lang", lang);
+			else
+				res = configResource.replace(":lang/", "");
 		}		
 		
 		return res;

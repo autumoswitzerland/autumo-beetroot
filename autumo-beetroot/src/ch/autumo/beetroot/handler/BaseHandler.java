@@ -827,7 +827,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	private String processJSON(BeetRootHTTPSession session) {
 		
-		final String currRessource =  this.getResource();
+		String currRessource =  this.getResource();
+		// this is no web-page call, so we have to get language from URL if any 
+		currRessource = LanguageManager.getInstance().getResource(currRessource, session.getUri());		
 
 		// prepare text buffer
 		final StringBuffer sb = new StringBuffer();

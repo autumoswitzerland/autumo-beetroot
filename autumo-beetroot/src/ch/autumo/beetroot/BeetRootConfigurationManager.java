@@ -267,7 +267,7 @@ public class BeetRootConfigurationManager {
 		
 		String v = generalProps.getProperty(key);
 		
-		if (v == null) {
+		if (v == null || v.length() == 0) {
 			LOG.warn("Value for key '"+key+"' doesn't exist in beetroot configuration!");
 			return -1;
 		}
@@ -378,6 +378,18 @@ public class BeetRootConfigurationManager {
 	 */
 	public ServletContext getServletContext() {
 		return servletContext;
+	}
+
+	/**
+	 * Get servlet name if any (only in servlet context)
+	 * @return servlet name
+	 */
+	public String getServletName() {
+		
+		String servletName = generalProps.getProperty("web_html_ref_pre_url_part");
+		if (servletName != null)
+			servletName = servletName.trim();
+		return servletName;
 	}
 	
 }
