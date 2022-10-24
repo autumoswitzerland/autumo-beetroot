@@ -227,71 +227,60 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 		
     	FileCache fc = null;
-		String prePath = "";
     	String filePath = null;
     	boolean tryFurther = false;
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-
-    	if (context != null)
-    		prePath = Utils.getRealPath(context);
 		
 		try {
-			filePath = prePath + res;
-			fc = FileCacheManager.getInstance().findOrCreate(filePath);
+			if (context == null)
+				fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
+			else
+				fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + res);
 		} catch (IOException e) {
 			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 			try {
-				filePath = "/" + res;
-				fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+				fc = FileCacheManager.getInstance().findOrCreateByResource("/" + res);
 			} catch (IOException e1) {
 				tryFurther = true;
 			}
 		}
 		
 		if (tryFurther) {
-			
 			tryFurther = false;
-			
 			LOG.trace("Resource '" + res + "' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
-			
-			// Special case JSON: overwrite languages, not needed!
-			if (session.getUri().endsWith(Constants.JSON_EXT)) {
-				res = "web/html/"+entity+"/columns.cfg";
-			} else {
+			if (!session.getUri().endsWith(Constants.JSON_EXT)) {
 				if (userSession == null)
 					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
 				else
 					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
 			}
-			
 			try {
-				filePath = prePath + res;
-				fc = FileCacheManager.getInstance().findOrCreate(filePath);
+				if (context == null)
+					fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
+				else
+					fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + res);
 			} catch (IOException e) {
 				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 				try {
-					filePath = "/" + res;
-					fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+					fc = FileCacheManager.getInstance().findOrCreateByResource("/" + res);
 				} catch (IOException e1) {
 					tryFurther = true;
 				}
 			}			
 				
 			if (tryFurther) {
-				
 				tryFurther = false;
-				
 				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
 				res = LanguageManager.getInstance().getResourceWithoutLang("web/html/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
-				
 				try {
-					filePath = prePath + res;
-					fc = FileCacheManager.getInstance().findOrCreate(filePath);
+					if (context == null)
+						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
+					else
+						fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + res);
 				} catch (IOException e) {
 					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
-						filePath = "/" + res;
-						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+						fc = FileCacheManager.getInstance().findOrCreateByResource("/" + res);
 					} catch (IOException e1) {
 						LOG.debug("Resource '"+res+"' doesn't exist, no columns used!");
 						return; // !
@@ -1512,62 +1501,56 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	protected Scanner getNewScanner(String resource) throws FileNotFoundException {
 		
-		String prePath = "";
     	String filePath = null;
     	FileCache fc = null;
     	boolean tryFurther = false;
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-    	if (context != null)
-    		prePath = Utils.getRealPath(context);
 		
 		try {
-			filePath = prePath + resource;
-			fc = FileCacheManager.getInstance().findOrCreate(filePath);
+			if (context == null )
+				fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
+			else
+				fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + resource);
 		} catch (IOException e) {
-			//LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
+			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 			try {
-				filePath = "/" + resource;
-				fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+				fc = FileCacheManager.getInstance().findOrCreateByResource("/" + resource);
 			} catch (IOException e1) {
 				tryFurther = true;
 			}
 		}
 		
 		if (tryFurther) {
-
 			tryFurther = false;
-			
 			LOG.trace("Resource '"+resource+"' doesn't exist, trying default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			resource = LanguageManager.getInstance().getResourceByLang(this.getResource(), LanguageManager.DEFAULT_LANG);
-
 			try {
-				filePath = prePath + resource;
-				fc = FileCacheManager.getInstance().findOrCreate(filePath);
+				if (context == null )
+					fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
+				else
+					fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + resource);
 			} catch (IOException e) {
 				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 				try {
-					filePath = "/" + resource;
-					fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+					fc = FileCacheManager.getInstance().findOrCreateByResource("/" + resource);
 				} catch (IOException e1) {
 					tryFurther = true;
 				}
 			}
 			
 			if (tryFurther) {
-
 				tryFurther = false;
-				
 				LOG.trace("Resource '"+resource+"' doesn't exist, trying NO language!");
 				resource = LanguageManager.getInstance().getResourceWithoutLang(this.getResource(), LanguageManager.DEFAULT_LANG);
-				
 				try {
-					filePath = prePath + resource;
-					fc = FileCacheManager.getInstance().findOrCreate(filePath);
+					if (context == null )
+						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
+					else
+						fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + resource);
 				} catch (IOException e) {
 					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
-						filePath = "/" + resource;
-						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+						fc = FileCacheManager.getInstance().findOrCreateByResource("/" + resource);
 					} catch (IOException e1) {
 						LOG.error("No resource has been found for '"+filePath+"' after trying to load it differently! "
 								+ "This will lead to an exception and you quite surely missed to add this resource to you app.");
@@ -1578,10 +1561,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}		
 		
 		try {
+			
 			if (fc.isCached())
 				return new Scanner(fc.getTextData());
 			else 
 				return new Scanner(fc.getData());
+			
 		} catch (IOException e) {
 			throw new FileNotFoundException("File/resource '"+fc.getFullPath()+"' not found! Exception: " + e.getMessage());
 		}				

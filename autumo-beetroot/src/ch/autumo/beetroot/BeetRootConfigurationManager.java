@@ -204,7 +204,7 @@ public class BeetRootConfigurationManager {
 	/**
 	 * Returns the full base path, where the base configuration is.
 	 * 
-	 * @return nase path
+	 * @return base path
 	 */
 	public String getFullConfigBasePath() {
 		return fullConfigBasePath;
@@ -255,6 +255,20 @@ public class BeetRootConfigurationManager {
 		
 		return v;
 	}
+
+	/**
+	 * Get a string value; no warning if value is not available.
+	 * 
+	 * @param key key
+	 * @return value
+	 * @throws Exception
+	 */
+	public String getStringNoWarn(String key) {
+		String v = generalProps.getProperty(key);
+		if (v != null)
+			v = v.trim();
+		return v;
+	}
 	
 	/**
 	 * Get integer value.
@@ -272,6 +286,21 @@ public class BeetRootConfigurationManager {
 			return -1;
 		}
 		
+		return Integer.valueOf(v);
+	}
+
+	/**
+	 * Get integer value; no warning if value is not available.
+	 * 
+	 * @param key key
+	 * @return value
+	 * @throws Exception
+	 */
+	public int getIntNoWarn(String key) {
+		String v = generalProps.getProperty(key);
+		if (v == null || v.length() == 0) {
+			return -1;
+		}
 		return Integer.valueOf(v);
 	}
 	

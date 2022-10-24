@@ -85,7 +85,7 @@ public class BeetRootClientHandler extends ClientHandler {
             // SocketTimeoutException, print the
             // stacktrace
             if (!(e instanceof SocketException && "NanoHttpd Shutdown".equals(e.getMessage())) && !(e instanceof SocketTimeoutException)) {
-                LOG.error("Communication with the client broken, or an bug in the handler code", e);
+                LOG.error("Communication with the client broken, or a bug in the handler code", e);
             }
         } finally {
             NanoHTTPD.safeClose(outputStream);

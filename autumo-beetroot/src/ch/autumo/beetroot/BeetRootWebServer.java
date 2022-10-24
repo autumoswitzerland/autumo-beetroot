@@ -428,15 +428,21 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				}
         	} else {  
 		        try {
-		        	filePath = dir + uri;
+		        	filePath =  BeetRootConfigurationManager.getInstance().getRootPath() + dir + uri;
 	        		fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 		        } catch (IOException e) {
-		        	
-					final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
-					LOG.error(err, e);
-					String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-					String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
-					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
+					try {
+						filePath = "/" + dir + uri;
+						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
+						isResource = true;
+					} catch (IOException e1) {
+						final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
+						LOG.error(err, e);
+						String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
+						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
+					}
 		        }
         	}
 	        

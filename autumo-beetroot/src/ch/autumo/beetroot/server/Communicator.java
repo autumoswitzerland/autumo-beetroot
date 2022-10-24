@@ -37,10 +37,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
@@ -65,7 +63,7 @@ public class Communicator {
 	private static int clientTimeout = -1;
 	static {
 		// read some undocumented settings if available
-		clientTimeout = BeetRootConfigurationManager.getInstance().getInt("client_timeout"); // in ms !
+		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in ms !
 	}	
 	
 	
@@ -99,17 +97,10 @@ public class Communicator {
 		DataInputStream input = null;
 		try {
 			
-			if (clientTimeout > 0) {
+			if (clientTimeout > 0)
+				timeout = clientTimeout;
 				
-				socket = new Socket(); 
-				final SocketAddress socketAddress = new InetSocketAddress(command.getHost(), command.getPort()); 
-				socket.connect(socketAddress, clientTimeout);
-				
-			} else {
-				
-				socket = new Socket(command.getHost(), command.getPort());
-			}
-			
+			socket = new Socket(command.getHost(), command.getPort());
 			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			socket.setSoTimeout(timeout);
 

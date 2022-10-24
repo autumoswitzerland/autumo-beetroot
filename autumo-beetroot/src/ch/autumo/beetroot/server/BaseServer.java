@@ -178,7 +178,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 
 		// read some undocumented settings if available
-		serverTimeout = configMan.getInt("server_timeout"); // in ms !
+		serverTimeout = configMan.getIntNoWarn("server_timeout"); // in ms !
 		
 		//------------------------------------------------------------------------------
 	
@@ -475,7 +475,7 @@ public abstract class BaseServer {
 			try {
 				//serverSocket = socketFactory.createServerSocket(this.listenerPort);
 				serverSocket = new ServerSocket(this.listenerPort);
-				if (serverTimeout > 0)
+				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
 					serverSocket.setSoTimeout(serverTimeout);
 					
 			} catch (IOException e) {
@@ -500,19 +500,25 @@ public abstract class BaseServer {
 						final Thread threadForClient = new Thread(handler);
 						threadForClient.start();
 					}
-		        } 
-		        catch (IOException e) {
+					
+		        } catch (IOException e) {
 		        	
 		        	if (!BaseServer.this.serverStop)
 		        		LOG.error("Admin server connection listener failed! We recommend to restart the server!", e);
 		        	
 		        } finally {
-	                try {
-	                    if (serverSocket != null)
-	                        serverSocket.close();
-	                } catch (IOException ioe) {
-	                    // nada to do !
-	                }
+		        	
+		        	if (!BaseServer.this.serverStop) {
+		        		if (serverSocket != null && serverSocket.isClosed()) {
+		        			try {
+			    				serverSocket = new ServerSocket(this.listenerPort);
+			    				if (serverTimeout > 0)
+			    					serverSocket.setSoTimeout(serverTimeout);
+		        			} catch (IOException e) {
+		        				// That's wild, I know 
+		        			}
+		        		}
+		        	}
 	            }				
             } 
 		
