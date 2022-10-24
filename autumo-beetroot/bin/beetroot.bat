@@ -12,7 +12,6 @@ REM
 REM  ROOT path
 REM 
 for %%d in (%~dp0..) do set ROOT=%%~fd
-cd ..
 
 REM 
 REM  Build the classpath
