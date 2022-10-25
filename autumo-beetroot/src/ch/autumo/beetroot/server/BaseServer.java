@@ -62,6 +62,7 @@ public abstract class BaseServer {
 
     private AdminListener adminListener = null;
 	private ServerSocket serverSocket = null;
+	
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
 	
@@ -397,10 +398,16 @@ public abstract class BaseServer {
 		return new Thread() {
 			@Override
 			public void run() {
-				// loop has been broken by STOP command.
-				Communicator.safeClose(serverSocket);
-				// shutdown server
-				stopServer();
+				if (!BaseServer.this.serverStop) {
+					LOG.info("[CTRL-C] signal received! Shutting down...");
+					if (LOG.isErrorEnabled()) {
+						System.out.println("["+ name +"] [CTRL-C] signal received! Shutting down...");
+					}
+					
+					BaseServer.this.serverStop = true;
+					// shutdown server
+					sendStopServer();
+				}
 			}
 		};
 	}
@@ -536,6 +543,7 @@ public abstract class BaseServer {
 	private final class ClientHandler implements Runnable {
 
 		private Socket clientSocket = null;
+		private DataInputStream in = null;
 
 		/**
 		 * Constructor.
@@ -549,7 +557,6 @@ public abstract class BaseServer {
 		@Override
 		public void run() {
 			
-			DataInputStream in = null;
 			ServerCommand command = null;
 			try {
 			
