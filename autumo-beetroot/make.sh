@@ -270,8 +270,9 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 
 	cd autumo-beetRoot-web-${VERSION}
-	# add servlet context variable to db url
-	sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
+	# DB must be defined by user always servlet-side for tomcat and weblogic! Auto-Server must be true for H2!
+	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:/[CONFIGURE-THIS-PATH]/beetroot;AUTO_SERVER=TRUE;IFEXISTS=TRUE|' beetroot.cfg
+	
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
 	cd ..
