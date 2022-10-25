@@ -288,16 +288,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 */
 	public Response serve(BeetRootHTTPSession session, HttpServletRequest request) {
 		
-		String uri = Utils.normalizeUri(session.getUri());
+		final String uri = Utils.normalizeUri(session.getUri());
+		String uriWithoutServlet = uri;
 		
 		// servlet magic :)
 		if (insertServletNameInTemplateRefs && uri.startsWith(servletName+"/")) {
-			uri = uri.replaceFirst(servletName+"/", "");
+			uriWithoutServlet = uri.replaceFirst(servletName+"/", "");
 		}
 
 		
 		// JSON
-		if (uri.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
+		if (uriWithoutServlet.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
 			
 			final String apiKeyName = BeetRootConfigurationManager.getInstance().getString("web_json_api_key_name");
 			final String apiKey = session.getParms().get(apiKeyName);
@@ -318,7 +319,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				return this.serveAtLast((BeetRootHTTPSession)session); // All good!
 			}
 			else {
-				LOG.warn("JSON API (URI: '"+uri+"'): Access with wrong JSON API Key!");
+				LOG.warn("JSON API (URI: '"+uriWithoutServlet+"'): Access with wrong JSON API Key!");
 				String t = LanguageManager.getInstance().translate("base.err.srv.io.title", LanguageManager.DEFAULT_LANG);
 				String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", LanguageManager.DEFAULT_LANG, "Disperse, nothing to see here!");
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
@@ -368,12 +369,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		final String dir = "web/";
     	
 		// web resources except html templates
-		if (uri.contains(".") && !uri.endsWith(".html")) { // Note: template request have no extension at all!
+		if (uriWithoutServlet.contains(".") && !uriWithoutServlet.endsWith(".html")) { // Note: template request have no extension at all!
 
-			final String requestedFile = uri.substring(uri.lastIndexOf("/") + 1, uri.length()).toLowerCase();
+			final String requestedFile = uriWithoutServlet.substring(uriWithoutServlet.lastIndexOf("/") + 1, uriWithoutServlet.length()).toLowerCase();
 			
 			// temporary file?
-			if (uri.startsWith("tmp/" + tmpFilePrefix)) {
+			if (uriWithoutServlet.startsWith("tmp/" + tmpFilePrefix)) {
 				
 				final String tmpDir = Utils.getTemporaryDirectory();
 				
@@ -386,7 +387,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					final String err = "Couldn't serve temporary file '" + fullTmpPath + "'!";
 					LOG.error(err, e);
 					String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-					String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
+					String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
 					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 				}
 			}
@@ -410,37 +411,37 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         	if (context != null) {
 
         		try {
-        			filePath = Utils.getRealPath(context) + dir + uri;
+        			filePath = Utils.getRealPath(context) + dir + uriWithoutServlet;
 					fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 				} catch (IOException e) {
 					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
-						filePath = "/" + dir + uri;
+						filePath = "/" + dir + uriWithoutServlet;
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
 						isResource = true;
 					} catch (IOException e1) {
 						final String err = "Resource not found on server looking up with resource path '" + filePath + "'!";
 						LOG.error(err, e);
 						String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
+						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 				}
         	} else {  
 		        try {
-		        	filePath =  BeetRootConfigurationManager.getInstance().getRootPath() + dir + uri;
+		        	filePath =  BeetRootConfigurationManager.getInstance().getRootPath() + dir + uriWithoutServlet;
 	        		fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 		        } catch (IOException e) {
 					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
-						filePath = "/" + dir + uri;
+						filePath = "/" + dir + uriWithoutServlet;
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
 						isResource = true;
 					} catch (IOException e1) {
 						final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
 						LOG.error(err, e);
 						String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uri);
+						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 		        }
@@ -448,7 +449,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	        
 			
 	    	// this consults cached 'META-INF/mime.types' !
-	        final String mimeType = Constants.MIME_TYPES_MAP.getContentType(uri);
+	        final String mimeType = Constants.MIME_TYPES_MAP.getContentType(uriWithoutServlet);
 	        //LOG.trace("MIME: "+mimeType);
 
 	        
@@ -576,7 +577,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			userSession.refresh();
 		
 	    // logout
-		if (uri.endsWith("/users/logout")) {
+		if (uriWithoutServlet.endsWith("/users/logout")) {
 			
 			loggedIn = false;
 			
@@ -600,7 +601,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
     		loggedIn = true;
     		
-    		if (uri.endsWith("/users/login")) {
+    		if (uriWithoutServlet.endsWith("/users/login")) {
 	            return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity());
     		}
     		
@@ -767,7 +768,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			
 			userSession.clearUserData();
 			
-			if (uri.endsWith("/users/reset") || uri.endsWith("/users/change")) {
+			if (uriWithoutServlet.endsWith("/users/reset") || uriWithoutServlet.endsWith("/users/change")) {
 				
 	            return this.serveAtLast((BeetRootHTTPSession)session);
 				

@@ -270,8 +270,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 
 	cd autumo-beetRoot-web-${VERSION}
-	# DB must be defined by user always servlet-side for tomcat and weblogic! Auto-Server must be true for H2!
-	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:/[CONFIGURE-THIS-PATH]/beetroot;AUTO_SERVER=TRUE;IFEXISTS=TRUE|' beetroot.cfg
+	# add servlet context variable to db url
+	sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
 	
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
@@ -322,6 +322,9 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
 	# no AUTO_SERVER=TRUE switch
 	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	# Change back mailing implementation
+	sed -i '' 's/mail_implementation=.*/mail_implementation=jakarta/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	sed -i '' 's/mail_session_name=.*/mail_session_name=/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=8080/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	cd autumo-beetRoot-web-${VERSION}

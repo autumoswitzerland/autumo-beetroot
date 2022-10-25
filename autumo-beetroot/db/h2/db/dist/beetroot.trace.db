@@ -1,4 +1,4 @@
-2022-10-02 02:49:39 jdbc[3]: exception
+2022-10-25 04:22:17 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLFeatureNotSupportedException: Dieses Feature wird nicht unterstützt: "getFunctions"
 Feature not supported: "getFunctions" [50100-200]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:507)

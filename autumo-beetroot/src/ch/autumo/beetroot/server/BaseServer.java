@@ -76,6 +76,8 @@ public abstract class BaseServer {
 	
 	private int serverTimeout = -1;
 	
+	private boolean hookShutdown = false;
+	
 	
 	static {
     	
@@ -398,15 +400,25 @@ public abstract class BaseServer {
 		return new Thread() {
 			@Override
 			public void run() {
+				
 				if (!BaseServer.this.serverStop) {
+					
+					hookShutdown = true;
+					
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("["+ name +"] [CTRL-C] signal received! Shutting down...");
 					}
 					
 					BaseServer.this.serverStop = true;
+					
+					//Communicator.safeClose(in);
+					Communicator.safeClose(serverSocket);
+					
 					// shutdown server
-					sendStopServer();
+					stopServer();
+					
+					//alternative: sendStopServer();
 				}
 			}
 		};
@@ -529,11 +541,13 @@ public abstract class BaseServer {
 	            }				
             } 
 		
-			// loop has been broken by STOP command.
-			Communicator.safeClose(serverSocket);
-			
-			// shutdown server
-			stopServer();
+			if (!hookShutdown) {
+				// loop has been broken by STOP command.
+				Communicator.safeClose(serverSocket);
+				
+				// shutdown server
+				stopServer();
+			}
 		}
 	}	
 
