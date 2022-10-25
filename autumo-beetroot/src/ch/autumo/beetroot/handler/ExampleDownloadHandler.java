@@ -37,8 +37,8 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Utils;
 
@@ -90,7 +90,7 @@ public class ExampleDownloadHandler extends BaseHandler {
 				f = new File(Utils.getRealPath(context) + requestedFilename);
 			}
 			else
-				f = new File(requestedFilename);
+				f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + requestedFilename);
 
 			downloadResponse.setDownloadFile(f);
 			

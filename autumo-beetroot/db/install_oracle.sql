@@ -141,14 +141,15 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 (tasks_seq.NEXTVAL, 'NONE', 'Task 5', '/path/task5.config', '*', '*', '*', 'feb,jun,sep', '*', '0', '0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- basic settings
-INSERT INTO properties (id, name, value) values 
-(properties_seq.NEXTVAL,'mail.host', 'localhost');
-INSERT INTO properties (id, name, value) values
-(properties_seq.NEXTVAL,'mail.port', '2500');
-INSERT INTO properties (id, name, value) values
-(properties_seq.NEXTVAL,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
 INSERT INTO properties (id, name, value) values
 (properties_seq.NEXTVAL,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
+-- NOTE: some mail settings in the 'beetroot.cfg' can be overwritten here:
+-- INSERT INTO properties (id, name, value) values 
+-- (properties_seq.NEXTVAL,'mail.host', 'localhost');
+-- INSERT INTO properties (id, name, value) values
+-- (properties_seq.NEXTVAL,'mail.port', '2500');
+-- INSERT INTO properties (id, name, value) values
+-- (properties_seq.NEXTVAL,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
 
 
 

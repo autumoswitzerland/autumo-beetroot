@@ -56,7 +56,7 @@ public class ExampleUploadHandler extends BaseHandler {
 
 	public ExampleUploadHandler(String entity, String errMsg) {
 		super(entity);
-		this.addErrorMessage(errMsg);
+		this.addSuccessMessage(errMsg);
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class ExampleUploadHandler extends BaseHandler {
 
 	@Override
 	public Class<?> getRedirectHandler() {
-		return HomeHandler.class;
+		return ExampleUploadHandler.class;
 	}
 
 	@Override

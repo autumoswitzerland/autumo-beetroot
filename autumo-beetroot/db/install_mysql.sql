@@ -99,14 +99,15 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 (5, 'NONE', 'Task 5', '/path/task5.config', '*', '*', '*', 'feb,jun,sep', '*', '0', '0', NOW(), NOW(), NOW());
 
 -- basic settings
-INSERT INTO properties (id, name, value) values 
-(1,'mail.host', 'localhost');
 INSERT INTO properties (id, name, value) values
-(2,'mail.port', '2500');
-INSERT INTO properties (id, name, value) values
-(3,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
-INSERT INTO properties (id, name, value) values
-(4,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
+(1,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
+-- NOTE: some mail settings in the 'beetroot.cfg' can be overwritten here:
+-- INSERT INTO properties (id, name, value) values 
+-- (2,'mail.host', 'localhost');
+-- INSERT INTO properties (id, name, value) values
+-- (3,'mail.port', '2500');
+-- INSERT INTO properties (id, name, value) values
+-- (4,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
 
 
 

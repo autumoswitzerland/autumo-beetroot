@@ -135,103 +135,101 @@ public abstract class AbstractMailer implements Mailer {
 		if (session != null)
 			userSession = session.getUserSession();
 		
-		String file = null;
 		
-		if (session == null) {
-			file = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/:lang/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
-		} else {
-			if (userSession == null)
-				file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Utils.normalizeUri(session.getUri()));
-			else
-				file = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
-			
-		}
-		
-
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		File f = null;	
 		InputStream is = null;
 		boolean streamIt = false;
-		String cp = "";
-		if (context != null) {
-			
-			cp = Utils.getRealPath(context);
 
-			f = new File(cp + file);
+		String res = null;
+		
+		
+		if (session == null) {
+			res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/:lang/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
+		} else {
+			if (userSession == null)
+				res = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Utils.normalizeUri(session.getUri()));
+			else
+				res = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
+		}
+		if (context != null) {
+			f = new File(Utils.getRealPath(context) + res);
 			if (!f.exists()) {
-				is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + file);
+				is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
 				streamIt = true;
 			}
+		} else {
+			f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 		}
-		else
-			f = new File(file);
+		
 		
 		if (!f.exists() || (streamIt && is == null)) {
-			
 			streamIt = false;
-			
-			LOG.warn("Resource '"+file+"' doesn't exist, looking up with default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.warn("Resource '"+res+"' doesn't exist, looking up with default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			if (session == null) {
-				file = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
+				res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
 			} else {
 				if (userSession == null)
-					file = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, session.getUri());
+					res = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, session.getUri());
 				else
-					file = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, userSession);
+					res = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, userSession);
 			}
-
 			if (context != null) {
-				
-				f = new File(cp + file);
+				f = new File(Utils.getRealPath(context) + res);
 				if (!f.exists()) {
-					is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + file);
+					is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
 					streamIt = true;
 				}
+			} else {
+				f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + res);	
 			}
-			else
-				f = new File(file);	
+			
 			
 			if (!f.exists() || (streamIt && is == null)) {
-				
 				streamIt = false;
-				
-				LOG.warn("Resource '"+file+"' doesn't exist, trying with NO language!");
+				LOG.warn("Resource '"+res+"' doesn't exist, trying with NO language!");
 				if (session == null) {
-					file = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/email/"+templateName+"."+extension, LanguageManager.DEFAULT_LANG);
+					res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/email/"+templateName+"."+extension, LanguageManager.DEFAULT_LANG);
 				} else {
-					file = LanguageManager.getInstance().getResourceWithoutLang("web/"+extension+"/email/"+templateName+"."+extension, session.getUri());
+					res = LanguageManager.getInstance().getResourceWithoutLang("web/"+extension+"/email/"+templateName+"."+extension, session.getUri());
 				}
-				
 				if (context != null) {
-					
-					f = new File(cp + file);
+					f = new File(Utils.getRealPath(context) + res);
 					if (!f.exists()) {
-						is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + file);
+						is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
 						streamIt = true;
 					}
+				} else {
+					f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 				}
-				else
-					f = new File(file);
 				
 				if (!f.exists() || (streamIt && is == null)) {
-					LOG.warn("Resource '"+file+"' doesn't exist, that's an error!");
-					throw new FileNotFoundException("No email template for name '"+templateName+"' found at all!");
+					LOG.warn("Resource '" + res + "' doesn't exist, that's an error!");
+					throw new FileNotFoundException("No email template for name '" + templateName + "' found at all!");
 				}
 			}
 		}		
 		
-		BufferedReader br = null; 
-		if (context != null && is != null) {
-			br = new BufferedReader(new InputStreamReader(is));
+		
+		BufferedReader br = null;
+		if (context != null) {
+			if (is != null)
+				br = new BufferedReader(new InputStreamReader(is));
+			else
+				br = new BufferedReader(new FileReader(Utils.getRealPath(context) + res));
 		} else {
-			br = new BufferedReader(new FileReader(cp + file));
+			if (is != null)
+				br = new BufferedReader(new InputStreamReader(is));
+			else
+				br = new BufferedReader(new FileReader(BeetRootConfigurationManager.getInstance().getRootPath() + res));
 		}
-		StringBuffer sb = new StringBuffer();
+
+		
+		final StringBuffer sb = new StringBuffer();
 	    String line;
 	    while ((line = br.readLine()) != null)
 	    	sb.append(line+"\n");
 	    br.close();
-		
 		return sb.toString();
 	}
 	
