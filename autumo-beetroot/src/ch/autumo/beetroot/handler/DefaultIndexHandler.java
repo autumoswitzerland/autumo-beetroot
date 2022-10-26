@@ -105,15 +105,17 @@ public class DefaultIndexHandler extends BaseHandler {
 		final Session userSession = SessionManager.getInstance().findOrCreate(session);
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
 		
-		
-		// delete ids from user session
+		// delete IDs from user session
 		userSession.removeAllIds();
 		
 		//?sort=name&amp;direction=asc
 		final String sortField = session.getParms().get("sort");
 		final String sortDir = session.getParms().get("direction");
 		
-		final String pg = session.getParms().get("page");
+		String pg = session.getParms().get("page");
+		if (pg == null)
+			pg = (String) userSession.get("page-"+this.entity);
+		
 		if (pg != null && pg.length() != 0) {
 			try {
 				page = Integer.valueOf(pg).intValue();

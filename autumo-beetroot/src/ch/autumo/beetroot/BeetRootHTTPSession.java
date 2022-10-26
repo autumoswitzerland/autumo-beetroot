@@ -324,10 +324,28 @@ public class BeetRootHTTPSession extends HTTPSession {
      * @param value new value
      */
     public void updateParameter(String key, String value) {
-    	
     	List<String> values = this.parms.get(key);
     	// we only update if there's one value for this key!
     	if (values != null && values.size() == 1) {
+    		values = new ArrayList<String>();
+    		values.add(value);
+    		this.parms.put(key, values);
+    	}
+    }
+
+    /**
+     * Overwrites existing parameter or adds it if it doens't
+     * exist.
+     * 
+     * @param key key
+     * @param value new value
+     */
+    public void overwriteParameter(String key, String value) {
+    	List<String> values = this.parms.get(key);
+    	// we only update if there's one value for this key!
+    	if (values != null && values.size() == 1) {
+    		this.updateParameter(key, value);
+    	} else {
     		values = new ArrayList<String>();
     		values.add(value);
     		this.parms.put(key, values);

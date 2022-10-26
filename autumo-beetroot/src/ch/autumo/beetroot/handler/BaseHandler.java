@@ -1984,7 +1984,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return Arrays.asList(roles);
 	}
 	
-	/** Special case serve; only use with care - retry uses it */
+	/**
+	 * Special case: Used for update/save retry cases when web from data was invalid!
+	 * 
+	 * @param session HTTP session
+	 * @param entity entity
+	 * @param handlerClass handler class
+	 * @param newParams new parameters
+	 * @param msg message
+	 * @param messageType message type
+	 * @return response
+	 * @throws Exception
+	 */
 	private Response serveHandler(
 			BeetRootHTTPSession session, 
 			String entity, 
@@ -2009,6 +2020,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return response;
 	}
 	
+	/**
+	 * Used for login and logout handler.
+	 * 
+	 * @param session HTTP session
+	 * @param handler login or logout handler
+	 * @param stat status
+	 * @return response
+	 * @throws Exception
+	 */
 	private Response serveHandler(IHTTPSession session, BaseHandler handler, HandlerResponse stat) throws Exception {
 		
 		if (stat != null) {
@@ -2036,6 +2056,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText((BeetRootHTTPSession)session, -1));
 	}
 
+	/**
+	 * Used when an handler access failed!
+	 * 
+	 * @param session HTTP session
+	 * @param newParams new parameters
+	 * @param msg message
+	 * @param messageType message type
+	 * @return response
+	 * @throws Exception
+	 */
 	private Response serveDefaultRedirectHandler(			
 			BeetRootHTTPSession session, 
 			Map<String, String> newParams, 
@@ -2068,6 +2098,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));		
 	}	
 	
+	/**
+	 * Used for standard redirects.
+	 * 
+	 * @param session HTTP session
+	 * @param msg success message
+	 * @return response
+	 * @throws Exception
+	 */
 	private Response serveRedirectHandler(BeetRootHTTPSession session, String msg) throws Exception {
 		
 		final Session userSession = session.getUserSession();
@@ -2086,15 +2124,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
         try {
 
-        	/* we only do this when refresh or refreshRoute is called!
         	// set current page if any
-            final String page = (String) userSession.get("page"+entity);
+            final String page = (String) userSession.get("page-"+entity);
     		if (page != null) {
-    			session.getParms().put("page", page);
+    			session.overwriteParameter("page", page);
     			// consume!
     			userSession.remove("page-"+entity);
     		}
-    		*/
     		
     		// read index data
         	handler.readData(session, -1);
@@ -2110,6 +2146,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));
 	}
 		
+	/**
+	 * Construct a handler.
+	 * 
+	 * @param session HTTP session
+	 * @param handlerClass handler class
+	 * @param entity entity
+	 * @param msg success message
+	 * @return response
+	 * @throws Exception
+	 */
 	private Object construct(BeetRootHTTPSession session, Class<?> handlerClass, String entity, String msg) throws Exception {
 		
 		final Session userSession = session.getUserSession();
@@ -2159,6 +2205,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         return handler;
 	}
 
+	/**
+	 * Refresh a route; used for no content handlers!
+	 * 
+	 * @param session HTTP session
+	 * @param route new URI route
+	 * @param msg success message
+	 * @return response
+	 */
 	private Response refreshRoute(BeetRootHTTPSession session, String route, String msg) {
 		
 		if (route.startsWith("/"))
@@ -2202,11 +2256,21 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), refreshText);
 	}
 	
+	/**
+	 * Refresh the index-route. Used if modify IDs have an inconsistent state.
+	 * 
+	 * @param session HTTP session
+	 * @param msg message
+	 * @return response
+	 */
 	private Response refresh(BeetRootHTTPSession session, String msg) {
 		
 		return this.refreshRoute(session, getDefaultHandlerEntity() + "/index", msg);
 	}
 	
+	/**
+	 * Get default handler entity from configuration.
+	 */
 	private String getDefaultHandlerEntity() {
 		
 		String entity;
@@ -2219,6 +2283,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 	}
 	
+	/**
+	 * Get default handler class from configuration.
+	 */
 	private Class<?> getDefaultHandlerClass() {
 		
 		String clz;
@@ -2229,20 +2296,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	    	LOG.warn("Couldn't load default handler class!", e);
 			return null;
 		}
-	}
-	
-	@SuppressWarnings("unused")
-	private void processTime() {
-		// stop stop-watch and measure
-		final long ifaceXEnd = System.currentTimeMillis();
-		final long duration = ifaceXEnd - baseHandlerStart;
-		final String durStr = "BEETROOT handler process time: " + Utils.getReadableDuration(duration, TimeUnit.HOURS);
-		LOG.info(durStr);
-	}
-	
-	/** Unused atm */
-	protected void loginMarker(boolean redirectLogin) {
-		//this.loginMarker = redirectLogin;
 	}
 	
 	/**
@@ -2388,22 +2441,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public void addHtmlDataLine(String line) {
 		this.htmlData += line + "\n";
 	}
-
-	/**
-	 * Pre-parse one HTML line of a template.
-	 * 
-	 * Note: This method is called before the engine replaces
-	 * standard other tags! 
-	 *  
-	 * @param line html line
-	 * @param session HTTP session
-	 * @return new html line or lines.
-	 */
-	/* not used atm
-	public String preParse(String line, BeetRootHTTPSession session) {
-		return line;
-	}
-	*/
 	
 	/**
 	 * Replace some more variables in template.
@@ -2528,6 +2565,22 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public String formatSingleValueForDB(BeetRootHTTPSession session, String val, String columnname) {
 		throw new IllegalAccessError("This method should never be called in this context!");
+	}
+
+	
+	
+	@SuppressWarnings("unused")
+	protected void loginMarker(boolean redirectLogin) {
+		//this.loginMarker = redirectLogin;
+	}
+	
+	@SuppressWarnings("unused")
+	private void processTime() {
+		// stop stop-watch and measure
+		final long ifaceXEnd = System.currentTimeMillis();
+		final long duration = ifaceXEnd - baseHandlerStart;
+		final String durStr = "BEETROOT handler process time: " + Utils.getReadableDuration(duration, TimeUnit.HOURS);
+		LOG.info(durStr);
 	}
 	
 }
