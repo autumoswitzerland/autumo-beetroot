@@ -171,6 +171,33 @@ public class Utils {
     }
     
 	/**
+	 * Enrich URL with parameters.
+	 * 
+	 * @param url url
+	 * @param name parameter name
+	 * @param value parameter value
+	 * @return new url
+	 */
+	public static String enrichQuery(String url, String name, Object value) {
+		StringBuilder queryString = new StringBuilder();
+		if (url.contains("?")) {
+			queryString.append("&");
+		} else {
+			queryString.append("?");
+		}
+		try {
+			queryString
+				.append(URLEncoder.encode(name, "UTF-8"))
+				.append("=")
+				.append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		url += queryString.toString();
+		return url;
+	}	
+	
+	/**
 	 * Update secret user key.
 	 * 
 	 * @param userId DB user id

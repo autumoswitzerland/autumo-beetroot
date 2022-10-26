@@ -117,6 +117,8 @@ public class DefaultIndexHandler extends BaseHandler {
 		if (pg != null && pg.length() != 0) {
 			try {
 				page = Integer.valueOf(pg).intValue();
+				// set current page to user session
+				userSession.set("page-"+this.entity, pg);
 			} catch (Exception e) {
 				LOG.warn("Couldn't parse page number, using page 1!", e);
 				page = 1;

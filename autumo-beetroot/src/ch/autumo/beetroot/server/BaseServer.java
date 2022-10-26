@@ -348,9 +348,12 @@ public abstract class BaseServer {
 
 		this.beforeStart();
 	
-		// Admin listener
+		// Admin listener and serevr thread
 		adminListener = new AdminListener(portAdminServer);
-		new Thread(adminListener).start();
+		final Thread server = new Thread(adminListener);
+		server.setName(this.name+"-Server");
+		server.start();
+		
 		LOG.info("Admin listener started on port "+portAdminServer+".");
 		if (LOG.isErrorEnabled())
 			System.out.println("["+ name +"] Admin listener started on port "+portAdminServer+".");
@@ -397,7 +400,7 @@ public abstract class BaseServer {
 	 * @return thread for runtime shutdown hook.
 	 */
 	protected Thread getShutDownHook() {
-		return new Thread() {
+		return new Thread("ShutDownHook") {
 			@Override
 			public void run() {
 				
@@ -517,6 +520,7 @@ public abstract class BaseServer {
 					if (clientSocket != null) {
 						final ClientHandler handler = new ClientHandler(clientSocket);
 						final Thread threadForClient = new Thread(handler);
+						threadForClient.setName(BaseServer.this.name + "-Client");
 						threadForClient.start();
 					}
 					

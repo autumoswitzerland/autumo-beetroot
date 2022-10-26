@@ -38,10 +38,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -1701,9 +1699,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 					} else if (requestCall) {
 						
+						// A request call is a call that wants to read data beside the default
+						// index and view handler!
+
 						// we simply let the code run further till handler read function
 						// -> used for reads that need a post form
-
 						
 					// ======== 3. Main HTTP: No method (save) ======
 						
@@ -2005,7 +2005,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         final UriResource ur = new UriResource(null, handlerClass, entity);
         final UriResponder responder = ((UriResponder) handler);
         
-        final Response response = responder.get(ur, newParams, (org.nanohttpd.protocols.http.IHTTPSession)session);
+        final Response response = responder.get(ur, newParams, (org.nanohttpd.protocols.http.IHTTPSession) session);
 		return response;
 	}
 	
@@ -2074,7 +2074,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		userSession.removeAllIds(); // important, we need to generate new ones!
 		
-		Object obj = construct(session, getRedirectHandler(), getEntity(), msg);
+		final String entity = this.getEntity();
+		Object obj = construct(session, getRedirectHandler(), entity, msg);
 		
 		if (!(obj instanceof BaseHandler)) {
 			return (Response) obj;
@@ -2083,9 +2084,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final BaseHandler handler = (BaseHandler) obj;
         handler.initialize(session);
 		
-		// read index data
         try {
-        	
+
+        	/* we only do this when refresh or refreshRoute is called!
+        	// set current page if any
+            final String page = (String) userSession.get("page"+entity);
+    		if (page != null) {
+    			session.getParms().put("page", page);
+    			// consume!
+    			userSession.remove("page-"+entity);
+    		}
+    		*/
+    		
+    		// read index data
         	handler.readData(session, -1);
         	
         } catch (Exception ex) {
@@ -2095,8 +2106,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         	
         	throw ex;
         }
-		// lang is re-written per redirect script
-        return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));		
+        
+		return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));
 	}
 		
 	private Object construct(BeetRootHTTPSession session, Class<?> handlerClass, String entity, String msg) throws Exception {
@@ -2153,41 +2164,37 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (route.startsWith("/"))
 			route = route.substring(1, route.length());
 		
+		String url = route;
 		final Session userSession = session.getUserSession();
 		
-		if (msg != null && msg.length() !=0 ) {
-			
-			try {
-				
-				msg = URLEncoder.encode(msg, StandardCharsets.UTF_8.toString());
-				if (msg.contains("?"))
-					msg = "&msg="+msg+"&sev=w";
-				else
-					msg = "?msg="+msg+"&sev=w";
-				
-			} catch (UnsupportedEncodingException e) {
-				
-				// zzz....
-				if (msg.contains("?"))
-					msg = "&msg="+LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession)+"&sev=w";
-				else
-					msg = "?msg="+LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession)+"&sev=w";
-			}
+		// Page ?
+        final String page = (String) userSession.get("page-"+entity);
+		if (page != null) {
+			url = Utils.enrichQuery(url, "page", page);
+			// consume!
+			userSession.remove("page-"+entity);
 		}
-		
-		if (msg == null)
-			msg = "";
+
+		// Message?
+		if (msg != null && msg.length() !=0 ) {
+			try {
+				url = Utils.enrichQuery(url, "msg", msg);
+			} catch (Exception e) {
+				url = Utils.enrichQuery(url, "msg", LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession));
+			}
+			url = Utils.enrichQuery(url, "sev", "w");
+		}
 		
 		String sn = "/";
 		if (insertServletNameInTemplateRefs)
 			sn = "/" + servletName + "/";
 		
-		String refreshText = 
+		final String refreshText = 
 				  "<!DOCTYPE html>\n"
 				+ "<html lang=\"en\">\n"
 				+ "<head>\n"
 				+ "	<meta charset=\"utf-8\">\n"
-				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + route + msg + "\" />\n"
+				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + url + "\" />\n"
 				+ "</head>\n"
 				+ "</html>\n"
 				+ "";
