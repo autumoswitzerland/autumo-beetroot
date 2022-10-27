@@ -132,7 +132,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	
 	mkdir autumo-beetRoot-$VERSION/cfg
 	
-	cp ../cfg/beetroot.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
+	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
 
 
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF
@@ -140,7 +140,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc/licenses
 
-	cp ../cfg/beetroot.cfg autumo-beetRoot-web-$VERSION/beetroot.cfg
+	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-web-$VERSION/beetroot.cfg
 	cp ../cfg/web.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/context.xml autumo-beetRoot-web-$VERSION/META-INF/context.xml
 

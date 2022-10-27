@@ -12,12 +12,22 @@
 			<div class="row tile-menu-row">
 
 				<div class="menuEntry">
-					<a class="portfolio-box" href="/{$lang}/users"> <img
-						class="img-fluid" src="/img/icons/menu-user-128.png" alt="">
+					{$ifrole=Administrator:}
+					<a class="portfolio-box" href="/{$lang}/users">
+					{$endifrole;}
+					{$ifrole=Operator,Controller:}
+					<a class="portfolio-box" href="{$userlink}">
+					{$endifrole;}
+					<img class="img-fluid" src="/img/icons/menu-user-128.png" alt="">
 						<div class="portfolio-box-caption">
 							<div class="portfolio-box-caption-content">
 								<div class="project-name">&nbsp;</div>
+								{$ifrole=Administrator:}
 								<div class="project-category text-faded">Manage Users</div>
+								{$endifrole;}
+								{$ifrole=Operator,Controller:}
+								<div class="project-category text-faded">User Profile</div>
+								{$endifrole;}
 							</div>
 						</div>
 					</a>

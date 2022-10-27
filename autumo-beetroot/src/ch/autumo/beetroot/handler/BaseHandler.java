@@ -118,6 +118,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static Pattern PATTERN_SEVERITY = Pattern.compile("\\{\\$severity\\}");
 	private static Pattern PATTERN_MESSAGE = Pattern.compile("\\{\\$message\\}");
 	private static Pattern PATTERN_USERINFO = Pattern.compile("\\{\\$userinfo\\}");
+	private static Pattern PATTERN_USERLINK = Pattern.compile("\\{\\$userlink\\}");
 	private static Pattern PATTERN_LANG_MENU_ENTRIES = Pattern.compile("\\{\\$lang_menu_entries\\}");
 	//private static Pattern PATTERN_ADMIN_MENU = Pattern.compile("\\{\\$adminmenu\\}");
 	//private static Pattern PATTERN_LOGIN_OR_LOGOUT = Pattern.compile("\\{\\$loginorlogout\\}");
@@ -993,6 +994,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				} else if (text.contains("{#template}")) {
 				
 					try {
+						
 						this.createTemplateContent(userSession, session);
 						
 						if (templateResource.endsWith("index.html")) {
@@ -1002,9 +1004,24 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						if (templateResource.endsWith("search.html")) {
 							parseTemplateHead(buffer, "{$head}");
 						}
+						
 						parseTemplateData(buffer, "{$data}");
 						
 						text = text.replace("{#template}", buffer.toString());
+
+						// Provide a link to current logged in user for every template!
+						if (text.contains("{$userlink}")) {
+							final Integer uid = userSession.getUserId();
+							if (uid != null) {
+								String usid = userSession.getModifyId(uid.intValue(), "users");
+								if (usid == null)
+									userSession.createIdPair(uid, "users");
+								text = PATTERN_USERLINK.matcher(text).replaceFirst(
+										"/"+lang+"/users/view?id=" + userSession.getModifyId(uid, "users"));
+							} else {
+								text = PATTERN_USERLINK.matcher(text).replaceFirst("#");
+							}
+						}
 						
 						if (text.contains("{$csrfToken}")) {
 							
