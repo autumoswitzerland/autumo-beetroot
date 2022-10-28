@@ -787,6 +787,9 @@ public class Utils {
 	 */
 	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint, List<SimpleEntry<String, String>> replacements, String... addTags) {
 		
+		html = html.replaceAll(">", "&gt;");
+		html = html.replaceAll("<", "&lt;");
+		
 		final Document jsoupDoc = Jsoup.parse(html);
 		final Document.OutputSettings outputSettings = new Document.OutputSettings();
 		outputSettings.prettyPrint(prettyPrint);
