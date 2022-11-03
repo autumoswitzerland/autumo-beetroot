@@ -3,7 +3,7 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.1
+#  Version: 4.2
 #
 #  Notes:
 #   -
@@ -134,7 +134,6 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
 
-
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc
@@ -217,6 +216,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../db/h2/db/dist/* autumo-beetRoot-web-$VERSION/db/h2/db/
 	cp ../db/*.sql autumo-beetRoot-web-$VERSION/db/
 	
+
+# --------- Gen resources
+
+	mkdir autumo-beetRoot-$VERSION/gen
+	
+	cp -r ../gen autumo-beetRoot-$VERSION/
 
 # --------- Web resources
 
