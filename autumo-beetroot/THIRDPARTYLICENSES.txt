@@ -64,7 +64,7 @@ with third parties: All licenses are covered by the license for this product (se
 -	Library:	Javax Servlet API
 	License:	CDDL 1.0 with Classpath Exception
 	Link:		https://javaee.github.io/servlet-spec/LICENSE
-				See: 3.5. Distribution of Executable Versions.
+				See: 3.6. Larger Works.
 
 -	Library:	jsoup: Java HTML Parser
 	License:	MIT License
@@ -91,10 +91,10 @@ with third parties: All licenses are covered by the license for this product (se
 	Link:		https://github.com/twilio/twilio-java/blob/main/LICENSE
 
 -	Library:	H2 Database Engine
-	Licenses:	MPL 2.0 (Mozilla Public License Version 2.0) or
-				EPL 1.0 (Eclipse Public License)
-	Links:		https://www.mozilla.org/en-US/MPL/2.0/
-				https://opensource.org/licenses/eclipse-1.0.php
+	Licenses:	EPL 1.0 (Eclipse Public License) or
+				MPL 2.0 (Mozilla Public License Version 2.0)
+	Links:		https://opensource.org/licenses/eclipse-1.0.php
+				https://www.mozilla.org/en-US/MPL/2.0/
 
 -	Library:	PostgreSQL
 	License:	The PostgreSQL License (PostgreSQL)
