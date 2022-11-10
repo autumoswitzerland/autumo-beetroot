@@ -43,6 +43,8 @@ import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.autumo.beetroot.logging.LoggingFactory;
+
 
 /**
  * Base beetRoot servlet.
@@ -78,8 +80,8 @@ public class AbstractBeetRootServlet extends HttpServlet {
 			// configure logging
 			final String logCfgFile = config.getInitParameter("beetRootLogConfig");
 			try {
-				Utils.configureLog4j2(webAppRoot + logCfgFile);
-			} catch (IOException ioex) {
+				LoggingFactory.getInstance().initialize(webAppRoot + logCfgFile);
+			} catch (Exception ioex) {
 				
 				LOG.error("Logging configuration initialization failed !", ioex);
 				throw new ServletException("Logging configuration initialization failed !", ioex);

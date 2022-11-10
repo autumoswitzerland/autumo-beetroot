@@ -50,6 +50,7 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.UtilsException;
+import ch.autumo.beetroot.logging.LoggingFactory;
 
 /**
  * Base server.
@@ -60,6 +61,8 @@ public abstract class BaseServer {
 	
 	private static String rootPath = null;
 
+	private BeetRootConfigurationManager configMan = null;
+	
     private AdminListener adminListener = null;
 	private ServerSocket serverSocket = null;
 	
@@ -143,7 +146,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 		
 		// Read general config
-		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
+		configMan = BeetRootConfigurationManager.getInstance();
 		// Must !
 		try {
 			configMan.initialize();
@@ -160,23 +163,11 @@ public abstract class BaseServer {
 		// configure logging
 		String logCfgFile = System.getProperty("log4j2.configurationFile");
 		// check if it has been overwritten with the 'log4j.configuration' parameter
-		if (logCfgFile != null) {
-			
-			// --> log4j2.configurationFile=file:<log-cfg-path>/logging.cfg
-			// --> In this case nothing to do, log4j2 reads the path!
-		} else {
+		if (logCfgFile == null)
 			logCfgFile = configMan.getString("ws_log_cfg");
-			try {
-				if (logCfgFile != null && logCfgFile.length() != 0)
-					Utils.configureLog4j2(rootPath + logCfgFile);
-				else
-					Utils.configureLog4j2(rootPath + "cfg/logging.xml");
-			} catch (Exception e) {
-				System.err.println("["+ name +"] Logging configuration initialization failed!");
-				e.printStackTrace();
-				Utils.fatalExit();
-			}
-		}
+		
+		this.initializeLogging(logCfgFile);
+
 
 		//------------------------------------------------------------------------------
 
@@ -258,6 +249,24 @@ public abstract class BaseServer {
 			this.sendStopServer();
 		}		
 	}
+	
+	/**
+	 * Initialize logging. Can be overwritten.
+	 * 
+	 * @param logCfgFile logging config file
+	 */
+	protected void initializeLogging(String logCfgFile) {
+		try {
+			if (logCfgFile != null && logCfgFile.length() != 0)
+				LoggingFactory.getInstance().initialize(rootPath + logCfgFile, "");
+			else
+				LoggingFactory.getInstance().initialize(rootPath + "cfg/logging.xml");
+		} catch (Exception e) {
+			System.err.println("["+ name +"] Logging configuration initialization failed!");
+			e.printStackTrace();
+			Utils.fatalExit();
+		}
+	}
 
 	/**
 	 * Get argument help text.
@@ -267,7 +276,7 @@ public abstract class BaseServer {
 	public String getHelpText() {
 		return Help.TEXT;
 	}
-	
+		
 	/**
 	 * Get server name.
 	 * 
@@ -275,6 +284,15 @@ public abstract class BaseServer {
 	 */
 	protected String getServerName() {
 		return this.name;
+	}
+	
+	/**
+	 * Get root path of this server.
+	 * 
+	 * @return root path
+	 */
+	protected static String getRootPath() {
+		return rootPath;
 	}
 	
 	/**

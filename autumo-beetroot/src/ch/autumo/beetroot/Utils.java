@@ -32,8 +32,6 @@ package ch.autumo.beetroot;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
@@ -70,8 +68,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.dbutils.BeanProcessor;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -618,24 +614,6 @@ public class Utils {
 		if (mimeArchiveList == null)
 			mimeArchiveList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_archive");
 		return mimeArchiveList.contains(mimeType);
-	}
-	
-	/**
-	 * Configure the log4j2 framework specifically with a log configuration file.
-	 * 
-	 * @param path a path to the configuration
-	 * @throws IOException
-	 */
-	public static void configureLog4j2(String path) throws IOException {
-		final File cf = new File(path);
-		if (cf.exists()) {
-			Configurator.initialize("BeetRootConfig", null, cf.toURI());
-		}
-		else {
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
-			ConfigurationSource cs = new ConfigurationSource(is);
-			Configurator.initialize(Thread.currentThread().getContextClassLoader(), cs);
-		}
 	}
 	
 	/**
