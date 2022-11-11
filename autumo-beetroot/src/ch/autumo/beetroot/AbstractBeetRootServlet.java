@@ -75,6 +75,17 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		final String configFilePath = config.getInitParameter("beetRootConfig");
 
 
+		// Read general config
+		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
+		try {
+			configMan.initializeWithFullPath(webAppRoot + configFilePath, getServletContext());
+		} catch (Exception e) {
+			LOG.error("Configuration initialization failed !", e);
+			throw new ServletException("Configuration initialization failed !", e);
+		}		
+
+		
+		// logging configuration
 		final String servletContainer = config.getInitParameter("servletContainer");
 		if (servletContainer == null || !servletContainer.equals("jetty")) {
 			// configure logging
@@ -87,18 +98,6 @@ public class AbstractBeetRootServlet extends HttpServlet {
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
 		}
-		
-		// Read general config
-		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
-		try {
-			
-			configMan.initializeWithFullPath(webAppRoot + configFilePath, getServletContext());
-			
-		} catch (Exception e) {
-			
-			LOG.error("Configuration initialization failed !", e);
-			throw new ServletException("Configuration initialization failed !", e);
-		}		
 		
 		// Are pw's in config encoded?
 		boolean pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
