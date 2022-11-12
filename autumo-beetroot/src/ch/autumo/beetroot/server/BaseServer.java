@@ -433,6 +433,7 @@ public abstract class BaseServer {
 					
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
+						System.out.println("");
 						System.out.println("["+ name +"] [CTRL-C] signal received! Shutting down...");
 					}
 					
@@ -655,6 +656,7 @@ public abstract class BaseServer {
 			if (answer instanceof StopAnswer) {
 				LOG.info("[STOP] signal received! Shutting down...");
 				if (LOG.isErrorEnabled()) {
+					System.out.println("");
 					System.out.println("["+ name +"] [STOP] signal received! Shutting down...");
 				}
 				
