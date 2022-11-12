@@ -49,31 +49,20 @@ public class BeetRootServer extends BaseServer {
 		super(params);
 	}
 
-	/**
-	 * Overwrite do do something before starting the server.
-	 * Handle exceptions by your own!
-	 */
-	protected void beforeStart() {
+	@Override
+	protected boolean beforeStart() {
+		return true;
 	}
 
-	/**
-	 * Overwrite do do something after starting the server.
-	 * Handle exceptions by your own!
-	 */
+	@Override
 	protected void afterStart() {
 	}
 	
-	/**
-	 * Overwrite do do something before stopping the server.
-	 * Handle exceptions by your own!
-	 */
+	@Override
 	protected void beforeStop() {
 	}
 
-	/**
-	 * Overwrite do do something after stopping the server.
-	 * Handle exceptions by your own!
-	 */
+	@Override
 	protected void afterStop() {
 	}
 	

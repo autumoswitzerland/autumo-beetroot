@@ -300,6 +300,12 @@ public abstract class BaseServer {
 	 */
 	protected void startServer() {
 		
+		final boolean start = this.beforeStart();
+		// start pre-condition ok? 
+		if (!start)
+			return;
+		
+		
 		LOG.info("Server starting...");
 		if (LOG.isErrorEnabled())
 			System.out.println("["+ name +"] Server starting...");
@@ -364,8 +370,7 @@ public abstract class BaseServer {
 			}
 		}
 
-		this.beforeStart();
-	
+		
 		// Admin listener and serevr thread
 		adminListener = new AdminListener(portAdminServer);
 		final Thread server = new Thread(adminListener);
@@ -472,25 +477,28 @@ public abstract class BaseServer {
 	}
 
 	/**
-	 * Overwrite do do something before starting the server.
+	 * Overwrite to do something before starting the server.
 	 * Handle exceptions by your own!
+	 * 
+	 * @return true id server should be started,
+	 * 		otherwise false; e.g. a pre-condition is not met
 	 */
-	protected abstract void beforeStart();
+	protected abstract boolean beforeStart();
 
 	/**
-	 * Overwrite do do something after starting the server.
+	 * Overwrite to do something after starting the server.
 	 * Handle exceptions by your own!
 	 */
 	protected abstract void afterStart();
 	
 	/**
-	 * Overwrite do do something before stopping the server.
+	 * Overwrite to do something before stopping the server.
 	 * Handle exceptions by your own!
 	 */
 	protected abstract void beforeStop();
 
 	/**
-	 * Overwrite do do something after stopping the server.
+	 * Overwrite to do something after stopping the server.
 	 * Handle exceptions by your own!
 	 */
 	protected abstract void afterStop();
