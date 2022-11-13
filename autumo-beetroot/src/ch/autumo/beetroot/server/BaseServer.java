@@ -373,8 +373,8 @@ public abstract class BaseServer {
 				
 			} catch (Exception e) {
 	
-				LOG.error("Cannot start web-server on port "+portWebServer+" - Shutting down!", e);
-				System.err.println(this.ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Shutting down!");
+				LOG.error("Cannot start web-server on port "+portWebServer+" - Already running? Stopping.", e);
+				System.err.println(this.ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Already running? Stopping.");
 				Utils.fatalExit();
 			}
 		}
