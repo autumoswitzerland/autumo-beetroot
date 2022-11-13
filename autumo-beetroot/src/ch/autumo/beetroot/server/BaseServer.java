@@ -44,9 +44,6 @@ import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diogonunes.jcolor.Ansi;
-import com.diogonunes.jcolor.Attribute;
-
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootWebServer;
@@ -166,8 +163,8 @@ public abstract class BaseServer {
 		}
 
 		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
-		this.ansiServerName = Ansi.colorize("["+ name +"]", Attribute.CYAN_TEXT());
-		this.ansiErrServerName = Ansi.colorize("["+ name +"]", Attribute.BRIGHT_RED_TEXT());
+		this.ansiServerName = Utils.cyan("["+ name +"]");
+		this.ansiErrServerName = Utils.red("["+ name +"]");
 		
 		
 		//------------------------------------------------------------------------------
@@ -446,7 +443,7 @@ public abstract class BaseServer {
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("");
-						System.out.println(BaseServer.this.ansiServerName + " " + Ansi.colorize("[CTRL-C]", Attribute.YELLOW_TEXT()) + " signal received! Shutting down...");
+						System.out.println(BaseServer.this.ansiServerName + " " + Utils.yellow("[CTRL-C]") + " signal received! Shutting down...");
 					}
 					
 					BaseServer.this.serverStop = true;
@@ -669,7 +666,7 @@ public abstract class BaseServer {
 				LOG.info("[STOP] signal received! Shutting down...");
 				if (LOG.isErrorEnabled()) {
 					System.out.println("");
-					System.out.println(BaseServer.this.ansiServerName + " " + Ansi.colorize("[STOP]", Attribute.RED_TEXT()) + " signal received! Shutting down...");
+					System.out.println(BaseServer.this.ansiServerName + " " + Utils.darkRed("[STOP]") + " signal received! Shutting down...");
 				}
 				
 				// only escape of this loop
@@ -710,9 +707,11 @@ public abstract class BaseServer {
 	 */
 	protected static final class Help {
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
-		private static final String TITLE = Ansi.colorize("beetRoot Server" + Constants.APP_VERSION, Attribute.CYAN_TEXT());
-		private static final String JAVA  = Ansi.colorize("java", Attribute.BRIGHT_GREEN_TEXT());
-		private static final String USAGE = Ansi.colorize("beetroot."+SHELL_EXT+" start|stop", Attribute.YELLOW_TEXT());
+		private static final String TITLE = Utils.cyan("beetRoot Server");
+		private static final String JAVA  = Utils.green("java");
+		private static final String USAGE = Utils.yellow("beetroot."+SHELL_EXT+" start|stop");
+		private static final String USAGE0 = Utils.yellow("beetroot."+SHELL_EXT+" -help");
+		private static final String USAGE1 = Utils.yellow("beetroot."+SHELL_EXT+" -h");
 		public static final String TEXT =
 				"" 																						+ Utils.LINE_SEPARATOR +
 				"" 																						+ Utils.LINE_SEPARATOR +
@@ -747,8 +746,8 @@ public abstract class BaseServer {
     			"  or" 																					+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    beetroot."+SHELL_EXT+" -help" 														+ Utils.LINE_SEPARATOR +
-    			"    beetroot."+SHELL_EXT+" -h" 														+ Utils.LINE_SEPARATOR +
+    			"    " + USAGE0					 														+ Utils.LINE_SEPARATOR +
+    			"    " + USAGE1					 														+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"";    	
 	}

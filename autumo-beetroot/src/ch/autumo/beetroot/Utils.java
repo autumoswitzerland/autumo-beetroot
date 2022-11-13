@@ -76,6 +76,8 @@ import org.jsoup.parser.Tag;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 
+import com.diogonunes.jcolor.Ansi;
+import com.diogonunes.jcolor.Attribute;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -90,6 +92,9 @@ import de.taimos.totp.TOTP;
  */
 public class Utils {
 
+	/** alpha-numeric HEX characters */
+	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
+	
 	/** Allowed text mime types. */
 	public static List<String> mimeTextList;
 	/** Allowed octet mime types. */
@@ -1144,6 +1149,62 @@ public class Utils {
 		}
 	}	
 	
+	/**
+	 * Cyan colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String cyan(String text) {
+		return Ansi.colorize(text, Attribute.CYAN_TEXT());		
+	}
+
+	/**
+	 * Green colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String green(String text) {
+		return Ansi.colorize(text, Attribute.BRIGHT_GREEN_TEXT());
+	}
+
+	/**
+	 * Yellow colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String yellow(String text) {
+		return Ansi.colorize(text, Attribute.YELLOW_TEXT());
+	}
+	
+	/**
+	 * Red colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String red(String text) {
+		return Ansi.colorize(text, Attribute.BRIGHT_RED_TEXT());
+	}
+
+	/**
+	 * Dark-Red colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String darkRed(String text) {
+		return Ansi.colorize(text, Attribute.RED_TEXT());
+	}
+
+	/**
+	 * Bytes 2 Hex.
+	 * 
+	 * @param bytes bytes
+	 * @return Hex representation
+	 */
 	public static String bytesToHex(byte[] bytes) {
 	    char[] hexChars = new char[bytes.length * 2];
 	    for (int j = 0; j < bytes.length; j++) {
@@ -1154,6 +1215,9 @@ public class Utils {
 	    return new String(hexChars);
 	}
 	
+	/**
+	 * Internal keys.
+	 */
 	public final static class KEYDATA {
 		private static final byte[] SALT_1 = {
 				(byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
@@ -1164,12 +1228,4 @@ public class Utils {
 		private static final int ITER_1 = 19;	
 	}
 
-	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
-
-	
-	public static void main(String[] args) {
-		System.out.println(generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAULT_LEN));
-		//System.out.println(create6DigitTOTPCode("userseckey"));
-	}
-	
 }
