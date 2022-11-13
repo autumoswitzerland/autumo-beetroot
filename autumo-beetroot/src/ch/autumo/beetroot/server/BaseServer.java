@@ -39,9 +39,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.diogonunes.jcolor.Ansi;
+import com.diogonunes.jcolor.Attribute;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
@@ -81,6 +85,10 @@ public abstract class BaseServer {
 	
 	private boolean hookShutdown = false;
 	
+	// colored text strings
+	protected String ansiServerName = null;
+	protected String ansiErrServerName = null;
+	
 	
 	static {
     	
@@ -101,7 +109,6 @@ public abstract class BaseServer {
 	public BaseServer(String params[]) {
 		
 		//------------------------------------------------------------------------------
-		
 		// Scheme:
 		//      beetroot.sh <operation>
 		// E.g  beetroot.sh start|stop
@@ -149,7 +156,9 @@ public abstract class BaseServer {
 		configMan = BeetRootConfigurationManager.getInstance();
 		// Must !
 		try {
-			configMan.initialize();
+			// A sub-classed server might already have been initializing the configuration manager
+			if (!configMan.isInitialized())
+				configMan.initialize();
 		} catch (Exception e) {
 			System.err.println("Configuration initialization failed !");
 			e.printStackTrace();
@@ -157,6 +166,9 @@ public abstract class BaseServer {
 		}
 
 		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
+		this.ansiServerName = Ansi.colorize("["+ name +"]", Attribute.CYAN_TEXT());
+		this.ansiErrServerName = Ansi.colorize("["+ name +"]", Attribute.BRIGHT_RED_TEXT());
+		
 		
 		//------------------------------------------------------------------------------
 		
@@ -187,12 +199,12 @@ public abstract class BaseServer {
 			
 			if (portAdminServer == -1) {
 				LOG.error("Admin server port not specified!");
-				System.err.println("["+ name +"] Admin server port not specified!");
+				System.err.println(this.ansiErrServerName + " Admin server port not specified!");
 				Utils.fatalExit();
 			}
 		} catch (Exception e) {
 			LOG.error("Admin server port has an invalid value: '" + v + "' !", e);
-			System.err.println("["+ name +"] Admin server port has an invalid value: '" + v + "' !");
+			System.err.println(this.ansiErrServerName + " Admin server port has an invalid value: '" + v + "' !");
 			Utils.fatalExit();
 		}
 		
@@ -202,7 +214,7 @@ public abstract class BaseServer {
 			
 		} catch (Exception e) {
 			LOG.error("Web server port has an invalid value: '" + v + "'!", e);
-			System.err.println("["+ name +"] Web server port has an invalid value: '" + v + "'!");
+			System.err.println(this.ansiErrServerName + " Web server port has an invalid value: '" + v + "'!");
 			Utils.fatalExit();
 		}
 		
@@ -221,11 +233,11 @@ public abstract class BaseServer {
 				);
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
-			System.err.println("["+ name +"] Couldn't decrypt DB password!");
+			System.err.println(this.ansiErrServerName + " Couldn't decrypt DB password!");
 			Utils.fatalExit();
 		} catch (Exception e) {
 			LOG.error("Couldn't create DB manager!", e);
-			System.err.println("["+ name +"] Couldn't create DB manager!");
+			System.err.println(this.ansiErrServerName + " Couldn't create DB manager!");
 			Utils.fatalExit();
 		}
 
@@ -262,7 +274,7 @@ public abstract class BaseServer {
 			else
 				LoggingFactory.getInstance().initialize(rootPath + "cfg/logging.xml");
 		} catch (Exception e) {
-			System.err.println("["+ name +"] Logging configuration initialization failed!");
+			System.err.println(this.ansiErrServerName + " Logging configuration initialization failed!");
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
@@ -308,7 +320,7 @@ public abstract class BaseServer {
 		
 		LOG.info("Server starting...");
 		if (LOG.isErrorEnabled())
-			System.out.println("["+ name +"] Server starting...");
+			System.out.println(this.ansiServerName + " Server starting...");
 		
 		// Start web server
 		if (startWebServer) {
@@ -316,14 +328,14 @@ public abstract class BaseServer {
 				
 				LOG.info("Starting internal web server...");
 				if (LOG.isErrorEnabled())
-					System.out.println("["+ name +"] Starting internal web server...");
+					System.out.println(this.ansiServerName + " Starting internal web server...");
 				
 				try {
 					Class.forName("javax.servlet.ServletOutputStream");
 				} catch (ClassNotFoundException e1) {
 					LOG.error("Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
-					System.err.println("["+ name +"] Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
-					System.err.println("["+ name +"] Shutting down!");
+					System.err.println(this.ansiErrServerName + " Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
+					System.err.println(this.ansiErrServerName + " Shutting down!");
 					Utils.fatalExit();
 				}
 				
@@ -358,14 +370,14 @@ public abstract class BaseServer {
 					
 				if (LOG.isErrorEnabled())
 					if (https)
-						System.out.println("["+ name +"] HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
+						System.out.println(this.ansiServerName + " HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
 					else
-						System.out.println("["+ name +"] HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
+						System.out.println(this.ansiServerName + " HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
 				
 			} catch (Exception e) {
 	
 				LOG.error("Cannot start web-server on port "+portWebServer+" - Shutting down!", e);
-				System.err.println("["+ name +"] Cannot start web-server on port "+portWebServer+" - Shutting down!");
+				System.err.println(this.ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Shutting down!");
 				Utils.fatalExit();
 			}
 		}
@@ -379,13 +391,13 @@ public abstract class BaseServer {
 		
 		LOG.info("Admin listener started on port "+portAdminServer+".");
 		if (LOG.isErrorEnabled())
-			System.out.println("["+ name +"] Admin listener started on port "+portAdminServer+".");
+			System.out.println(this.ansiServerName + " Admin listener started on port "+portAdminServer+".");
 
 		this.afterStart();
 		
 		LOG.info("Server started.");
 		if (LOG.isErrorEnabled())
-			System.out.println("["+ name +"] Server started.");
+			System.out.println(this.ansiServerName + " Server started.");
 	}
 
 	/**
@@ -399,20 +411,20 @@ public abstract class BaseServer {
 			
 			LOG.info("Stopping internal web server...");
 			if (LOG.isErrorEnabled())
-				System.out.println("["+ name +"] Stopping internal web server...");
+				System.out.println(this.ansiServerName + " Stopping internal web server...");
 
 			webServer.stop();
 			
 			LOG.info("Internal web server stopped.");
 			if (LOG.isErrorEnabled())
-				System.out.println("["+ name +"] Internal web server stopped.");
+				System.out.println(this.ansiServerName + " Internal web server stopped.");
 		}
 
 		this.afterStop();
 		
 		LOG.info(name + " server stopped.");
 		if (LOG.isErrorEnabled())
-			System.out.println("["+ name +"] Server stopped.");
+			System.out.println(this.ansiServerName + " Server stopped.");
 	}
 
 	/**
@@ -434,7 +446,7 @@ public abstract class BaseServer {
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("");
-						System.out.println("["+ name +"] [CTRL-C] signal received! Shutting down...");
+						System.out.println(BaseServer.this.ansiServerName + " " + Ansi.colorize("[CTRL-C]", Attribute.YELLOW_TEXT()) + " signal received! Shutting down...");
 					}
 					
 					BaseServer.this.serverStop = true;
@@ -529,7 +541,7 @@ public abstract class BaseServer {
 					
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
-				System.err.println("["+ name +"] Admin server listener cannot be created on port '" + this.listenerPort + "'!");
+				System.err.println(BaseServer.this.ansiErrServerName + " Admin server listener cannot be created on port '" + this.listenerPort + "'!");
 				Utils.fatalExit();
 			}
 		}
@@ -657,7 +669,7 @@ public abstract class BaseServer {
 				LOG.info("[STOP] signal received! Shutting down...");
 				if (LOG.isErrorEnabled()) {
 					System.out.println("");
-					System.out.println("["+ name +"] [STOP] signal received! Shutting down...");
+					System.out.println(BaseServer.this.ansiServerName + " " + Ansi.colorize("[STOP]", Attribute.RED_TEXT()) + " signal received! Shutting down...");
 				}
 				
 				// only escape of this loop
@@ -679,7 +691,7 @@ public abstract class BaseServer {
 			} catch (IOException e) {
 	        	
 				LOG.error("Admin server client response failed! We recommend to restart the server!", e);
-				System.err.println("["+ name +"] Admin server client response failed! We recommend to restart the server!");
+				System.err.println(BaseServer.this.ansiErrServerName + " Admin server client response failed! We recommend to restart the server!");
 				
 	        } finally {
 	        	
@@ -697,27 +709,30 @@ public abstract class BaseServer {
 	 * Help class for shell script.
 	 */
 	protected static final class Help {
-		
+		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
+		private static final String TITLE = Ansi.colorize("beetRoot Server" + Constants.APP_VERSION, Attribute.CYAN_TEXT());
+		private static final String JAVA  = Ansi.colorize("java", Attribute.BRIGHT_GREEN_TEXT());
+		private static final String USAGE = Ansi.colorize("beetroot."+SHELL_EXT+" start|stop", Attribute.YELLOW_TEXT());
 		public static final String TEXT =
 				"" 																						+ Utils.LINE_SEPARATOR +
 				"" 																						+ Utils.LINE_SEPARATOR +
-				"beetRoot Server" + Constants.APP_VERSION 												+ Utils.LINE_SEPARATOR +
+				TITLE									 												+ Utils.LINE_SEPARATOR +
 				"---------------------" 																+ Utils.LINE_SEPARATOR +
     			"Usage:"																				+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"  Here's a detailed usage of the java-process, but you should use the server-script" 	+ Utils.LINE_SEPARATOR +
     			"  in the root-directory, which takes the argument 'start' or 'stop'."					+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    beetroot.sh start|stop"				 											+ Utils.LINE_SEPARATOR +
+    			"    " + USAGE								 											+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"  Without script - the Java processes:" 												+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    java -DROOTPATH=\"<root-path>\" \\"												+ Utils.LINE_SEPARATOR +
+    			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ Utils.LINE_SEPARATOR +
     			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer start|stop"		+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"      or" 																				+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    java -DROOTPATH=\"<root-path>\" \\"												+ Utils.LINE_SEPARATOR +
+    			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ Utils.LINE_SEPARATOR +
     			"         -Dlog4j.configuration=file:<log-cfg-path>/server-logging.cfg \\"		 		+ Utils.LINE_SEPARATOR +
     			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer start|stop"		+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
@@ -732,8 +747,8 @@ public abstract class BaseServer {
     			"  or" 																					+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    beetroot.sh -help" 																+ Utils.LINE_SEPARATOR +
-    			"    beetroot.sh -h" 																	+ Utils.LINE_SEPARATOR +
+    			"    beetroot."+SHELL_EXT+" -help" 														+ Utils.LINE_SEPARATOR +
+    			"    beetroot."+SHELL_EXT+" -h" 														+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"";    	
 	}

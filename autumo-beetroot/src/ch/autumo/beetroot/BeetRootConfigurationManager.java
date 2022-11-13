@@ -79,7 +79,7 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
-	 * Get config manager.
+	 * Get configuration manager.
 	 * 
 	 * @return manager
 	 */
@@ -92,12 +92,12 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
-	 * Throws a runtime exception if this config manager 
-	 * hasn't been initialized yet!
+	 * Has this configuration manager been initialized?
+	 *  
+	 * @return true if so, otherwise false
 	 */
-	public static void isInitialized() {
-		if (manager == null)
-			throw new RuntimeException("Configuration manager must be first initialized before this code!");
+	public boolean isInitialized() {
+		return isInitialized;
 	}
 	
 	/**
@@ -152,7 +152,6 @@ public class BeetRootConfigurationManager {
 	private synchronized void initializeWithFullPath(String configFilePath) throws Exception {
 		
 		if (isInitialized) {
-			
     		LOG.warn("WARNING: Initialisation of configuration manager is called more than once!");
     		return;
 		}

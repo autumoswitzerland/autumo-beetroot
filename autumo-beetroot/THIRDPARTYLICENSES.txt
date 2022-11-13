@@ -90,6 +90,10 @@ with third parties: All licenses are covered by the license for this product (se
 	License:	MIT License
 	Link:		https://github.com/twilio/twilio-java/blob/main/LICENSE
 
+-	Library:	JColor - 2011 Diogo Nunes
+	License:	MIT License
+	Link:		https://github.com/dialex/JColor/blob/main/LICENSE
+
 -	Library:	H2 Database Engine
 	Licenses:	EPL 1.0 (Eclipse Public License) or
 				MPL 2.0 (Mozilla Public License Version 2.0)
