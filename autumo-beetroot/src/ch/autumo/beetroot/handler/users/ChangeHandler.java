@@ -42,12 +42,12 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
-import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Default login handler.

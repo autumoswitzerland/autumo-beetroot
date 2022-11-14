@@ -44,5 +44,5 @@ CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 #
 java \
 	-cp "${CLASSPATH}" \
-	ch.autumo.beetroot.PWEncoder $*
+	ch.autumo.beetroot.utils.security.PWEncoder $*
 

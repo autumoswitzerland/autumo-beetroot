@@ -48,7 +48,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Default handler for 'web/html/<entity>/add.html' templates.

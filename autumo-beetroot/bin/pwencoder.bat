@@ -23,5 +23,5 @@ set CLASSPATH=%ROOT%/lib/*
 REM 
 REM  Encode
 REM 
-java -DROOTPATH="%ROOT%" -classpath "%CLASSPATH%" ch.autumo.beetroot.PWEncoder %*
+java -DROOTPATH="%ROOT%" -classpath "%CLASSPATH%" ch.autumo.beetroot.utils.security.PWEncoder %*
 

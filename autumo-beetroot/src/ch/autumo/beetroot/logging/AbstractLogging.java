@@ -30,7 +30,7 @@
  */
 package ch.autumo.beetroot.logging;
 
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Abstract logging class.

@@ -16,9 +16,9 @@ package ch.autumo.beetroot.handler.users;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.handler.NoContentAndConfigHandler;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Settings handler.

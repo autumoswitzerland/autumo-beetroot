@@ -47,12 +47,12 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootWebServer;
-import ch.autumo.beetroot.Colors;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.SecureApplicationHolder;
-import ch.autumo.beetroot.Utils;
-import ch.autumo.beetroot.UtilsException;
 import ch.autumo.beetroot.logging.LoggingFactory;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Colors;
+import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.UtilsException;
 
 /**
  * Base server.

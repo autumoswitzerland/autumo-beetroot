@@ -35,8 +35,8 @@ import java.util.Map;
 
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Users add handler. 

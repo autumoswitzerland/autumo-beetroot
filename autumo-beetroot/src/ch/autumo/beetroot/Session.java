@@ -41,6 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
 
+import ch.autumo.beetroot.utils.GUIDGenerator;
+
 /**
  * User session.
  */

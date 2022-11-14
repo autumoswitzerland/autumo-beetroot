@@ -28,10 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.utils;
 
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
+
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 
 /**
  * ANSI Colors.

@@ -43,6 +43,9 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.autumo.beetroot.security.SecureApplication;
+import ch.autumo.beetroot.utils.Utils;
+
 
 
 /**

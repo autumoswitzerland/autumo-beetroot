@@ -51,9 +51,9 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
-import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Abstract mailer class.

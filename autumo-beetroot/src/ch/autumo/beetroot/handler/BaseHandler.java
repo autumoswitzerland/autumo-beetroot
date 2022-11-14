@@ -73,13 +73,13 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
-import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Utils;
 import jakarta.activation.MimeType;
 
 /**

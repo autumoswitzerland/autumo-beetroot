@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
-import ch.autumo.beetroot.SecureApplicationHolder;
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * PLANT - beetRoot CRUD Generator.

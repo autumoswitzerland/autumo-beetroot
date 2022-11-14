@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Default file download handler for 'web/html/files/view.html' templates.

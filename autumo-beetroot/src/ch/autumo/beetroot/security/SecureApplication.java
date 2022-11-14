@@ -28,45 +28,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
-
-import java.io.IOException;
+package ch.autumo.beetroot.security;
 
 /**
- *
- * Utils exception.
- *
- */
-public class UtilsException extends IOException {
+*
+* Secure application to provide a seed.
+*/
+public interface SecureApplication {
 
-	private static final long serialVersionUID = 1997384039883172508L;
-	
-	private int code;
-	private String rawMessage;
-
-	public UtilsException(String message) {
-		super(message);
-	}
-
-	public UtilsException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public UtilsException(String message, String rawMessage) {
-		super(message);
-		this.rawMessage = rawMessage;
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public String getRawMessage() {
-		return rawMessage;
-	}
-
-	public void setRawMessage(String rawMessage) {
-		this.rawMessage = rawMessage;
-	}
+	/**
+	 * Returns a unique security key, which is different for every app.
+	 * @return sec key
+	 */
+	public String getUniqueSecurityKey();
 	
 }

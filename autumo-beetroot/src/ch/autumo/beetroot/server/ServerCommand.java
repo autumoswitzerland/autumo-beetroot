@@ -32,8 +32,8 @@ package ch.autumo.beetroot.server;
 
 import java.io.IOException;
 
-import ch.autumo.beetroot.SecureApplicationHolder;
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Secure server command.

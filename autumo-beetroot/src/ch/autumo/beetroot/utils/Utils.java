@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,6 +82,12 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Session;
+import ch.autumo.beetroot.security.SecureApplication;
 import de.taimos.totp.TOTP;
 
 

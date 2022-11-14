@@ -28,9 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.utils.security;
 
-
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.security.SecureApplication;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.UtilsException;
 
 /**
  * Encoder for passwords.

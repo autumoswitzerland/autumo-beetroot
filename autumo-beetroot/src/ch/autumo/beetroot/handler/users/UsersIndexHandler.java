@@ -36,8 +36,8 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Users index handler. 

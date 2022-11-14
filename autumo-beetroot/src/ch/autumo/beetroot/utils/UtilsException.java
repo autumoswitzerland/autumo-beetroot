@@ -28,40 +28,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.utils;
+
+import java.io.IOException;
 
 /**
- * Router interface.
+ *
+ * Utils exception.
+ *
  */
-public interface Router {
+public class UtilsException extends IOException {
 
-	/**
-	 * Get not implemented handler class.
-	 * return not implemented handler class
-	 */
-	Class<?> getNotImplementedHandler();
+	private static final long serialVersionUID = 1997384039883172508L;
+	
+	private int code;
+	private String rawMessage;
 
-	/**
-	 * Get not found handler class.
-	 * return not found handler class
-	 */
-	Class<?> getNotFoundHandler();
+	public UtilsException(String message) {
+		super(message);
+	}
 
-	/**
-	 * Return the default routes. Default routes are the routes
-	 * for the first page that should be shown, if someone
-	 * enters URLs suc as '/' or '/index.html', etc.
-	 * They should have have priority less than the default
-	 * priority 100.
-	 * 
-	 * @return default routes.
-	 */
-	Route[] getDefaultRoutes();
+	public UtilsException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-	/**
-	 * Get web application routes.
-	 * @return routes
-	 */
-	Route[] getRoutes();
+	public UtilsException(String message, String rawMessage) {
+		super(message);
+		this.rawMessage = rawMessage;
+	}
 
+	public int getCode() {
+		return code;
+	}
+
+	public String getRawMessage() {
+		return rawMessage;
+	}
+
+	public void setRawMessage(String rawMessage) {
+		this.rawMessage = rawMessage;
+	}
+	
 }

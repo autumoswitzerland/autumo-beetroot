@@ -39,7 +39,7 @@ import com.twilio.type.PhoneNumber;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.SecureApplicationHolder;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
 
 /**
  * Twilio SMS Messenger

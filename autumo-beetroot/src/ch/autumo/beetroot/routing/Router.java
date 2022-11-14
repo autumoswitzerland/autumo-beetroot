@@ -28,59 +28,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package ch.autumo.beetroot.routing;
 
 /**
- * Sec App Holder.
+ * Router interface.
  */
-public class SecureApplicationHolder {
-
-	protected final static Logger LOG = LoggerFactory.getLogger(SecureApplicationHolder.class.getName());
-	
-	private static SecureApplicationHolder holder = null;
-	private static final SecApp SEC_APP= new SecApp();
-	
-	private static String secKey = null; 
-	
-	private SecureApplicationHolder() {
-		
-		secKey = BeetRootConfigurationManager.getInstance().getString(Constants.SEC_KEY_SEED);
-		
-		if (secKey == null || secKey.length() == 0)
-			throw new SecurityException("No security key seed has been defined! See configurations!");
-	}
+public interface Router {
 
 	/**
-	 * Get sec app holder.
+	 * Get not implemented handler class.
+	 * return not implemented handler class
+	 */
+	Class<?> getNotImplementedHandler();
+
+	/**
+	 * Get not found handler class.
+	 * return not found handler class
+	 */
+	Class<?> getNotFoundHandler();
+
+	/**
+	 * Return the default routes. Default routes are the routes
+	 * for the first page that should be shown, if someone
+	 * enters URLs suc as '/' or '/index.html', etc.
+	 * They should have have priority less than the default
+	 * priority 100.
 	 * 
-	 * @return sec app holder
+	 * @return default routes.
 	 */
-	public static SecureApplicationHolder getInstance() {
-		
-		if (holder == null) {
-			holder = new SecureApplicationHolder();
-		}
-		return holder;
-	}
+	Route[] getDefaultRoutes();
 
 	/**
-	 * Get Sec App.
+	 * Get web application routes.
+	 * @return routes
 	 */
-	public SecureApplication getSecApp() {
-		return SEC_APP;
-	}
+	Route[] getRoutes();
 
-	/**
-	 * Sec App.
-	 */
-	private static final class SecApp implements SecureApplication {
-		@Override
-		public String getUniqueSecurityKey() {
-			return secKey;
-		}
-	}
-	
 }

@@ -47,7 +47,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import ch.autumo.beetroot.BeetRootDatabaseManager;
-import ch.autumo.beetroot.Utils;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Fertilizer for plant.

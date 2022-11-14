@@ -28,18 +28,62 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.security;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.Constants;
 
 /**
-*
-* Secure application to provide a seed.
-*/
-public interface SecureApplication {
+ * Sec App Holder.
+ */
+public class SecureApplicationHolder {
+
+	protected final static Logger LOG = LoggerFactory.getLogger(SecureApplicationHolder.class.getName());
+	
+	private static SecureApplicationHolder holder = null;
+	private static final SecApp SEC_APP= new SecApp();
+	
+	private static String secKey = null; 
+	
+	private SecureApplicationHolder() {
+		
+		secKey = BeetRootConfigurationManager.getInstance().getString(Constants.SEC_KEY_SEED);
+		
+		if (secKey == null || secKey.length() == 0)
+			throw new SecurityException("No security key seed has been defined! See configurations!");
+	}
 
 	/**
-	 * Returns a unique security key, which is different for every app.
-	 * @return sec key
+	 * Get sec app holder.
+	 * 
+	 * @return sec app holder
 	 */
-	public String getUniqueSecurityKey();
+	public static SecureApplicationHolder getInstance() {
+		
+		if (holder == null) {
+			holder = new SecureApplicationHolder();
+		}
+		return holder;
+	}
+
+	/**
+	 * Get Sec App.
+	 */
+	public SecureApplication getSecApp() {
+		return SEC_APP;
+	}
+
+	/**
+	 * Sec App.
+	 */
+	private static final class SecApp implements SecureApplication {
+		@Override
+		public String getUniqueSecurityKey() {
+			return secKey;
+		}
+	}
 	
 }

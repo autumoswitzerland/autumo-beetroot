@@ -43,13 +43,13 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
-import ch.autumo.beetroot.GUIDGenerator;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.mailing.MailerFactory;
+import ch.autumo.beetroot.utils.GUIDGenerator;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Default login handler.

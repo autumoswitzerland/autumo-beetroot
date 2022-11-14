@@ -41,9 +41,9 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
-import ch.autumo.beetroot.Utils;
-import ch.autumo.beetroot.UtilsException;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
+import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.UtilsException;
 
 /**
  * Users view handler.
