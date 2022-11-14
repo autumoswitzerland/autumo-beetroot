@@ -76,8 +76,6 @@ import org.jsoup.parser.Tag;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 
-import com.diogonunes.jcolor.Ansi;
-import com.diogonunes.jcolor.Attribute;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -101,12 +99,6 @@ public class Utils {
 	public static List<String> mimeOctetList;
 	/** Allowed archive mime types. */
 	public static List<String> mimeArchiveList;
-
-	/** show ANSI colors? */
-	private static boolean showAnsiColors = false;
-	static {
-		showAnsiColors = BeetRootConfigurationManager.getInstance().getYesOrNo("console_colors");
-	}
 	
 	/**
 	 * OS.
@@ -1154,71 +1146,6 @@ public class Utils {
 			default: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
 		}
 	}	
-	
-	/**
-	 * Cyan colored string.
-	 * 
-	 * @param text text
-	 * @return colored string
-	 */
-	public static String cyan(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.CYAN_TEXT());
-		else
-			return text;
-	}
-
-	/**
-	 * Green colored string.
-	 * 
-	 * @param text text
-	 * @return colored string
-	 */
-	public static String green(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.BRIGHT_GREEN_TEXT());
-		else
-			return text;
-	}
-
-	/**
-	 * Yellow colored string.
-	 * 
-	 * @param text text
-	 * @return colored string
-	 */
-	public static String yellow(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.YELLOW_TEXT());
-		else
-			return text;
-	}
-	
-	/**
-	 * Red colored string.
-	 * 
-	 * @param text text
-	 * @return colored string
-	 */
-	public static String red(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.BRIGHT_RED_TEXT());
-		else
-			return text;
-	}
-
-	/**
-	 * Dark-Red colored string.
-	 * 
-	 * @param text text
-	 * @return colored string
-	 */
-	public static String darkRed(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.RED_TEXT());
-		else
-			return text;
-	}
 
 	/**
 	 * Bytes 2 Hex.

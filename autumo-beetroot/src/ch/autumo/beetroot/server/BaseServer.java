@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootWebServer;
+import ch.autumo.beetroot.Colors;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.SecureApplicationHolder;
 import ch.autumo.beetroot.Utils;
@@ -163,8 +164,8 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 
 		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
-		this.ansiServerName = Utils.cyan("["+ name +"]");
-		this.ansiErrServerName = Utils.red("["+ name +"]");
+		this.ansiServerName = Colors.cyan("["+ name +"]");
+		this.ansiErrServerName = Colors.red("["+ name +"]");
 		
 		
 		//------------------------------------------------------------------------------
@@ -443,7 +444,7 @@ public abstract class BaseServer {
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("");
-						System.out.println(BaseServer.this.ansiServerName + " " + Utils.yellow("[CTRL-C]") + " signal received! Shutting down...");
+						System.out.println(BaseServer.this.ansiServerName + " " + Colors.yellow("[CTRL-C]") + " signal received! Shutting down...");
 					}
 					
 					BaseServer.this.serverStop = true;
@@ -666,7 +667,7 @@ public abstract class BaseServer {
 				LOG.info("[STOP] signal received! Shutting down...");
 				if (LOG.isErrorEnabled()) {
 					System.out.println("");
-					System.out.println(BaseServer.this.ansiServerName + " " + Utils.darkRed("[STOP]") + " signal received! Shutting down...");
+					System.out.println(BaseServer.this.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
 				}
 				
 				// only escape of this loop
@@ -707,11 +708,11 @@ public abstract class BaseServer {
 	 */
 	protected static final class Help {
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
-		private static final String TITLE = Utils.cyan("beetRoot Server");
-		private static final String JAVA  = Utils.green("java");
-		private static final String USAGE = Utils.yellow("beetroot."+SHELL_EXT+" start|stop");
-		private static final String USAGE0 = Utils.yellow("beetroot."+SHELL_EXT+" -help");
-		private static final String USAGE1 = Utils.yellow("beetroot."+SHELL_EXT+" -h");
+		private static final String TITLE = Colors.cyan("beetRoot Server");
+		private static final String JAVA  = Colors.green("java");
+		private static final String USAGE = Colors.yellow("beetroot."+SHELL_EXT+" start|stop");
+		private static final String USAGE0 = Colors.yellow("beetroot."+SHELL_EXT+" -help");
+		private static final String USAGE1 = Colors.yellow("beetroot."+SHELL_EXT+" -h");
 		public static final String TEXT =
 				"" 																						+ Utils.LINE_SEPARATOR +
 				"" 																						+ Utils.LINE_SEPARATOR +
