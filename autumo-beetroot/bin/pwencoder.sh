@@ -14,6 +14,7 @@
 # ROOT path
 #
 ROOT="$(dirname "`pwd`")"
+cd ..
 
 #
 # Base classpath
