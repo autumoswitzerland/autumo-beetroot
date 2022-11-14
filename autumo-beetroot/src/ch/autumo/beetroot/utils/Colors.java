@@ -54,16 +54,26 @@ public final class Colors {
 	}
 	
 	/**
+	 * Colorize text.
+	 * 
+	 * @param text text to colorize
+	 * @param attribute color attribute
+	 * @return
+	 */
+	public static String foregroundColorize(String text, Attribute attribute) {
+		if (showAnsiColors)
+			return Ansi.colorize(text, attribute);
+		else 
+			return text;
+	}	
+	/**
 	 * Cyan colored string.
 	 * 
 	 * @param text text
 	 * @return colored string
 	 */
 	public static String cyan(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.CYAN_TEXT());
-		else 
-			return text;
+		return foregroundColorize(text, Attribute.CYAN_TEXT());
 	}
 
 	/**
@@ -73,10 +83,7 @@ public final class Colors {
 	 * @return colored string
 	 */
 	public static String green(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.BRIGHT_GREEN_TEXT());
-		else 
-			return text;
+		return foregroundColorize(text, Attribute.BRIGHT_GREEN_TEXT());
 	}
 
 	/**
@@ -86,10 +93,7 @@ public final class Colors {
 	 * @return colored string
 	 */
 	public static String yellow(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.YELLOW_TEXT());
-		else 
-			return text;
+		return foregroundColorize(text, Attribute.YELLOW_TEXT());
 	}
 	
 	/**
@@ -99,10 +103,7 @@ public final class Colors {
 	 * @return colored string
 	 */
 	public static String red(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.BRIGHT_RED_TEXT());
-		else 
-			return text;
+		return foregroundColorize(text, Attribute.BRIGHT_RED_TEXT());
 	}
 
 	/**
@@ -112,10 +113,7 @@ public final class Colors {
 	 * @return colored string
 	 */
 	public static String darkRed(String text) {
-		if (showAnsiColors)
-			return Ansi.colorize(text, Attribute.RED_TEXT());
-		else 
-			return text;
+		return foregroundColorize(text, Attribute.RED_TEXT());
 	}
 	
 }
