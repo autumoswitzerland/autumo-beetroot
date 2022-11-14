@@ -101,6 +101,12 @@ public class Utils {
 	public static List<String> mimeOctetList;
 	/** Allowed archive mime types. */
 	public static List<String> mimeArchiveList;
+
+	/** show ANSI colors? */
+	private static boolean showAnsiColors = false;
+	static {
+		showAnsiColors = BeetRootConfigurationManager.getInstance().getYesOrNo("console_colors");
+	}
 	
 	/**
 	 * OS.
@@ -1156,7 +1162,10 @@ public class Utils {
 	 * @return colored string
 	 */
 	public static String cyan(String text) {
-		return Ansi.colorize(text, Attribute.CYAN_TEXT());		
+		if (showAnsiColors)
+			return Ansi.colorize(text, Attribute.CYAN_TEXT());
+		else
+			return text;
 	}
 
 	/**
@@ -1166,7 +1175,10 @@ public class Utils {
 	 * @return colored string
 	 */
 	public static String green(String text) {
-		return Ansi.colorize(text, Attribute.BRIGHT_GREEN_TEXT());
+		if (showAnsiColors)
+			return Ansi.colorize(text, Attribute.BRIGHT_GREEN_TEXT());
+		else
+			return text;
 	}
 
 	/**
@@ -1176,7 +1188,10 @@ public class Utils {
 	 * @return colored string
 	 */
 	public static String yellow(String text) {
-		return Ansi.colorize(text, Attribute.YELLOW_TEXT());
+		if (showAnsiColors)
+			return Ansi.colorize(text, Attribute.YELLOW_TEXT());
+		else
+			return text;
 	}
 	
 	/**
@@ -1186,7 +1201,10 @@ public class Utils {
 	 * @return colored string
 	 */
 	public static String red(String text) {
-		return Ansi.colorize(text, Attribute.BRIGHT_RED_TEXT());
+		if (showAnsiColors)
+			return Ansi.colorize(text, Attribute.BRIGHT_RED_TEXT());
+		else
+			return text;
 	}
 
 	/**
@@ -1196,7 +1214,10 @@ public class Utils {
 	 * @return colored string
 	 */
 	public static String darkRed(String text) {
-		return Ansi.colorize(text, Attribute.RED_TEXT());
+		if (showAnsiColors)
+			return Ansi.colorize(text, Attribute.RED_TEXT());
+		else
+			return text;
 	}
 
 	/**

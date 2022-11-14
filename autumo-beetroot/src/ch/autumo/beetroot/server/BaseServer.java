@@ -105,6 +105,19 @@ public abstract class BaseServer {
 	 */
 	public BaseServer(String params[]) {
 		
+		// Read general config
+		configMan = BeetRootConfigurationManager.getInstance();
+		// Must !
+		try {
+			// A sub-classed server might already have been initializing the configuration manager
+			if (!configMan.isInitialized())
+				configMan.initialize();
+		} catch (Exception e) {
+			System.err.println("Configuration initialization failed !");
+			e.printStackTrace();
+			Utils.fatalExit();
+		}
+		
 		//------------------------------------------------------------------------------
 		// Scheme:
 		//      beetroot.sh <operation>
@@ -148,19 +161,6 @@ public abstract class BaseServer {
 		}		
 		
 		//------------------------------------------------------------------------------
-		
-		// Read general config
-		configMan = BeetRootConfigurationManager.getInstance();
-		// Must !
-		try {
-			// A sub-classed server might already have been initializing the configuration manager
-			if (!configMan.isInitialized())
-				configMan.initialize();
-		} catch (Exception e) {
-			System.err.println("Configuration initialization failed !");
-			e.printStackTrace();
-			Utils.fatalExit();
-		}
 
 		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
 		this.ansiServerName = Utils.cyan("["+ name +"]");
