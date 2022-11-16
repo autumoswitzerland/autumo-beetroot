@@ -30,9 +30,12 @@
  */
 package ch.autumo.beetroot.utils.security;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Utils;
 import ch.autumo.beetroot.utils.UtilsException;
 
@@ -105,16 +108,17 @@ public class PWEncoder {
 	}
 
     private static final class Help {
-    	
+		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
+		private static final String USAGEA = Colors.yellow("pwencoder."+SHELL_EXT+" \"<password to encode>\"");
+		private static final String USAGE0 = Colors.yellow("pwencoder.sh \"mySecretPass\"");
     	public static final String TEXT =
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
-				"beetRoot Password Encoder" 														+ Utils.LINE_SEPARATOR +
+				Colors.cyan("beetRoot Password Encoder")											+ Utils.LINE_SEPARATOR +
 				"-------------------------"	 														+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Help:" 																			+ Utils.LINE_SEPARATOR +
-				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"In the beetRoot configuration file and database, passwords can be encoded." 		+ Utils.LINE_SEPARATOR +
 				"This tool does the enconding. Keep the passwords in a password store, this" 		+ Utils.LINE_SEPARATOR +
@@ -123,8 +127,7 @@ public class PWEncoder {
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Usage:" 																			+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
-				"" 																					+ Utils.LINE_SEPARATOR +
-				"  pwencoder.sh|.bat \"<password to encode>\""	 									+ Utils.LINE_SEPARATOR +
+				"  " + USAGEA									 									+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Important notes:" 																	+ Utils.LINE_SEPARATOR +
@@ -138,7 +141,7 @@ public class PWEncoder {
 				"         not be able to decode the correct values!" 								+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"         Example:" 																+ Utils.LINE_SEPARATOR +
-				"         pwencoder.sh \"mySecretPass\"" 											+ Utils.LINE_SEPARATOR +
+				"         " + USAGE0					 											+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR;
     }

@@ -51,6 +51,7 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Utils;
 
 /**
@@ -73,7 +74,7 @@ public class Plant {
 	
 	private String getDescription() {
 		final String all = CR + CR + getLine() + CR
-				+ " PLANT "+RELEASE+" - BeetRoot Generator for creating operable CRUD views" + CR
+				+ Colors.cyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
 				+ " (c) 2022 autumo GmbH";
 		return all;
@@ -145,7 +146,7 @@ public class Plant {
 
 			do {
 				System.out.println("");
-				System.out.println("Process another entity?: ");
+				System.out.println(Colors.yellow("Process another entity?") + ": ");
 				System.out.println("  [y] = Yes ");
 				System.out.println("  [n] = No ");
 				System.out.print(">");
@@ -178,7 +179,7 @@ public class Plant {
 						tableList.add(rs.getString(1));
 					rs.close();
 				} else {
-					System.out.println("NOTE:");
+					System.out.println(Colors.yellow("NOTE") + ":");
 					System.out.println("At this time CRUD generation is only possible with MySQL and MariaDB.");
 					System.out.println("We suggest setting up one of these databases for development and then");
 					System.out.println("using the generated templates and code for the target database.");
@@ -223,7 +224,7 @@ public class Plant {
 			// Shoe entity names
 			do {
 				System.out.println("");
-				System.out.println("Input entity name: ");
+				System.out.println(Colors.yellow("Input entity name") + ": ");
 				for (int j = 0; j < tableNames.length; j++) {
 					System.out.println("  ["+(j+1)+"] = "+tableNames[j]);
 				} 
@@ -265,7 +266,7 @@ public class Plant {
 				singleEntity = tableNames[d-1];
 				System.out.println("");
 				System.out.println("Generate CRUD templates and code for entity '" + singleEntity + "' (y/n, enter = y) ?): ");
-				System.out.println("NOTE: This will overwrite existing generated sources (HTML, java & columns.cfg)!");
+				System.out.println(Colors.yellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
 				System.out.print(">");
 	
 				String answer = br.readLine().trim();
@@ -278,7 +279,7 @@ public class Plant {
 				
 				System.out.println("");
 				System.out.println("Generate CRUD templates and code for ALL (!) entities (y/n, enter = y) ?): ");
-				System.out.println("NOTE: This will overwrite existing generated sources (HTML, java & columns.cfg)!");
+				System.out.println(Colors.yellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
 				System.out.print(">");
 				
 				String answer = br.readLine().trim();
@@ -328,7 +329,7 @@ public class Plant {
 		// ---- Router
     	
 		System.out.println("");
-		System.out.println("  Add the following lines to your beetRoot Router:\n");
+		System.out.println(Colors.yellow("  Add the following lines to your beetRoot Router:\n"));
 		System.out.println(
 				  "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/index\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
@@ -356,7 +357,7 @@ public class Plant {
 		try {
 			line = new DefaultParser().parse(makeOptions(), args);
 		} catch (ParseException exp) {
-			System.err.println("Couldn't read program argument. Reason: " + exp.getMessage());
+			System.err.println(Colors.red("Couldn't read program argument.") + " Reason: " + exp.getMessage());
 			usage();
 			Utils.invalidArgumentsExit();
 		}
@@ -374,7 +375,7 @@ public class Plant {
 					
 					this.execute();
 					
-					System.out.println("Entity '"+singleEntity+"' processed!");
+					System.out.println(Colors.green("Entity '"+singleEntity+"' processed!"));
 					System.out.println("");
 					
 				} else if (a == 10) {
@@ -383,7 +384,7 @@ public class Plant {
 					for (int i = 0; i < tableNames.length; i++) {
 						singleEntity = tableNames[i];
 						this.execute();
-						System.out.println("Entity '"+singleEntity+"' processed!");
+						System.out.println(Colors.green("Entity '"+singleEntity+"' processed!"));
 					}
 					System.out.println("");
 				}
@@ -394,12 +395,12 @@ public class Plant {
 			} while (this.readParameters(true) == 1);
 
 		} catch (IllegalArgumentException e) {
-			System.err.println("Uhh, something went wrong");
+			System.err.println(Colors.red("Uhh, something went wrong"));
 			e.printStackTrace();
 			//usage();
 			return -1;
 		} catch (Exception e) {
-			System.err.println("Uhh, something went wrong");
+			System.err.println(Colors.red("Uhh, something went wrong"));
 			e.printStackTrace();
 			return -1;
 		}
@@ -407,12 +408,12 @@ public class Plant {
 		System.out.println("");
 		this.printLine();
 		System.out.println("");
-		System.out.println("NOTE:");
+		System.out.println(Colors.yellow("NOTE")+":");
 		System.out.println("- Move generated code to own packages and HTML to the desired (language)");
 		System.out.println("  directories.");
 		System.out.println("- New generation has overwriten possible previous generated sources!");
 		System.out.println("");
-		System.out.println("TODO's:");
+		System.out.println(Colors.yellow("TODO's")+":");
 		System.out.println("- Add the routes above to your router!");
 		System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
 		System.out.println("  default value in the add handler that are not present in the GUI!");
