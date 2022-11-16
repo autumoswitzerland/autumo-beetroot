@@ -4,8 +4,8 @@
 package planted.beetroot.handler.##entitynameplural##;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.handler.HandlerResponse;
+import ch.autumo.beetroot.utils.Utils;
 
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 

@@ -81,7 +81,7 @@ public class Fertilizer {
 	public Fertilizer(String dbEntity, String resource, String outputBaseDir, String type) throws FertilizerException {
 		
 		this.dbEntity = dbEntity.toLowerCase().trim();
-		if (!dbEntity.endsWith("s")) {
+		if (!dbEntity.endsWith("s") && !dbEntity.endsWith("S")) {
 			throw new FertilizerException("Entity '"+dbEntity+"' doesn't end with a 's' letter!\n"
 					+ "database entities should be named for example:\n"
 					+ "users, tasks, properties, rooms, candies, etc.");

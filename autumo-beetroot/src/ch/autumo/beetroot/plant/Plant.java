@@ -48,9 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Utils;
 
@@ -118,13 +118,6 @@ public class Plant {
 			usage();
 			Utils.invalidArgumentsExit();
 		}
-		
-		
-		if (argsList.length == 1)
-			BeetRootConfigurationManager.getInstance().initialize(argsList[0]);
-		else
-			BeetRootConfigurationManager.getInstance().initialize();
-
         
 		// Are pw's in config encoded?
 		boolean pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
@@ -431,8 +424,13 @@ public class Plant {
 		return 0;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
+		if (args.length == 1)
+			BeetRootConfigurationManager.getInstance().initialize(args[0].trim());
+		else
+			BeetRootConfigurationManager.getInstance().initialize();
+		
 		final Plant generator = new Plant();
 		final int exit = generator.run(args);
 		System.exit(exit);

@@ -44,6 +44,14 @@ import ch.autumo.beetroot.utils.UtilsException;
  */
 public class PWEncoder {
 	
+	static {
+		try {
+			BeetRootConfigurationManager.getInstance().initialize();
+		} catch (Exception e) {
+			System.err.println("ERROR (Initialization): " + e.getMessage());
+		}		
+	}
+	
 	/**
 	 * Encoder.
 	 * 
@@ -67,8 +75,8 @@ public class PWEncoder {
 		try {
 			BeetRootConfigurationManager.getInstance().initialize();
 		} catch (Exception e) {
-			System.err.println("Couldn't initialize configuration 'cfg/beetroot.cfg' !");
-			System.err.println("ERROR: " + e.getMessage());
+			System.err.println(Colors.red("Couldn't initialize configuration 'cfg/beetroot.cfg' !"));
+			System.err.println(Colors.red("ERROR") + ": " + e.getMessage());
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
@@ -92,13 +100,13 @@ public class PWEncoder {
 			encoded = Utils.encode(data, app);
 				
 		} catch (UtilsException e) {
-			System.err.println("Couldn't encode!");
-			System.err.println("ERROR: " + e.getMessage());
+			System.err.println(Colors.red("Couldn't encode!"));
+			System.err.println(Colors.red("Error")+": " + e.getMessage());
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
 		
-		System.out.println(encoded);
+		System.out.println(Colors.green(encoded));
 		System.out.println("");
 	}
 	
