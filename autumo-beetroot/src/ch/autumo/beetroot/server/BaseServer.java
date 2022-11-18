@@ -221,14 +221,34 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
-		// DB conn manager
+		/** this is an undocumented configuration key: it allows to use unsupported databases! */
+		final String dbDriver = configMan.getStringNoWarn("db_driver");
+		
+		// DB manager initialization
 		try {
-			BeetRootDatabaseManager.getInstance().initialize(
-					configMan.getString("db_url"),
-					configMan.getString("db_user"),
-					pwEncoded ? 
-							configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
-				);
+			
+			if (dbDriver != null && dbDriver.length() != 0) {
+				
+				// initialize unsupported DB
+				BeetRootDatabaseManager.getInstance().initializeUnsupported(
+						dbDriver,
+						configMan.getString("db_url"),
+						configMan.getString("db_user"),
+						pwEncoded ? 
+								configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
+					);
+				
+			} else {
+
+				// supported databases
+				BeetRootDatabaseManager.getInstance().initialize(
+						configMan.getString("db_url"),
+						configMan.getString("db_user"),
+						pwEncoded ? 
+								configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
+					);
+			}
+			
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
 			System.err.println(this.ansiErrServerName + " Couldn't decrypt DB password!");

@@ -60,6 +60,8 @@ public class BeetRootDatabaseManager {
 	private boolean isOracleDb = false;
 	private boolean isPostgreDb = false;
 	
+	private boolean isUnsupported = false;
+	
 	/**
 	 * Access DB manager.
 	 * 
@@ -116,6 +118,30 @@ public class BeetRootDatabaseManager {
 	}
 	
 	/**
+	 * Initialize the DB manager with an officially unsupported database.
+	 * This can work, but only the supported databases have been tested.
+	 * 
+	 * @param driverClass driver class
+	 * @param url JDBC URL
+	 * @param user user
+	 * @param pass password
+	 * @throws Exception
+	 */
+	public void initializeUnsupported(String driverClass, String url, String user, String pass) throws Exception {
+	
+		// unsupported
+		isUnsupported = true;
+		
+		driver = driverClass;
+		
+		Class.forName(driver);	
+		
+		this.url = url;
+		this.user = user;
+		this.pass = pass;
+	}
+	
+	/**
 	 * Get an new DB connection
 	 * @return DB connection
 	 * 
@@ -146,6 +172,10 @@ public class BeetRootDatabaseManager {
 		return isPostgreDb;
 	}
 
+	public boolean isUnsupported() {
+		return isUnsupported;
+	}
+	
 	/**
 	 * Rest users token.
 	 * @param dbId user id
