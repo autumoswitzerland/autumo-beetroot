@@ -31,7 +31,7 @@
 package ch.autumo.beetroot.server;
 
 /**
- * Stop answer - only server-side internally used as a marker class.
+ * Health answer - only server-side internally used as a marker class.
  */
-public class StopAnswer extends ClientAnswer {
+public class HealthAnswer extends ClientAnswer {
 }

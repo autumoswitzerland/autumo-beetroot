@@ -122,7 +122,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 		// Scheme:
 		//      beetroot.sh <operation>
-		// E.g  beetroot.sh start|stop
+		// E.g  beetroot.sh start|stop|health
 		//------------------------------------------------------------------------------
     	
 		if (params.length == 0 || (params[0].equals("-help") || params[0].equals("-h"))) {
@@ -137,9 +137,9 @@ public abstract class BaseServer {
 		}
 
 		// check op
-		if (!(params[0].equalsIgnoreCase("start") || params[0].equalsIgnoreCase("stop"))) {
+		if (!(params[0].equalsIgnoreCase("start") || params[0].equalsIgnoreCase("stop") || params[0].equalsIgnoreCase("health"))) {
 			System.out.println(this.getHelpText());
-			System.out.println("Valid server operations are 'start' or 'stop'!");
+			System.out.println("Valid server operations are 'health', 'start' or 'stop'!");
 			System.out.println("");
 			Utils.invalidArgumentsExit();
 		}
@@ -266,7 +266,11 @@ public abstract class BaseServer {
 		// OPERATION
 		final String operation = params[0];
 		
-		if (operation.equalsIgnoreCase("start")) {
+		if (operation.equalsIgnoreCase("health")) {
+			
+			this.sendServerCommand(Communicator.HEALTH_COMMAND);
+			
+		} else if (operation.equalsIgnoreCase("start")) {
 			
 			this.startServer();
 			
@@ -276,7 +280,7 @@ public abstract class BaseServer {
 			
 		} else if (operation.equalsIgnoreCase("stop")) {
 			
-			this.sendStopServer();
+			this.sendServerCommand(Communicator.STOP_COMMAND);
 		}		
 	}
 	
@@ -481,14 +485,14 @@ public abstract class BaseServer {
 		};
 	}
 	
-	private void sendStopServer() {
+	private void sendServerCommand(String command) {
 		try {
-			Communicator.sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, Communicator.STOP_COMMAND));
+			Communicator.sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, command));
 		} catch (Exception e) {
-			LOG.error("Send STOP server command failed!", e);
+			LOG.error("Send "+command+" server command failed!", e);
 		}
 	}
-    
+	
 	/**
 	 * This method is called when a server command has been received.
 	 * At this point security checks have been made.
@@ -501,6 +505,11 @@ public abstract class BaseServer {
 		// shutdown
 		if (command.getCommand().equals(Communicator.STOP_COMMAND)) {
 			return new StopAnswer();
+		}
+
+		// shutdown
+		if (command.getCommand().equals(Communicator.HEALTH_COMMAND)) {
+			return new HealthAnswer();
 		}
 		
 		// standard answer = OK
@@ -534,6 +543,27 @@ public abstract class BaseServer {
 	 */
 	protected abstract void afterStop();
 
+	/**
+	 * Prints out the health status of this server.
+	 * Overwrite if necessary.
+	 */
+	protected void printHealthStatus() {
+		
+		LOG.info("Server is running and healthy!");
+		LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): Started");
+		if (startWebServer)
+			LOG.info("* Web-Server (Port: " + this.portWebServer + "): Started");
+		
+		if (LOG.isErrorEnabled()) {
+			System.out.println("");
+			System.out.println("[" + this.name + "] Server is running and healthy!");
+			System.out.println("[" + this.name + "] * Admin-Interface (Port: " + this.portAdminServer + "): Started");
+			if (startWebServer)
+				System.out.println("[" + this.name + "] * Web-Server (Port: " + this.portWebServer + "): Started");
+		}
+	}
+	
+	
 	/**
 	 * Admin server listener for operation signals.
 	 */
@@ -654,11 +684,13 @@ public abstract class BaseServer {
 				return;
 	        }	
 			
+			
 			// Security checks:
 			// 0. invalid server command?
 			if (command == null) {
 				LOG.error("Server command: received command is too long, command is ignored!");
 				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket); //
 				return;
 			}
 			// 1. correct server name?
@@ -666,10 +698,11 @@ public abstract class BaseServer {
 			if (!serverName.equals(BaseServer.this.getServerName())) {
 				LOG.error("Server command: Wrong server name received, command is ignored!");
 				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket); //
 				return;
 			}
-			// -> not a good idea
 			/*
+			// -> not a good idea
 			// 2. sec-key
 			final String secKey = command.getSecKey();
 			if (!secKey.equals(SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey())) {
@@ -678,9 +711,22 @@ public abstract class BaseServer {
 				return;
 			}
 			*/
+
 			
 			// execute command
 			final ClientAnswer answer = BaseServer.this.processServerCommand(command);
+			
+			// Health status request?
+			if (answer instanceof HealthAnswer) {
+				LOG.info("[HEALTH] signal received, printing server's health state to console.");
+
+				// print info
+				BaseServer.this.printHealthStatus();
+				
+				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket); //
+				return;
+			}
 			
 			// shutdown received?
 			if (answer instanceof StopAnswer) {
@@ -694,6 +740,7 @@ public abstract class BaseServer {
 				BaseServer.this.serverStop = true;
 				
 				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket); //
 				Communicator.safeClose(serverSocket);
 	        	
 				return;
@@ -730,7 +777,7 @@ public abstract class BaseServer {
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
 		private static final String TITLE = Colors.cyan("beetRoot Server");
 		private static final String JAVA  = Colors.green("java");
-		private static final String USAGE = Colors.yellow("beetroot."+SHELL_EXT+" start|stop");
+		private static final String USAGE = Colors.yellow("beetroot."+SHELL_EXT+" start|stop|health");
 		private static final String USAGE0 = Colors.yellow("beetroot."+SHELL_EXT+" -help");
 		private static final String USAGE1 = Colors.yellow("beetroot."+SHELL_EXT+" -h");
 		public static final String TEXT =
@@ -741,20 +788,20 @@ public abstract class BaseServer {
     			"Usage:"																				+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"  Here's a detailed usage of the java-process, but you should use the server-script" 	+ Utils.LINE_SEPARATOR +
-    			"  in the root-directory, which takes the argument 'start' or 'stop'."					+ Utils.LINE_SEPARATOR +
+    			"  in the root-directory that accepts the commands 'health', 'start' or 'stop'."		+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"    " + USAGE								 											+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"  Without script - the Java processes:" 												+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ Utils.LINE_SEPARATOR +
-    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer start|stop"		+ Utils.LINE_SEPARATOR +
+    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"      or" 																				+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ Utils.LINE_SEPARATOR +
     			"         -Dlog4j.configuration=file:<log-cfg-path>/server-logging.cfg \\"		 		+ Utils.LINE_SEPARATOR +
-    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer start|stop"		+ Utils.LINE_SEPARATOR +
+    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"" 																						+ Utils.LINE_SEPARATOR +
     			"      <root-path>      :  Root directory where ifaceX is installed." 					+ Utils.LINE_SEPARATOR +

@@ -57,6 +57,9 @@ public class Communicator {
 	/** Stop command */
 	public final static String STOP_COMMAND = "STOP";
 
+	/** Health command */
+	public final static String HEALTH_COMMAND = "HEALTH";
+
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
 	
@@ -112,9 +115,16 @@ public class Communicator {
 			writer.flush();
 			
 			if (command.getCommand().equals(STOP_COMMAND)) {
+				
 				// we cannot expect an answer, because the server is already down
 				return new StopAnswer();
+				
+			} else if (command.getCommand().equals(HEALTH_COMMAND)) {
+				
+				return new HealthAnswer();
+					
 			} else {
+				
 				// read answer
 				input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 				return readAnswer(input);
