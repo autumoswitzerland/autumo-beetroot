@@ -3,9 +3,27 @@
 		function startup() {
 			//prepareAll();
 {$redirectIndex}
+
+			var headerShow = localStorage.getItem("header.visibility");
+			if (headerShow != null) {
+				if (headerShow == "false") {
+					document.getElementById('header').style.display = "none";
+				}
+			}
+
 			return true;
 		}
+		
 {$checkBoxLogic}
+
+		function hideHeader() {
+			$('header').fadeOut(300, function(){ document.getElementById('header').style.display = "none";});
+			localStorage.setItem("header.visibility", "false");
+		}
+		function showHeader() {
+			document.getElementById('header').style.display = "flex";
+			localStorage.setItem("header.visibility", "true");
+		}
 
 		$(document).ready(function() {
 		    $('form:first *:input[type!=hidden]:first').focus();
