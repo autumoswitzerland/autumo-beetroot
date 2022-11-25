@@ -1899,16 +1899,27 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			String res = getResource();
 			if (res == null)
 				res = session.getUri();
-			
-			final String err1 = getTemplateEngineErrorTitle(userSession, res); 
-			final String err2 = err1 + "<br><br>" + getTemplateEngineErrorMessage(userSession, res); 
+			String err1 = this.getTemplateEngineErrorTitle(userSession, res); 
+			String err2 = err1 + "<br><br>" + getTemplateEngineErrorMessage(userSession, res);
 			
 			LOG.error(err1, e);
+			
+			final String custExInfo[] = this.getCustomizedExceptionInformation(userSession);
+			if (custExInfo != null) {
+				if (custExInfo.length == 2) {
+					err1 = custExInfo[0];
+					err2 = custExInfo[1];
+				} else {
+					LOG.warn("Your customized exception handler information needs 2 arguments: "
+							+"[title][message], but it has '"+custExInfo.length+"'; "
+							+"correct the return value of 'getCustomizedExceptionInformation' in your code!");	
+				}
+			}
 			
 			final HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, err1);
 			try {
 				
-				return serveHandler(session, new ErrorHandler(Status.INTERNAL_ERROR, LanguageManager.getInstance().translate("base.err.template.title", userSession), err2), errStat);
+				return serveHandler(session, new ErrorHandler(Status.INTERNAL_ERROR, err1, err2), errStat);
 				
 			} catch (Exception excalibur) {
 				
@@ -1919,6 +1930,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}			
 		}
     }
+	
+	/**
+	 * Overwrite this method, if you want to have a customized 
+	 * handler exception title and message.
+	 * 
+	 * @param userSession user session
+	 * @return array of two values containing title[0] and text[1]
+	 */
+	protected String[] getCustomizedExceptionInformation(Session userSession) {
+		return null;
+	}
 	
 	/**
 	 * Overwrite this if your handler doesn't have an output.

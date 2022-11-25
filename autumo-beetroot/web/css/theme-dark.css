@@ -111,7 +111,7 @@ ul.pagination li a {
     color: #aaaaaa;
 }
 .container {
-    border-bottom: 1px solid #000000 ! important;
+    border-bottom: 1px solid #000000 !important;
 }
 .prev {
     border: 1px solid #aaaaaa;
@@ -142,7 +142,13 @@ h1 {
 }
 
 h3 {
-    color: #dddddd !important;
+    color: #2DC7FE !important;
+}
+.content h4.errMsg {
+    color: #0093E6 !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 20px !important;
+    border: 0;
 }
 .dropdown-content {
     background-color: #555555;
