@@ -88,7 +88,7 @@ public abstract class AbstractMailer implements Mailer {
 		auth = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_auth");
 		tlsEnable = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
 		
-		portStr = BeetRootDatabaseManager.getProperty("mail.port");
+		portStr = BeetRootDatabaseManager.getInstance().getProperty("mail.port");
 		if (portStr != null)
 			port = Integer.valueOf(portStr).intValue();
 		if (port < 0) {
@@ -99,7 +99,7 @@ public abstract class AbstractMailer implements Mailer {
 			}
 		}
 		   
-		host = BeetRootDatabaseManager.getProperty("mail.host");
+		host = BeetRootDatabaseManager.getInstance().getProperty("mail.host");
 		host = (host == null || host.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_host") : host; 
 
 		pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
@@ -109,7 +109,7 @@ public abstract class AbstractMailer implements Mailer {
 						SecureApplicationHolder.getInstance().getSecApp())
 				: BeetRootConfigurationManager.getInstance().getString("mail_password");
 
-		from = BeetRootDatabaseManager.getProperty("mail.mailer");
+		from = BeetRootDatabaseManager.getInstance().getProperty("mail.mailer");
 		from = (from == null || from.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
 		
 		

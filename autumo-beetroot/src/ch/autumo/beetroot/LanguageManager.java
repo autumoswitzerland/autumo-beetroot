@@ -456,7 +456,7 @@ public class LanguageManager {
 			
 			try {
 				
-				lang = BeetRootDatabaseManager.getLanguage(uid.intValue());
+				lang = BeetRootDatabaseManager.getInstance().getLanguage(uid.intValue());
 				
 			} catch (Exception e) {
 				

@@ -309,7 +309,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			final String apiKey = session.getParms().get(apiKeyName);
 			String dbApiKey = null;
 			try {
-				dbApiKey = BeetRootDatabaseManager.getProperty("web.json.api.key");
+				dbApiKey = BeetRootDatabaseManager.getInstance().getProperty("web.json.api.key");
 			} catch (Exception e) {
 				LOG.warn("Couldn't read property from DB!", e);
 				String t = LanguageManager.getInstance().translate("base.err.srv.db.title", LanguageManager.DEFAULT_LANG);
@@ -732,7 +732,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             			userSession.createIdPair(dbId, "users");
 
 					    try {
-	            			dbUserLang = BeetRootDatabaseManager.getLanguage(dbId);
+	            			dbUserLang = BeetRootDatabaseManager.getInstance().getLanguage(dbId);
 	            	    	userSession.setUserLang(dbUserLang);
 						} catch (Exception e) {
 							LOG.error("Couldn't load user language from DB!", e);
@@ -818,7 +818,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         
         try {
         	
-			BeetRootDatabaseManager.resetToken(userId);
+			BeetRootDatabaseManager.getInstance().resetToken(userId);
 			
 		} catch (Exception e1) {
 			final String err = "Couldn't reset last token for user '"+username+"' after login!";

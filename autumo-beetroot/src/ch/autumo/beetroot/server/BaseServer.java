@@ -221,32 +221,36 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
-		/** this is an undocumented configuration key: it allows to use unsupported databases! */
-		final String dbDriver = configMan.getStringNoWarn("db_driver");
-		
-		// DB manager initialization
+		// DB manager initialization if not yet done!
 		try {
 			
-			if (dbDriver != null && dbDriver.length() != 0) {
-				
-				// initialize unsupported DB
-				BeetRootDatabaseManager.getInstance().initializeUnsupported(
-						dbDriver,
-						configMan.getString("db_url"),
-						configMan.getString("db_user"),
-						pwEncoded ? 
-								configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
-					);
-				
-			} else {
+			final BeetRootDatabaseManager dbMan = BeetRootDatabaseManager.getInstance();
+			if (!dbMan.isInitialized()) {
 
-				// supported databases
-				BeetRootDatabaseManager.getInstance().initialize(
-						configMan.getString("db_url"),
-						configMan.getString("db_user"),
-						pwEncoded ? 
-								configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
-					);
+				/** this is an undocumented configuration key: it allows to use unsupported databases! */
+				final String dbDriver = configMan.getStringNoWarn("db_driver");
+				
+				if (dbDriver != null && dbDriver.length() != 0) {
+					
+					// initialize unsupported DB
+					BeetRootDatabaseManager.getInstance().initializeUnsupported(
+							dbDriver,
+							configMan.getString("db_url"),
+							configMan.getString("db_user"),
+							pwEncoded ? 
+									configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
+						);
+					
+				} else {
+	
+					// supported databases
+					BeetRootDatabaseManager.getInstance().initialize(
+							configMan.getString("db_url"),
+							configMan.getString("db_user"),
+							pwEncoded ? 
+									configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
+						);
+				}
 			}
 			
 		} catch (UtilsException e) {

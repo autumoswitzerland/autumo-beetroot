@@ -68,7 +68,7 @@ public class JavaxMailer extends AbstractMailer {
 		final Properties props = super.getProperties();
 		props.put("mail.from", from);
 		
-		String msname = BeetRootDatabaseManager.getProperty("mail.session.name");
+		String msname = BeetRootDatabaseManager.getInstance().getProperty("mail.session.name");
 		if (msname == null || msname.length() == 0) {
 			msname = BeetRootConfigurationManager.getInstance().getString("mail_session_name");
 			if (msname == null || msname.length() == 0)
@@ -90,7 +90,7 @@ public class JavaxMailer extends AbstractMailer {
 
 		final MimeMessage message = new MimeMessage(mailSession);
 		
-		String from = BeetRootDatabaseManager.getProperty("mail.mailer");
+		String from = BeetRootDatabaseManager.getInstance().getProperty("mail.mailer");
 		from = from == null ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
 		
 		message.setFrom(new InternetAddress(from));

@@ -159,7 +159,7 @@ public class ChangeHandler extends BaseHandler {
 				
 				LOG.debug("Invalid token used: "+token);
 				
-				BeetRootDatabaseManager.resetToken(userid);
+				BeetRootDatabaseManager.getInstance().resetToken(userid);
 
 				userid = -1;
 				

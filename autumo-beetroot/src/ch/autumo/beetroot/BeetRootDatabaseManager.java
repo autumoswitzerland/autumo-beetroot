@@ -49,6 +49,8 @@ public class BeetRootDatabaseManager {
 	
 	private static BeetRootDatabaseManager instance = null;	
 	
+	private static boolean isInitialized = false;
+	
 	private String url = null;
 	private String user = null;
 	private String pass = null;
@@ -61,6 +63,9 @@ public class BeetRootDatabaseManager {
 	private boolean isPostgreDb = false;
 	
 	private boolean isUnsupported = false;
+
+	private BeetRootDatabaseManager() {
+	}
 	
 	/**
 	 * Access DB manager.
@@ -73,8 +78,14 @@ public class BeetRootDatabaseManager {
  
         return instance;
     }
-
-	private BeetRootDatabaseManager() {
+	
+	/**
+	 * Has this database manager been initialized?
+	 *  
+	 * @return true if so, otherwise false
+	 */
+	public boolean isInitialized() {
+		return isInitialized;
 	}
 	
 	/**
@@ -86,6 +97,11 @@ public class BeetRootDatabaseManager {
 	 * @throws Exception
 	 */
 	public void initialize(String url, String user, String pass) throws Exception {
+		
+		if (isInitialized) {
+    		LOG.warn("WARNING: Initialisation of database manager is called more than once!");
+    		return;
+		}
 		
 		// Is H2 db?
 		isH2Db = url.startsWith(Constants.JDBC_H2_DB);
@@ -115,6 +131,8 @@ public class BeetRootDatabaseManager {
 		this.url = url;
 		this.user = user;
 		this.pass = pass;
+		
+		isInitialized = true;
 	}
 	
 	/**
@@ -129,6 +147,11 @@ public class BeetRootDatabaseManager {
 	 */
 	public void initializeUnsupported(String driverClass, String url, String user, String pass) throws Exception {
 	
+		if (isInitialized) {
+    		LOG.warn("WARNING: Initialisation of database manager is called more than once!");
+    		return;
+		}
+		
 		// unsupported
 		isUnsupported = true;
 		
@@ -139,6 +162,8 @@ public class BeetRootDatabaseManager {
 		this.url = url;
 		this.user = user;
 		this.pass = pass;
+		
+		isInitialized = true;
 	}
 	
 	/**
@@ -181,7 +206,7 @@ public class BeetRootDatabaseManager {
 	 * @param dbId user id
 	 * @throws Exception
 	 */
-	public static void resetToken(int dbId) throws Exception {
+	public void resetToken(int dbId) throws Exception {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -253,7 +278,7 @@ public class BeetRootDatabaseManager {
 	 * @return value for name/key
 	 * @throws SQLException
 	 */
-	public static String getProperty(String name) throws SQLException {
+	public String getProperty(String name) throws SQLException {
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -290,7 +315,7 @@ public class BeetRootDatabaseManager {
 	 * @return language
 	 * @throws Exception
 	 */
-	public static String getLanguage(int dbId) throws Exception {
+	public String getLanguage(int dbId) throws Exception {
 
 		String lang = null;
 		
@@ -366,12 +391,5 @@ public class BeetRootDatabaseManager {
 	public String getDriver() {
 		return driver;
 	}
-
-	/*
-	public static void main(String[] args) throws Exception {
-		BeetRootDatabaseManager.getInstance().initialize("jdbc:oracle:thin:@localhost:1521/orcl", "ifacex", "***");
-		System.err.println("ERR: "+BeetRootDatabaseManager.getInstance().countRecords("tasks"));
-	}
-	*/
 	
 }
