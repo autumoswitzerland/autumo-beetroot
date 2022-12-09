@@ -181,8 +181,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail-api*.jar
 	
 	
-	echo "-> Signing libs..."
-	jarsigner -storepass 73UtVBzPU7ULY5Ewp6sSQMpi -keystore ../cfg/KeyStore.jks -tsa http://tsa.pki.admin.ch/tsa autumo-beetRoot-$VERSION/lib/autumo-beetroot-${VERSION}.jar autumo.ch
+	#echo "-> Signing libs..."
+	#jarsigner -storepass xxxxx -keystore ../cfg/KeyStore.jks -tsa http://tsa.pki.admin.ch/tsa autumo-beetRoot-$VERSION/lib/autumo-beetroot-${VERSION}.jar autumo.ch
 
 	# make empty dirs
 	mkdir autumo-beetRoot-$VERSION/log
