@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.Constants;
 
 /**
  * Abstract message.
@@ -53,7 +54,8 @@ public abstract class AbstractMessage {
 
 	// Encrypt client-server-com?
 	static {
-		ENCRYPT = BeetRootConfigurationManager.getInstance().getYesOrNo("admin_com_encrypt");
+		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
+		ENCRYPT = (mode != null && mode.equalsIgnoreCase("cmd"));
 	}	
 	protected static final boolean ENCRYPT;
 	

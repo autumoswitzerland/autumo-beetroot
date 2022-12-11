@@ -39,6 +39,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
+
 import org.apache.commons.lang3.SystemUtils;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.slf4j.Logger;
@@ -76,6 +79,7 @@ public abstract class BaseServer {
 	private int portWebServer = -1;
 
 	private boolean pwEncoded = false;
+	private boolean sslSockets = false;
 	
 	protected String name = null;
 	
@@ -185,7 +189,12 @@ public abstract class BaseServer {
 		serverTimeout = configMan.getIntNoWarn("server_timeout"); // in ms !
 		
 		//------------------------------------------------------------------------------
-	
+
+		// SSL sockets?
+		final String mode = configMan.getString(Constants.KEY_ADMIN_COM_ENC);
+		if (mode != null && mode.equalsIgnoreCase("ssl"))
+			sslSockets = true;
+		
 		// Are pw's in config encoded?
 		pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
 		
@@ -272,7 +281,7 @@ public abstract class BaseServer {
 		
 		if (operation.equalsIgnoreCase("health")) {
 			
-			this.sendServerCommand(Communicator.HEALTH_COMMAND);
+			this.sendServerCommand(Communicator.CMD_HEALTH);
 			
 		} else if (operation.equalsIgnoreCase("start")) {
 			
@@ -284,7 +293,7 @@ public abstract class BaseServer {
 			
 		} else if (operation.equalsIgnoreCase("stop")) {
 			
-			this.sendServerCommand(Communicator.STOP_COMMAND);
+			this.sendServerCommand(Communicator.CMD_STOP);
 		}		
 	}
 	
@@ -507,13 +516,20 @@ public abstract class BaseServer {
 	public ClientAnswer processServerCommand(ServerCommand command) {
 		
 		// shutdown
-		if (command.getCommand().equals(Communicator.STOP_COMMAND)) {
+		if (command.getCommand().equals(Communicator.CMD_STOP)) {
 			return new StopAnswer();
 		}
-
-		// shutdown
-		if (command.getCommand().equals(Communicator.HEALTH_COMMAND)) {
+		// health request
+		if (command.getCommand().equals(Communicator.CMD_HEALTH)) {
 			return new HealthAnswer();
+		}
+		// file get request
+		if (command.getCommand().equals(Communicator.CMD_FILE_GET)) {
+			//return new HealthAnswer();
+		}
+		// file send request
+		if (command.getCommand().equals(Communicator.CMD_FILE_SEND)) {
+			//return new HealthAnswer();
 		}
 		
 		// standard answer = OK
@@ -577,17 +593,21 @@ public abstract class BaseServer {
 		
 		/**
 		 * Create admin listener on specific port
-		 * @param listenerPort listenr port
+		 * @param listenerPort listener port
 		 */
 		public AdminListener(int listenerPort) {
 			
 			this.listenerPort = listenerPort;
 			
-			//final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
-			// communication is encrypted through the app
+			// Communication is encrypted through the command message (cmd),
+			// by SSL sockets (ssl) or it is not (none) 
 			try {
-				//serverSocket = socketFactory.createServerSocket(this.listenerPort);
-				serverSocket = new ServerSocket(this.listenerPort);
+				if (sslSockets) {
+					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
+					serverSocket = socketFactory.createServerSocket(this.listenerPort);
+				} else {
+					serverSocket = new ServerSocket(this.listenerPort);
+				}
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
 					serverSocket.setSoTimeout(serverTimeout);
 					
@@ -677,7 +697,9 @@ public abstract class BaseServer {
 	        catch (UtilsException e) {
 	        	
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
-				LOG.error("  -> Either the secret key seed doesn't match on both sides or the server's configuration is set to encode server-client communication, but the client's isn't!");
+				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode),");
+				LOG.error("     different encrypt modes have beee defined on boths side, or the server's");
+				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
 				//LOG.error("  -> Exception: " + e);
 				return;

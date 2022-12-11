@@ -347,7 +347,7 @@ public class Session implements Serializable {
 		if (ok == null)
 			return false;
 		
-		return new Boolean(ok.toString()).booleanValue();
+		return Boolean.valueOf(ok.toString());
 	}
 	
 	/**

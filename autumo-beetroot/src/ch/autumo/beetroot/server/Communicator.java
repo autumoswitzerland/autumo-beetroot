@@ -42,10 +42,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.Constants;
 
 /**
  * Client/Server communication
@@ -55,18 +59,25 @@ public class Communicator {
 	protected final static Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
 	
 	/** Stop command */
-	public final static String STOP_COMMAND = "STOP";
-
+	public final static String CMD_STOP = "STOP";
 	/** Health command */
-	public final static String HEALTH_COMMAND = "HEALTH";
+	public final static String CMD_HEALTH = "HEALTH";
+	/** File get request */
+	public final static String CMD_FILE_GET = "FILE_GET";
+	/** File send request */
+	public final static String CMD_FILE_SEND = "FILE_SEND";
 
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
 	
 	private static int clientTimeout = -1;
+	private static boolean sslSockets = false;
 	static {
 		// read some undocumented settings if available
 		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in ms !
+		// SSL sockets?
+		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
+		sslSockets = (mode != null && mode.equalsIgnoreCase("ssl"));
 	}	
 	
 	
@@ -103,7 +114,13 @@ public class Communicator {
 			if (clientTimeout > 0)
 				timeout = clientTimeout;
 				
-			socket = new Socket(command.getHost(), command.getPort());
+			if (sslSockets) {
+				final SocketFactory sslsocketfactory = SSLSocketFactory.getDefault();
+				socket = sslsocketfactory.createSocket(command.getHost(), command.getPort());				
+			} else {
+				socket = new Socket(command.getHost(), command.getPort());
+			}
+			
 			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			socket.setSoTimeout(timeout);
 
@@ -114,12 +131,12 @@ public class Communicator {
 			LOG.trace("Server command '"+command.getCommand()+"' sent!");
 			writer.flush();
 			
-			if (command.getCommand().equals(STOP_COMMAND)) {
+			if (command.getCommand().equals(CMD_STOP)) {
 				
 				// we cannot expect an answer, because the server is already down
 				return new StopAnswer();
 				
-			} else if (command.getCommand().equals(HEALTH_COMMAND)) {
+			} else if (command.getCommand().equals(CMD_HEALTH)) {
 				
 				return new HealthAnswer();
 					
@@ -203,10 +220,12 @@ public class Communicator {
 		
 		final int length = in.readInt();
 		
+		/*
 		if (length > 256) {
 			// prevent other requests, max length should not be longer than 256 bytes
 			return null; 
 		}
+		*/
 		
 		final byte[] messageByte = new byte[length];
 	    boolean end = false;

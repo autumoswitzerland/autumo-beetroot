@@ -106,6 +106,11 @@ public class Constants {
 	public static final String KEY_ADMIN_HOST = "admin_host";
 	
 	/**
+	 * Communication encryption mode. 
+	 */
+	public static final String KEY_ADMIN_COM_ENC = "admin_com_encrypt";
+	
+	/**
 	 * Passwords in configuration encoded?
 	 */
 	public static final String KEY_ADMIN_PW_ENC = "admin_pw_encoded";
