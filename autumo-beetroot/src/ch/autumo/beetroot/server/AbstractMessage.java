@@ -30,8 +30,14 @@
  */
 package ch.autumo.beetroot.server;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +56,7 @@ public abstract class AbstractMessage {
 		ENCRYPT = BeetRootConfigurationManager.getInstance().getYesOrNo("admin_com_encrypt");
 	}	
 	protected static final boolean ENCRYPT;
-
+	
 	private Map<String, String> messageMap = null;
 	
 	protected String message = "null";
@@ -58,12 +64,22 @@ public abstract class AbstractMessage {
 	protected String domain = "null";
 	protected int id = 0;
 
+	protected Serializable object = null;
+
 	
 	public AbstractMessage() {
 	}
 
 	public AbstractMessage(String message) {
 		this.message = message;
+	}
+
+	public void setObject(Serializable object) {
+		this.object = object;
+	}
+	
+	public Serializable getObject() {
+		return object;
 	}
 	
 	public String getEntity() {
@@ -76,6 +92,25 @@ public abstract class AbstractMessage {
 
 	public String getDomain() {
 		return domain;
+	}
+	
+	protected void deserializeObject(String serializedObject) throws IOException {
+		final byte data[] = Base64.getDecoder().decode(serializedObject);
+		final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+		try {
+			this.object  = (Serializable) ois.readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException("Class not found for transferred object", e);
+		}
+		ois.close();
+	}
+
+	protected String serializeObject() throws IOException {
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(this.object);
+		oos.close();
+		return Base64.getEncoder().encodeToString(baos.toByteArray()); 
 	}
 	
 	/**

@@ -61,6 +61,7 @@ public class BeetRootConfigurationManager {
 	private static boolean isInitialized = false;
 	
 	private ServletContext servletContext = null;
+	protected boolean isWithinDesktop = false;
 	
 	private String fullConfigBasePath = null;
 	
@@ -111,6 +112,40 @@ public class BeetRootConfigurationManager {
 	 */
 	public boolean runsWithinServletContext() {
 		return servletContext != null;
+	}
+	
+	/**
+	 * Return true, if this configuration manager runs within a desktop
+	 * otherwise false.
+	 * 
+	 * @return true is is within desktop context
+	 */
+	public boolean runsWithinDesktopContext() {
+		return this.isWithinDesktop;
+	}
+
+	/**
+	 * Returns true if it doesn't run server-side.
+	 * 
+	 * @return false if server-side
+	 */
+	public boolean isRemote() {
+		return this.runsWithinDesktopContext() || runsWithinServletContext();
+	}
+	
+	/**
+	 * Update or add a value to the internal properties.
+	 * 
+	 * @param key key
+	 * @param value vane
+	 */
+	public void updateProperty(String key, String value) {
+		if (this.generalProps == null || !isInitialized) {
+			LOG.error("Internal properties or configuration manager not initialised!");
+			throw new RuntimeException("Internal properties or configuration manager not initialised!");
+		}
+		
+		this.generalProps.put(key, value);
 	}
 	
 	/**
@@ -200,6 +235,50 @@ public class BeetRootConfigurationManager {
 			throw new Exception("Couldn't read general server configuration '" + file + "' !");
 		}
 		
+		isInitialized = true;
+	}
+	
+	/**
+	 * Initialize with desktop configuration which must have been created
+	 * beforehand by the desktop application!
+	 *  
+	 * @param desktopCfgFile only the file name without path, e.g. 'myapp.cfg'
+	 * @param appName application name
+	 * @throws Exception
+	 */
+	public synchronized void initializeDesktop(String desktopCfgFile, String appName) throws Exception {
+		
+		if (isInitialized) {
+    		LOG.warn("WARNING: Initialisation of configuration manager is called more than once!");
+    		return;
+		}
+		
+		this.isWithinDesktop = true;
+		
+		final String path = Utils.getDesktopPropertiesPath(appName);
+		final String filePath = path + desktopCfgFile;
+        final File f = new File(filePath);
+        Properties p = null;
+        if (f.exists()) {
+            p = new Properties();
+            try {
+                final FileInputStream fis = new FileInputStream(f);
+                p.load(fis);
+                fis.close();
+            } catch (IOException ex) {
+    			LOG.error("Couldn't read general desktop configuration '" + path + "' !", ex);
+    			throw new Exception("Couldn't read general desktop configuration '" + path + "' !");
+            }
+            this.generalProps = p;
+        } else {
+			LOG.error("Couldn't read general desktop configuration '" + path + "', file doesn't exist !");
+			throw new Exception("Couldn't read general desktop configuration '" + path + "', file doesn't exist !");
+        }
+        
+		// set full path
+		fullConfigBasePath = path;
+        
+		// At last
 		isInitialized = true;
 	}
 	

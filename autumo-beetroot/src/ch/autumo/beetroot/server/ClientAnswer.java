@@ -94,8 +94,13 @@ public class ClientAnswer extends AbstractMessage {
 	
 	@Override
 	public String getTransferString() throws IOException {
+
+		final String ts; 
+		if (super.object != null)
+			ts = type + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + errorReason.trim() + super.serializeObject();
+		else
+			ts = type + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + errorReason.trim();
 		
-		final String ts = type + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + errorReason.trim();
 		if (ENCRYPT)
 			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
@@ -112,16 +117,19 @@ public class ClientAnswer extends AbstractMessage {
 	public static ClientAnswer parse(String transferString) throws IOException {
 	
 		if (ENCRYPT)
-			transferString = Utils.decode(transferString, SecureApplicationHolder.getInstance().getSecApp());
+			transferString = Utils.decodeCom(transferString, SecureApplicationHolder.getInstance().getSecApp());
 		
 		final ClientAnswer answer = new ClientAnswer();
 		
-		final String parts [] = transferString.split(MSG_PART_SEPARATOR);
+		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 6);
 		answer.type = Integer.valueOf(parts[0]).intValue();
 		answer.message = parts[1];
 		answer.entity = parts[2];
 		answer.id = Integer.valueOf(parts[3]).intValue();
 		answer.errorReason = parts[4];
+		if (parts.length == 6) {
+			answer.deserializeObject(parts[5]);
+		}
 		
 		return answer;
 	}	

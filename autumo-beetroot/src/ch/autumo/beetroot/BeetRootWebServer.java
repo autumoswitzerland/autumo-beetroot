@@ -133,7 +133,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			// routes
 			this.addMappings();
 			
-			// init any otehr module
+			// init any other modules
 			this.initModules(BeetRootConfigurationManager.getInstance().getServletContext() != null, BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
 			
 		} catch (Exception ex) {

@@ -91,7 +91,13 @@ public class ServerCommand extends AbstractMessage {
 
 	@Override
 	public String getTransferString() throws IOException {
-		final String ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + domain;
+		
+		final String ts; 
+		if (super.object != null)
+			ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + domain + MSG_PART_SEPARATOR + super.serializeObject();
+		else
+			ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + domain;
+		
 		if (ENCRYPT)
 			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
@@ -108,16 +114,19 @@ public class ServerCommand extends AbstractMessage {
 	public static ServerCommand parse(String transferString) throws IOException {
 	
 		if (ENCRYPT)
-			transferString = Utils.decode(transferString, SecureApplicationHolder.getInstance().getSecApp());
+			transferString = Utils.decodeCom(transferString, SecureApplicationHolder.getInstance().getSecApp());
 		
 		final ServerCommand command = new ServerCommand();
 		
-		final String parts [] = transferString.split(MSG_PART_SEPARATOR);
+		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 6);
 		command.serverName = parts[0];
 		command.message = parts[1];
 		command.entity = parts[2];
 		command.id = Integer.valueOf(parts[3]).intValue();
 		command.domain = parts[4];
+		if (parts.length == 6) {
+			command.deserializeObject(parts[5]);
+		}
 		
 		return command;
 	}

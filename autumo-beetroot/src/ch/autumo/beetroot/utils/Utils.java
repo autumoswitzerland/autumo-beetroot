@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
@@ -61,12 +62,14 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.dbutils.BeanProcessor;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -88,6 +91,7 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.security.SecureApplication;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
 import de.taimos.totp.TOTP;
 
 
@@ -126,6 +130,55 @@ public class Utils {
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
+	/**
+	 * Get Windows APPDATA directory.
+	 */
+    public static final String WIN_APPDATA_FOLDER = System.getenv("APPDATA" /*"LOCALAPPDATA"*/);
+	
+	/**
+	 * Is Windows?
+	 * 
+	 * @return true if so
+	 */
+	public static boolean isWindows() {
+		return SystemUtils.IS_OS_WINDOWS;
+	}
+
+	/**
+	 * Is Mac?
+	 * 
+	 * @return true if so
+	 */
+	public static boolean isMac() {
+		return SystemUtils.IS_OS_MAC;
+	}
+
+	/**
+	 * Is Unix?
+	 * 
+	 * @return true if so
+	 */
+	public static boolean isUnix() {
+		return SystemUtils.IS_OS_UNIX;
+	}
+
+	/**
+	 * Is Solaris?
+	 * 
+	 * @return true if so
+	 */
+	public static boolean isSolaris() {
+		return SystemUtils.IS_OS_SOLARIS;
+	}
+	
+	/**
+	 * Get operating system.
+	 * 
+	 * @return true if so
+	 */
+	public static String getOS() {
+		return OS;	
+	}
 	
 	/**
 	 * Get temporary directory.
@@ -431,6 +484,22 @@ public class Utils {
 		}
 	}
 	
+    /**
+     * Get properties path.
+     * 
+     * @param appName app name
+     * @return properties path
+     */
+    public static String getDesktopPropertiesPath(String appName) {
+        if (isMac())
+            return USER_HOME + FILE_SEPARATOR + "Library" + FILE_SEPARATOR + "Application Support" + FILE_SEPARATOR + "autumo" + FILE_SEPARATOR + appName + FILE_SEPARATOR;
+        if (isWindows())
+            return WIN_APPDATA_FOLDER + FILE_SEPARATOR + "autumo" + FILE_SEPARATOR + appName + FILE_SEPARATOR;
+        if (isUnix())
+            return USER_HOME + FILE_SEPARATOR + "." + appName + FILE_SEPARATOR;
+        return USER_HOME + FILE_SEPARATOR;
+    }
+    
 	/**
 	 * Count rows of type clz (entity class).
 	 * @param clz entity class
@@ -1035,6 +1104,36 @@ public class Utils {
 	public static String encode(String data, SecureApplication secureApplication) throws UtilsException {
 		return encodeBase64_PBE_MD5_DES(data, secureApplication);
 	}
+
+	/**
+	 * 
+	 * Encode com data.
+	 * 
+	 * @param data data
+	 * @param secureApplication secure application
+	 * @return encoded data
+	 * @throws UtilsException
+	 */
+	public static String encodeCom(String data, SecureApplication secureApplication) throws UtilsException {
+		return encodeBase64_SHA3_256_AES(data, secureApplication);
+	}
+	
+	private static String encodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
+    	byte[] key = null;
+    	byte[] encrypted = null;
+		try {
+			key = (app.getUniqueSecurityKey()).getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance("SHA3-256");
+	    	key = sha.digest(key);
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+	    	Cipher cipher = Cipher.getInstance("AES");
+	    	cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+	    	encrypted = cipher.doFinal(data.getBytes());
+		} catch (Exception e) {
+			throw new UtilsException("Couldn't encode password/key!", e);
+		}
+    	return Base64.encodeBase64String(encrypted);
+    }	
 	
 	private static String encodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {
     	
@@ -1070,6 +1169,43 @@ public class Utils {
 	public static String decode(String data, SecureApplication secureApplication) throws UtilsException {
 		return decodeBase64_PBE_MD5_DES(data, secureApplication);
 	}
+
+	/**
+	 * 
+	 * Decode com data.
+	 * 
+	 * @param data data
+	 * @param secureApplication secure application
+	 * @return decoded data
+	 * @throws UtilsException
+	 */
+	public static String decodeCom(String data, SecureApplication secureApplication) throws UtilsException {
+		return decodeBase64_SHA3_256_AES(data, secureApplication);
+	}
+	
+	private static String decodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
+    	
+    	byte[] key = null;
+    	byte[] cipherData = null;
+		try {
+			key = (app.getUniqueSecurityKey()).getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance("SHA3-256");
+	    	key = sha.digest(key);
+	    	//key = Arrays.copyOf(key, KEYDATA.LEN_3); 
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+	    	byte[] crypted;	    	//----
+	    	//BASE64Decoder decoder = new BASE64Decoder();
+	    	//crypted = decoder.decodeBuffer(data);
+	    	crypted = Base64.decodeBase64(data);
+	    	//----
+	    	Cipher cipher = Cipher.getInstance("AES");
+	    	cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+	    	cipherData = cipher.doFinal(crypted);
+		} catch (Exception e) {
+			throw new UtilsException("Couldn't decode password/key!", e);
+		}
+    	return new String(cipherData);
+    }
 	
 	private static String decodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {
     	
@@ -1182,4 +1318,13 @@ public class Utils {
 		private static final int ITER_1 = 19;	
 	}
 
+	
+	public static void main(String[] args) throws Exception {
+		BeetRootConfigurationManager.getInstance().initialize();
+		String e = encodeCom("This would be crazy!", SecureApplicationHolder.getInstance().getSecApp());
+		System.out.println("ENC:"+e);
+		String d = decodeCom(e, SecureApplicationHolder.getInstance().getSecApp());
+		System.out.println("DEC:"+d);
+	}
+	
 }
