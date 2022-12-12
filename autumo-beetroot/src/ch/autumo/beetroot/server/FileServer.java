@@ -61,15 +61,19 @@ public class FileServer {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(FileServer.class.getName());
 	
+	/** the base server */
 	private BaseServer baseServer = null;
 	
 	private FileListener fileListener = null;
-	private int portFileServer = -1;
+	protected int portFileServer = -1;
 	private ServerSocket serverSocket = null;
 	private int serverTimeout = -1;
 	
 	private boolean sslSockets = false;
 
+	private boolean stopped = false;
+	
+	
 	/** The download queue */
 	private List<Download> downloadQueue = Collections.synchronizedList(new ArrayList<Download>());
 	
@@ -95,11 +99,6 @@ public class FileServer {
 		
 		// read some undocumented settings if available
 		serverTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("server_timeout"); // in ms !
-		
-		LOG.info("File listener started on port "+portFileServer+".");
-		if (LOG.isErrorEnabled())
-			System.out.println(BaseServer.ansiServerName + " File listener started on port "+portFileServer+".");
-		
 	}
 
 	/**
@@ -111,6 +110,13 @@ public class FileServer {
 		final Thread server = new Thread(fileListener);
 		server.setName(baseServer.name + "-FileServer");
 		server.start();
+	}
+
+	/**
+	 * Stop file server.
+	 */
+	public void stop() {
+		stopped = true;
 	}
 	
 	/**
@@ -186,7 +192,7 @@ public class FileServer {
 		@Override
 		public void run() {
 			
-			while (!FileServer.this.baseServer.isStopped()) {
+			while (!stopped) {
 				
 				Socket clientSocket = null;
 				try {
@@ -202,12 +208,12 @@ public class FileServer {
 					
 		        } catch (IOException e) {
 		        	
-		        	if (!FileServer.this.baseServer.isStopped())
+		        	if (!stopped)
 		        		LOG.error("File server connection listener failed! We recommend to restart the server!", e);
 		        	
 		        } finally {
 		        	
-		        	if (!FileServer.this.baseServer.isStopped()) {
+		        	if (!stopped) {
 		        		if (serverSocket != null && serverSocket.isClosed()) {
 		        			try {
 		        				if (sslSockets) {
@@ -224,10 +230,8 @@ public class FileServer {
 	            }				
             } 
 		
-			if (!FileServer.this.baseServer.isHookShutdown()) {
-				// loop has been broken by STOP command.
-				Communicator.safeClose(serverSocket);
-			}
+			// loop has been broken by STOP command.
+			Communicator.safeClose(serverSocket);
 		}		
 	}
 	

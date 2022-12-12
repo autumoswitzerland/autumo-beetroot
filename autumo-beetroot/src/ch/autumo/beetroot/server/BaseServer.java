@@ -72,6 +72,7 @@ public abstract class BaseServer {
 	private ServerSocket serverSocket = null;
 
     private FileServer fileServer = null;
+	protected boolean startFileServer = true;
 	
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
@@ -418,11 +419,15 @@ public abstract class BaseServer {
 			}
 		}
 
-		final boolean fileServerStart = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
-		if (fileServerStart) {
+		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
+		if (startFileServer) {
 			// File listener and server thread
 			fileServer = new FileServer(this);
 			fileServer.start();
+			
+			LOG.info("File listener started on port " + fileServer.portFileServer + ".");
+			if (LOG.isErrorEnabled())
+				System.out.println(ansiServerName + " File listener started on port " + fileServer.portFileServer + ".");
 		}
 		
 		// Admin listener and server thread
@@ -448,6 +453,19 @@ public abstract class BaseServer {
 	protected void stopServer() {
 		
 		this.beforeStop();
+
+		if (startFileServer) {
+			
+			LOG.info("Stopping internal file server...");
+			if (LOG.isErrorEnabled())
+				System.out.println(ansiServerName + " Stopping internal file server...");
+			
+			fileServer.stop();
+			
+			LOG.info("Internal file server stopped.");
+			if (LOG.isErrorEnabled())
+				System.out.println(ansiServerName + " Internal file server stopped.");
+		}
 		
 		if (startWebServer) {
 			
@@ -467,22 +485,6 @@ public abstract class BaseServer {
 		LOG.info(name + " server stopped.");
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server stopped.");
-	}
-
-	/**
-	 * Server stopped?
-	 * @return true is so
-	 */
-	public boolean isStopped() {
-		return this.serverStop;
-	}
-
-	/**
-	 * Is hook-shutdown in progress?
-	 * @return true is so
-	 */
-	public boolean isHookShutdown() {
-		return this.serverStop;
 	}
 	
 	/**
@@ -549,14 +551,16 @@ public abstract class BaseServer {
 		// file request
 		if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 			
-			if (fileServer != null) {
+			if (startFileServer) {
+				
 				final String uniqueFileId = command.getFileId();
-				final String fName = null; // access from file store TODO
+				
+				// TODO available ! TODO: ask FileFinder Interface (if configured)
+				final String fName = null;
 				boolean available = true;
-				if (available) { // available !
+				if (available) { 
 					File file = null;
-					if (fileServer != null)
-						fileServer.addToDownloadQueue(new Download(uniqueFileId, fName, file));
+					fileServer.addToDownloadQueue(new Download(uniqueFileId, fName, file));
 					return new ClientAnswer(fName, uniqueFileId);
 				} else {
 					return new ClientAnswer(fName, ClientAnswer.TYPE_FILE_NOK);
