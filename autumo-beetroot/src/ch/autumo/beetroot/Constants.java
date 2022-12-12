@@ -104,6 +104,11 @@ public class Constants {
 	 * Start file server?
 	 */
 	public static final String KEY_ADMIN_FILE_SERVER = "admin_file_server_start";
+
+	/**
+	 * File finder implementation.
+	 */
+	public static final String KEY_ADMIN_FILE_FINDER = "admin_file_finder";
 	
 	/**
 	 * Admin file server buffer size.

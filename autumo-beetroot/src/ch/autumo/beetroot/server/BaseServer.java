@@ -36,6 +36,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -73,6 +74,7 @@ public abstract class BaseServer {
 
     private FileServer fileServer = null;
 	protected boolean startFileServer = true;
+	private FileFinder fileFinder = null;
 	
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
@@ -421,13 +423,47 @@ public abstract class BaseServer {
 
 		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
 		if (startFileServer) {
-			// File listener and server thread
-			fileServer = new FileServer(this);
-			fileServer.start();
 			
-			LOG.info("File listener started on port " + fileServer.portFileServer + ".");
-			if (LOG.isErrorEnabled())
-				System.out.println(ansiServerName + " File listener started on port " + fileServer.portFileServer + ".");
+			// if we start the file server, we have to deliver a file finder
+			// Without a file finder, the file server is not started!
+			final String fileFinderClass = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_FILE_FINDER);
+			if (fileFinderClass != null) {
+				
+				Class<?> clazz;
+				try {
+					
+					clazz = Class.forName(fileFinderClass);
+					final Constructor<?> constructor = clazz.getDeclaredConstructor();
+		            constructor.setAccessible(true);
+		            
+		            fileFinder = (FileFinder) constructor.newInstance();
+		            
+					// File listener and server thread
+					fileServer = new FileServer(this);
+					fileServer.start();
+					
+					LOG.info("File listener started on port " + fileServer.portFileServer + ".");
+					if (LOG.isErrorEnabled())
+						System.out.println(ansiServerName + " File listener started on port " + fileServer.portFileServer + ".");
+		            
+				} catch (Exception e) {
+					
+					LOG.info("File server is not started, because file finder couldn't be created!");
+					if (LOG.isErrorEnabled())
+						System.out.println(ansiServerName + " File server is not started, because file finder couldn't be created!");
+					
+					startFileServer = false;
+				}
+				
+			} else {
+				
+				LOG.info("File server is not started, because no file finder has been configured!");
+				if (LOG.isErrorEnabled())
+					System.out.println(ansiServerName + " File server is not started, because no file finder has been configured!");
+				
+				startFileServer = false;
+			}
+			
 		}
 		
 		// Admin listener and server thread
@@ -552,18 +588,12 @@ public abstract class BaseServer {
 		if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 			
 			if (startFileServer) {
-				
-				final String uniqueFileId = command.getFileId();
-				
-				// TODO available ! TODO: ask FileFinder Interface (if configured)
-				final String fName = null;
-				boolean available = true;
-				if (available) { 
-					File file = null;
-					fileServer.addToDownloadQueue(new Download(uniqueFileId, fName, file));
-					return new ClientAnswer(fName, uniqueFileId);
+				final Download download = fileFinder.findFile(command.getFileId());
+				if (download != null) { 
+					fileServer.addToDownloadQueue(download);
+					return new ClientAnswer(download.getFileName(), download.getFileId());
 				} else {
-					return new ClientAnswer(fName, ClientAnswer.TYPE_FILE_NOK);
+					return new ClientAnswer("No file found with unique file id '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
 				}
 			} else {
 				LOG.error("A client requested a file, but file server is not running!");
