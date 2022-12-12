@@ -610,6 +610,8 @@ public abstract class BaseServer {
 		
 		LOG.info("Server is running and healthy!");
 		LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): Started");
+		if (startFileServer)
+			LOG.info("* File-Server (Port: " + fileServer.portFileServer + "): Started");
 		if (startWebServer)
 			LOG.info("* Web-Server (Port: " + this.portWebServer + "): Started");
 		
@@ -617,6 +619,8 @@ public abstract class BaseServer {
 			System.out.println("");
 			System.out.println("[" + this.name + "] Server is running and healthy!");
 			System.out.println("[" + this.name + "] * Admin-Interface (Port: " + this.portAdminServer + "): Started");
+			if (startFileServer)
+				System.out.println("[" + this.name + "] * File-Server (Port: " + fileServer.portFileServer + "): Started");
 			if (startWebServer)
 				System.out.println("[" + this.name + "] * Web-Server (Port: " + this.portWebServer + "): Started");
 		}
