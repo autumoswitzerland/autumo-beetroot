@@ -30,28 +30,32 @@
  */
 package ch.autumo.beetroot.server;
 
+import java.io.File;
+
 /**
- * File answer: only used when the server received a file from client!
+ * File storage interface.
  */
-public class FileAnswer extends ClientAnswer {
+public interface FileStorage {
 
 	/**
-	 * Success constructor.
-	 * 
-	 * @param answer answer
-	 * @param fileId file id generated server side
+	 * Find a file. The file delivered within the download must be
+	 * physically temporarily available, so it can be delivered by
+	 * a stream.
+	 *   
+	 * @param uniqueFileId unique file id
+	 * @return download or null if file is not available
+	 * @throws Exception
 	 */
-	public FileAnswer(String answer, String fileId) {
-		super(answer, fileId);
-	}
+	public Download findFile(String uniqueFileId) throws Exception;
 	
 	/**
-	 * Fail constructor.
+	 * Store a file.
 	 * 
-	 * @param answer answer (reason)
-	 * @param type failure type
+	 * @param file file
+	 * @param name file name
+	 * @return unique file ID
+	 * @throws Exception
 	 */
-	public FileAnswer(String answer, int type) {
-		super(answer, type);
-	}
+	public String store(File file, String name) throws Exception;
+	
 }

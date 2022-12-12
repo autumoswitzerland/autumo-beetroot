@@ -71,14 +71,14 @@ public class ClientAnswer extends AbstractMessage {
 		this.fileId = fileId;
 	}
 	
-	public ClientAnswer(String answer, String entity, int id) {
+	public ClientAnswer(String answer, String entity, long id) {
 		super(answer);
 		this.type = TYPE_OK;
 		this.entity = entity;
 		this.id = id;
 	}
 	
-	public ClientAnswer(int type, String answer, String entity, int id, String errorReason) {
+	public ClientAnswer(int type, String answer, String entity, long id, String errorReason) {
 		super(answer);
 		this.type = type;
 		this.entity = entity;

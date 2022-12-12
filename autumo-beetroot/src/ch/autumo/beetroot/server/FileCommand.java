@@ -30,28 +30,31 @@
  */
 package ch.autumo.beetroot.server;
 
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+
 /**
- * File answer: only used when the server received a file from client!
+ * File command.
  */
-public class FileAnswer extends ClientAnswer {
+public class FileCommand extends ServerCommand {
 
 	/**
-	 * Success constructor.
+	 * File command to send before sending a file to
+	 * server.
 	 * 
-	 * @param answer answer
-	 * @param fileId file id generated server side
+	 * @param fileName file name
+	 * @param size file size
 	 */
-	public FileAnswer(String answer, String fileId) {
-		super(answer, fileId);
+	public FileCommand(String fileName, long size) {
+		super(Communicator.CMD_FILE_RECEIVE_REQUEST, fileName, size);
+		init();
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		
+		host = BeetRootConfigurationManager.getInstance().getString("admin_host");
+		port = BeetRootConfigurationManager.getInstance().getInt("admin_port");
 	}
 	
-	/**
-	 * Fail constructor.
-	 * 
-	 * @param answer answer (reason)
-	 * @param type failure type
-	 */
-	public FileAnswer(String answer, int type) {
-		super(answer, type);
-	}
 }

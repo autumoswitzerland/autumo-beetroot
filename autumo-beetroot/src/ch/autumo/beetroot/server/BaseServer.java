@@ -74,7 +74,8 @@ public abstract class BaseServer {
 
     private FileServer fileServer = null;
 	protected boolean startFileServer = true;
-	private FileFinder fileFinder = null;
+	
+	private FileStorage fileStorage = null;
 	
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
@@ -114,7 +115,7 @@ public abstract class BaseServer {
 	 */
 	public BaseServer(String params[]) {
 		
-		// Read general config
+		// Read general configuration
 		configMan = BeetRootConfigurationManager.getInstance();
 		// Must !
 		try {
@@ -424,22 +425,22 @@ public abstract class BaseServer {
 		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
 		if (startFileServer) {
 			
-			// if we start the file server, we have to deliver a file finder
-			// Without a file finder, the file server is not started!
-			final String fileFinderClass = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_FILE_FINDER);
-			if (fileFinderClass != null) {
+			// if we start the file server, we have to deliver a file storage
+			// Without a file storage, the file server is not started!
+			final String fileStorageClass = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_FILE_STORAGE);
+			if (fileStorageClass != null) {
 				
 				Class<?> clazz;
 				try {
 					
-					clazz = Class.forName(fileFinderClass);
+					clazz = Class.forName(fileStorageClass);
 					final Constructor<?> constructor = clazz.getDeclaredConstructor();
 		            constructor.setAccessible(true);
 		            
-		            fileFinder = (FileFinder) constructor.newInstance();
+		            fileStorage = (FileStorage) constructor.newInstance();
 		            
 					// File listener and server thread
-					fileServer = new FileServer(this);
+					fileServer = new FileServer(this, fileStorage);
 					fileServer.start();
 					
 					LOG.info("File listener started on port " + fileServer.portFileServer + ".");
@@ -448,22 +449,17 @@ public abstract class BaseServer {
 		            
 				} catch (Exception e) {
 					
-					LOG.info("File server is not started, because file finder couldn't be created!");
-					if (LOG.isErrorEnabled())
-						System.out.println(ansiServerName + " File server is not started, because file finder couldn't be created!");
-					
+					LOG.error("File server is not started, because file storage couldn't be created!");
+					System.out.println(ansiServerName + " File server is not started, because file storage couldn't be created!");
 					startFileServer = false;
 				}
 				
 			} else {
 				
-				LOG.info("File server is not started, because no file finder has been configured!");
-				if (LOG.isErrorEnabled())
-					System.out.println(ansiServerName + " File server is not started, because no file finder has been configured!");
-				
+				LOG.error("File server is not started, because no file storage has been configured!");
+				System.err.println(ansiServerName + " File server is not started, because no file storage has been configured!");
 				startFileServer = false;
 			}
-			
 		}
 		
 		// Admin listener and server thread
@@ -588,7 +584,15 @@ public abstract class BaseServer {
 		if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 			
 			if (startFileServer) {
-				final Download download = fileFinder.findFile(command.getFileId());
+				Download download = null;
+				try {
+					download = fileStorage.findFile(command.getFileId());
+				} catch (Exception e) {
+					LOG.error("Couldn't find file wiht ID ''!", e);
+					System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
+					download = null;
+				}
+				
 				if (download != null) { 
 					fileServer.addToDownloadQueue(download);
 					return new ClientAnswer(download.getFileName(), download.getFileId());
@@ -599,6 +603,15 @@ public abstract class BaseServer {
 				LOG.error("A client requested a file, but file server is not running!");
 				return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
 			}			
+		}
+		// file receive request
+		if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
+			
+			if (startFileServer) {
+				final Upload upload = new Upload(command.getId(), command.getEntity()); 
+				fileServer.addToUploadQueue(upload);
+				return new ClientAnswer(command.getEntity(), "FILE", command.getId());
+			}
 		}
 		
 		// standard answer = OK
@@ -775,8 +788,8 @@ public abstract class BaseServer {
 	        catch (UtilsException e) {
 	        	
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
-				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode),");
-				LOG.error("     different encrypt modes have beee defined on boths side, or the server's");
+				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode) or");
+				LOG.error("     different encrypt modes have been defined on boths side, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
 				//LOG.error("  -> Exception: " + e);
@@ -805,17 +818,6 @@ public abstract class BaseServer {
 	        	Communicator.safeClose(clientSocket); //
 				return;
 			}
-			/*
-			// -> not a good idea
-			// 2. sec-key
-			final String secKey = command.getSecKey();
-			if (!secKey.equals(SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey())) {
-				LOG.error("Server command: Wrong security key received, command is ignored!");
-				Communicator.safeClose(in);
-				return;
-			}
-			*/
-
 			
 			// execute command
 			final ClientAnswer answer = BaseServer.this.processServerCommand(command);
@@ -858,16 +860,14 @@ public abstract class BaseServer {
 				 Communicator.writeAnswer(answer, out);
 			
 			} catch (IOException e) {
-	        	
 				LOG.error("Admin server client response failed! We recommend to restart the server!", e);
 				System.err.println(BaseServer.ansiErrServerName + " Admin server client response failed! We recommend to restart the server!");
-				
 	        } finally {
-	        	
-	        	Communicator.safeClose(in);
 	        	Communicator.safeClose(out);
-	        	Communicator.safeClose(clientSocket);
-			}			
+			}
+			
+        	Communicator.safeClose(in);
+        	Communicator.safeClose(clientSocket);
 		}
 	}
 	

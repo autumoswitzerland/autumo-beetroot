@@ -32,6 +32,7 @@ package ch.autumo.beetroot.server;
 
 import java.io.IOException;
 
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 
@@ -41,56 +42,74 @@ import ch.autumo.beetroot.utils.Utils;
 public class ServerCommand extends AbstractMessage {
 
 	private String serverName = null;
-	private String host = null;
-	private int port = -1;
 
+	protected String host = null;
+	protected int port = -1;
+	private int timeout = -1;
+	
 	private ServerCommand() {
+		super();
+		init();
 	}
 	
-	public ServerCommand(String serverName, String host, int port, String command) {
+	public ServerCommand(String command) {
 		super(command);
-		this.serverName = serverName;
-		this.host = host;
-		this.port = port;
+		init();
 	}
 
-	public ServerCommand(String serverName, String host, int port, String command, String fileId) {
+	public ServerCommand(String command, String fileId) {
 		super(command);
-		this.serverName = serverName;
-		this.host = host;
-		this.port = port;
 		this.fileId = fileId;
+		init();
 	}
 	
-	public ServerCommand(String serverName, String host, int port, String command, String entity, int id) {
+	public ServerCommand(String command, String entity, long id) {
 		super(command);
-		this.serverName = serverName;
-		this.host = host;
-		this.port = port;
 		this.entity = entity;
 		this.id = id;
+		init();
 	}
 
-	public ServerCommand(String serverName, String host, int port, String command, String entity, int id, String domain) {
+	public ServerCommand(String command, String entity, long id, String domain) {
 		super(command);
-		this.serverName = serverName;
-		this.host = host;
-		this.port = port;
 		this.entity = entity;
 		this.id = id;
 		this.domain = domain;
+		init();
 	}
 	
-	public String getServerName() {
-		return this.serverName;
+	protected void init() {
+		// we must read these configs always, in some applications this may
+		// be changed by the user! 
+		serverName = BeetRootConfigurationManager.getInstance().getString("server_name");
+		if (serverName == null || serverName.length() == 0)
+			serverName = "solothurn";
+		
+		host = BeetRootConfigurationManager.getInstance().getString("admin_host");
+		port = BeetRootConfigurationManager.getInstance().getInt("admin_port");
+		
+		timeout = BeetRootConfigurationManager.getInstance().getInt("connection_timeout");
+        if (timeout == -1) {
+			timeout = 5000;
+			LOG.warn("Using 5 seconds for client connection timeout.");
+        }
+        timeout = timeout * 1000;			
 	}
 
+	public int getTimeout() {
+		return timeout;
+	}
+	
 	public String getHost() {
 		return host;
 	}
 	
 	public int getPort() {
 		return port;
+	}
+	
+	public String getServerName() {
+		return this.serverName;
 	}
 	
 	public String getCommand() {

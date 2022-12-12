@@ -35,27 +35,22 @@ import java.io.File;
 /**
  * Download.
  */
-public class Download {
+public class Download extends FileAction {
 
 	private String fileId = null;
-	private String fileName = null;
 	private File file = null;
 
 	/**
 	 * Download.
 	 * 
-	 * @param fileId unique fiel ID
+	 * @param fileId unique file ID
 	 * @param fileName file name
 	 * @param file temporary file to download
 	 */
 	public Download(String fileId, String fileName, File file) {
+		super(fileName);
 		this.file = file;
-		this.fileName = fileName;
 		this.fileId = fileId;
-	}
-
-	public String getFileName() {
-		return fileName;
 	}
 
 	public String getFileId() {

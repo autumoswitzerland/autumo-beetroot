@@ -31,18 +31,30 @@
 package ch.autumo.beetroot.server;
 
 /**
- * Find finder interface.
+ * Upload.
  */
-public interface FileFinder {
+public class Upload extends FileAction {
+
+	private long size = -1;
 
 	/**
-	 * Find a file. The file delivered within the download must be
-	 * physically temporarily available, so it can be delivered by
-	 * a stream.
-	 *   
-	 * @param uniqueFileId unique file id
-	 * @return download or null if file is not available
+	 * Upload.
+	 * 
+	 * @param size file size
+	 * @param fileName file name
 	 */
-	public Download findFile(String uniqueFileId);
+	public Upload(long size, String fileName) {
+		super(fileName);
+		this.size = size;
+	}
+	
+	public long getSize() {
+		return size;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return size == ((Upload)obj).size;
+	}
 	
 }

@@ -31,27 +31,18 @@
 package ch.autumo.beetroot.server;
 
 /**
- * File answer: only used when the server received a file from client!
+ * Server file action.
  */
-public class FileAnswer extends ClientAnswer {
+public class FileAction {
+	
+	private String fileName = null;
 
-	/**
-	 * Success constructor.
-	 * 
-	 * @param answer answer
-	 * @param fileId file id generated server side
-	 */
-	public FileAnswer(String answer, String fileId) {
-		super(answer, fileId);
+	public FileAction(String fileName) {
+		this.fileName = fileName;
 	}
 	
-	/**
-	 * Fail constructor.
-	 * 
-	 * @param answer answer (reason)
-	 * @param type failure type
-	 */
-	public FileAnswer(String answer, int type) {
-		super(answer, type);
+	public String getFileName() {
+		return fileName;
 	}
+	
 }

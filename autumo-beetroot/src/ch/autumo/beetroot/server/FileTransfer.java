@@ -61,9 +61,9 @@ public class FileTransfer {
 	public final static String CMD_FILE_GET = "FILE_GET";
 
 	/** file server default port */
-	public static int DEFAULT_PORT = 9777;
-	/** file server default port */
-	public static int DEFAULT_RECEIVER_PORT = 9779;
+	public static int DEFAULT_FILE_SERVER_PORT = 9777;
+	/** file receiver default port */
+	public static int DEFAULT_FILE_RECEIVER_PORT = 9779;
 	
 	/** default buffer length for sending bits of a file */
 	public static int DEFAULT_BUFFER_LEN = 32;
@@ -78,7 +78,7 @@ public class FileTransfer {
 	/** file server host */
 	private static String hostAdmin = null;
 	
-	/** client timeout iof configured */
+	/** client timeout if configured */
 	private static int clientTimeout = -1;
 	
 	/** use SSL sockets? */
@@ -97,15 +97,15 @@ public class FileTransfer {
 		// File server port
 		portFileServer = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_PORT);
 		if (portFileServer == -1) {
-			LOG.error("File server port not specified! Using port '" + DEFAULT_PORT + "'.");
-			portFileServer = DEFAULT_PORT;
+			LOG.error("File server port not specified! Using port '" + DEFAULT_FILE_SERVER_PORT + "'.");
+			portFileServer = DEFAULT_FILE_SERVER_PORT;
 		}
 
-		// File server port
+		// File receiver port
 		portFileReceiver = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_RECEIVER_PORT);
 		if (portFileReceiver == -1) {
-			//LOG.error("File receiver port not specified! Using port '" + DEFAULT_RECEIVER_PORT + "'.");
-			portFileReceiver = DEFAULT_RECEIVER_PORT;
+			LOG.error("File receiver port not specified! Using port '" + DEFAULT_FILE_RECEIVER_PORT + "'.");
+			portFileReceiver = DEFAULT_FILE_RECEIVER_PORT;
 		}
 		
 		// File server host
@@ -244,34 +244,24 @@ public class FileTransfer {
 	}
 	
 	/**
-	 * Read a server file server side.
-	 * 
-	 * @param in input stream
-	 * @param fileId unique file id
-	 * @return server temporary file or null, if file received was invalid
-	 * @throws IOException
-	 */
-	protected static File readFile(DataInputStream in, String fileId) throws IOException {
-	    return read(in, fileId);
-	}
-	
-	/**
 	 * Server side file read.
 	 * 
 	 * @param in input stream
+	 * @param fileName file name
+	 * @param size file size previously read!
 	 * @return server temporary file or null, if file received was invalid
 	 * @throws IOException
 	 */
-	private static File read(DataInputStream in, String fileName) throws IOException {
+	protected static File readFile(DataInputStream in, String fileName, long size) throws IOException {
 
+		long length = size;
 		final File f = new File(Utils.getTemporaryDirectory() + fileName);
 		final FileOutputStream fileOutputStream = new FileOutputStream(f);
-		long length = in.readLong();
 		final byte buffer[] = new byte[bufferLenKb];
 		int bytes = 0;
         while (length > 0 && (bytes = in.read(buffer, 0, (int)Math.min(buffer.length, length))) != -1) {
             fileOutputStream.write(buffer,0,bytes);
-            length -= bytes;      // read upto file size
+            length -= bytes; // read up to file size
         }
         fileOutputStream.close();
 		

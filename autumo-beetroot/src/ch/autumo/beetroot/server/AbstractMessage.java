@@ -41,6 +41,9 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 
@@ -49,22 +52,28 @@ import ch.autumo.beetroot.Constants;
  */
 public abstract class AbstractMessage {
 
+	protected final static Logger LOG = LoggerFactory.getLogger(AbstractMessage.class.getName());
+	
 	/** message part separator character */
 	public static final String MSG_PART_SEPARATOR = "#";
 
+	/** server name */
+	public static String serverName;
+
 	// Encrypt client-server-com?
+	protected static final boolean ENCRYPT;
+	
 	static {
 		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
 		ENCRYPT = (mode != null && mode.equalsIgnoreCase("cmd"));
 	}	
-	protected static final boolean ENCRYPT;
 	
 	private Map<String, String> messageMap = null;
 	
 	protected String message = "null";
 	protected String entity = "null";
 	protected String domain = "null";
-	protected int id = 0;
+	protected long id = 0;
 	protected String fileId = "null";
 
 	protected Serializable object = null;
@@ -89,7 +98,7 @@ public abstract class AbstractMessage {
 		return entity;
 	}
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

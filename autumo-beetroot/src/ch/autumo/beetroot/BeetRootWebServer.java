@@ -204,7 +204,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 		try {
 			
-	        timeout = BeetRootConfigurationManager.getInstance().getInt("ws_connection_timeout");
+	        timeout = BeetRootConfigurationManager.getInstance().getInt("connection_timeout");
 	        
 	        if (timeout == -1) {
 	        	
@@ -217,7 +217,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		} catch (Exception e) {
 			
 			timeout = 5000;
-			LOG.error("Couldn't read 'ws_connection_timeout' from configuration. Using 5 seconds!");
+			LOG.error("Couldn't read 'connection_timeout' from configuration. Using 5 seconds!");
 		}
 		start(timeout, daemon);
 	}

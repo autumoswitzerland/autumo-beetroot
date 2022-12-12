@@ -64,6 +64,8 @@ public class Communicator {
 	public final static String CMD_HEALTH = "HEALTH";
 	/** File request */
 	public final static String CMD_FILE_REQUEST = "FILE_REQUEST";
+	/** File receive request */
+	public final static String CMD_FILE_RECEIVE_REQUEST = "FILE_RECEIVE_REQUEST";
 
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
@@ -90,23 +92,12 @@ public class Communicator {
 	 * @throws Excpetion
 	 */
 	public static ClientAnswer sendServerCommand(ServerCommand command) throws Exception {
-		return sendServerCommand(command, TIMEOUT * 1000);
-	}
-	
-	/**
-	 * Send a server command client side.
-	 * 
-	 * @param command server command
-	 * @param command timeout socket timeout in milliseconds
-	 * @return client answer
-	 * @throws Excpetion
-	 */
-	public static ClientAnswer sendServerCommand(ServerCommand command, int timeout) throws Exception {
 		
 		//send signal and end !
 		Socket socket = null;
 		DataOutputStream output = null;
 		DataInputStream input = null;
+		int timeout = command.getTimeout();
 		try {
 			
 			if (clientTimeout > 0)
