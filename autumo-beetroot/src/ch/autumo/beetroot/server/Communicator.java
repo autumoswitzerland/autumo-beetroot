@@ -52,7 +52,7 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 
 /**
- * Client/Server communication
+ * Client/Server communication.
  */
 public class Communicator {
 
@@ -62,10 +62,8 @@ public class Communicator {
 	public final static String CMD_STOP = "STOP";
 	/** Health command */
 	public final static String CMD_HEALTH = "HEALTH";
-	/** File get request */
-	public final static String CMD_FILE_GET = "FILE_GET";
-	/** File send request */
-	public final static String CMD_FILE_SEND = "FILE_SEND";
+	/** File request */
+	public final static String CMD_FILE_REQUEST = "FILE_REQUEST";
 
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
@@ -209,23 +207,20 @@ public class Communicator {
 	    return ServerCommand.parse(read(in));
 	}
 	
+	
+	// Helper functions
+	//------------------------------------------------------------------------------
+	
 	/**
-	 * Server side read.
+	 * Server- or client-side read.
 	 * 
 	 * @param in input stream
 	 * @return unparsed data
 	 * @throws IOException
 	 */
-	private static String read(DataInputStream in) throws IOException {
+	public static String read(DataInputStream in) throws IOException {
 		
 		final int length = in.readInt();
-		
-		/*
-		if (length > 256) {
-			// prevent other requests, max length should not be longer than 256 bytes
-			return null; 
-		}
-		*/
 		
 		final byte[] messageByte = new byte[length];
 	    boolean end = false;
@@ -249,11 +244,6 @@ public class Communicator {
 	    
 	    return dataString.toString();
 	}	
-	
-	
-	
-	// Helper functions
-	//------------------------------------------------------------------------------
 	
 	/**
 	 * Safe close for closeable object  (e.g. stream, socket).

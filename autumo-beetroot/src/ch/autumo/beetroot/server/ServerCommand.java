@@ -54,6 +54,14 @@ public class ServerCommand extends AbstractMessage {
 		this.port = port;
 	}
 
+	public ServerCommand(String serverName, String host, int port, String command, String fileId) {
+		super(command);
+		this.serverName = serverName;
+		this.host = host;
+		this.port = port;
+		this.fileId = fileId;
+	}
+	
 	public ServerCommand(String serverName, String host, int port, String command, String entity, int id) {
 		super(command);
 		this.serverName = serverName;
@@ -92,11 +100,9 @@ public class ServerCommand extends AbstractMessage {
 	@Override
 	public String getTransferString() throws IOException {
 		
-		final String ts; 
+		String ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + fileId + MSG_PART_SEPARATOR + domain; 
 		if (super.object != null)
-			ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + domain + MSG_PART_SEPARATOR + super.serializeObject();
-		else
-			ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + domain;
+			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
 		if (ENCRYPT)
 			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
@@ -118,14 +124,15 @@ public class ServerCommand extends AbstractMessage {
 		
 		final ServerCommand command = new ServerCommand();
 		
-		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 6);
+		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 7);
 		command.serverName = parts[0];
 		command.message = parts[1];
 		command.entity = parts[2];
 		command.id = Integer.valueOf(parts[3]).intValue();
-		command.domain = parts[4];
-		if (parts.length == 6) {
-			command.deserializeObject(parts[5]);
+		command.fileId = parts[4];
+		command.domain = parts[5];
+		if (parts.length == 7) {
+			command.deserializeObject(parts[6]);
 		}
 		
 		return command;

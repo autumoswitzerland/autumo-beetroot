@@ -101,6 +101,26 @@ public class Constants {
 	public static final String KEY_ADMIN_PORT = "admin_port";
 
 	/**
+	 * Start file server?
+	 */
+	public static final String KEY_ADMIN_FILE_SERVER = "admin_file_server_start";
+	
+	/**
+	 * Admin file server buffer size.
+	 */
+	public static final String KEY_ADMIN_FILE_BUF_SIZE = "admin_file_buffer_size";
+	
+	/**
+	 * File server port.
+	 */
+	public static final String KEY_ADMIN_FILE_PORT = "admin_file_port";
+
+	/**
+	 * File receiver port (file-store end-point).
+	 */
+	public static final String KEY_ADMIN_FILE_RECEIVER_PORT = "admin_file_receiver_port";
+	
+	/**
 	 * Admin server/shutdown host.
 	 */
 	public static final String KEY_ADMIN_HOST = "admin_host";
@@ -146,7 +166,7 @@ public class Constants {
 	public static final String KEY_WS_START = "ws_start";
 
 	/**
-	 * HTTPS fro web server?
+	 * HTTPS for web server?
 	 */
 	public static final String KEY_WS_HTTPS = "ws_https";
 	

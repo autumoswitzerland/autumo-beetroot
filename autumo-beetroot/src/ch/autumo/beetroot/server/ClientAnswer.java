@@ -41,6 +41,8 @@ import ch.autumo.beetroot.utils.Utils;
 public class ClientAnswer extends AbstractMessage {
 
 	public static final int TYPE_OK = 1;
+	public static final int TYPE_FILE_OK = 2;
+	public static final int TYPE_FILE_NOK = -2;
 	public static final int TYPE_ERROR = -1;
 	
 	private int type = TYPE_OK;
@@ -55,6 +57,18 @@ public class ClientAnswer extends AbstractMessage {
 
 	public ClientAnswer(String answer) {
 		super(answer);
+	}
+
+	public ClientAnswer(String answer, int type) {
+		super(answer);
+		this.type = type;
+		this.fileId = null;
+	}
+	
+	public ClientAnswer(String answer, String fileId) {
+		super(answer);
+		this.type = TYPE_FILE_OK;
+		this.fileId = fileId;
 	}
 	
 	public ClientAnswer(String answer, String entity, int id) {
@@ -80,14 +94,6 @@ public class ClientAnswer extends AbstractMessage {
 		return message;
 	}
 	
-	public String getEntity() {
-		return entity;
-	}
-	
-	public int getId() {
-		return id;
-	}
-	
 	public String getErrorReason() {
 		return errorReason;
 	}
@@ -95,11 +101,9 @@ public class ClientAnswer extends AbstractMessage {
 	@Override
 	public String getTransferString() throws IOException {
 
-		final String ts; 
+		String ts = type + MSG_PART_SEPARATOR + message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + fileId + MSG_PART_SEPARATOR + errorReason.trim(); 
 		if (super.object != null)
-			ts = type + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + errorReason.trim() + super.serializeObject();
-		else
-			ts = type + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + errorReason.trim();
+			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
 		if (ENCRYPT)
 			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
@@ -121,14 +125,15 @@ public class ClientAnswer extends AbstractMessage {
 		
 		final ClientAnswer answer = new ClientAnswer();
 		
-		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 6);
+		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 7);
 		answer.type = Integer.valueOf(parts[0]).intValue();
 		answer.message = parts[1];
 		answer.entity = parts[2];
 		answer.id = Integer.valueOf(parts[3]).intValue();
-		answer.errorReason = parts[4];
-		if (parts.length == 6) {
-			answer.deserializeObject(parts[5]);
+		answer.fileId = parts[4];
+		answer.errorReason = parts[5];
+		if (parts.length == 7) {
+			answer.deserializeObject(parts[6]);
 		}
 		
 		return answer;

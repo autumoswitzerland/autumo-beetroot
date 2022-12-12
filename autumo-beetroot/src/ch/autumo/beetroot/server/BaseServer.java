@@ -70,6 +70,8 @@ public abstract class BaseServer {
 	
     private AdminListener adminListener = null;
 	private ServerSocket serverSocket = null;
+
+    private FileServer fileServer = null;
 	
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
@@ -88,9 +90,8 @@ public abstract class BaseServer {
 	private boolean hookShutdown = false;
 	
 	// colored text strings
-	protected String ansiServerName = null;
-	protected String ansiErrServerName = null;
-	
+	protected static String ansiServerName = null;
+	protected static String ansiErrServerName = null;
 	
 	static {
     	
@@ -168,8 +169,8 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 
 		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
-		this.ansiServerName = Colors.cyan("["+ name +"]");
-		this.ansiErrServerName = Colors.red("["+ name +"]");
+		ansiServerName = Colors.cyan("["+ name +"]");
+		ansiErrServerName = Colors.red("["+ name +"]");
 		
 		
 		//------------------------------------------------------------------------------
@@ -206,12 +207,12 @@ public abstract class BaseServer {
 			
 			if (portAdminServer == -1) {
 				LOG.error("Admin server port not specified!");
-				System.err.println(this.ansiErrServerName + " Admin server port not specified!");
+				System.err.println(ansiErrServerName + " Admin server port not specified!");
 				Utils.fatalExit();
 			}
 		} catch (Exception e) {
 			LOG.error("Admin server port has an invalid value: '" + v + "' !", e);
-			System.err.println(this.ansiErrServerName + " Admin server port has an invalid value: '" + v + "' !");
+			System.err.println(ansiErrServerName + " Admin server port has an invalid value: '" + v + "' !");
 			Utils.fatalExit();
 		}
 		
@@ -221,7 +222,7 @@ public abstract class BaseServer {
 			
 		} catch (Exception e) {
 			LOG.error("Web server port has an invalid value: '" + v + "'!", e);
-			System.err.println(this.ansiErrServerName + " Web server port has an invalid value: '" + v + "'!");
+			System.err.println(ansiErrServerName + " Web server port has an invalid value: '" + v + "'!");
 			Utils.fatalExit();
 		}
 		
@@ -264,11 +265,11 @@ public abstract class BaseServer {
 			
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
-			System.err.println(this.ansiErrServerName + " Couldn't decrypt DB password!");
+			System.err.println(ansiErrServerName + " Couldn't decrypt DB password!");
 			Utils.fatalExit();
 		} catch (Exception e) {
 			LOG.error("Couldn't create DB manager!", e);
-			System.err.println(this.ansiErrServerName + " Couldn't create DB manager!");
+			System.err.println(ansiErrServerName + " Couldn't create DB manager!");
 			Utils.fatalExit();
 		}
 
@@ -309,7 +310,7 @@ public abstract class BaseServer {
 			else
 				LoggingFactory.getInstance().initialize(rootPath + "cfg/logging.xml");
 		} catch (Exception e) {
-			System.err.println(this.ansiErrServerName + " Logging configuration initialization failed!");
+			System.err.println(ansiErrServerName + " Logging configuration initialization failed!");
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
@@ -355,7 +356,7 @@ public abstract class BaseServer {
 		
 		LOG.info("Server starting...");
 		if (LOG.isErrorEnabled())
-			System.out.println(this.ansiServerName + " Server starting...");
+			System.out.println(ansiServerName + " Server starting...");
 		
 		// Start web server
 		if (startWebServer) {
@@ -363,14 +364,14 @@ public abstract class BaseServer {
 				
 				LOG.info("Starting internal web server...");
 				if (LOG.isErrorEnabled())
-					System.out.println(this.ansiServerName + " Starting internal web server...");
+					System.out.println(ansiServerName + " Starting internal web server...");
 				
 				try {
 					Class.forName("javax.servlet.ServletOutputStream");
 				} catch (ClassNotFoundException e1) {
 					LOG.error("Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
-					System.err.println(this.ansiErrServerName + " Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
-					System.err.println(this.ansiErrServerName + " Shutting down!");
+					System.err.println(ansiErrServerName + " Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
+					System.err.println(ansiErrServerName + " Shutting down!");
 					Utils.fatalExit();
 				}
 				
@@ -405,20 +406,26 @@ public abstract class BaseServer {
 					
 				if (LOG.isErrorEnabled())
 					if (https)
-						System.out.println(this.ansiServerName + " HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
+						System.out.println(ansiServerName + " HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
 					else
-						System.out.println(this.ansiServerName + " HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
+						System.out.println(ansiServerName + " HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
 				
 			} catch (Exception e) {
 	
 				LOG.error("Cannot start web-server on port "+portWebServer+" - Already running? Stopping.", e);
-				System.err.println(this.ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Already running? Stopping.");
+				System.err.println(ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Already running? Stopping.");
 				Utils.fatalExit();
 			}
 		}
 
+		final boolean fileServerStart = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
+		if (fileServerStart) {
+			// File listener and server thread
+			fileServer = new FileServer(this);
+			fileServer.start();
+		}
 		
-		// Admin listener and serevr thread
+		// Admin listener and server thread
 		adminListener = new AdminListener(portAdminServer);
 		final Thread server = new Thread(adminListener);
 		server.setName(this.name+"-Server");
@@ -426,13 +433,13 @@ public abstract class BaseServer {
 		
 		LOG.info("Admin listener started on port "+portAdminServer+".");
 		if (LOG.isErrorEnabled())
-			System.out.println(this.ansiServerName + " Admin listener started on port "+portAdminServer+".");
+			System.out.println(ansiServerName + " Admin listener started on port "+portAdminServer+".");
 
 		this.afterStart();
 		
 		LOG.info("Server started.");
 		if (LOG.isErrorEnabled())
-			System.out.println(this.ansiServerName + " Server started.");
+			System.out.println(ansiServerName + " Server started.");
 	}
 
 	/**
@@ -446,22 +453,38 @@ public abstract class BaseServer {
 			
 			LOG.info("Stopping internal web server...");
 			if (LOG.isErrorEnabled())
-				System.out.println(this.ansiServerName + " Stopping internal web server...");
+				System.out.println(ansiServerName + " Stopping internal web server...");
 
 			webServer.stop();
 			
 			LOG.info("Internal web server stopped.");
 			if (LOG.isErrorEnabled())
-				System.out.println(this.ansiServerName + " Internal web server stopped.");
+				System.out.println(ansiServerName + " Internal web server stopped.");
 		}
 
 		this.afterStop();
 		
 		LOG.info(name + " server stopped.");
 		if (LOG.isErrorEnabled())
-			System.out.println(this.ansiServerName + " Server stopped.");
+			System.out.println(ansiServerName + " Server stopped.");
 	}
 
+	/**
+	 * Server stopped?
+	 * @return true is so
+	 */
+	public boolean isStopped() {
+		return this.serverStop;
+	}
+
+	/**
+	 * Is hook-shutdown in progress?
+	 * @return true is so
+	 */
+	public boolean isHookShutdown() {
+		return this.serverStop;
+	}
+	
 	/**
 	 * OS shutdown hook. Don't overwrite this, unless you know
 	 * exactly what you are doing. This implementation calls
@@ -481,7 +504,7 @@ public abstract class BaseServer {
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("");
-						System.out.println(BaseServer.this.ansiServerName + " " + Colors.yellow("[CTRL-C]") + " signal received! Shutting down...");
+						System.out.println(BaseServer.ansiServerName + " " + Colors.yellow("[CTRL-C]") + " signal received! Shutting down...");
 					}
 					
 					BaseServer.this.serverStop = true;
@@ -523,13 +546,25 @@ public abstract class BaseServer {
 		if (command.getCommand().equals(Communicator.CMD_HEALTH)) {
 			return new HealthAnswer();
 		}
-		// file get request
-		if (command.getCommand().equals(Communicator.CMD_FILE_GET)) {
-			//return new HealthAnswer();
-		}
-		// file send request
-		if (command.getCommand().equals(Communicator.CMD_FILE_SEND)) {
-			//return new HealthAnswer();
+		// file request
+		if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
+			
+			if (fileServer != null) {
+				final String uniqueFileId = command.getFileId();
+				final String fName = null; // access from file store TODO
+				boolean available = true;
+				if (available) { // available !
+					File file = null;
+					if (fileServer != null)
+						fileServer.addToDownloadQueue(new Download(uniqueFileId, fName, file));
+					return new ClientAnswer(fName, uniqueFileId);
+				} else {
+					return new ClientAnswer(fName, ClientAnswer.TYPE_FILE_NOK);
+				}
+			} else {
+				LOG.error("A client requested a file, but file server is not running!");
+				return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
+			}			
 		}
 		
 		// standard answer = OK
@@ -583,7 +618,6 @@ public abstract class BaseServer {
 		}
 	}
 	
-	
 	/**
 	 * Admin server listener for operation signals.
 	 */
@@ -592,7 +626,8 @@ public abstract class BaseServer {
 		private int listenerPort = -1;
 		
 		/**
-		 * Create admin listener on specific port
+		 * Create admin listener on specific port.
+		 * 
 		 * @param listenerPort listener port
 		 */
 		public AdminListener(int listenerPort) {
@@ -613,7 +648,7 @@ public abstract class BaseServer {
 					
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
-				System.err.println(BaseServer.this.ansiErrServerName + " Admin server listener cannot be created on port '" + this.listenerPort + "'!");
+				System.err.println(BaseServer.ansiErrServerName + " Admin server listener cannot be created on port '" + this.listenerPort + "'!");
 				Utils.fatalExit();
 			}
 		}
@@ -645,7 +680,12 @@ public abstract class BaseServer {
 		        	if (!BaseServer.this.serverStop) {
 		        		if (serverSocket != null && serverSocket.isClosed()) {
 		        			try {
-			    				serverSocket = new ServerSocket(this.listenerPort);
+		        				if (sslSockets) {
+		        					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
+		        					serverSocket = socketFactory.createServerSocket(this.listenerPort);
+		        				} else {
+		        					serverSocket = new ServerSocket(this.listenerPort);
+		        				}
 			    				if (serverTimeout > 0)
 			    					serverSocket.setSoTimeout(serverTimeout);
 		        			} catch (IOException e) {
@@ -759,7 +799,7 @@ public abstract class BaseServer {
 				LOG.info("[STOP] signal received! Shutting down...");
 				if (LOG.isErrorEnabled()) {
 					System.out.println("");
-					System.out.println(BaseServer.this.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
+					System.out.println(BaseServer.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
 				}
 				
 				// only escape of this loop
@@ -782,7 +822,7 @@ public abstract class BaseServer {
 			} catch (IOException e) {
 	        	
 				LOG.error("Admin server client response failed! We recommend to restart the server!", e);
-				System.err.println(BaseServer.this.ansiErrServerName + " Admin server client response failed! We recommend to restart the server!");
+				System.err.println(BaseServer.ansiErrServerName + " Admin server client response failed! We recommend to restart the server!");
 				
 	        } finally {
 	        	
@@ -791,10 +831,7 @@ public abstract class BaseServer {
 	        	Communicator.safeClose(clientSocket);
 			}			
 		}
-		
 	}
-
-	
 	
 	/**
 	 * Help class for shell script.

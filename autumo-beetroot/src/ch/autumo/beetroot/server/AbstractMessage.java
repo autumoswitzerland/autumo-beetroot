@@ -65,6 +65,7 @@ public abstract class AbstractMessage {
 	protected String entity = "null";
 	protected String domain = "null";
 	protected int id = 0;
+	protected String fileId = "null";
 
 	protected Serializable object = null;
 
@@ -94,6 +95,10 @@ public abstract class AbstractMessage {
 
 	public String getDomain() {
 		return domain;
+	}
+
+	public String getFileId() {
+		return fileId;
 	}
 	
 	protected void deserializeObject(String serializedObject) throws IOException {
@@ -164,7 +169,7 @@ public abstract class AbstractMessage {
 	/**
 	 * Checks if this key is contained.
 	 * @param key key
-	 * @return true if so, otehrwise false
+	 * @return true if so, otherwise false
 	 */
 	public boolean contains(String key) {
 		return this.getMessageValue(key) != null;
