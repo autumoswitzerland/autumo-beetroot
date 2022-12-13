@@ -33,10 +33,13 @@ package ch.autumo.beetroot;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -337,6 +340,24 @@ public class BeetRootConfigurationManager {
 		return v;
 	}
 
+	/**
+	 * Get all values starting with a specific key-prefix.
+	 * 
+	 * @param keyPrefix key prefix, e.g. 'dispatcher_'
+	 * @return collected values
+	 */
+	public String[] getValues(String keyPrefix) {
+		
+		final List<String> collectedVals = new ArrayList<>();
+		final Set<Object> keys = generalProps.keySet();
+		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
+			final String key = (String) iterator.next();
+			if (key.startsWith(keyPrefix))
+				collectedVals.add(generalProps.getProperty(keyPrefix));
+		}
+		return collectedVals.toArray(new String[collectedVals.size()]);
+	}
+	
 	/**
 	 * Get a string value; no warning if value is not available.
 	 * 

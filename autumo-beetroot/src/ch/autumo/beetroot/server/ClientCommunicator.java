@@ -35,8 +35,8 @@ public class ClientCommunicator extends Communicator {
 			String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
 			try {
 				final String keystorepw = pwEncoded ? 
-						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
+						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
+							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
 		        socketFactory = new SecureSocketFactory(SSLUtils.makeSSLSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
 			} catch (Exception e) {
 				LOG.error("Cannot make client calls secure (SSL)! ", e);

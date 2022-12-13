@@ -67,7 +67,7 @@ public class Constants {
 	public static final int SECRET_USER_KEY_DEFAULT_LEN = 20;
 	
 	
-	// Config specific
+	// General
 	//------------------------------------------------------------------------------
 	
     /**
@@ -95,6 +95,25 @@ public class Constants {
 	 */
 	public static final String USER_SETTINGS_URL_PART = "users/settings";
 	
+	/**
+	 * Yes!
+	 */
+	public static final String YES = "yes";
+
+	/**
+	 * No show identifier for not showing certain columns and values defined in 'columns.cfg'.
+	 */
+	public static final String GUI_COL_NO_SHOW = "NO_SHOW";
+	
+	/**
+	 * QR image size.
+	 */
+	public static final int QR_IMG_SIZE = 320;
+	
+	
+	// Server-specific
+	//------------------------------------------------------------------------------
+
 	/**
 	 * Admin server/shutdown port.
 	 */
@@ -141,6 +160,25 @@ public class Constants {
 	public static final String KEY_ADMIN_PW_ENC = "admin_pw_encoded";
 
 	/**
+	 * SSL Certificate key-store.
+	 */
+	public static final String KEY_KEYSTORE_FILE = "keystore";
+
+	/**
+	 * Key-store password.
+	 */
+	public static final String KEY_KEYSTORE_PW = "keystore_password";
+
+	/**
+	 * Sec key seed key.
+	 */
+	public static final String SEC_KEY_SEED = "secret_key_seed";
+	
+	
+	// Web-Server-specific
+	//------------------------------------------------------------------------------
+	
+	/**
 	 * Prefix for temporary files.
 	 */
 	public static final String KEY_WS_TMP_FILE_PREFIX = "ws_tmp_file_prefix";
@@ -176,20 +214,14 @@ public class Constants {
 	public static final String KEY_WS_HTTPS = "ws_https";
 	
 	/**
-	 * SSL certficate keystore.
-	 */
-	public static final String KEY_KEYSTORE_FILE = "ws_ks";
-
-	/**
 	 * Use CSRF tokens?
 	 */
 	public static final String KEY_WS_USE_CSRF_TOKENS = "ws_use_csrf_tokens";
-	
-	/**
-	 * Web server password.
-	 */
-	public static final String KEY_WS_KEYSTORE_PW = "ws_ks_password";
 
+	
+	// Web-specific
+	//------------------------------------------------------------------------------
+	
 	/**
 	 * How many records should be shown per index web page?
 	 */
@@ -204,26 +236,6 @@ public class Constants {
 	 * Default web handler entity.
 	 */
 	public static final String KEY_WEB_DEFAULT_ENTITY = "web_default_entity";
-	
-	/**
-	 * Yes!
-	 */
-	public static final String YES = "yes";
-
-	/**
-	 * Sec key seed key.
-	 */
-	public static final String SEC_KEY_SEED = "secret_key_seed";
-
-	/**
-	 * No show identifier for not showing certain columns and values defined in 'columns.cfg'.
-	 */
-	public static final String GUI_COL_NO_SHOW = "NO_SHOW";
-	
-	/**
-	 * QR image size.
-	 */
-	public static final int QR_IMG_SIZE = 320;
 
 	
 	// SQL specific

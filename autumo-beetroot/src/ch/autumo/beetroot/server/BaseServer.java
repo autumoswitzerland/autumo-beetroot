@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -69,6 +71,8 @@ public abstract class BaseServer {
 	private static String rootPath = null;
 
 	private BeetRootConfigurationManager configMan = null;
+	
+	private Map<String, Dispatcher> dispatchers = new HashMap<>();
 	
 	protected ServerSocketFactory serverSocketFactory = null;
 	
@@ -283,6 +287,29 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
+		// Server dispatcher initialization
+		final String ds[] = configMan.getValues("dispatcher_");
+		for (int i = 0; i < ds.length; i++) {
+			Class<?> clazz;
+			String currDisp = null;
+			try {
+				currDisp = ds[i];
+				clazz = Class.forName(currDisp);
+				final Constructor<?> constructor = clazz.getDeclaredConstructor();
+	            constructor.setAccessible(true);
+	            final Dispatcher d = (Dispatcher) constructor.newInstance();
+	            // add dispatcher that handles server commands of distributed components/modules
+	            dispatchers.put(d.getId(), d);
+			} catch (Exception ex) {
+				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
+				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");
+				Utils.fatalExit();
+			}			
+		}
+		
+		
+		//------------------------------------------------------------------------------
+		
 		
 		// OPERATION
 		final String operation = params[0];
@@ -397,8 +424,8 @@ public abstract class BaseServer {
 				if (https) {
 					final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
 					final String keystorepw = pwEncoded ? 
-							BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-								BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
+							BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
+								BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
 					
 					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
 				}
@@ -424,12 +451,12 @@ public abstract class BaseServer {
 			}
 		}
 
-		if (sslSockets) {
+		if (sslSockets) { // For C/S-communication
 			final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
 			try {
 				final String keystorepw = pwEncoded ? 
-						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
+						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
+							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
 		        this.serverSocketFactory = new SecureServerSocketFactory(SSLUtils.makeSSLServerSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
 			} catch (Exception e) {
 				LOG.error("Cannot make server secure (SSL)! Stopping.", e);
@@ -575,11 +602,11 @@ public abstract class BaseServer {
 	
     /**
      * Send a server command.
-     * @param command serevr command
+     * @param command server command
      */
 	private void sendServerCommand(String command) {
 		try {
-			ClientCommunicator.sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, command));
+			ClientCommunicator.sendServerCommand(new ServerCommand(ServerCommand.DISPATCHER_ID_INTERNAL, name, "localhost", portAdminServer, command));
 		} catch (Exception e) {
 			LOG.error("Send "+command+" server command failed!", e);
 		}
@@ -589,50 +616,71 @@ public abstract class BaseServer {
 	 * This method is called when a server command has been received.
 	 * At this point security checks have been made.
 	 * 
+	 * Usually mustn't be overwritten, because configured module/component
+	 * dispatchers do the work beside internal commands. 
+	 * 
 	 * @param command received server command
 	 * @return client answer
 	 */
-	public ClientAnswer processServerCommand(ServerCommand command) {
+	protected ClientAnswer processServerCommand(ServerCommand command) {
 		
-		// shutdown
-		if (command.getCommand().equals(Communicator.CMD_STOP)) {
-			return new StopAnswer();
-		}
-		// health request
-		if (command.getCommand().equals(Communicator.CMD_HEALTH)) {
-			return new HealthAnswer();
-		}
-		// file request
-		if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
+		// --- 1. Internal commands without components/modules
+		if (command.getDispatcherId() == ServerCommand.DISPATCHER_ID_INTERNAL) {
 			
-			if (startFileServer) {
-				Download download = null;
-				try {
-					download = fileStorage.findFile(command.getFileId());
-				} catch (Exception e) {
-					LOG.error("Couldn't find file wiht ID ''!", e);
-					System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
-					download = null;
-				}
+			// shutdown
+			if (command.getCommand().equals(Communicator.CMD_STOP)) {
+				return new StopAnswer();
+			}
+			// health request
+			if (command.getCommand().equals(Communicator.CMD_HEALTH)) {
+				return new HealthAnswer();
+			}
+			// file request
+			if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 				
-				if (download != null) { 
-					fileServer.addToDownloadQueue(download);
-					return new ClientAnswer(download.getFileName(), download.getFileId());
+				if (startFileServer) {
+					Download download = null;
+					try {
+						download = fileStorage.findFile(command.getFileId());
+					} catch (Exception e) {
+						LOG.error("Couldn't find file wiht ID ''!", e);
+						System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
+						download = null;
+					}
+					
+					if (download != null) { 
+						fileServer.addToDownloadQueue(download);
+						return new ClientAnswer(download.getFileName(), download.getFileId());
+					} else {
+						return new ClientAnswer("No file found with unique file id '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
+					}
 				} else {
-					return new ClientAnswer("No file found with unique file id '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
+					LOG.error("A client requested a file, but file server is not running!");
+					return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
+				}			
+			}
+			// file receive request
+			if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
+				
+				if (startFileServer) {
+					final Upload upload = new Upload(command.getId(), command.getEntity()); 
+					fileServer.addToUploadQueue(upload);
+					return new ClientAnswer(command.getEntity(), "FILE", command.getId());
 				}
-			} else {
-				LOG.error("A client requested a file, but file server is not running!");
-				return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
-			}			
-		}
-		// file receive request
-		if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
+			}
 			
-			if (startFileServer) {
-				final Upload upload = new Upload(command.getId(), command.getEntity()); 
-				fileServer.addToUploadQueue(upload);
-				return new ClientAnswer(command.getEntity(), "FILE", command.getId());
+		// --- 2. module/component dispatchers
+		} else { 
+			
+			final String did = command.getDispatcherId();
+			final Dispatcher dispatcher = dispatchers.get(did);
+			if (dispatcher != null) {
+				
+				// dispatch server command
+				return dispatcher.dispatch(command);
+				
+			} else {
+				LOG.error("A client send a server command with invalid dispatcher ID '"+did+"'!");
 			}
 		}
 		

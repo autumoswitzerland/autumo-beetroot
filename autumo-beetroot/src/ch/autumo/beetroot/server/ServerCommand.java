@@ -41,43 +41,92 @@ import ch.autumo.beetroot.utils.Utils;
  */
 public class ServerCommand extends AbstractMessage {
 
+	/** Dispatcher ID for internal server-commands */
+	public static final String DISPATCHER_ID_INTERNAL = "beetroot-internal";
+	
 	private String serverName = null;
 
+	private String dispatcherId = null;
+	
 	protected String host = null;
 	protected int port = -1;
 	private int timeout = -1;
-	
+
+	/**
+	 * Internal constructor.
+	 */
 	private ServerCommand() {
 		super();
 		init();
 	}
 	
-	public ServerCommand(String command) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param dispatcherId dispatcher ID
+	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * @param command server command
+	 */
+	public ServerCommand(String dispatcherId, String command) {
 		super(command);
+		this.dispatcherId = dispatcherId;
 		init();
 	}
 
-	public ServerCommand(String command, String fileId) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param dispatcherId dispatcher ID
+	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * @param command server command
+	 * @param fileId unique file ID
+	 */
+	public ServerCommand(String dispatcherId, String command, String fileId) {
 		super(command);
+		this.dispatcherId = dispatcherId;
 		this.fileId = fileId;
 		init();
 	}
 	
-	public ServerCommand(String command, String entity, long id) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param dispatcherId dispatcher ID
+	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * @param command server command
+	 * @param entity entity name
+	 * @param id unique id
+	 */
+	public ServerCommand(String dispatcherId, String command, String entity, long id) {
 		super(command);
+		this.dispatcherId = dispatcherId;
 		this.entity = entity;
 		this.id = id;
 		init();
 	}
 
-	public ServerCommand(String command, String entity, long id, String domain) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param dispatcherId dispatcher ID
+	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * @param command server command
+	 * @param entity entity name
+	 * @param id unique id
+	 * @param domain domain name
+	 */
+	public ServerCommand(String dispatcherId, String command, String entity, long id, String domain) {
 		super(command);
+		this.dispatcherId = dispatcherId;
 		this.entity = entity;
 		this.id = id;
 		this.domain = domain;
 		init();
 	}
 	
+	/**
+	 * Initialize configuration.
+	 */
 	protected void init() {
 		// we must read these configs always, in some applications this may
 		// be changed by the user! 
@@ -96,6 +145,14 @@ public class ServerCommand extends AbstractMessage {
         timeout = timeout * 1000;			
 	}
 
+	/**
+	 * Get dispatcher id {@link ch.autumo.beetroot.server.Dispatcher}.
+	 * @return dispatcher id
+	 */
+	public String getDispatcherId() {
+		return dispatcherId;
+	}
+	
 	public int getTimeout() {
 		return timeout;
 	}
@@ -119,7 +176,7 @@ public class ServerCommand extends AbstractMessage {
 	@Override
 	public String getTransferString() throws IOException {
 		
-		String ts = serverName + MSG_PART_SEPARATOR +  message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + fileId + MSG_PART_SEPARATOR + domain; 
+		String ts = serverName + MSG_PART_SEPARATOR + dispatcherId + MSG_PART_SEPARATOR + message.trim() + MSG_PART_SEPARATOR + entity.trim() + MSG_PART_SEPARATOR + id + MSG_PART_SEPARATOR + fileId + MSG_PART_SEPARATOR + domain; 
 		if (super.object != null)
 			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
@@ -145,13 +202,14 @@ public class ServerCommand extends AbstractMessage {
 		
 		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 7);
 		command.serverName = parts[0];
-		command.message = parts[1];
-		command.entity = parts[2];
-		command.id = Integer.valueOf(parts[3]).intValue();
-		command.fileId = parts[4];
-		command.domain = parts[5];
-		if (parts.length == 7) {
-			command.deserializeObject(parts[6]);
+		command.dispatcherId = parts[1];
+		command.message = parts[2];
+		command.entity = parts[3];
+		command.id = Integer.valueOf(parts[4]).intValue();
+		command.fileId = parts[5];
+		command.domain = parts[6];
+		if (parts.length == 8) {
+			command.deserializeObject(parts[7]);
 		}
 		
 		return command;

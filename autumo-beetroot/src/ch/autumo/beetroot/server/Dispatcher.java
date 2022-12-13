@@ -30,31 +30,25 @@
  */
 package ch.autumo.beetroot.server;
 
-import ch.autumo.beetroot.BeetRootConfigurationManager;
-
 /**
- * File command.
+ * Dispatcher for server commands received server-side;
+ * every remote component must implement a dispatcher.
  */
-public class FileCommand extends ServerCommand {
+public interface Dispatcher {
 
 	/**
-	 * File command to send before sending a file to
-	 * server.
-	 * 
-	 * @param fileName file name
-	 * @param size file size
+	 * Returns an unique ID for this dispatcher.
+	 * @return unique ID
 	 */
-	public FileCommand(String fileName, long size) {
-		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_RECEIVE_REQUEST, fileName, size);
-		init();
-	}
-
-	@Override
-	protected void init() {
-		super.init();
-		
-		host = BeetRootConfigurationManager.getInstance().getString("admin_host");
-		port = BeetRootConfigurationManager.getInstance().getInt("admin_port");
-	}
+	public String getId();
+	
+	/**
+	 * Dispatch server command and deliver an answer for
+	 * the client.
+	 * 
+	 * @param serverCommand server command
+	 * @return client answer
+	 */
+	public ClientAnswer dispatch(ServerCommand serverCommand);
 	
 }
