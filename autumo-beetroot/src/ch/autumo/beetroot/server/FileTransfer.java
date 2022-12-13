@@ -30,18 +30,12 @@
  */
 package ch.autumo.beetroot.server;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,30 +63,15 @@ public class FileTransfer {
 	public static int DEFAULT_BUFFER_LEN = 32;
 	
 	/** buffer length for sending bits of a file */
-	private static int bufferLenKb = DEFAULT_BUFFER_LEN;
+	protected static int bufferLenKb = DEFAULT_BUFFER_LEN;
 	
 	/** file server port */
-	private static int portFileServer = -1;
+	protected static int portFileServer = -1;
 	/** file receiver port (file-store end-point) */
-	private static int portFileReceiver = -1;
-	/** file server host */
-	private static String hostAdmin = null;
-	
-	/** client timeout if configured */
-	private static int clientTimeout = -1;
-	
-	/** use SSL sockets? */
-	private static boolean sslSockets = false;
+	protected static int portFileReceiver = -1;
 	
 	
 	static {
-		
-		// read some undocumented settings if available
-		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in ms !
-		
-		// SSL sockets?
-		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
-		sslSockets = (mode != null && mode.equalsIgnoreCase("ssl"));
 		
 		// File server port
 		portFileServer = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_PORT);
@@ -108,107 +87,11 @@ public class FileTransfer {
 			portFileReceiver = DEFAULT_FILE_RECEIVER_PORT;
 		}
 		
-		// File server host
-		hostAdmin = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_HOST);
 		// Buffer size
-		
 		bufferLenKb = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_BUF_SIZE);
 		if (bufferLenKb == -1)
 			bufferLenKb = DEFAULT_BUFFER_LEN;
 	}		
-	
-	
-	// Client-side
-	//------------------------------------------------------------------------------
-	
-	/**
-	 * Send a file client side - a file store must be available server side.
-	 * 
-	 * @param file file
-	 * @return client answer
-	 * @throws Excpetion
-	 */
-	public static ClientAnswer sendFile(File file) throws Exception {
-		return sendFile(file, Communicator.TIMEOUT * 1000);
-	}
-	
-	/**
-	 * Send a file client side - a file store must be available server side.
-	 * 
-	 * @param file server file
-	 * @param command timeout socket timeout in milliseconds
-	 * @return file answer
-	 * @throws Excpetion
-	 */
-	public static FileAnswer sendFile(File file, int timeout) throws Exception {
-		
-		//send signal and end !
-		Socket socket = null;
-		DataOutputStream output = null;
-		DataInputStream input = null;
-		try {
-			
-			if (clientTimeout > 0)
-				timeout = clientTimeout;
-				
-			if (sslSockets) {
-				final SocketFactory sslsocketfactory = SSLSocketFactory.getDefault();
-				socket = sslsocketfactory.createSocket(hostAdmin, portFileReceiver);				
-			} else {
-				socket = new Socket(hostAdmin, portFileReceiver);
-			}
-			
-			final FileInputStream fileInputStream = new FileInputStream(file);
-			
-			output = new DataOutputStream(socket.getOutputStream());
-			socket.setSoTimeout(timeout);
-
-	        // send file size
-			output.writeLong(file.length());  
-	        // break file into chunks
-	        final byte buffer[] = new byte[bufferLenKb];
-	        int bytes = 0;
-	        while ((bytes = fileInputStream.read(buffer)) != -1) {
-	        	output.write(buffer, 0, bytes);
-	        	output.flush();
-	        }
-	        fileInputStream.close();			
-			
-			LOG.trace("File '" + file.getName() + "' sent!");
-			
-			// read file answer
-			input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-			return FileTransfer.readAnswer(input);
-			
-		} catch (UnknownHostException e) {
-			
-			LOG.error("File receiver cannot be contacted at "+hostAdmin+":"+portFileReceiver+"! Host seems to be unknown or cannot be resolved. [UHE]", e);
-			throw e;
-			
-		} catch (IOException e) {
-			
-			LOG.error("File receiver cannot be contacted at "+hostAdmin+":"+portFileReceiver+"! PS: Is it really running? [IO]", e);
-			throw e;
-			
-		} finally {
-			
-			Communicator.safeClose(input);
-			Communicator.safeClose(output);
-			Communicator.safeClose(socket);
-		}
-	}
-	
-	/**
-	 * Read a file answer from the server client side when it received a file.
-	 * Server must answer with a file answer when it has received a file.
-	 * 
-	 * @param in input stream
-	 * @return file answer or null, if answer received was invalid
-	 * @throws IOException
-	 */
-	public static FileAnswer readAnswer(DataInputStream in) throws IOException {
-	    return (FileAnswer) FileAnswer.parse(Communicator.read(in));
-	}	
 	
 	
 	// Server-side

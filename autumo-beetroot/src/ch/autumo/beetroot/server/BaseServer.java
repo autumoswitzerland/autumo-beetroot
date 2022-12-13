@@ -40,9 +40,6 @@ import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import javax.net.ServerSocketFactory;
-import javax.net.ssl.SSLServerSocketFactory;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.slf4j.Logger;
@@ -54,9 +51,13 @@ import ch.autumo.beetroot.BeetRootWebServer;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.transport.DefaultServerSocketFactory;
+import ch.autumo.beetroot.transport.SecureServerSocketFactory;
+import ch.autumo.beetroot.transport.ServerSocketFactory;
 import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Utils;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.security.SSLUtils;
 
 /**
  * Base server.
@@ -68,6 +69,8 @@ public abstract class BaseServer {
 	private static String rootPath = null;
 
 	private BeetRootConfigurationManager configMan = null;
+	
+	protected ServerSocketFactory serverSocketFactory = null;
 	
     private AdminListener adminListener = null;
 	private ServerSocket serverSocket = null;
@@ -393,7 +396,6 @@ public abstract class BaseServer {
 				final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 				if (https) {
 					final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
-					
 					final String keystorepw = pwEncoded ? 
 							BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
 								BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
@@ -422,6 +424,22 @@ public abstract class BaseServer {
 			}
 		}
 
+		if (sslSockets) {
+			final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
+			try {
+				final String keystorepw = pwEncoded ? 
+						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_WS_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
+							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_KEYSTORE_PW);
+		        this.serverSocketFactory = new SecureServerSocketFactory(SSLUtils.makeSSLServerSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
+			} catch (Exception e) {
+				LOG.error("Cannot make server secure (SSL)! Stopping.", e);
+				System.err.println(ansiErrServerName + " Cannot make server secure (SSL)! Stopping.");
+				Utils.fatalExit();
+			}
+		} else {
+	        this.serverSocketFactory = new DefaultServerSocketFactory();
+		}
+		
 		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
 		if (startFileServer) {
 			
@@ -555,9 +573,13 @@ public abstract class BaseServer {
 		};
 	}
 	
+    /**
+     * Send a server command.
+     * @param command serevr command
+     */
 	private void sendServerCommand(String command) {
 		try {
-			Communicator.sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, command));
+			ClientCommunicator.sendServerCommand(new ServerCommand(name, "localhost", portAdminServer, command));
 		} catch (Exception e) {
 			LOG.error("Send "+command+" server command failed!", e);
 		}
@@ -688,12 +710,7 @@ public abstract class BaseServer {
 			// Communication is encrypted through the command message (cmd),
 			// by SSL sockets (ssl) or it is not (none) 
 			try {
-				if (sslSockets) {
-					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
-					serverSocket = socketFactory.createServerSocket(this.listenerPort);
-				} else {
-					serverSocket = new ServerSocket(this.listenerPort);
-				}
+				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
 					serverSocket.setSoTimeout(serverTimeout);
 					
@@ -731,12 +748,7 @@ public abstract class BaseServer {
 		        	if (!BaseServer.this.serverStop) {
 		        		if (serverSocket != null && serverSocket.isClosed()) {
 		        			try {
-		        				if (sslSockets) {
-		        					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
-		        					serverSocket = socketFactory.createServerSocket(this.listenerPort);
-		        				} else {
-		        					serverSocket = new ServerSocket(this.listenerPort);
-		        				}
+		        				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
 			    				if (serverTimeout > 0)
 			    					serverSocket.setSoTimeout(serverTimeout);
 		        			} catch (IOException e) {

@@ -207,12 +207,7 @@ public class FileServer {
 			// Communication is encrypted through the command message (cmd),
 			// by SSL sockets (ssl) or it is not (none) 
 			try {
-				if (sslSockets) {
-					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
-					fileServerSocket = socketFactory.createServerSocket(this.listenerPort);
-				} else {
-					fileServerSocket = new ServerSocket(this.listenerPort);
-				}
+				fileServerSocket = baseServer.serverSocketFactory.create(this.listenerPort);
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
 					fileServerSocket.setSoTimeout(serverTimeout);
 					
@@ -378,15 +373,9 @@ public class FileServer {
 			// Communication is encrypted through the command message (cmd),
 			// by SSL sockets (ssl) or it is not (none) 
 			try {
-				if (sslSockets) {
-					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
-					fileReceiverSocket = socketFactory.createServerSocket(this.listenerPort);
-				} else {
-					fileReceiverSocket = new ServerSocket(this.listenerPort);
-				}
+				fileReceiverSocket = baseServer.serverSocketFactory.create(this.listenerPort);
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
 					fileReceiverSocket.setSoTimeout(serverTimeout);
-					
 			} catch (IOException e) {
 				LOG.error("File receiver listener cannot be created on port '" + this.listenerPort + "'!", e);
 				System.err.println(BaseServer.ansiErrServerName + " File receiver listener cannot be created on port '" + this.listenerPort + "'!");

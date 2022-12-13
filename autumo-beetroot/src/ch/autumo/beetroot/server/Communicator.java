@@ -30,8 +30,6 @@
  */
 package ch.autumo.beetroot.server;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -39,17 +37,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 
 /**
  * Client/Server communication.
@@ -57,6 +48,9 @@ import ch.autumo.beetroot.Constants;
 public class Communicator {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
+	
+	/** Connection timeout in seconds */
+	public final static int TIMEOUT = 5;
 	
 	/** Stop command */
 	public final static String CMD_STOP = "STOP";
@@ -66,106 +60,6 @@ public class Communicator {
 	public final static String CMD_FILE_REQUEST = "FILE_REQUEST";
 	/** File receive request */
 	public final static String CMD_FILE_RECEIVE_REQUEST = "FILE_RECEIVE_REQUEST";
-
-	/** Connection timeout in seconds */
-	public final static int TIMEOUT = 5;
-	
-	private static int clientTimeout = -1;
-	private static boolean sslSockets = false;
-	static {
-		// read some undocumented settings if available
-		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in ms !
-		// SSL sockets?
-		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
-		sslSockets = (mode != null && mode.equalsIgnoreCase("ssl"));
-	}	
-	
-	
-	// Client-side
-	//------------------------------------------------------------------------------
-	
-	/**
-	 * Send a server command client side.
-	 * 
-	 * @param command server command
-	 * @return client answer
-	 * @throws Excpetion
-	 */
-	public static ClientAnswer sendServerCommand(ServerCommand command) throws Exception {
-		
-		//send signal and end !
-		Socket socket = null;
-		DataOutputStream output = null;
-		DataInputStream input = null;
-		int timeout = command.getTimeout();
-		try {
-			
-			if (clientTimeout > 0)
-				timeout = clientTimeout;
-				
-			if (sslSockets) {
-				final SocketFactory sslsocketfactory = SSLSocketFactory.getDefault();
-				socket = sslsocketfactory.createSocket(command.getHost(), command.getPort());				
-			} else {
-				socket = new Socket(command.getHost(), command.getPort());
-			}
-			
-			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-			socket.setSoTimeout(timeout);
-
-			output.writeInt(command.getDataLength());
-			final PrintWriter writer = new PrintWriter(output, true);
-			writer.println(command.getTransferString());
-			
-			LOG.trace("Server command '"+command.getCommand()+"' sent!");
-			writer.flush();
-			
-			if (command.getCommand().equals(CMD_STOP)) {
-				
-				// we cannot expect an answer, because the server is already down
-				return new StopAnswer();
-				
-			} else if (command.getCommand().equals(CMD_HEALTH)) {
-				
-				return new HealthAnswer();
-					
-			} else {
-				
-				// read answer
-				input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-				return readAnswer(input);
-			}
-			
-		} catch (UnknownHostException e) {
-			
-			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! Host seems to be unknown or cannot be resolved. [UHE]", e);
-			throw e;
-			
-		} catch (IOException e) {
-			
-			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! PS: Is it really running? [IO]", e);
-			throw e;
-			
-		} finally {
-			
-			safeClose(input);
-			safeClose(output);
-			safeClose(socket);
-		}
-	}
-
-	/**
-	 * Read an answer from the server client side.
-	 * 
-	 * @param in input stream
-	 * @return client answer or null, if answer received was invalid
-	 * @throws IOException
-	 */
-	public static ClientAnswer readAnswer(DataInputStream in) throws IOException {
-	    return ClientAnswer.parse(read(in));
-	}
-
-	
 	
 	// Server-side
 	//------------------------------------------------------------------------------
@@ -209,7 +103,7 @@ public class Communicator {
 	 * @return unparsed data
 	 * @throws IOException
 	 */
-	public static String read(DataInputStream in) throws IOException {
+	protected static String read(DataInputStream in) throws IOException {
 		
 		final int length = in.readInt();
 		
