@@ -31,7 +31,6 @@
 package ch.autumo.beetroot;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,12 +38,21 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 /**
  * Database manager.
  * Supported databases: H2, MySQL, MariaDB, Oracle, PostgreSQL.
  */
 public class BeetRootDatabaseManager {
 
+	public static final String CFG_KEY_DB_POOL_INIT_SIZE = "db_pool_init_size";
+	public static final String CFG_KEY_DB_POOL_MIN_SIZE = "db_pool_min_size";
+	public static final String CFG_KEY_DB_POOL_MAX_SIZE = "db_pool_max_size";
+	public static final String CFG_KEY_DB_POOL_INCREMENT = "db_pool_increment";
+	public static final String CFG_KEY_DB_POOL_MAX_STMTS = "db_pool_max_stmts";
+	public static final String CFG_KEY_DB_POOL_MAX_STMTS_PER_CONN = "db_pool_max_stmts_per_conn";
+	
 	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootDatabaseManager.class.getName());
 	
 	private static BeetRootDatabaseManager instance = null;	
@@ -61,9 +69,12 @@ public class BeetRootDatabaseManager {
 	private boolean isMariaDb = false;
 	private boolean isOracleDb = false;
 	private boolean isPostgreDb = false;
+
+	private ComboPooledDataSource cpds = null;
 	
 	private boolean isUnsupported = false;
 
+	
 	private BeetRootDatabaseManager() {
 	}
 	
@@ -126,11 +137,13 @@ public class BeetRootDatabaseManager {
 		if (isH2Db)
 			driver = "org.h2.Driver";	
 
-		Class.forName(driver);	
+		//Class.forName(driver);	
 		
 		this.url = url;
 		this.user = user;
 		this.pass = pass;
+		
+		this.initializePool();
 		
 		isInitialized = true;
 	}
@@ -157,13 +170,52 @@ public class BeetRootDatabaseManager {
 		
 		driver = driverClass;
 		
-		Class.forName(driver);	
+		//Class.forName(driver);	
 		
 		this.url = url;
 		this.user = user;
 		this.pass = pass;
 		
+		this.initializePool();
+		
 		isInitialized = true;
+	}
+	
+	private void initializePool() throws Exception {
+		
+		cpds = new ComboPooledDataSource();
+		
+		cpds.setDriverClass(driver);            
+		cpds.setJdbcUrl(url);
+		cpds.setUser(user);                                  
+		cpds.setPassword(pass);
+		
+		final BeetRootConfigurationManager cm = BeetRootConfigurationManager.getInstance();
+		
+		// the settings below are optional -- c3p0 can work with defaults
+		final String poolConfig[] = cm.getKeys("db_pool_");
+		for (int i = 0; i < poolConfig.length; i++) {
+			switch (poolConfig[0]) {
+				case CFG_KEY_DB_POOL_INIT_SIZE: 
+					cpds.setMinPoolSize(cm.getInt(CFG_KEY_DB_POOL_INIT_SIZE, 5));
+					break;
+				case CFG_KEY_DB_POOL_MIN_SIZE: 
+					cpds.setMinPoolSize(cm.getInt(CFG_KEY_DB_POOL_MIN_SIZE, 5));
+					break;
+				case CFG_KEY_DB_POOL_MAX_SIZE: 
+					cpds.setMaxPoolSize(cm.getInt(CFG_KEY_DB_POOL_MAX_SIZE, 50));
+					break;
+				case CFG_KEY_DB_POOL_INCREMENT: 
+					cpds.setMaxPoolSize(cm.getInt(CFG_KEY_DB_POOL_INCREMENT, 5));
+					break;
+				case CFG_KEY_DB_POOL_MAX_STMTS: 
+					cpds.setMaxStatements(cm.getInt(CFG_KEY_DB_POOL_MAX_STMTS, 200));
+					break;
+				case CFG_KEY_DB_POOL_MAX_STMTS_PER_CONN: 
+					cpds.setMaxStatements(cm.getInt(CFG_KEY_DB_POOL_MAX_STMTS_PER_CONN, 20));
+					break;
+			}
+		}
 	}
 	
 	/**
@@ -173,8 +225,7 @@ public class BeetRootDatabaseManager {
 	 * @throws SQLException
 	 */
 	public Connection getConnection() throws SQLException {
-		
-		return DriverManager.getConnection(this.url, this.user, this.pass);
+		return cpds.getConnection();
 	}
 
 	public boolean isH2Db() {

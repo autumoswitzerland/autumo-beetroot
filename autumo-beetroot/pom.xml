@@ -266,6 +266,20 @@
 		-->
 
 		<dependency>
+		    <groupId>com.mchange</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>0.9.5.5</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.mchange</groupId>
+		    <artifactId>mchange-commons-java</artifactId>
+		    <version>0.2.20</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
 		    <groupId>com.h2database</groupId>
 		    <artifactId>h2</artifactId>
 		    <version>1.4.200</version>

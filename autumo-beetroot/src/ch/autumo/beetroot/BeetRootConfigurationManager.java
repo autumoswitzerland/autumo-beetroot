@@ -341,6 +341,56 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
+	 * Get a string value or default value if non-existent.
+	 * 
+	 * @param key key
+	 * @param defaultVal default value
+	 * @return value
+	 * @throws Exception
+	 */
+	public String getString(String key, String defaultVal) {
+		
+		String v = generalProps.getProperty(key);
+		if (v != null)
+			v = v.trim();
+		if (v == null)
+			return defaultVal;
+		return v;
+	}
+	
+	/**
+	 * Get a string value; no warning if value is not available.
+	 * 
+	 * @param key key
+	 * @return value
+	 * @throws Exception
+	 */
+	public String getStringNoWarn(String key) {
+		String v = generalProps.getProperty(key);
+		if (v != null)
+			v = v.trim();
+		return v;
+	}
+	
+	/**
+	 * Get all keys starting with a specific key-prefix.
+	 * 
+	 * @param keyPrefix key prefix, e.g. 'dispatcher_'
+	 * @return collected values
+	 */
+	public String[] getKeys(String keyPrefix) {
+		
+		final List<String> collectedKeys = new ArrayList<>();
+		final Set<Object> keys = generalProps.keySet();
+		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
+			final String key = (String) iterator.next();
+			if (key.startsWith(keyPrefix))
+				collectedKeys.add(key);
+		}
+		return collectedKeys.toArray(new String[collectedKeys.size()]);
+	}
+	
+	/**
 	 * Get all values starting with a specific key-prefix.
 	 * 
 	 * @param keyPrefix key prefix, e.g. 'dispatcher_'
@@ -356,20 +406,6 @@ public class BeetRootConfigurationManager {
 				collectedVals.add(generalProps.getProperty(keyPrefix));
 		}
 		return collectedVals.toArray(new String[collectedVals.size()]);
-	}
-	
-	/**
-	 * Get a string value; no warning if value is not available.
-	 * 
-	 * @param key key
-	 * @return value
-	 * @throws Exception
-	 */
-	public String getStringNoWarn(String key) {
-		String v = generalProps.getProperty(key);
-		if (v != null)
-			v = v.trim();
-		return v;
 	}
 	
 	/**
@@ -391,6 +427,21 @@ public class BeetRootConfigurationManager {
 		return Integer.valueOf(v);
 	}
 
+	/**
+	 * Get integer value.
+	 * 
+	 * @param key key
+	 * @param defaultVal default value or default value if non-existent.
+	 * @return value
+	 * @throws Exception
+	 */
+	public int getInt(String key, int defaultVal) {
+		String v = generalProps.getProperty(key);
+		if (v == null || v.length() == 0)
+			return defaultVal;
+		return Integer.valueOf(v);
+	}
+	
 	/**
 	 * Get integer value; no warning if value is not available.
 	 * 
