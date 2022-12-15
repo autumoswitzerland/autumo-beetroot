@@ -384,7 +384,7 @@ public class BeetRootConfigurationManager {
 		final Set<Object> keys = generalProps.keySet();
 		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
 			final String key = (String) iterator.next();
-			if (key.startsWith(keyPrefix))
+			if (key.startsWith(key))
 				collectedKeys.add(key);
 		}
 		return collectedKeys.toArray(new String[collectedKeys.size()]);
@@ -403,7 +403,7 @@ public class BeetRootConfigurationManager {
 		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
 			final String key = (String) iterator.next();
 			if (key.startsWith(keyPrefix))
-				collectedVals.add(generalProps.getProperty(keyPrefix));
+				collectedVals.add(generalProps.getProperty(key));
 		}
 		return collectedVals.toArray(new String[collectedVals.size()]);
 	}
@@ -465,23 +465,28 @@ public class BeetRootConfigurationManager {
 	 * @return true or false
 	 */
 	public boolean getYesOrNo(String key) {
-		
 		String val = generalProps.getProperty(key);
-		
 		if (val == null || val.length() == 0) {
-			
-			if (val == null)
-				LOG.warn("Value for yes/no key '"+key+"' doesn't exist in beetroot configuration!");
-			
+			LOG.warn("Value for yes/no key '"+key+"' doesn't exist in beetroot configuration!");
 			return false;
 		}
-		
 		val = val.trim();
-		
-		if (val.toLowerCase().equals(Constants.YES))
-			return true;
-		else
+		return val.toLowerCase().equals(Constants.YES);
+	}	
+
+	/**
+	 * Get yes (true) or no (false), if the configuration is messed up false
+	 * is returned. No warning if key is missing.
+	 * 
+	 * @param key key
+	 * @return true or false
+	 */
+	public boolean getYesOrNoNoWarn(String key) {
+		String val = generalProps.getProperty(key);
+		if (val == null || val.length() == 0)
 			return false;
+		val = val.trim();
+		return val.toLowerCase().equals(Constants.YES);
 	}	
 	
 	/**

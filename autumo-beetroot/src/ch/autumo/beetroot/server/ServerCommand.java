@@ -44,20 +44,46 @@ public class ServerCommand extends AbstractMessage {
 	/** Dispatcher ID for internal server-commands */
 	public static final String DISPATCHER_ID_INTERNAL = "beetroot-internal";
 	
-	private String serverName = null;
+	private static String cfgServerName = null;
+	
+	protected static String host = null;
+	protected static int port = -1;
+	private static int timeout = -1;
 
+	private String serverName = null;
 	private String dispatcherId = null;
 	
-	protected String host = null;
-	protected int port = -1;
-	private int timeout = -1;
-
+	static {
+		reInit();
+	}
+	
+	/**
+	 * Initialize configuration.
+	 */
+	protected static void reInit() {
+		// we must read these configs always, in some applications this may
+		// be changed by the user! 
+		cfgServerName = BeetRootConfigurationManager.getInstance().getString("server_name");
+		if (cfgServerName == null || cfgServerName.length() == 0)
+			cfgServerName = "solothurn";
+		
+		host = BeetRootConfigurationManager.getInstance().getString("admin_host");
+		port = BeetRootConfigurationManager.getInstance().getInt("admin_port");
+		
+		timeout = BeetRootConfigurationManager.getInstance().getInt("connection_timeout");
+        if (timeout == -1) {
+			timeout = 5;
+			LOG.warn("Using 5 seconds for client connection timeout.");
+        }
+        timeout = timeout * 1000;			
+	}
+	
 	/**
 	 * Internal constructor.
 	 */
 	private ServerCommand() {
 		super();
-		init();
+		this.serverName = cfgServerName;
 	}
 	
 	/**
@@ -69,8 +95,8 @@ public class ServerCommand extends AbstractMessage {
 	 */
 	public ServerCommand(String dispatcherId, String command) {
 		super(command);
+		this.serverName = cfgServerName;
 		this.dispatcherId = dispatcherId;
-		init();
 	}
 
 	/**
@@ -83,9 +109,9 @@ public class ServerCommand extends AbstractMessage {
 	 */
 	public ServerCommand(String dispatcherId, String command, String fileId) {
 		super(command);
+		this.serverName = cfgServerName;
 		this.dispatcherId = dispatcherId;
 		this.fileId = fileId;
-		init();
 	}
 	
 	/**
@@ -99,10 +125,10 @@ public class ServerCommand extends AbstractMessage {
 	 */
 	public ServerCommand(String dispatcherId, String command, String entity, long id) {
 		super(command);
+		this.serverName = cfgServerName;
 		this.dispatcherId = dispatcherId;
 		this.entity = entity;
 		this.id = id;
-		init();
 	}
 
 	/**
@@ -117,32 +143,11 @@ public class ServerCommand extends AbstractMessage {
 	 */
 	public ServerCommand(String dispatcherId, String command, String entity, long id, String domain) {
 		super(command);
+		this.serverName = cfgServerName;
 		this.dispatcherId = dispatcherId;
 		this.entity = entity;
 		this.id = id;
 		this.domain = domain;
-		init();
-	}
-	
-	/**
-	 * Initialize configuration.
-	 */
-	protected void init() {
-		// we must read these configs always, in some applications this may
-		// be changed by the user! 
-		serverName = BeetRootConfigurationManager.getInstance().getString("server_name");
-		if (serverName == null || serverName.length() == 0)
-			serverName = "solothurn";
-		
-		host = BeetRootConfigurationManager.getInstance().getString("admin_host");
-		port = BeetRootConfigurationManager.getInstance().getInt("admin_port");
-		
-		timeout = BeetRootConfigurationManager.getInstance().getInt("connection_timeout");
-        if (timeout == -1) {
-			timeout = 5000;
-			LOG.warn("Using 5 seconds for client connection timeout.");
-        }
-        timeout = timeout * 1000;			
 	}
 
 	/**
@@ -166,7 +171,7 @@ public class ServerCommand extends AbstractMessage {
 	}
 	
 	public String getServerName() {
-		return this.serverName;
+		return serverName;
 	}
 	
 	public String getCommand() {
@@ -181,7 +186,7 @@ public class ServerCommand extends AbstractMessage {
 			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
 		if (ENCRYPT)
-			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
+			return Utils.encodeCom(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
 			return ts;
 	}
@@ -200,7 +205,7 @@ public class ServerCommand extends AbstractMessage {
 		
 		final ServerCommand command = new ServerCommand();
 		
-		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 7);
+		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 8);
 		command.serverName = parts[0];
 		command.dispatcherId = parts[1];
 		command.message = parts[2];

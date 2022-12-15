@@ -65,7 +65,7 @@ public abstract class AbstractMessage {
 	
 	static {
 		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
-		ENCRYPT = (mode != null && mode.equalsIgnoreCase("cmd"));
+		ENCRYPT = (mode != null && mode.equalsIgnoreCase("sha3"));
 	}	
 	
 	private Map<String, String> messageMap = null;

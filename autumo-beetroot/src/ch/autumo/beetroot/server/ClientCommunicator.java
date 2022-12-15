@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.transport.DefaultSocketFactory;
 import ch.autumo.beetroot.transport.SecureSocketFactory;
 import ch.autumo.beetroot.transport.SocketFactory;
 import ch.autumo.beetroot.utils.security.SSLUtils;
@@ -24,6 +25,13 @@ public class ClientCommunicator extends Communicator {
 	private static boolean sslSockets = false;
 	
 	static {
+		reInit();
+	}
+	
+	/**
+	 * Re-initialize client communicator.
+	 */
+	public static void reInit() {
 		// read some undocumented settings if available
 		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in ms !
 		// SSL sockets?
@@ -42,8 +50,11 @@ public class ClientCommunicator extends Communicator {
 				LOG.error("Cannot make client calls secure (SSL)! ", e);
 				System.err.println("Cannot make client calls secure (SSL)! ");
 			}
-		}
+		} else {
+			socketFactory = new DefaultSocketFactory();
+		}		
 	}
+	
 	
 	// Client-side
 	//------------------------------------------------------------------------------
@@ -63,13 +74,12 @@ public class ClientCommunicator extends Communicator {
 		DataInputStream input = null;
 		int timeout = command.getTimeout();
 		try {
-			
 			if (clientTimeout > 0)
 				timeout = clientTimeout;
 				
 			socket = socketFactory.create(command.getHost(), command.getPort());
-			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			socket.setSoTimeout(timeout);
+			output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
 			output.writeInt(command.getDataLength());
 			final PrintWriter writer = new PrintWriter(output, true);
@@ -79,33 +89,22 @@ public class ClientCommunicator extends Communicator {
 			writer.flush();
 			
 			if (command.getCommand().equals(CMD_STOP)) {
-				
 				// we cannot expect an answer, because the server is already down
 				return new StopAnswer();
-				
 			} else if (command.getCommand().equals(CMD_HEALTH)) {
-				
 				return new HealthAnswer();
-					
 			} else {
-				
 				// read answer
 				input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 				return readAnswer(input);
 			}
-			
 		} catch (UnknownHostException e) {
-			
 			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! Host seems to be unknown or cannot be resolved. [UHE]", e);
 			throw e;
-			
 		} catch (IOException e) {
-			
 			LOG.error(command.getServerName() + " admin server cannot be contacted at "+command.getHost()+":"+command.getPort()+"! PS: Is it really running? [IO]", e);
 			throw e;
-			
 		} finally {
-			
 			safeClose(input);
 			safeClose(output);
 			safeClose(socket);

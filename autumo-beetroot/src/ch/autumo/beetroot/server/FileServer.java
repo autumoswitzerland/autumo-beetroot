@@ -227,10 +227,18 @@ public class FileServer {
 					
 					// it waits for a connection
 					clientSocket = fileServerSocket.accept();
+					
+					String addr = null;
+					if (clientSocket.getInetAddress() != null)
+						addr = clientSocket.getInetAddress().toString();
+					
 					if (clientSocket != null) {
 						final ClientFileHandler handler = new ClientFileHandler(clientSocket);
 						final Thread threadForClient = new Thread(handler);
-						threadForClient.setName(FileServer.this.baseServer.name + "-FileServerClient");
+						if (addr == null)
+							threadForClient.setName(FileServer.this.baseServer.name + "-FileServerClient");
+						else
+							threadForClient.setName(FileServer.this.baseServer.name + "-FileServerClient("+addr+")");
 						threadForClient.start();
 					}
 					
@@ -244,12 +252,9 @@ public class FileServer {
 		        	if (!stopped) {
 		        		if (fileServerSocket != null && fileServerSocket.isClosed()) {
 		        			try {
-		        				if (sslSockets) {
-		        					final ServerSocketFactory socketFactory = SSLServerSocketFactory.getDefault();
-		        					fileServerSocket = socketFactory.createServerSocket(this.listenerPort);
-		        				} else {
-		        					fileServerSocket = new ServerSocket(this.listenerPort);
-		        				}
+		        				fileServerSocket = baseServer.serverSocketFactory.create(this.listenerPort);
+			    				if (serverTimeout > 0)
+			    					fileServerSocket.setSoTimeout(serverTimeout);
 		        			} catch (IOException e) {
 		        				// That's wild, I know 
 		        			}
@@ -289,7 +294,7 @@ public class FileServer {
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
 				// Only file GET commands allowed!
-				command = Communicator.readCommand(in);//XXX
+				command = Communicator.readCommand(in);
 	        } 
 	        catch (UtilsException e) {
 	        	
@@ -392,10 +397,18 @@ public class FileServer {
 					
 					// it waits for a connection
 					clientSocket = fileReceiverSocket.accept();
+					
+					String addr = null;
+					if (clientSocket.getInetAddress() != null)
+						addr = clientSocket.getInetAddress().toString();
+					
 					if (clientSocket != null) {
 						final ClientReceiverHandler handler = new ClientReceiverHandler(clientSocket);
 						final Thread threadForClient = new Thread(handler);
-						threadForClient.setName(FileServer.this.baseServer.name + "-FileReceiverClient");
+						if (addr == null)
+							threadForClient.setName(FileServer.this.baseServer.name + "-FileReceiverClient");
+						else
+							threadForClient.setName(FileServer.this.baseServer.name + "-FileReceiverClient("+addr+")");
 						threadForClient.start();
 					}
 					

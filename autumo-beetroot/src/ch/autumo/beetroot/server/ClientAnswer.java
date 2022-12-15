@@ -106,7 +106,7 @@ public class ClientAnswer extends AbstractMessage {
 			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
 		if (ENCRYPT)
-			return Utils.encode(ts, SecureApplicationHolder.getInstance().getSecApp());
+			return Utils.encodeCom(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
 			return ts;
 	}

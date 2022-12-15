@@ -93,6 +93,7 @@ public abstract class BaseServer {
 
 	private boolean pwEncoded = false;
 	private boolean sslSockets = false;
+	private boolean sha3Com = false;
 	
 	protected String name = null;
 	
@@ -206,6 +207,8 @@ public abstract class BaseServer {
 		final String mode = configMan.getString(Constants.KEY_ADMIN_COM_ENC);
 		if (mode != null && mode.equalsIgnoreCase("ssl"))
 			sslSockets = true;
+		if (mode != null && mode.equalsIgnoreCase("sha3"))
+			sha3Com = true;
 		
 		// Are pw's in config encoded?
 		pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
@@ -428,6 +431,10 @@ public abstract class BaseServer {
 								BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
 					
 					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
+					
+					LOG.info("Web-Server communication is SSL (TLS) secured!");
+					if (LOG.isErrorEnabled())
+						System.out.println(ansiServerName + " Web-Server communication is SSL (TLS) secured!");
 				}
 				
 				webServer.start(false);
@@ -458,6 +465,11 @@ public abstract class BaseServer {
 						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
 							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
 		        this.serverSocketFactory = new SecureServerSocketFactory(SSLUtils.makeSSLServerSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
+		        
+				LOG.info("Client-Server communication (with file transfers) is SSL secured!");
+				if (LOG.isErrorEnabled())
+					System.out.println(ansiServerName + " Client-Server communication (with file transfers) is SSL secured!");
+		        
 			} catch (Exception e) {
 				LOG.error("Cannot make server secure (SSL)! Stopping.", e);
 				System.err.println(ansiErrServerName + " Cannot make server secure (SSL)! Stopping.");
@@ -467,7 +479,13 @@ public abstract class BaseServer {
 	        this.serverSocketFactory = new DefaultServerSocketFactory();
 		}
 		
-		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER);
+		if (sha3Com) {
+			LOG.info("Client-Server communication is SHA3-256 encrypted!");
+			if (LOG.isErrorEnabled())
+				System.out.println(ansiServerName + " Client-Server communication is SHA3-256 encrypted!");
+		}
+		
+		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNoNoWarn(Constants.KEY_ADMIN_FILE_SERVER);
 		if (startFileServer) {
 			
 			// if we start the file server, we have to deliver a file storage
@@ -606,7 +624,7 @@ public abstract class BaseServer {
      */
 	private void sendServerCommand(String command) {
 		try {
-			ClientCommunicator.sendServerCommand(new ServerCommand(ServerCommand.DISPATCHER_ID_INTERNAL, name, "localhost", portAdminServer, command));
+			ClientCommunicator.sendServerCommand(new ServerCommand(ServerCommand.DISPATCHER_ID_INTERNAL, command));
 		} catch (Exception e) {
 			LOG.error("Send "+command+" server command failed!", e);
 		}
@@ -625,7 +643,7 @@ public abstract class BaseServer {
 	protected ClientAnswer processServerCommand(ServerCommand command) {
 		
 		// --- 1. Internal commands without components/modules
-		if (command.getDispatcherId() == ServerCommand.DISPATCHER_ID_INTERNAL) {
+		if (command.getDispatcherId().equals(ServerCommand.DISPATCHER_ID_INTERNAL)) {
 			
 			// shutdown
 			if (command.getCommand().equals(Communicator.CMD_STOP)) {
@@ -779,10 +797,18 @@ public abstract class BaseServer {
 					
 					// it waits for a connection
 					clientSocket = serverSocket.accept();
+					
+					String addr = null;
+					if (clientSocket.getInetAddress() != null)
+						addr = clientSocket.getInetAddress().toString();
+					
 					if (clientSocket != null) {
 						final ClientHandler handler = new ClientHandler(clientSocket);
 						final Thread threadForClient = new Thread(handler);
-						threadForClient.setName(BaseServer.this.name + "-Client");
+						if (addr == null)
+							threadForClient.setName(BaseServer.this.name + "-Client");
+						else
+							threadForClient.setName(BaseServer.this.name + "-Client("+addr+")");
 						threadForClient.start();
 					}
 					
@@ -853,6 +879,7 @@ public abstract class BaseServer {
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
 				//LOG.error("  -> Exception: " + e);
+				e.printStackTrace();
 				return;
 	        }	
 	        catch (IOException e) {

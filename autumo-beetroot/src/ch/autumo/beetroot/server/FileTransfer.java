@@ -51,13 +51,13 @@ public class FileTransfer {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(FileTransfer.class.getName());
 	
-	/** File get */
-	public final static String CMD_FILE_GET = "FILE_GET";
-
 	/** file server default port */
 	public static int DEFAULT_FILE_SERVER_PORT = 9777;
 	/** file receiver default port */
 	public static int DEFAULT_FILE_RECEIVER_PORT = 9779;
+	
+	/** File get */
+	public final static String CMD_FILE_GET = "FILE_GET";
 	
 	/** default buffer length for sending bits of a file */
 	public static int DEFAULT_BUFFER_LEN = 32;
@@ -65,27 +65,7 @@ public class FileTransfer {
 	/** buffer length for sending bits of a file */
 	protected static int bufferLenKb = DEFAULT_BUFFER_LEN;
 	
-	/** file server port */
-	protected static int portFileServer = -1;
-	/** file receiver port (file-store end-point) */
-	protected static int portFileReceiver = -1;
-	
-	
 	static {
-		
-		// File server port
-		portFileServer = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_PORT);
-		if (portFileServer == -1) {
-			LOG.error("File server port not specified! Using port '" + DEFAULT_FILE_SERVER_PORT + "'.");
-			portFileServer = DEFAULT_FILE_SERVER_PORT;
-		}
-
-		// File receiver port
-		portFileReceiver = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_RECEIVER_PORT);
-		if (portFileReceiver == -1) {
-			LOG.error("File receiver port not specified! Using port '" + DEFAULT_FILE_RECEIVER_PORT + "'.");
-			portFileReceiver = DEFAULT_FILE_RECEIVER_PORT;
-		}
 		
 		// Buffer size
 		bufferLenKb = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_BUF_SIZE);
@@ -126,8 +106,12 @@ public class FileTransfer {
         	download.getFile().delete();
 	}
 	
+	
+	// Server and Client-side
+	//------------------------------------------------------------------------------
+	
 	/**
-	 * Server side file read.
+	 * Server/client side file read.
 	 * 
 	 * @param in input stream
 	 * @param fileName file name

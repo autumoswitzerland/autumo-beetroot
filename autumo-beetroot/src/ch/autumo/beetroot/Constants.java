@@ -150,7 +150,7 @@ public class Constants {
 	public static final String KEY_ADMIN_HOST = "admin_host";
 	
 	/**
-	 * Communication encryption mode. 
+	 * Communication encryption mode; none|sha3|ssl
 	 */
 	public static final String KEY_ADMIN_COM_ENC = "admin_com_encrypt";
 	

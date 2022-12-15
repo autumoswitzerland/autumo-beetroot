@@ -30,12 +30,10 @@
  */
 package ch.autumo.beetroot.server;
 
-import ch.autumo.beetroot.BeetRootConfigurationManager;
-
 /**
- * File command.
+ * File receive request.
  */
-public class FileCommand extends ServerCommand {
+public class FileReceiveRequest extends ServerCommand {
 
 	/**
 	 * File command to send before sending a file to
@@ -44,17 +42,8 @@ public class FileCommand extends ServerCommand {
 	 * @param fileName file name
 	 * @param size file size
 	 */
-	public FileCommand(String fileName, long size) {
+	public FileReceiveRequest(String fileName, long size) {
 		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_RECEIVE_REQUEST, fileName, size);
-		init();
-	}
-
-	@Override
-	protected void init() {
-		super.init();
-		
-		host = BeetRootConfigurationManager.getInstance().getString("admin_host");
-		port = BeetRootConfigurationManager.getInstance().getInt("admin_port");
 	}
 	
 }
