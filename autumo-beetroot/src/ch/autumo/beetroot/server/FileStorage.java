@@ -43,19 +43,21 @@ public interface FileStorage {
 	 * a stream.
 	 *   
 	 * @param uniqueFileId unique file id
+	 * @param domain domain or null (default)
 	 * @return download or null if file is not available
 	 * @throws Exception
 	 */
-	public Download findFile(String uniqueFileId) throws Exception;
+	public Download findFile(String uniqueFileId, String domain) throws Exception;
 	
 	/**
 	 * Store a file.
 	 * 
 	 * @param file file
 	 * @param name file name
+	 * @param domain domain or null (default)
 	 * @return unique file ID
 	 * @throws Exception
 	 */
-	public String store(File file, String name) throws Exception;
+	public String store(File file, String name, String domain) throws Exception;
 	
 }

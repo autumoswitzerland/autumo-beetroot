@@ -501,7 +501,7 @@ public class FileServer {
 					// store it !
 					String uniqueFileId = null;
 					try {
-						uniqueFileId = fileStorage.store(file, upload.getFileName());
+						uniqueFileId = fileStorage.store(file, upload.getFileName(), null);
 					} catch (Exception e1) {
 						LOG.error("Couldn't store received file '"+upload.getFileName()+"'!", e1);
 						System.err.println(BaseServer.ansiErrServerName + " Couldn't store received file '"+upload.getFileName()+"'!");

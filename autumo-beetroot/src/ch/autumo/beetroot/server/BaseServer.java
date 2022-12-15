@@ -659,7 +659,7 @@ public abstract class BaseServer {
 				if (startFileServer) {
 					Download download = null;
 					try {
-						download = fileStorage.findFile(command.getFileId());
+						download = fileStorage.findFile(command.getFileId(), null);
 					} catch (Exception e) {
 						LOG.error("Couldn't find file wiht ID ''!", e);
 						System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
