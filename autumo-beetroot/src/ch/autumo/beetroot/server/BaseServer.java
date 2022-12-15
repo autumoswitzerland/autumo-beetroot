@@ -506,9 +506,9 @@ public abstract class BaseServer {
 					fileServer = new FileServer(this, fileStorage);
 					fileServer.start();
 					
-					LOG.info("File listener started on port " + fileServer.portFileServer + ".");
+					LOG.info("File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileServer + ".");
 					if (LOG.isErrorEnabled())
-						System.out.println(ansiServerName + " File listener started on port " + fileServer.portFileServer + ".");
+						System.out.println(ansiServerName + " File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileServer + ".");
 		            
 				} catch (Exception e) {
 					
