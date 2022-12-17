@@ -54,10 +54,11 @@ public interface FileStorage {
 	 * 
 	 * @param file file
 	 * @param name file name
+	 * @param user user or null
 	 * @param domain domain or null (default)
 	 * @return unique file ID
 	 * @throws Exception
 	 */
-	public String store(File file, String name, String domain) throws Exception;
+	public String store(File file, String name, String user, String domain) throws Exception;
 	
 }
