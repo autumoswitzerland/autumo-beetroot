@@ -38,7 +38,7 @@ import java.io.File;
 public interface FileStorage {
 
 	/**
-	 * Find a file. The file delivered within the download must be
+	 * Find a file (latest version). The file delivered within the download must be
 	 * physically temporarily available, so it can be delivered by
 	 * a stream.
 	 *   

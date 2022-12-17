@@ -36,13 +36,19 @@ package ch.autumo.beetroot.server;
 public class FileAction {
 	
 	private String fileName = null;
+	private String domain = null;
 
-	public FileAction(String fileName) {
+	public FileAction(String fileName, String domain) {
 		this.fileName = fileName;
+		this.domain = domain;
 	}
 	
 	public String getFileName() {
 		return fileName;
+	}
+	
+	public String getDomain() {
+		return domain;
 	}
 	
 }

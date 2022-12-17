@@ -496,37 +496,37 @@ public class FileServer {
 			// Store file!
 			if (file != null) {
 				
-				if (fileStorage != null) {
+				// store it !
+				String uniqueFileId = null;
+				try {
 					
-					// store it !
-					String uniqueFileId = null;
-					try {
-						uniqueFileId = fileStorage.store(file, upload.getFileName(), null, null);
-					} catch (Exception e1) {
-						LOG.error("Couldn't store received file '"+upload.getFileName()+"'!", e1);
-						System.err.println(BaseServer.ansiErrServerName + " Couldn't store received file '"+upload.getFileName()+"'!");
-						uniqueFileId = null;
-					}					
+					if (fileStorage != null)
+						uniqueFileId = fileStorage.store(file, upload.getFileName(), upload.getUser(), upload.getDomain());
+					else
+						uniqueFileId = baseServer.store(file, upload.getFileName(), upload.getUser(), upload.getDomain());
 					
-					DataOutputStream out = null;
-					try {
-						out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-						if (uniqueFileId != null)
-							Communicator.writeAnswer(new FileAnswer(upload.getFileName(), uniqueFileId), out);
-						else
-							Communicator.writeAnswer(new FileAnswer(upload.getFileName(), ClientAnswer.TYPE_FILE_NOK), out);
-						
-					} catch (IOException e) {
-						LOG.error("File receiver client response failed! We recommend to restart the server!", e);
-						System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
-			        } finally {
-			        	Communicator.safeClose(out);
-					}			
+				} catch (Exception e1) {
+					
+					LOG.error("Couldn't store received file '"+upload.getFileName()+"'!", e1);
+					System.err.println(BaseServer.ansiErrServerName + " Couldn't store received file '"+upload.getFileName()+"'!");
+					uniqueFileId = null;
+				}					
+				
+				DataOutputStream out = null;
+				try {
+					out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
+					if (uniqueFileId != null)
+						Communicator.writeAnswer(new FileAnswer(upload.getFileName(), uniqueFileId), out);
+					else
+						Communicator.writeAnswer(new FileAnswer(upload.getFileName(), ClientAnswer.TYPE_FILE_NOK), out);
+					
+				} catch (IOException e) {
+					LOG.error("File receiver client response failed! We recommend to restart the server!", e);
+					System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
+		        } finally {
+		        	Communicator.safeClose(out);
+				}			
 
-				} else {
-					LOG.error("No file storage implememtation found, but file received: Files cannot be stored!");
-					System.out.println(BaseServer.ansiServerName + " No file storage implememtation found, but file received: Files cannot be stored!");
-				}
 			}
 			
         	Communicator.safeClose(in);

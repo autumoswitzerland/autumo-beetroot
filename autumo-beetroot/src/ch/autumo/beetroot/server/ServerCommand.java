@@ -75,7 +75,7 @@ public class ServerCommand extends AbstractMessage {
 			timeout = 5;
 			LOG.warn("Using 5 seconds for client connection timeout.");
         }
-        timeout = timeout * 1000;			
+        timeout = timeout * 1000;		
 	}
 	
 	/**

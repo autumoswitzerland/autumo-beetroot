@@ -46,9 +46,10 @@ public class Download extends FileAction {
 	 * @param fileId unique file ID
 	 * @param fileName file name
 	 * @param file temporary file to download
+	 * @param domain domain
 	 */
-	public Download(String fileId, String fileName, File file) {
-		super(fileName);
+	public Download(String fileId, String fileName, File file, String domain) {
+		super(fileName, domain);
 		this.file = file;
 		this.fileId = fileId;
 	}

@@ -519,9 +519,9 @@ public abstract class BaseServer {
 				
 			} else {
 				
-				LOG.error("File server is not started, because no file storage has been configured!");
-				System.err.println(ansiServerName + " File server is not started, because no file storage has been configured!");
-				startFileServer = false;
+				LOG.info("No file storage has been configured, try using internal methods!");
+				if (LOG.isErrorEnabled())
+					System.err.println(ansiServerName + " No file storage has been configured, try using internal methods!");
 			}
 		}
 		
@@ -580,6 +580,34 @@ public abstract class BaseServer {
 		LOG.info(name + " server stopped.");
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server stopped.");
+	}
+	
+	/**
+	 * Internal find-file method if no file-storage has been configured.
+	 * -> Must be overwritten if this internal module is used.
+	 * 
+	 * @param uniqueFileId unique file ID
+	 * @param domain domain or null
+	 * @return Download for the server to queue
+	 * @throws Exception
+	 */
+	protected Download findFile(String uniqueFileId, String domain) throws Exception {
+		throw new IllegalAccessError("Can't find files, since no file-storage has been configured and neither an implementation (findFile) has been provided!");
+	}
+
+	/**
+	 * Internal file-store method if no file-storage has been configured.
+	 * -> Must be overwritten if this internal module is used.
+	 * 
+	 * @param file file
+	 * @param name file name
+	 * @param user user or null
+	 * @param domain domain or  null (default)
+	 * @return unique file ID
+	 * @throws Exception
+	 */
+	protected String store(File file, String name, String user, String domain) throws Exception {
+		throw new IllegalAccessError("Can't store files, since no file-storage has been configured and neither an implementation (store) has been provided!");
 	}
 	
 	/**
@@ -659,10 +687,19 @@ public abstract class BaseServer {
 				if (startFileServer) {
 					Download download = null;
 					try {
-						download = fileStorage.findFile(command.getFileId(), null);
+						
+						String domain = "default";
+						if (command.getDomain() != null)
+							domain = command.getEntity();
+						
+						if (fileStorage != null)
+							download = fileStorage.findFile(command.getFileId(), domain);
+						else
+							download = this.findFile(command.getFileId(), domain);
+						
 					} catch (Exception e) {
-						LOG.error("Couldn't find file wiht ID ''!", e);
-						System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
+						LOG.error("Find file request failed for file ID '"+command.getFileId()+"'!", e);
+						System.err.println(BaseServer.ansiErrServerName + " Find file request failed for file ID '"+command.getFileId()+"'!");
 						download = null;
 					}
 					
@@ -681,7 +718,15 @@ public abstract class BaseServer {
 			if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
 				
 				if (startFileServer) {
-					final Upload upload = new Upload(command.getId(), command.getEntity()); 
+					String user = null;
+					if (command.getObject() != null)
+						user = command.getObject().toString();
+					
+					String domain = "default";
+					if (command.getDomain() != null)
+						domain = command.getEntity();
+					
+					final Upload upload = new Upload(command.getId(), command.getEntity(), user, domain); 
 					fileServer.addToUploadQueue(upload);
 					return new ClientAnswer(command.getEntity(), "FILE", command.getId());
 				}
