@@ -53,6 +53,16 @@ import ch.autumo.beetroot.BeetRootWebServer;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.server.action.Download;
+import ch.autumo.beetroot.server.action.Upload;
+import ch.autumo.beetroot.server.communication.ClientCommunicator;
+import ch.autumo.beetroot.server.communication.Communicator;
+import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.message.HealthAnswer;
+import ch.autumo.beetroot.server.message.ServerCommand;
+import ch.autumo.beetroot.server.message.StopAnswer;
+import ch.autumo.beetroot.server.modules.Dispatcher;
+import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.transport.DefaultServerSocketFactory;
 import ch.autumo.beetroot.transport.SecureServerSocketFactory;
 import ch.autumo.beetroot.transport.ServerSocketFactory;
@@ -578,6 +588,19 @@ public abstract class BaseServer {
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server stopped.");
 	}
+
+	/**
+	 * Internal delete method if no file-storage has been configured.
+	 * -> Must be overwritten if this internal module is used.
+	 * 
+	 * @param uniqueFileId unique file ID
+	 * @param domain domain or null
+     * @return true if at least one (of all versions) has been found and deleted
+	 * @throws Exception
+	 */
+	protected boolean delete(String uniqueFileId, String domain) throws Exception {
+		throw new IllegalAccessError("Can't delete files, since no file-storage has been configured and neither an implementation (delete) has been provided!");
+	}
 	
 	/**
 	 * Internal find-file method if no file-storage has been configured.
@@ -678,7 +701,7 @@ public abstract class BaseServer {
 			if (command.getCommand().equals(Communicator.CMD_HEALTH)) {
 				return new HealthAnswer();
 			}
-			// file request
+			// file request (for download)
 			if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 				
 				if (startFileServer) {
@@ -704,14 +727,14 @@ public abstract class BaseServer {
 						fileServer.addToDownloadQueue(download);
 						return new ClientAnswer(download.getFileName(), download.getFileId());
 					} else {
-						return new ClientAnswer("No file found with unique file id '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
+						return new ClientAnswer("No file found with unique file ID '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
 					}
 				} else {
 					LOG.error("A client requested a file, but file server is not running!");
 					return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
 				}			
 			}
-			// file receive request
+			// file receive request (for upload)
 			if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
 				
 				if (startFileServer) {
@@ -728,7 +751,31 @@ public abstract class BaseServer {
 					return new ClientAnswer(command.getEntity(), "FILE", command.getId());
 				}
 			}
-			
+			// file delete
+			if (command.getCommand().equals(Communicator.CMD_FILE_DELETE)) {
+				
+				boolean success = false;
+				try {
+					String domain = "default";
+					if (command.getDomain() != null)
+						domain = command.getDomain();
+					
+					if (fileStorage != null)
+						success = fileStorage.delete(command.getFileId(), domain);
+					else
+						success = this.delete(command.getFileId(), domain);
+				
+				} catch (Exception e) {
+					LOG.error("Delete file failed for file ID '"+command.getFileId()+"'!", e);
+					System.err.println(BaseServer.ansiErrServerName + " Delete file failed for file ID '"+command.getFileId()+"'!");
+					success = false;
+				}
+				
+				if (success) 
+					return new ClientAnswer("Success", command.getFileId());
+				else
+					return new ClientAnswer("Delete file failed for file ID '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
+			}
 		// --- 2. module/component dispatchers
 		} else { 
 			

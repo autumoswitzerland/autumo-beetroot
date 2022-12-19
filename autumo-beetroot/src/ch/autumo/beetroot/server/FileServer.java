@@ -51,6 +51,13 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.server.action.Download;
+import ch.autumo.beetroot.server.action.Upload;
+import ch.autumo.beetroot.server.communication.Communicator;
+import ch.autumo.beetroot.server.communication.FileTransfer;
+import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.message.ServerCommand;
+import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.utils.UtilsException;
 
 

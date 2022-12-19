@@ -28,27 +28,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message;
 
 /**
- * Server file action.
+ * Health answer - only server-side internally used as a marker class.
  */
-public class FileAction {
-	
-	private String fileName = null;
-	private String domain = null;
-
-	public FileAction(String fileName, String domain) {
-		this.fileName = fileName;
-		this.domain = domain;
-	}
-	
-	public String getFileName() {
-		return fileName;
-	}
-	
-	public String getDomain() {
-		return domain;
-	}
-	
+public class HealthAnswer extends ClientAnswer {
 }

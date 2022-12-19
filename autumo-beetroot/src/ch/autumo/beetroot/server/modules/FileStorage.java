@@ -28,10 +28,49 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.modules;
+
+import java.io.File;
+
+import ch.autumo.beetroot.server.action.Download;
 
 /**
- * Health answer - only server-side internally used as a marker class.
+ * File storage interface.
  */
-public class HealthAnswer extends ClientAnswer {
+public interface FileStorage {
+	
+	/**
+	 * Store a file.
+	 * 
+	 * @param file file
+	 * @param name file name
+	 * @param user user or null
+	 * @param domain domain or null (default)
+	 * @return unique file ID
+	 * @throws Exception
+	 */
+	public String store(File file, String name, String user, String domain) throws Exception;
+
+	/**
+	 * Find a file (latest version). The file delivered within the download must be
+	 * physically temporarily available, so it can be delivered by
+	 * a stream.
+	 *   
+	 * @param uniqueFileId unique file id
+	 * @param domain domain or null (default)
+	 * @return download or null if file is not available
+	 * @throws Exception
+	 */
+	public Download findFile(String uniqueFileId, String domain) throws Exception;
+	
+	/**
+	 * Delete a file.
+	 * 
+	 * @param uniqueFileId unique file id
+	 * @param domain domain or null (default)
+     * @return true if at least one (of all versions) has been found and deleted
+	 * @throws Exception
+	 */
+	public boolean delete(String uniqueFileId, String domain) throws Exception;
+	
 }

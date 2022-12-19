@@ -28,27 +28,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message.file;
+
+import ch.autumo.beetroot.server.communication.Communicator;
+import ch.autumo.beetroot.server.message.ServerCommand;
 
 /**
- * Dispatcher for server commands received server-side;
- * every remote component must implement a dispatcher.
+ * File delete command; client-side.
  */
-public interface Dispatcher {
+public class DeleteRequest extends ServerCommand {
 
 	/**
-	 * Returns an unique ID for this dispatcher.
-	 * @return unique ID
-	 */
-	public String getId();
-	
-	/**
-	 * Dispatch server command and deliver an answer for
-	 * the client.
+	 * Delete file from server
 	 * 
-	 * @param serverCommand server command
-	 * @return client answer
+	 * @param fileId unique file ID
+	 * @param domain domain or null (default)
 	 */
-	public ClientAnswer dispatch(ServerCommand serverCommand);
+	public DeleteRequest(String fileId, String domain) {
+		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_DELETE, fileId, domain);
+	}
 	
 }

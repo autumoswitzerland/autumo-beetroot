@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.communication;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.server.action.Download;
 import ch.autumo.beetroot.utils.Utils;
 
 /**
@@ -85,7 +86,7 @@ public class FileTransfer {
 	 * @param out output stream
 	 * @throws Excpetion
 	 */
-	protected static void writeFile(Download download, DataOutputStream output) throws IOException {
+	public static void writeFile(Download download, DataOutputStream output) throws IOException {
 		
 		final FileInputStream fileInputStream = new FileInputStream(download.getFile());
 		
@@ -120,7 +121,7 @@ public class FileTransfer {
 	 * @return server temporary file or null, if file received was invalid
 	 * @throws IOException
 	 */
-	protected static File readFile(DataInputStream in, String fileName, long size) throws IOException {
+	public static File readFile(DataInputStream in, String fileName, long size) throws IOException {
 
 		long length = size;
 		final File f = new File(Utils.getTemporaryDirectory() + fileName);

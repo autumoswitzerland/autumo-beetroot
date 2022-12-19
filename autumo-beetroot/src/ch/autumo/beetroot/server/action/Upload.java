@@ -28,37 +28,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
-
-import java.io.File;
+package ch.autumo.beetroot.server.action;
 
 /**
- * File storage interface.
+ * Upload.
  */
-public interface FileStorage {
+public class Upload extends FileAction {
 
-	/**
-	 * Find a file (latest version). The file delivered within the download must be
-	 * physically temporarily available, so it can be delivered by
-	 * a stream.
-	 *   
-	 * @param uniqueFileId unique file id
-	 * @param domain domain or null (default)
-	 * @return download or null if file is not available
-	 * @throws Exception
-	 */
-	public Download findFile(String uniqueFileId, String domain) throws Exception;
+	private long size = -1;
+	private String user = null;
 	
 	/**
-	 * Store a file.
+	 * Upload.
 	 * 
-	 * @param file file
-	 * @param name file name
+	 * @param size file size
+	 * @param fileName file name
 	 * @param user user or null
 	 * @param domain domain or null (default)
-	 * @return unique file ID
-	 * @throws Exception
 	 */
-	public String store(File file, String name, String user, String domain) throws Exception;
+	public Upload(long size, String fileName, String user, String domain) {
+		super(fileName, domain);
+		this.size = size;
+		this.user = user;
+	}
+	
+	public long getSize() {
+		return size;
+	}
+
+	public String getUser() {
+		return user;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return size == ((Upload)obj).size;
+	}
 	
 }

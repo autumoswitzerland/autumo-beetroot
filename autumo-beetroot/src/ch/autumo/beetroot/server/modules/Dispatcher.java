@@ -28,26 +28,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.modules;
+
+import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.message.ServerCommand;
 
 /**
- * Upload request; client-side.
+ * Dispatcher for server commands received server-side;
+ * every remote component must implement a dispatcher.
  */
-public class UploadRequest extends ServerCommand {
+public interface Dispatcher {
 
 	/**
-	 * File command to send before sending a file to
-	 * server.
-	 * 
-	 * @param fileName file name
-	 * @param user user or null
-	 * @param domain domain or null (default)
-	 * @param size file size
+	 * Returns an unique ID for this dispatcher.
+	 * @return unique ID
 	 */
-	public UploadRequest(String fileName, String user, String domain, long size) {
-		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_RECEIVE_REQUEST, fileName, size, domain);
-		if (user != null)
-			super.setObject(user); // set the user into the general transfer object
-	}
+	public String getId();
+	
+	/**
+	 * Dispatch server command and deliver an answer for
+	 * the client.
+	 * 
+	 * @param serverCommand server command
+	 * @return client answer
+	 */
+	public ClientAnswer dispatch(ServerCommand serverCommand);
 	
 }

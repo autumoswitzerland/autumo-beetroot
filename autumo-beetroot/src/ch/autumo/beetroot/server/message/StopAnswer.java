@@ -28,41 +28,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message;
 
 /**
- * Upload.
+ * Stop answer - only server-side internally used as a marker class.
  */
-public class Upload extends FileAction {
-
-	private long size = -1;
-	private String user = null;
-	
-	/**
-	 * Upload.
-	 * 
-	 * @param size file size
-	 * @param fileName file name
-	 * @param user user or null
-	 * @param domain domain or null (default)
-	 */
-	public Upload(long size, String fileName, String user, String domain) {
-		super(fileName, domain);
-		this.size = size;
-		this.user = user;
-	}
-	
-	public long getSize() {
-		return size;
-	}
-
-	public String getUser() {
-		return user;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		return size == ((Upload)obj).size;
-	}
-	
+public class StopAnswer extends ClientAnswer {
 }

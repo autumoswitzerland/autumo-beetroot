@@ -1,4 +1,4 @@
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.communication;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.transport.DefaultSocketFactory;
 import ch.autumo.beetroot.transport.SecureSocketFactory;
 import ch.autumo.beetroot.transport.SocketFactory;

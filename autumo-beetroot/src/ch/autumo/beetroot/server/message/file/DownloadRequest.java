@@ -28,32 +28,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message.file;
 
-import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.communication.Communicator;
+import ch.autumo.beetroot.server.message.ServerCommand;
 
 /**
- * File answer: only used when the server received a file from client!
+ * Download request; client-side.
  */
-public class FileAnswer extends ClientAnswer {
+public class DownloadRequest extends ServerCommand {
 
 	/**
-	 * Success constructor.
+	 * File download request to send before receiving a file
+	 * from server.
 	 * 
-	 * @param answer answer
-	 * @param fileId file id generated server side
+	 * @param fileId unique file ID
+	 * @param domain domain or null (default)
 	 */
-	public FileAnswer(String answer, String fileId) {
-		super(answer, fileId);
+	public DownloadRequest(String fileId, String domain) {
+		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_REQUEST, fileId, domain);
 	}
 	
-	/**
-	 * Fail constructor.
-	 * 
-	 * @param answer answer (reason)
-	 * @param type failure type
-	 */
-	public FileAnswer(String answer, int type) {
-		super(answer, type);
-	}
 }

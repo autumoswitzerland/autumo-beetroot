@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message;
 
 import java.io.IOException;
 
@@ -90,7 +90,7 @@ public class ServerCommand extends AbstractMessage {
 	 * Constructor.
 	 * 
 	 * @param dispatcherId dispatcher ID
-	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * 	{@link ch.autumo.beetroot.server.modules.Dispatcher}
 	 * @param command server command
 	 */
 	public ServerCommand(String dispatcherId, String command) {
@@ -103,7 +103,7 @@ public class ServerCommand extends AbstractMessage {
 	 * Constructor.
 	 * 
 	 * @param dispatcherId dispatcher ID
-	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * 	{@link ch.autumo.beetroot.server.modules.Dispatcher}
 	 * @param command server command
 	 * @param fileId unique file ID
 	 */
@@ -118,7 +118,7 @@ public class ServerCommand extends AbstractMessage {
 	 * Constructor.
 	 * 
 	 * @param dispatcherId dispatcher ID
-	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * 	{@link ch.autumo.beetroot.server.modules.Dispatcher}
 	 * @param command server command
 	 * @param fileId unique file ID
 	 * @param domain domain
@@ -135,7 +135,7 @@ public class ServerCommand extends AbstractMessage {
 	 * Constructor.
 	 * 
 	 * @param dispatcherId dispatcher ID
-	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * 	{@link ch.autumo.beetroot.server.modules.Dispatcher}
 	 * @param command server command
 	 * @param entity entity name
 	 * @param id unique id
@@ -152,7 +152,7 @@ public class ServerCommand extends AbstractMessage {
 	 * Constructor.
 	 * 
 	 * @param dispatcherId dispatcher ID
-	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * 	{@link ch.autumo.beetroot.server.modules.Dispatcher}
 	 * @param command server command
 	 * @param entity entity name
 	 * @param id unique id
@@ -168,7 +168,7 @@ public class ServerCommand extends AbstractMessage {
 	}
 
 	/**
-	 * Get dispatcher id {@link ch.autumo.beetroot.server.Dispatcher}.
+	 * Get dispatcher id {@link ch.autumo.beetroot.server.modules.Dispatcher}.
 	 * @return dispatcher id
 	 */
 	public String getDispatcherId() {

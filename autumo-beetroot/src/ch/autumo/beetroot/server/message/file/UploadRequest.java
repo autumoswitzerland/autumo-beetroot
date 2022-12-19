@@ -28,22 +28,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message.file;
+
+import ch.autumo.beetroot.server.communication.Communicator;
+import ch.autumo.beetroot.server.message.ServerCommand;
 
 /**
- * Download request; client-side.
+ * Upload request; client-side.
  */
-public class DownloadRequest extends ServerCommand {
+public class UploadRequest extends ServerCommand {
 
 	/**
-	 * File download request to send before receiving a file
-	 * from server.
+	 * File command to send before sending a file to
+	 * server.
 	 * 
-	 * @param fileId unique file ID
+	 * @param fileName file name
+	 * @param user user or null
 	 * @param domain domain or null (default)
+	 * @param size file size
 	 */
-	public DownloadRequest(String fileId, String domain) {
-		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_REQUEST, fileId, domain);
+	public UploadRequest(String fileName, String user, String domain, long size) {
+		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_RECEIVE_REQUEST, fileName, size, domain);
+		if (user != null)
+			super.setObject(user); // set the user into the general transfer object
 	}
 	
 }

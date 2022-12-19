@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.communication;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
@@ -41,6 +41,10 @@ import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.autumo.beetroot.server.BaseServer;
+import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.message.ServerCommand;
 
 /**
  * Client/Server communication.
@@ -56,9 +60,11 @@ public class Communicator {
 	public final static String CMD_STOP = "STOP";
 	/** Health command */
 	public final static String CMD_HEALTH = "HEALTH";
-	/** File request */
+	/** File delete */
+	public final static String CMD_FILE_DELETE = "FILE_DELETE";
+	/** File request for download */
 	public final static String CMD_FILE_REQUEST = "FILE_REQUEST";
-	/** File receive request */
+	/** File receive request for upload */
 	public final static String CMD_FILE_RECEIVE_REQUEST = "FILE_RECEIVE_REQUEST";
 	
 	// Server-side
@@ -71,7 +77,7 @@ public class Communicator {
 	 * @param out output stream
 	 * @throws Excpetion
 	 */
-	protected static void writeAnswer(ClientAnswer answer, DataOutputStream out) throws IOException {
+	public static void writeAnswer(ClientAnswer answer, DataOutputStream out) throws IOException {
 		
 		out.writeInt(answer.getDataLength());
 		final PrintWriter writer = new PrintWriter(out, true);
@@ -88,7 +94,7 @@ public class Communicator {
 	 * @return server command or null, if command received was invalid
 	 * @throws IOException
 	 */
-	protected static ServerCommand readCommand(DataInputStream in) throws IOException {
+	public static ServerCommand readCommand(DataInputStream in) throws IOException {
 	    return ServerCommand.parse(read(in));
 	}
 	
@@ -135,7 +141,7 @@ public class Communicator {
 	 * 
 	 * @param closeable closeable object
 	 */
-    protected static final void safeClose(Object closeable) {
+    public static final void safeClose(Object closeable) {
         try {
             if (closeable != null) {
                 if (closeable instanceof Closeable) {
