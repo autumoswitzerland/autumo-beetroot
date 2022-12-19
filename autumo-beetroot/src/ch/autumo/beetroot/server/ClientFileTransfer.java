@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
@@ -19,6 +22,8 @@ import ch.autumo.beetroot.transport.SocketFactory;
 import ch.autumo.beetroot.utils.security.SSLUtils;
 
 public class ClientFileTransfer extends FileTransfer {
+	
+	protected final static Logger LOG = LoggerFactory.getLogger(ClientFileTransfer.class.getName());
 	
 	private static SocketFactory socketFactory = null;
 	
@@ -96,7 +101,7 @@ public class ClientFileTransfer extends FileTransfer {
 	 * @param fileId unique file ID
 	 * @param filename file name
 	 * @return file
-	 * @throws Exception
+	 * @throws Exception also if file isn't found/available!
 	 */
 	public static File getFile(String fileId, String filename) throws Exception {
 		return getFile(fileId, filename, Communicator.TIMEOUT * 1000);
@@ -174,7 +179,7 @@ public class ClientFileTransfer extends FileTransfer {
 	 * @return file answer
 	 * @throws Excpetion
 	 */
-	public static FileAnswer sendFile(File file, int timeout) throws Exception {
+	public static ClientAnswer sendFile(File file, int timeout) throws Exception {
 		
 		//send signal and end !
 		Socket socket = null;
@@ -194,7 +199,7 @@ public class ClientFileTransfer extends FileTransfer {
 	        // send file size
 			output.writeLong(file.length());  
 	        // break file into chunks
-	        final byte buffer[] = new byte[bufferLenKb];
+	        final byte buffer[] = new byte[bufferLen];
 	        int bytes = 0;
 	        while ((bytes = fileInputStream.read(buffer)) != -1) {
 	        	output.write(buffer, 0, bytes);
@@ -215,7 +220,7 @@ public class ClientFileTransfer extends FileTransfer {
 			
 		} catch (IOException e) {
 			
-			LOG.error("File receiver cannot be contacted at "+hostAdmin+":"+portFileReceiver+"! PS: Is it really running? [IO]", e);
+			LOG.error("File receiver cannot be contacted at "+hostAdmin+":"+portFileReceiver+" or no data available! PS: Is it really running? [IO]", e);
 			throw e;
 			
 		} finally {
@@ -234,7 +239,7 @@ public class ClientFileTransfer extends FileTransfer {
 	 * @return file answer or null, if answer received was invalid
 	 * @throws IOException
 	 */
-	public static FileAnswer readAnswer(DataInputStream in) throws IOException {
-	    return (FileAnswer) FileAnswer.parse(Communicator.read(in));
+	public static ClientAnswer readAnswer(DataInputStream in) throws IOException {
+	    return ClientAnswer.parse(Communicator.read(in));
 	}		
 }

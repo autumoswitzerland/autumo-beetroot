@@ -59,18 +59,19 @@ public class FileTransfer {
 	/** File get */
 	public final static String CMD_FILE_GET = "FILE_GET";
 	
-	/** default buffer length for sending bits of a file */
+	/** default buffer length in Kb for sending bits of a file */
 	public static int DEFAULT_BUFFER_LEN = 32;
 	
 	/** buffer length for sending bits of a file */
-	protected static int bufferLenKb = DEFAULT_BUFFER_LEN;
+	protected static int bufferLen = 1024 * DEFAULT_BUFFER_LEN;
 	
 	static {
-		
 		// Buffer size
-		bufferLenKb = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_BUF_SIZE);
-		if (bufferLenKb == -1)
-			bufferLenKb = DEFAULT_BUFFER_LEN;
+		bufferLen = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_BUF_SIZE);
+		if (bufferLen == -1)
+			bufferLen = DEFAULT_BUFFER_LEN;
+		
+		bufferLen = bufferLen * 1024;
 	}		
 	
 	
@@ -91,7 +92,7 @@ public class FileTransfer {
         // send file size
 		output.writeLong(download.getFile().length());  
         // break file into chunks
-        final byte buffer[] = new byte[bufferLenKb];
+        final byte buffer[] = new byte[bufferLen];
         int bytes = 0;
         while ((bytes = fileInputStream.read(buffer)) != -1) {
         	output.write(buffer, 0, bytes);
@@ -124,7 +125,7 @@ public class FileTransfer {
 		long length = size;
 		final File f = new File(Utils.getTemporaryDirectory() + fileName);
 		final FileOutputStream fileOutputStream = new FileOutputStream(f);
-		final byte buffer[] = new byte[bufferLenKb];
+		final byte buffer[] = new byte[bufferLen];
 		int bytes = 0;
         while (length > 0 && (bytes = in.read(buffer, 0, (int)Math.min(buffer.length, length))) != -1) {
             fileOutputStream.write(buffer,0,bytes);

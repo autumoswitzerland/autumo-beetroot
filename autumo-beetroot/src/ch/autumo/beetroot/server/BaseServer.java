@@ -491,38 +491,35 @@ public abstract class BaseServer {
 			// if we start the file server, we have to deliver a file storage
 			// Without a file storage, the file server is not started!
 			final String fileStorageClass = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_FILE_STORAGE);
-			if (fileStorageClass != null) {
-				
+			if (fileStorageClass != null && fileStorageClass.length() != 0) {
 				Class<?> clazz;
 				try {
-					
 					clazz = Class.forName(fileStorageClass);
 					final Constructor<?> constructor = clazz.getDeclaredConstructor();
 		            constructor.setAccessible(true);
-		            
 		            fileStorage = (FileStorage) constructor.newInstance();
 		            
-					// File listener and server thread
-					fileServer = new FileServer(this, fileStorage);
-					fileServer.start();
-					
-					LOG.info("File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileServer + ".");
-					if (LOG.isErrorEnabled())
-						System.out.println(ansiServerName + " File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileServer + ".");
-		            
 				} catch (Exception e) {
-					
-					LOG.error("File server is not started, because file storage couldn't be created!");
-					System.out.println(ansiServerName + " File server is not started, because file storage couldn't be created!");
+					LOG.error("File server is not started, because configured file storage couldn't be created!");
+					System.out.println(ansiErrServerName + " File server is not started, because configured file storage couldn't be created!");
 					startFileServer = false;
 				}
-				
 			} else {
-				
 				LOG.info("No file storage has been configured, try using internal methods!");
 				if (LOG.isErrorEnabled())
-					System.err.println(ansiServerName + " No file storage has been configured, try using internal methods!");
+					System.out.println(ansiServerName + " No file storage has been configured, try using internal methods!");
+				startFileServer = true;
+				fileStorage = null;
 			}
+			
+            if (startFileServer) { // if it is still a GO...
+				// File listener and server thread
+				fileServer = new FileServer(this, fileStorage);
+				fileServer.start();
+				LOG.info("File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileReceiver + ".");
+				if (LOG.isErrorEnabled())
+					System.out.println(ansiServerName + " File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileReceiver + ".");
+            }
 		}
 		
 		// Admin listener and server thread
@@ -690,7 +687,7 @@ public abstract class BaseServer {
 						
 						String domain = "default";
 						if (command.getDomain() != null)
-							domain = command.getEntity();
+							domain = command.getDomain();
 						
 						if (fileStorage != null)
 							download = fileStorage.findFile(command.getFileId(), domain);
@@ -724,7 +721,7 @@ public abstract class BaseServer {
 					
 					String domain = "default";
 					if (command.getDomain() != null)
-						domain = command.getEntity();
+						domain = command.getDomain();
 					
 					final Upload upload = new Upload(command.getId(), command.getEntity(), user, domain); 
 					fileServer.addToUploadQueue(upload);

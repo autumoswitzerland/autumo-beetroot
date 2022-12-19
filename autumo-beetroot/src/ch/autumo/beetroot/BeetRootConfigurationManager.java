@@ -141,14 +141,14 @@ public class BeetRootConfigurationManager {
 	 * 
 	 * @param key key
 	 * @param value vane
+	 * @return old value if any or null
 	 */
-	public void updateProperty(String key, String value) {
+	public String updateProperty(String key, String value) {
 		if (this.generalProps == null || !isInitialized) {
 			LOG.error("Internal properties or configuration manager not initialised!");
 			throw new RuntimeException("Internal properties or configuration manager not initialised!");
 		}
-		
-		this.generalProps.put(key, value);
+		return (String) this.generalProps.put(key, value);
 	}
 	
 	/**

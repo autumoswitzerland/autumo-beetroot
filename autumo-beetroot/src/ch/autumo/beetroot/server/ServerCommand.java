@@ -113,6 +113,23 @@ public class ServerCommand extends AbstractMessage {
 		this.dispatcherId = dispatcherId;
 		this.fileId = fileId;
 	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param dispatcherId dispatcher ID
+	 * 	{@link ch.autumo.beetroot.server.Dispatcher}
+	 * @param command server command
+	 * @param fileId unique file ID
+	 * @param domain domain
+	 */
+	public ServerCommand(String dispatcherId, String command, String fileId, String domain) {
+		super(command);
+		this.serverName = cfgServerName;
+		this.dispatcherId = dispatcherId;
+		this.fileId = fileId;
+		this.domain = domain;
+	}
 	
 	/**
 	 * Constructor.

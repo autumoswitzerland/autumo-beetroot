@@ -31,9 +31,9 @@
 package ch.autumo.beetroot.server;
 
 /**
- * File receive request.
+ * Upload request; client-side.
  */
-public class FileReceiveRequest extends ServerCommand {
+public class UploadRequest extends ServerCommand {
 
 	/**
 	 * File command to send before sending a file to
@@ -44,7 +44,7 @@ public class FileReceiveRequest extends ServerCommand {
 	 * @param domain domain or null (default)
 	 * @param size file size
 	 */
-	public FileReceiveRequest(String fileName, String user, String domain, long size) {
+	public UploadRequest(String fileName, String user, String domain, long size) {
 		super(DISPATCHER_ID_INTERNAL, Communicator.CMD_FILE_RECEIVE_REQUEST, fileName, size, domain);
 		if (user != null)
 			super.setObject(user); // set the user into the general transfer object
