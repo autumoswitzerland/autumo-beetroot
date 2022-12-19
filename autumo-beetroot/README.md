@@ -88,9 +88,11 @@
 
 ![autumo beetroot screen][product-screenshot]
 
-beetRoot is a rapid Java web-development framework ready to run! If you know [CakePHP](https://cakePHP.org), you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model!
+beetRoot is a rapid Java web development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model! The client-server frameworks supports encrypted communication (SSL), provides a file download and upload interface and can be extended with own modules.
 
-It is shipped with the following features ready to use:
+Note that the client-server framework is not documented in this document; it focuses only on the web development part.
+
+The Web framework is shipped with the following features ready to use:
 
 - Add, edit, view, list and delete functionality for entities
 - Bean support with transient and unique fields
@@ -98,9 +100,11 @@ It is shipped with the following features ready to use:
 - File up- and download
 - Full MIME types control
 - 2-Factor-Authentication
+- Clever web file caching
 - Password reset mechanism
 - Extendable user settings
 - Dark theme and theme support
+- Interface for SMS notifictaions
 - Mailing inclusive mail templates
 - URL routing with language support
 - File caching (resources and templates)
@@ -110,12 +114,13 @@ It is shipped with the following features ready to use:
 - User roles & access control on controller level
 - User session are stored when servers are stopped
 - Entities can be served through the JSON REST API
+- Logging implementations other than log4j2 supported
 - Servlet API 4.0 Java EE 8 (prepared for 5.0 Jakarta EE 8)
 - Full CRUD-Generator **PLANT** for views, models and handlers
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
 - Runs stand-alone as well as in common servlet containers such as apache Tomcat and jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
-- Secure Client/Server communication, if beetRoot is installed in a servlet container apart from beetRoot server and if there's need for such communication to steer backend processes
+- Secure client-server communication, if beetRoot is installed in a servlet container apart from beetRoot server and if there's need for such communication to steer backend processes
 - Hierarchical resource loader; e.g. German language requested, if not found, use configured default language, then use no language at all; "lookup till you find something usable" is the 
   algorithm for everything. As well, load resources from file system (first), then as a resource within packages (jar, war) if not found beforehand.
 - And some more stuff... 
@@ -136,6 +141,7 @@ Enjoy!
 * [Jakarta Mail API](https://eclipse-ee4j.github.io/mail)
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
+* [c3p0] (https://www.mchange.com/projects/c3p0)
 * [normalize.css](https://necolas.github.io/normalize.css)
 * ...and some more; see [THIRDPARTYLICENSES.txt](https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/THIRDPARTYLICENSES.txt)
 
@@ -233,6 +239,7 @@ Furthermore, the configuration offers wide possibilities of customization for yo
 - Supported databases: MySQL, MariaDB, Java H2, Oracle, PostgreSQL
 - Default web view (in case of certain redirects)
 - Mail configuration inclusive TLS; some configuration parameters can be overwritten by values in the standard DB table `properties`
+- ...and much more.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
