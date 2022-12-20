@@ -50,6 +50,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1066,10 +1067,30 @@ public class Utils {
 	 * @return time-stamp a time-stamp representation that works with used DB
 	 */
 	public static String nowTimeStamp() {
+		return Utils.timeStamp(new Date());
+	}
+    
+	/**
+	 * Get a time-stamp representation that can be stored in DB.
+	 * 
+	 * Note that this code returns a 'to_timestamp'-call when you are using
+	 * an Oracle database, hence that value cannot be enclosed with
+	 * apostrophes '...'; in case of Oracle it looks like this:
+	 * 
+	 * "to_timestamp('2022-12-21 23:59:59.999', 'YYYY-MM-DD HH24:MI:SS.FF')"
+	 * 
+	 * and in case of all other databases:
+	 * 
+	 * "2022-12-21 23:59:59.999"
+	 * 
+	 * @param date create time-stamp out of given date
+	 * @return time-stamp a time-stamp representation that works with used DB
+	 */
+	public static String timeStamp(Date date) {
 		
 		String ts_str = null;
 		
-		final Timestamp ts = new Timestamp(System.currentTimeMillis());
+		final Timestamp ts = new Timestamp(date.getTime());
 		ts_str = ts.toLocalDateTime().toString();
 
 		if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
@@ -1079,7 +1100,7 @@ public class Utils {
 		
 		return ts_str;
 	}
-    
+	
 	/**
 	 * Generates a CSRF token.
 	 * 
