@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.transport.DefaultSocketFactory;
@@ -77,13 +76,8 @@ public class ClientFileTransfer extends FileTransfer {
 		sslSockets = (mode != null && mode.equalsIgnoreCase("ssl"));
 		
 		if (sslSockets) {
-			boolean pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
-			String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
 			try {
-				final String keystorepw = pwEncoded ? 
-						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
-		        socketFactory = new SecureSocketFactory(SSLUtils.makeSSLSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
+		        socketFactory = new SecureSocketFactory(SSLUtils.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
 			} catch (Exception e) {
 				LOG.error("Cannot make client calls secure (SSL)! ", e);
 				System.err.println("Cannot make client calls secure (SSL)! ");

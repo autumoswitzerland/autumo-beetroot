@@ -40,12 +40,53 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+
 
 /**
  * SSL Utils.
  */
 public class SSLUtils {
 
+	/**
+	 * Get key-store file.
+	 * 
+	 * @return key-store file
+	 */
+	public static String getKeystoreFile() {
+		String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
+		if (!keystoreFile.startsWith("/"))
+			keystoreFile = "/" + keystoreFile;		
+		return keystoreFile;
+	}
+	
+	/**
+	 * Get key-store password.
+	 * 
+	 * @return key-store password
+	 * @throws Exception
+	 */
+	public static char[] getKeystorePw() throws Exception {
+		
+		return SSLUtils.getKeystorePw(BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC));
+	}
+
+	/**
+	 * Get key-store password.
+	 * 
+	 * @param encodedPassword is the password encoded in configuration?
+	 * @return key-store password
+	 * @throws Exception
+	 */
+	public static char[] getKeystorePw(boolean encodedPassword) throws Exception {
+		final String keystorepw = encodedPassword ? 
+				BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
+					BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
+		return keystorepw.toCharArray();
+	}
+	
     /**
      * Creates an SSLServerSocketFactory. Pass a KeyStore resource with your
      * certificate and pass-phrase.

@@ -435,13 +435,7 @@ public abstract class BaseServer {
 				
 				final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 				if (https) {
-					final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
-					final String keystorepw = pwEncoded ? 
-							BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-								BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
-					
-					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
-					
+					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
 					LOG.info("Web-Server communication is SSL (TLS) secured!");
 					if (LOG.isErrorEnabled())
 						System.out.println(ansiServerName + " Web-Server communication is SSL (TLS) secured!");
@@ -469,13 +463,8 @@ public abstract class BaseServer {
 		}
 
 		if (sslSockets) { // For C/S-communication
-			final String keystoreFile = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_FILE);
 			try {
-				final String keystorepw = pwEncoded ? 
-						BeetRootConfigurationManager.getInstance().getDecodedString(Constants.KEY_KEYSTORE_PW, SecureApplicationHolder.getInstance().getSecApp()) : 
-							BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
-		        this.serverSocketFactory = new SecureServerSocketFactory(SSLUtils.makeSSLServerSocketFactory(keystoreFile, keystorepw.toCharArray()), null);
-		        
+		        this.serverSocketFactory = new SecureServerSocketFactory(SSLUtils.makeSSLServerSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
 				LOG.info("Client-Server communication (with file transfers) is SSL secured!");
 				if (LOG.isErrorEnabled())
 					System.out.println(ansiServerName + " Client-Server communication (with file transfers) is SSL secured!");
@@ -548,7 +537,7 @@ public abstract class BaseServer {
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server started.");
 	}
-
+	
 	/**
 	 * Stop server and web server if configured.
 	 */
