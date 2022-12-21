@@ -75,11 +75,9 @@ with third parties: All licenses are covered by the license for this product (se
 	License:	CDDL 1.1 with Classpath Exception & Special Exception
 	Link:		https://oss.oracle.com/licenses/CDDL+GPL-1.1
 
--	Library:	c3p0: JDBC DataSources/Resource Pools
-	Licenses:	The Eclipse Public License (EPL), version 1.0 or
-				The GNU Lesser General Public License (LGPLv2.1)
-	Links:		https://www.eclipse.org/legal/epl-v10.html
-				https://opensource.org/licenses/LGPL-2.1
+-	Library:	HikariCP: JDBC Connection Pool
+	Licenses:	Apache License, Version 2.0
+	Links:		https://github.com/brettwooldridge/HikariCP/blob/dev/LICENSE
 
 -	Library:	JAXB API
 	License:	CDDL 1.1 + GPL with Classpath & Special Exception

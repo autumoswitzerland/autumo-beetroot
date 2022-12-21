@@ -232,6 +232,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	
 	cp -r ../web autumo-beetRoot-web-$VERSION/
 	
+# --------- SSL resources
+
+	mkdir autumo-beetRoot-$VERSION/ssl
+
+	cp -r ../ssl autumo-beetRoot-$VERSION/
+	
 # --------- Copy scripts
 
 	mkdir autumo-beetRoot-$VERSION/bin
@@ -269,6 +275,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	# create archive
 	zip -r "autumo-beetRoot-${VERSION}.zip" autumo-beetRoot-${VERSION} \
+		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
 
@@ -284,6 +291,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	# create archive
 	zip -r "autumo-beetRoot-web-${VERSION}.zip" autumo-beetRoot-web-${VERSION} \
+		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
 
@@ -313,6 +321,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir beetroot/
 	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/ 
 	zip -r "beetroot-weblogic.zip" beetroot/ \
+		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
 	rm -fR beetroot/

@@ -384,7 +384,7 @@ public class BeetRootConfigurationManager {
 		final Set<Object> keys = generalProps.keySet();
 		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
 			final String key = (String) iterator.next();
-			if (key.startsWith(key))
+			if (key.startsWith(keyPrefix))
 				collectedKeys.add(key);
 		}
 		return collectedKeys.toArray(new String[collectedKeys.size()]);

@@ -69,7 +69,6 @@ public class SSLUtils {
 	 * @throws Exception
 	 */
 	public static char[] getKeystorePw() throws Exception {
-		
 		return SSLUtils.getKeystorePw(BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC));
 	}
 

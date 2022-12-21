@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.logging.LoggingFactory;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 import ch.autumo.beetroot.utils.UtilsException;
 
@@ -102,9 +101,6 @@ public class AbstractBeetRootServlet extends HttpServlet {
 			}
 		}
 		
-		// Are pw's in config encoded?
-		boolean pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
-		
 		String dbUrl = configMan.getString("db_url");
 		if (dbUrl.contains("[WEB-CONTEXT-PATH]")) {
 			dbUrl = dbUrl.replace("[WEB-CONTEXT-PATH]", webAppRootWithoutSlash);
@@ -112,12 +108,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		
 		// DB connection manager
 		try {
-			BeetRootDatabaseManager.getInstance().initialize(
-					dbUrl,
-					configMan.getString("db_user"),
-					pwEncoded ? 
-							configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
-				);
+			BeetRootDatabaseManager.getInstance().initialize();
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
 			throw new ServletException("Couldn't decrypt DB password!", e);
@@ -166,6 +157,9 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		
 		// free service resource, etc.
 		beetRootService.destroy();
+		
+		// release database resources
+		BeetRootDatabaseManager.getInstance().release();
 		
 		// no threads need to be stopped, no streams closed,
 		// servlet container does it all for us here.,

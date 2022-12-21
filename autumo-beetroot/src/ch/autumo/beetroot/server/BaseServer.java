@@ -52,7 +52,6 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootWebServer;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.logging.LoggingFactory;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.server.action.Download;
 import ch.autumo.beetroot.server.action.Upload;
 import ch.autumo.beetroot.server.communication.ClientCommunicator;
@@ -101,7 +100,6 @@ public abstract class BaseServer {
 	protected boolean startWebServer = true;
 	private int portWebServer = -1;
 
-	private boolean pwEncoded = false;
 	private boolean sslSockets = false;
 	private boolean sha3Com = false;
 	
@@ -220,9 +218,6 @@ public abstract class BaseServer {
 		if (mode != null && mode.equalsIgnoreCase("sha3"))
 			sha3Com = true;
 		
-		// Are pw's in config encoded?
-		pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
-		
 		// read config params
 		String v = null;
 		try {
@@ -260,33 +255,8 @@ public abstract class BaseServer {
 			
 			final BeetRootDatabaseManager dbMan = BeetRootDatabaseManager.getInstance();
 			if (!dbMan.isInitialized()) {
-
-				/** this is an undocumented configuration key: it allows to use unsupported databases! */
-				final String dbDriver = configMan.getStringNoWarn("db_driver");
-				
-				if (dbDriver != null && dbDriver.length() != 0) {
-					
-					// initialize unsupported DB
-					BeetRootDatabaseManager.getInstance().initializeUnsupported(
-							dbDriver,
-							configMan.getString("db_url"),
-							configMan.getString("db_user"),
-							pwEncoded ? 
-									configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
-						);
-					
-				} else {
-	
-					// supported databases
-					BeetRootDatabaseManager.getInstance().initialize(
-							configMan.getString("db_url"),
-							configMan.getString("db_user"),
-							pwEncoded ? 
-									configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password")
-						);
-				}
+				BeetRootDatabaseManager.getInstance().initialize();
 			}
-			
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
 			System.err.println(ansiErrServerName + " Couldn't decrypt DB password!");
@@ -571,6 +541,13 @@ public abstract class BaseServer {
 				System.out.println(ansiServerName + " Internal web server stopped.");
 		}
 
+		// release database resources
+		try {
+			BeetRootDatabaseManager.getInstance().release();
+		} catch (Exception e) {
+			LOG.error("Couldn't release database manager!", e);
+		}
+		
 		this.afterStop();
 		
 		LOG.info(name + " server stopped.");

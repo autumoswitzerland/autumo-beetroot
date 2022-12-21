@@ -34,11 +34,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.zaxxer.hikari.HikariDataSource;
+
+import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Database manager.
@@ -46,32 +50,31 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  */
 public class BeetRootDatabaseManager {
 
-	public static final String CFG_KEY_DB_POOL_INIT_SIZE = "db_pool_init_size";
-	public static final String CFG_KEY_DB_POOL_MIN_SIZE = "db_pool_min_size";
-	public static final String CFG_KEY_DB_POOL_MAX_SIZE = "db_pool_max_size";
-	public static final String CFG_KEY_DB_POOL_INCREMENT = "db_pool_increment";
-	public static final String CFG_KEY_DB_POOL_MAX_STMTS = "db_pool_max_stmts";
-	public static final String CFG_KEY_DB_POOL_MAX_STMTS_PER_CONN = "db_pool_max_stmts_per_conn";
-	
 	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootDatabaseManager.class.getName());
 	
-	private static BeetRootDatabaseManager instance = null;	
+	public static final String POOL_NAME = "beetRoot-DB-Pool";
 	
+	public static final String CFG_KEY_DS_EXT_JNDI = "db_ds_ext_jndi";
+	public static final String CFG_KEY_DS_INT_DSCN = "db_ds_int_dataSourceClassName";
+	
+	private static BeetRootDatabaseManager instance = null;	
 	private static boolean isInitialized = false;
+	
+	private HikariDataSource dataSource = null;
+	
+	private String dsExternalJndi = null;
+	private String dataSourceClassName = null;
+	private String dataSourceDriverClassName = null;
 	
 	private String url = null;
 	private String user = null;
 	private String pass = null;
-	private String driver = null;
 	
 	private boolean isH2Db = false;
 	private boolean isMysqlDb = false;
 	private boolean isMariaDb = false;
 	private boolean isOracleDb = false;
 	private boolean isPostgreDb = false;
-
-	private ComboPooledDataSource cpds = null;
-	
 	private boolean isUnsupported = false;
 
 	
@@ -102,17 +105,33 @@ public class BeetRootDatabaseManager {
 	/**
 	 * Initialize DB manager.
 	 * 
-	 * @param url jdbc url
-	 * @param user user
-	 * @param pass password
 	 * @throws Exception
 	 */
-	public void initialize(String url, String user, String pass) throws Exception {
+	public void initialize() throws Exception {
 		
 		if (isInitialized) {
     		LOG.warn("WARNING: Initialisation of database manager is called more than once!");
     		return;
 		}
+		
+		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
+		
+		/** this is an undocumented configuration key: it allows to use unsupported databases! */
+		final String driverClass = configMan.getStringNoWarn("db_driver");
+		if (driverClass != null && driverClass.length() != 0) {
+			dataSourceDriverClassName = driverClass;
+			isUnsupported = true;
+		}
+
+		// default parameters
+		final boolean pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
+		this.url = configMan.getString("db_url");
+		this.user = configMan.getString("db_user");
+		this.pass = pwEncoded ? configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password");
+		
+		
+		// if external JNDI data-source provides a JDBC URL, we still must beetRoot
+		// to know what data-base is used, at least 'jdbc:[DB-identifier]' must be provided!
 		
 		// Is H2 db?
 		isH2Db = url.startsWith(Constants.JDBC_H2_DB);
@@ -126,55 +145,29 @@ public class BeetRootDatabaseManager {
 		isPostgreDb = url.startsWith(Constants.JDBC_POSTGRE_DB);
 		
 		
-		if (isMysqlDb)
-			driver = "com.mysql.cj.jdbc.Driver";
-		if (isMariaDb)
-			driver = "org.mariadb.jdbc.Driver";
-		if (isOracleDb)
-			driver = "oracle.jdbc.OracleDriver";
-		if (isPostgreDb)
-			driver = "org.postgresql.Driver";
-		if (isH2Db)
-			driver = "org.h2.Driver";	
-
-		//Class.forName(driver);	
-		
-		this.url = url;
-		this.user = user;
-		this.pass = pass;
-		
-		this.initializePool();
-		
-		isInitialized = true;
-	}
-	
-	/**
-	 * Initialize the DB manager with an officially unsupported database.
-	 * This can work, but only the supported databases have been tested.
-	 * 
-	 * @param driverClass driver class
-	 * @param url JDBC URL
-	 * @param user user
-	 * @param pass password
-	 * @throws Exception
-	 */
-	public void initializeUnsupported(String driverClass, String url, String user, String pass) throws Exception {
-	
-		if (isInitialized) {
-    		LOG.warn("WARNING: Initialisation of database manager is called more than once!");
-    		return;
+		// only used if no external JNDI data-source is provided and the internal
+		// data-source needs a pre-defined driver class
+		if (isMysqlDb) {
+			dataSourceClassName = null;
+			dataSourceDriverClassName = "com.mysql.cj.jdbc.Driver";
+			// The MySQL DataSource is known to be broken with respect to network timeout support. Use jdbc-Url instead.
 		}
-		
-		// unsupported
-		isUnsupported = true;
-		
-		driver = driverClass;
-		
-		//Class.forName(driver);	
-		
-		this.url = url;
-		this.user = user;
-		this.pass = pass;
+		if (isMariaDb) {
+			dataSourceClassName = "org.mariadb.jdbc.MariaDbDataSource";
+			dataSourceDriverClassName = "org.mariadb.jdbc.MariaDbDataSource";
+		}
+		if (isOracleDb) {
+			dataSourceClassName = "oracle.jdbc.pool.OracleDataSource";
+			dataSourceDriverClassName = "oracle.jdbc.OracleDriver";
+		}
+		if (isPostgreDb) {
+			dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"; // or "com.impossibl.postgres.jdbc.PGDataSource"
+			dataSourceDriverClassName = "org.postgresql.Driver";
+		}
+		if (isH2Db) {
+			dataSourceClassName = "org.h2.jdbcx.JdbcDataSource";
+			dataSourceDriverClassName = "org.h2.Driver";
+		}
 		
 		this.initializePool();
 		
@@ -182,39 +175,82 @@ public class BeetRootDatabaseManager {
 	}
 	
 	private void initializePool() throws Exception {
+
+		// hikari data-source
+		dataSource = new HikariDataSource();
+
+		// hikari proerties if any
+		final Properties dsProps = new Properties();
 		
-		cpds = new ComboPooledDataSource();
-		
-		cpds.setDriverClass(driver);            
-		cpds.setJdbcUrl(url);
-		cpds.setUser(user);                                  
-		cpds.setPassword(pass);
-		
+		// read additional configuration parameters
 		final BeetRootConfigurationManager cm = BeetRootConfigurationManager.getInstance();
 		
-		// the settings below are optional -- c3p0 can work with defaults
-		final String poolConfig[] = cm.getKeys("db_pool_");
-		for (int i = 0; i < poolConfig.length; i++) {
-			switch (poolConfig[0]) {
-				case CFG_KEY_DB_POOL_INIT_SIZE: 
-					cpds.setMinPoolSize(cm.getInt(CFG_KEY_DB_POOL_INIT_SIZE, 5));
-					break;
-				case CFG_KEY_DB_POOL_MIN_SIZE: 
-					cpds.setMinPoolSize(cm.getInt(CFG_KEY_DB_POOL_MIN_SIZE, 5));
-					break;
-				case CFG_KEY_DB_POOL_MAX_SIZE: 
-					cpds.setMaxPoolSize(cm.getInt(CFG_KEY_DB_POOL_MAX_SIZE, 50));
-					break;
-				case CFG_KEY_DB_POOL_INCREMENT: 
-					cpds.setMaxPoolSize(cm.getInt(CFG_KEY_DB_POOL_INCREMENT, 5));
-					break;
-				case CFG_KEY_DB_POOL_MAX_STMTS: 
-					cpds.setMaxStatements(cm.getInt(CFG_KEY_DB_POOL_MAX_STMTS, 200));
-					break;
-				case CFG_KEY_DB_POOL_MAX_STMTS_PER_CONN: 
-					cpds.setMaxStatements(cm.getInt(CFG_KEY_DB_POOL_MAX_STMTS_PER_CONN, 20));
-					break;
+		
+		// 1. external JNDI and data-source?
+		dsExternalJndi = cm.getStringNoWarn(CFG_KEY_DS_EXT_JNDI);
+		if (dsExternalJndi != null && dsExternalJndi.length() > 0) {
+			LOG.info("External JNDI data-source '"+dsExternalJndi+"' has been configured");
+			// check if we still have a JDBC-URL prefix for determining the db type for beetRoot
+			if (url == null || url.length() == 0)
+				throw new Exception("External JNDI data-source '"+dsExternalJndi+"' has been configured, but no JDBC-URL-prefix within 'db_url' " 
+									+ "configuration parameterhas been defined! "
+									+ Utils.LINE_SEPARATOR +
+									"It is used at least for determining what database is used; scheme 'jdbc:<database-id>'.");
+			
+			dataSource.setDataSourceJNDI(dsExternalJndi);
+			// This means jdbcUrl, driverClassName, dataSourceProperties, user-name, password have been set externally
+			// --> All done!
+			return;
+		}
+
+		
+		// 2. set pool name for internal data-source
+		dataSource.setPoolName(POOL_NAME);
+
+		
+		// 3 optional settings?
+		final String poolConfigKeys[] = cm.getKeys("db_pool_");
+		for (int i = 0; i < poolConfigKeys.length; i++) {
+			final String key = poolConfigKeys[i];
+			final String value = cm.getString(key);
+			final String dsPropKey = key.substring(8, key.length());
+			dsProps.put(dsPropKey, value);
+		}
+		if (dsProps.size() > 0)
+			dataSource.setDataSourceProperties(dsProps);
+
+		
+		// 4. own defined data-source?
+		final String dscn = cm.getString(CFG_KEY_DS_INT_DSCN);
+		if (dscn != null && dscn.length() > 0) {
+			dataSource.setDataSourceClassName(dscn);
+			final String intDsConfigKeys[] = cm.getKeys("db_ds_int_");
+			for (int i = 0; i < intDsConfigKeys.length; i++) {
+				final String key = intDsConfigKeys[i];
+				final String value = cm.getString(key);
+				final String dsPropKey = key.substring(8, key.length());
+				dsProps.put(dsPropKey, value);
 			}
+			dataSource.setDataSourceProperties(dsProps);
+			// Int his case, we are finished too!
+			return;
+		}
+				
+		
+		// 5. Default initialization with JDBC URL and driver class
+		dataSource.setJdbcUrl(url);
+		dataSource.setUsername(user);
+		dataSource.setPassword(pass);
+		dataSource.setDriverClassName(dataSourceDriverClassName);
+	}
+	
+	/**
+	 * Resource database pool resources. Should be called when a container
+	 * life-cycle or a server ends!
+	 */
+	public void release() {
+		if (dataSource != null) {
+			dataSource.close();
 		}
 	}
 	
@@ -225,7 +261,7 @@ public class BeetRootDatabaseManager {
 	 * @throws SQLException
 	 */
 	public Connection getConnection() throws SQLException {
-		return cpds.getConnection();
+		return dataSource.getConnection();
 	}
 
 	public boolean isH2Db() {
@@ -440,7 +476,11 @@ public class BeetRootDatabaseManager {
 	}
 
 	public String getDriver() {
-		return driver;
+		return dataSourceDriverClassName;
+	}
+
+	public String getDataSource() {
+		return dataSourceClassName;
 	}
 	
 }

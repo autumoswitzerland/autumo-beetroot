@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Utils;
 
@@ -119,15 +118,8 @@ public class Plant {
 			Utils.invalidArgumentsExit();
 		}
         
-		// Are pw's in config encoded?
-		boolean pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC); 
 		// DB connection manager
-		BeetRootDatabaseManager.getInstance().initialize(
-				BeetRootConfigurationManager.getInstance().getString("db_url"),
-				BeetRootConfigurationManager.getInstance().getString("db_user"),
-				pwEncoded ? 
-						BeetRootConfigurationManager.getInstance().getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : BeetRootConfigurationManager.getInstance().getString("db_password")
-			);
+		BeetRootDatabaseManager.getInstance().initialize();
 	}
 
 	private int readParameters(boolean askRetry) throws Exception {

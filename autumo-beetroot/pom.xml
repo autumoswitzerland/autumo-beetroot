@@ -266,16 +266,9 @@
 		-->
 
 		<dependency>
-		    <groupId>com.mchange</groupId>
-		    <artifactId>c3p0</artifactId>
-		    <version>0.9.5.5</version>
-		    <scope>provided</scope>
-		</dependency>
-
-		<dependency>
-		    <groupId>com.mchange</groupId>
-		    <artifactId>mchange-commons-java</artifactId>
-		    <version>0.2.20</version>
+		   <groupId>com.zaxxer</groupId>
+		   <artifactId>HikariCP</artifactId>
+		   <version>5.0.1</version>
 		    <scope>provided</scope>
 		</dependency>
 
