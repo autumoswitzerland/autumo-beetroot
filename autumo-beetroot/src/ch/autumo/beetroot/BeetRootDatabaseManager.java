@@ -31,9 +31,12 @@
 package ch.autumo.beetroot;
 
 import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -221,7 +224,7 @@ public class BeetRootDatabaseManager {
 
 		
 		// 4. own defined data-source?
-		final String dscn = cm.getString(CFG_KEY_DS_INT_DSCN);
+		final String dscn = cm.getStringNoWarn(CFG_KEY_DS_INT_DSCN);
 		if (dscn != null && dscn.length() > 0) {
 			dataSource.setDataSourceClassName(dscn);
 			final String intDsConfigKeys[] = cm.getKeys("db_ds_int_");
@@ -249,9 +252,23 @@ public class BeetRootDatabaseManager {
 	 * life-cycle or a server ends!
 	 */
 	public void release() {
+		// close pool
 		if (dataSource != null) {
 			dataSource.close();
 		}
+		// de-register database drivers loaded by this class-loader only!
+		final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		final Enumeration<Driver> drivers = DriverManager.getDrivers();
+		while (drivers.hasMoreElements()) {
+			final Driver driver = drivers.nextElement();
+			if (driver.getClass().getClassLoader() == cl) {
+				try {
+					DriverManager.deregisterDriver(driver);
+				} catch (SQLException e) {
+					LOG.warn("Couldn't de-register database driver '"+driver,getClass().getName()+"'.");
+				}
+			}
+		}		
 	}
 	
 	/**
