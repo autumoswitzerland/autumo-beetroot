@@ -118,6 +118,7 @@ The Web framework is shipped with the following features ready to use:
 - Servlet API 4.0 Java EE 8 (prepared for 5.0 Jakarta EE 8)
 - Full CRUD-Generator **PLANT** for views, models and handlers
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
+- Database connecton pooling (internal and external JNDI data sources)
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
 - Runs stand-alone as well as in common servlet containers such as apache Tomcat and jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
 - Secure client-server communication, if beetRoot is installed in a servlet container apart from beetRoot server and if there's need for such communication to steer backend processes
@@ -141,7 +142,7 @@ Enjoy!
 * [Jakarta Mail API](https://eclipse-ee4j.github.io/mail)
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
-* [c3p0](https://www.mchange.com/projects/c3p0)
+* [HikariCP](https://github.com/brettwooldridge/HikariCP)
 * [normalize.css](https://necolas.github.io/normalize.css)
 * ...and some more; see [THIRDPARTYLICENSES.txt](https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/THIRDPARTYLICENSES.txt)
 
