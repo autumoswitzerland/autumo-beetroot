@@ -78,6 +78,7 @@ public class BeetRootDatabaseManager {
 	private boolean isMariaDb = false;
 	private boolean isOracleDb = false;
 	private boolean isPostgreDb = false;
+	private boolean isPostgreNGDb = false;
 	private boolean isUnsupported = false;
 
 	
@@ -146,10 +147,16 @@ public class BeetRootDatabaseManager {
 		isOracleDb = url.startsWith(Constants.JDBC_ORACLE_DB);
 		// Is Postgre db?
 		isPostgreDb = url.startsWith(Constants.JDBC_POSTGRE_DB);
+		// Is Postgre NG db?
+		isPostgreNGDb = url.startsWith(Constants.JDBC_POSTGRE_NG_DB);
 		
 		
 		// only used if no external JNDI data-source is provided and the internal
 		// data-source needs a pre-defined driver class
+		if (isH2Db) {
+			dataSourceClassName = "org.h2.jdbcx.JdbcDataSource";
+			dataSourceDriverClassName = "org.h2.Driver";
+		}
 		if (isMysqlDb) {
 			dataSourceClassName = null;
 			dataSourceDriverClassName = "com.mysql.cj.jdbc.Driver";
@@ -164,12 +171,12 @@ public class BeetRootDatabaseManager {
 			dataSourceDriverClassName = "oracle.jdbc.OracleDriver";
 		}
 		if (isPostgreDb) {
-			dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"; // or "com.impossibl.postgres.jdbc.PGDataSource"
+			dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource";
 			dataSourceDriverClassName = "org.postgresql.Driver";
 		}
-		if (isH2Db) {
-			dataSourceClassName = "org.h2.jdbcx.JdbcDataSource";
-			dataSourceDriverClassName = "org.h2.Driver";
+		if (isPostgreNGDb) {
+			dataSourceClassName = "com.impossibl.postgres.jdbc.PGDataSource";
+			dataSourceDriverClassName = "com.impossibl.postgres.jdbc.PGDriver";
 		}
 		
 		this.initializePool();
@@ -301,6 +308,10 @@ public class BeetRootDatabaseManager {
 		return isPostgreDb;
 	}
 
+	public boolean isPostgreDbWithNGDriver() {
+		return isPostgreNGDb;
+	}
+	
 	public boolean isUnsupported() {
 		return isUnsupported;
 	}

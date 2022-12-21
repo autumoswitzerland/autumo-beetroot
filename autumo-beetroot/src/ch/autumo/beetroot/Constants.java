@@ -330,5 +330,9 @@ public class Constants {
 	 */
 	public static String JDBC_POSTGRE_DB = "jdbc:postgresql";	
 
+	/**
+	 * Postgre db with PGJDBC-NG driver.
+	 */
+	public static String JDBC_POSTGRE_NG_DB = "jdbc:pgsql";	
 	
 }
