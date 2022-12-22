@@ -33,9 +33,13 @@ package ch.autumo.beetroot.handler.users;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.passay.RuleResult;
+
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
+import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.utils.Utils;
 
 /**
@@ -49,6 +53,17 @@ public class UsersAddHandler extends DefaultAddHandler {
 
 	public UsersAddHandler(String entity, String errMsg) {
 		super(entity, errMsg);
+	}
+	
+	@Override
+	public HandlerResponse saveData(BeetRootHTTPSession session) throws Exception {
+		
+		final String pass = session.getParms().get("password");
+		final RuleResult rr = PasswordHelper.isValid(pass);
+		if (!rr.isValid()) {
+			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+		}
+		return super.saveData(session);
 	}
 	
 	@Override

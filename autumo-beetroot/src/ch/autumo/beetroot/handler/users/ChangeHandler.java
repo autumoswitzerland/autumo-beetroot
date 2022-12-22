@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.passay.RuleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,6 +180,12 @@ public class ChangeHandler extends BaseHandler {
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 		
 		String pass = session.getParms().get("password");
+		
+		final RuleResult rr = PasswordHelper.isValid(pass);
+		if (!rr.isValid()) {
+			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+		}		
+		
 		try {
 			if (pass != null && pass.length() != 0) { // && suserid != null && suserid.length() != 0) {
 				

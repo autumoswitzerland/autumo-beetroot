@@ -222,6 +222,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.passay</groupId>
+			<artifactId>passay</artifactId>
+			<version>1.6.2</version>
+		    <scope>provided</scope>
+		</dependency>
+  
+		<dependency>
     		<groupId>com.diogonunes</groupId>
     		<artifactId>JColor</artifactId>
 		    <version>5.5.1</version>

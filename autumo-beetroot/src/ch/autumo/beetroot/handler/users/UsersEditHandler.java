@@ -30,9 +30,13 @@
  */
 package ch.autumo.beetroot.handler.users;
 
+import org.passay.RuleResult;
+
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultEditHandler;
+import ch.autumo.beetroot.handler.HandlerResponse;
 
 /**
  * Tasks edit handler. 
@@ -45,6 +49,17 @@ public class UsersEditHandler extends DefaultEditHandler {
 	
 	public UsersEditHandler(String entity, String errMsg) {
 		super(entity, errMsg);
+	}
+
+	@Override
+	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
+		
+		final String pass = session.getParms().get("password");
+		final RuleResult rr = PasswordHelper.isValid(pass);
+		if (!rr.isValid()) {
+			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+		}		
+		return super.updateData(session, id);
 	}
 
 	@Override

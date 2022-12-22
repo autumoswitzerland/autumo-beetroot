@@ -87,6 +87,10 @@ with third parties: All licenses are covered by the license for this product (se
 	License:	MIT License
 	Link:		https://github.com/jhy/jsoup/blob/master/LICENSE
 
+-	Library:	Passay - Password policy enforcement for Java
+	License:	Apache License, Version 2.0
+	Link:		https://github.com/vt-middleware/passay/blob/master/LICENSE-apache2
+
 -	Library:	Google FindBugs JSR305
 	License:	Apache License, Version 2.0
 	Link:		https://www.apache.org/licenses/LICENSE-2.0

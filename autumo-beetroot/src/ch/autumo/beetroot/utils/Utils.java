@@ -92,12 +92,11 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.security.SecureApplication;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import de.taimos.totp.TOTP;
 
 
 /**
- * Utils.
+ * Utils - A long story.
  */
 public class Utils {
 
@@ -110,6 +109,7 @@ public class Utils {
 	public static List<String> mimeOctetList;
 	/** Allowed archive mime types. */
 	public static List<String> mimeArchiveList;
+	
 	
 	/**
 	 * OS.
@@ -136,6 +136,32 @@ public class Utils {
 	 */
     public static final String WIN_APPDATA_FOLDER = System.getenv("APPDATA" /*"LOCALAPPDATA"*/);
 	
+    
+    
+	// General
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Bytes 2 Hex.
+	 * 
+	 * @param bytes bytes
+	 * @return Hex representation
+	 */
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for (int j = 0; j < bytes.length; j++) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+	        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+	    }
+	    return new String(hexChars);
+	}	
+	
+	
+	
+    // OS
+	//------------------------------------------------------------------------------
+    
 	/**
 	 * Is Windows?
 	 * 
@@ -202,23 +228,32 @@ public class Utils {
 		return dir;
 	}
 
-	/**
-	 * Access result set value and HTML escape it.
-	 * 
-	 * @param set result set
-	 * @param dbColumnName db column name
-	 * @return escaped db value
-	 * @throws SQLException
-	 */
-	public static String getValue(ResultSet set, String dbColumnName) throws SQLException {
 
-		String v = set.getString(dbColumnName);
-		if (v != null && v.length() != 0)
-			return escapeHtml(v);
-		
-		return v;
-	}
 	
+	// Desktop
+	//------------------------------------------------------------------------------
+	
+    /**
+     * Get properties path.
+     * 
+     * @param appName app name
+     * @return properties path
+     */
+    public static String getDesktopPropertiesPath(String appName) {
+        if (isMac())
+            return USER_HOME + FILE_SEPARATOR + "Library" + FILE_SEPARATOR + "Application Support" + FILE_SEPARATOR + "autumo" + FILE_SEPARATOR + appName + FILE_SEPARATOR;
+        if (isWindows())
+            return WIN_APPDATA_FOLDER + FILE_SEPARATOR + "autumo" + FILE_SEPARATOR + appName + FILE_SEPARATOR;
+        if (isUnix())
+            return USER_HOME + FILE_SEPARATOR + "." + appName + FILE_SEPARATOR;
+        return USER_HOME + FILE_SEPARATOR;
+    }
+			
+	
+
+	// HTML / URL / URI
+	//------------------------------------------------------------------------------
+
     /**
      * HTML escape value.
      * 
@@ -228,7 +263,7 @@ public class Utils {
     public static String escapeHtml(String value) {
     	return StringEscapeUtils.escapeHtml4(value);
     }
-    
+	
 	/**
 	 * Enrich URL with parameters.
 	 * 
@@ -257,393 +292,6 @@ public class Utils {
 	}	
 	
 	/**
-	 * Update secret user key.
-	 * 
-	 * @param userId DB user id
-	 * @param newSecretUserKey new secret user key
-	 * @throws SQLException
-	 */
-	public static void updateSecretUserKey(int userId, String newSecretUserKey) throws SQLException {
-		
-		Connection conn = null;
-		Statement stmt = null;
-		
-		try {
-			
-			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			stmt = conn.createStatement();
-		
-			String stmtStr = "UPDATE users SET secretkey='"+newSecretUserKey+"' WHERE id=" + userId;
-			stmt.executeUpdate(stmtStr);
-		
-		} finally {
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();    	
-		}		
-	}
-	
-	/**
-	 * Generate a secret user key with specific length.
-	 * Note: Only initially for every user once!
-	 * 
-	 * @return secret user key
-	 */
-	public static String createSecretUserKey() {
-		return generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAULT_LEN);
-	}		
-	
-	/**
-	 * Generate a secret user key with specific length.
-	 * Note: Only initially for every user once!
-	 * 
-	 * @param len length
-	 * @return secret user key
-	 */
-	private static String generateSecretUserKey(int len) {
-	    final SecureRandom random = new SecureRandom();
-	    final byte[] bytes = new byte[len];
-	    random.nextBytes(bytes);
-	    final Base32 base32 = new Base32();
-	    return base32.encodeToString(bytes);
-	}	
-
-	/**
-	 * Create 5-digit TOTP (time-based one-time password) code
-	 * for a user secret key.
-	 * 
-	 * @param secretUserKey secret user key
-	 * @return code
-	 */
-	
-	public static String create6DigitTOTPCode(String secretUserKey) {
-	    final Base32 base32 = new Base32();
-	    final byte[] bytes = base32.decode(secretUserKey);
-	    final String hexKey = Hex.encodeHexString(bytes);
-	    return TOTP.getOTP(hexKey);
-	}
-
-	/**
-	 * Create Google Authenticator bar code.
-	 * 
-	 * @param secretUserKey secret user key
-	 * @param email email of user
-	 * @return bar code
-	 * @throws UtilsException
-	 */
-	public static String getGoogleAuthenticatorBarCode(String secretUserKey, String email) throws UtilsException  {
-	    try {
-	    	final String issuer = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME); // app name !
-	        return "otpauth://totp/"
-	                + URLEncoder.encode(issuer + ":" + email, "UTF-8").replace("+", "%20")
-	                + "?secret=" + URLEncoder.encode(secretUserKey, "UTF-8").replace("+", "%20")
-	                + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
-	    } catch (UnsupportedEncodingException e) {
-	        throw new UtilsException("Couldn't create Google authenticator bar code!", e);
-	    }
-	}
-	
-	/**
-	 * Create QR code.
-	 * 
-	 * @param barCodeData Google authenticator bar code.
-	 * @param height height of QR code image
-	 * @param width width of QR code image
-	 * @return path to QR code image file
-	 * @throws UtilsException
-	 */
-	public static String createQRCode(String barCodeData, int height, int width) throws UtilsException {
-		
-	    BitMatrix matrix;
-		try {
-			matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE, width, height);
-		} catch (WriterException e) {
-			throw new UtilsException("Couldn't create QR matrix for bar code", e);
-		}
-		
-		File png = null;
-		String absPath = null;
-		
-		String prefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
-		if (prefix == null || prefix.length() == 0)
-			prefix = "beetrootweb-";
-		
-		try {
-			
-			png = File.createTempFile(prefix, ".png", new File(getTemporaryDirectory()));
-			png.deleteOnExit();
-	        absPath = png.getAbsolutePath();
-			final FileOutputStream out = new FileOutputStream(png);
-	        MatrixToImageWriter.writeToStream(matrix, "png", out);
-	        
-	    } catch (Exception e) {
-			throw new UtilsException("Couldn't write QR matrix to: '"+absPath+"'!", e);
-		}		
-		
-		return absPath;
-	}
-	
-	/**
-	 * Load user settings map into user session.
-	 *  
-	 * @param userSession user session
-	 * @return user settings map
-	 * @throws SQLException
-	 */
-	public static Map<String, String> loadUserSettings(Session userSession) throws SQLException {
-
-		Map<String, String> map = userSession.getUserSettings();
-		if (map != null)
-			return map;
-		
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet set = null; 
-		String settingsString = null;
-		
-		try {
-			
-			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			stmt = conn.createStatement();
-		
-			String stmtStr = "SELECT settings FROM users WHERE id="+userSession.getUserId();
-			set = stmt.executeQuery(stmtStr);
-			
-			set.next(); // one record !
-			settingsString = set.getString(1);
-		
-		} finally {
-			if (set != null)
-				set.close();
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();    	
-		}
-		
-		if (settingsString == null || settingsString.length() == 0) {
-			map = new HashMap<String, String>();
-			userSession.setUserSettings(map);
-			return map;
-		}
-		
-		final String pairs[] = settingsString.replace(" ", "").trim().split(",");
-		final Map<String, String> settingsMap = new HashMap<String, String>();
-		for (int i = 0; i < pairs.length; i++) {
-			String pair[] = pairs[i].split("=");
-			settingsMap.put(pair[0], pair[1]);
-		}
-		
-		userSession.setUserSettings(settingsMap);
-		return settingsMap;
-	}
-
-	/**
-	 * Store user setting from user session settings.
-	 * 
-	 * @param userSession user session
-	 * @throws SQLException
-	 */
-	public static void storeUserSettings(Session userSession) throws SQLException {
-		
-		final Map<String, String> map = userSession.getUserSettings();
-		if (map == null)
-			return;
-		
-		String settingsStr = "";
-		
-		final Set<String> keys = map.keySet();
-		int i = 1;
-		int s = keys.size();
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			String key = iterator.next();
-			String val = map.get(key);
-			if (i == s)
-				settingsStr += (key+"="+val);
-			else
-				settingsStr += (key+"="+val+",");
-			i++;
-		}
-		
-		Connection conn = null;
-		Statement stmt = null;
-		
-		try {
-			
-			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			stmt = conn.createStatement();
-		
-			String stmtStr = "UPDATE users SET settings='"+settingsStr+"' WHERE id=" + userSession.getUserId();
-			stmt.executeUpdate(stmtStr);
-		
-		} finally {
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();    	
-		}
-	}
-	
-    /**
-     * Get properties path.
-     * 
-     * @param appName app name
-     * @return properties path
-     */
-    public static String getDesktopPropertiesPath(String appName) {
-        if (isMac())
-            return USER_HOME + FILE_SEPARATOR + "Library" + FILE_SEPARATOR + "Application Support" + FILE_SEPARATOR + "autumo" + FILE_SEPARATOR + appName + FILE_SEPARATOR;
-        if (isWindows())
-            return WIN_APPDATA_FOLDER + FILE_SEPARATOR + "autumo" + FILE_SEPARATOR + appName + FILE_SEPARATOR;
-        if (isUnix())
-            return USER_HOME + FILE_SEPARATOR + "." + appName + FILE_SEPARATOR;
-        return USER_HOME + FILE_SEPARATOR;
-    }
-    
-	/**
-	 * Count rows of type clz (entity class).
-	 * @param clz entity class
-	 * @return amount of rows or -1 if something bad happens
-	 * @throws SQLException
-	 */
-	public static int countRows(Class<?> clz) throws SQLException {
-
-		final String table = classToTable(clz);
-		return countRows(table);
-	}
-	
-	/**
-	 * Count rows of table.
-	 * @param table table DB name
-	 * @return amount of rows or -1 if something bad happens
-	 * @throws SQLException
-	 */
-	public static int countRows(String table) throws SQLException {
-
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet set = null;
-		int amount = -1;
-		
-		try {
-			
-			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			stmt = conn.createStatement();
-		
-			set = stmt.executeQuery("SELECT count(*) FROM " + table);
-			
-			if(!set.next()) {
-				
-				set.close();
-				stmt.close();
-				conn.close();
-				return -1;
-			}
-			
-			amount =  set.getInt(1);
-		
-		} finally {
-			if (set != null)
-				set.close();
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();    	
-		}
-
-		return amount;
-	}	
-	
-	/**
-	 * Select a record of type clz (entity class).
-	 * 
-	 * @param clz entity class
-	 * @param id DB record id
-	 * @return entity bean
-	 * @throws SQLException
-	 */
-	public static Entity selectRecord(Class<?> clz, int id) throws SQLException {
-		
-		final String table = classToTable(clz);
-		
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet set = null;
-		Entity entity = null;
-		
-		try {
-			
-			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			stmt = conn.createStatement();
-		
-			String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
-			set = stmt.executeQuery(stmtStr);
-	
-			set.next(); // one record !
-			entity = createBean(clz, set);
-		
-		} finally {
-			if (set != null)
-				set.close();
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();    	
-		}
-		
-		return entity;
-	}
-	
-	/**
-	 * Class to DB table.
-	 * @param clz class
-	 * @return name of table in DB
-	 */
-	public static String classToTable(Class<?> clz) {
-		
-		final String c = clz.getName().toLowerCase();
-		String table = c.substring(c.lastIndexOf(".") + 1, c.length());
-		if (table.endsWith("y"))
-			table = (table.substring(0, table.length() - 1)) + "ies";
-		else
-			table += "s";
-		
-		return table;
-	}
-	
-	
-	/**
-	 * Create bean.
-	 * 
-	 * @param beanClass bean class, must be of type  {@link Entity}.
-	 * @param set result set at current position the data is taken from
-	 * @return entity bean or null
-	 * @throws SQLException
-	 */
-	public static Entity createBean(Class<?> beanClass, ResultSet set) throws SQLException {
-		return createBean(beanClass, set, new BeanProcessor());
-	}
-	
-	/**
-	 * Create bean.
-	 * 
-	 * @param beanClass bean class, must be of type  {@link Entity}.
-	 * @param set result set at current position the data is taken from
-	 * @param processor bean processor
-	 * @return entity bean or null
-	 * @throws SQLException
-	 */
-	public static Entity createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
-		
-		Entity entity = null;
-		if (beanClass != null)
-			entity = (Entity) processor.toBean(set, beanClass);
-		
-		return entity;
-	}
-	
-	/**
 	 * Normalize URI.
 	 * @param uri URI
 	 * @return normalized URI
@@ -657,131 +305,6 @@ public class Utils {
         	uri = uri.substring(0, uri.length() - 1);
         return uri;
     }
-    
-	/**
-	 * Is supported text mime type?
-	 * 
-	 * @param mimeType mime type
-	 * @return true if so
-	 */
-	public static boolean isMimeTypeText(String mimeType) {
-		
-		if (mimeTextList == null)
-			mimeTextList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_text");
-		return mimeTextList.contains(mimeType);
-	}
-
-	/**
-	 * Is supported octet-stream mime type?
-	 * 
-	 * @param mimeType mime type
-	 * @return true if so
-	 */
-	public static boolean isMimeTypeOctet(String mimeType) {
-		if (mimeOctetList == null)
-			mimeOctetList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_octet");
-		return mimeOctetList.contains(mimeType);
-	}
-	
-	/**
-	 * Is supported archive mime type?
-	 * 
-	 * @param mimeType mime type
-	 * @return true if so
-	 */
-	public static boolean isMimeTypeArchive(String mimeType) {
-		if (mimeArchiveList == null)
-			mimeArchiveList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_archive");
-		return mimeArchiveList.contains(mimeType);
-	}
-	
-	/**
-	 * Check if this SQL type is a html-input text type.
-	 * 
-	 * @param sqlType SQL type
-	 * @return true if it is a html-input text type.
-	 */
-	public static boolean isSqlTextType(int sqlType) {
-		for (int i = 0; i < Constants.SQL_TEXT_TYPES.length; i++) {
-			if (Constants.SQL_TEXT_TYPES[i] == sqlType)
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Check if this SQL type is a html-input number type.
-	 * 
-	 * @param sqlType SQL type
-	 * @return true if it is a html-input number type.
-	 */
-	public static boolean isSqlNumberType(int sqlType) {
-		for (int i = 0; i < Constants.SQL_NUMBER_TYPES.length; i++) {
-			if (Constants.SQL_NUMBER_TYPES[i] == sqlType)
-				return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Check if this SQL type is a html-input date type.
-	 * 
-	 * @param sqlType SQL type
-	 * @return true if it is a html-input date type.
-	 */
-	public static boolean isSqlDateTimeType(int sqlType) {
-		for (int i = 0; i < Constants.SQL_DATE_TYPES.length; i++) {
-			if (Constants.SQL_DATE_TYPES[i] == sqlType)
-				return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Check if this SQL type is a html-input binary type.
-	 * 
-	 * @param sqlType SQL type
-	 * @return true if it is a html-input binary type.
-	 */
-	public static boolean isSqlBinaryType(int sqlType) {
-		for (int i = 0; i < Constants.SQL_BINARY_TYPES.length; i++) {
-			if (Constants.SQL_BINARY_TYPES[i] == sqlType)
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Check if this SQL type is a html-input boolean type.
-	 * 
-	 * @param sqlType SQL type
-	 * @return true if it is a html-input boolean type.
-	 */
-	public static boolean isSqlBooelanType(int sqlType) {
-		for (int i = 0; i < Constants.SQL_BOOLEAN_TYPES.length; i++) {
-			if (Constants.SQL_BOOLEAN_TYPES[i] == sqlType)
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Get correct DB value for a boolean.
-	 * @param value boolean value
-	 * @return DB boolean value as string
-	 */
-	public static String getBooleanDatabaseMappingValue(boolean value) {
-		
-    	String val = null;
-    	
-    	// Informix uses 't' or 'f'
-		if (value) {
-			val = "1";
-		} else {
-			val = "0";
-		}
-		return val;
-	}
 	
 	/**
 	 * Get servlets context's real path.
@@ -796,8 +319,8 @@ public class Utils {
 			cp += Utils.FILE_SEPARATOR;
 		
 		return cp;
-	}
-
+	}   
+	
 	/**
 	 * Remove unnecessary HTML tags, but preserve line-breaks.
 	 * 
@@ -1009,6 +532,132 @@ public class Utils {
 		<input type="submit">
 		<input type="button">
 		 */
+	}	
+	
+	
+	
+	// 2FA / OTP
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Generate a secret user key with specific length.
+	 * Note: Only initially for every user once!
+	 * 
+	 * @return secret user key
+	 */
+	public static String createSecretUserKey() {
+		return generateSecretUserKey(Constants.SECRET_USER_KEY_DEFAULT_LEN);
+	}		
+	
+	/**
+	 * Generate a secret user key with specific length.
+	 * Note: Only initially for every user once!
+	 * 
+	 * @param len length
+	 * @return secret user key
+	 */
+	private static String generateSecretUserKey(int len) {
+	    final SecureRandom random = new SecureRandom();
+	    final byte[] bytes = new byte[len];
+	    random.nextBytes(bytes);
+	    final Base32 base32 = new Base32();
+	    return base32.encodeToString(bytes);
+	}	
+
+	/**
+	 * Create 5-digit TOTP (time-based one-time password) code
+	 * for a user secret key.
+	 * 
+	 * @param secretUserKey secret user key
+	 * @return code
+	 */
+	public static String create6DigitTOTPCode(String secretUserKey) {
+	    final Base32 base32 = new Base32();
+	    final byte[] bytes = base32.decode(secretUserKey);
+	    final String hexKey = Hex.encodeHexString(bytes);
+	    return TOTP.getOTP(hexKey);
+	}
+
+	/**
+	 * Create Google Authenticator bar code.
+	 * 
+	 * @param secretUserKey secret user key
+	 * @param email email of user
+	 * @return bar code
+	 * @throws UtilsException
+	 */
+	public static String getGoogleAuthenticatorBarCode(String secretUserKey, String email) throws UtilsException  {
+	    try {
+	    	final String issuer = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME); // app name !
+	        return "otpauth://totp/"
+	                + URLEncoder.encode(issuer + ":" + email, "UTF-8").replace("+", "%20")
+	                + "?secret=" + URLEncoder.encode(secretUserKey, "UTF-8").replace("+", "%20")
+	                + "&issuer=" + URLEncoder.encode(issuer, "UTF-8").replace("+", "%20");
+	    } catch (UnsupportedEncodingException e) {
+	        throw new UtilsException("Couldn't create Google authenticator bar code!", e);
+	    }
+	}
+	
+	/**
+	 * Create QR code.
+	 * 
+	 * @param barCodeData Google authenticator bar code.
+	 * @param height height of QR code image
+	 * @param width width of QR code image
+	 * @return path to QR code image file
+	 * @throws UtilsException
+	 */
+	public static String createQRCode(String barCodeData, int height, int width) throws UtilsException {
+		
+	    BitMatrix matrix;
+		try {
+			matrix = new MultiFormatWriter().encode(barCodeData, BarcodeFormat.QR_CODE, width, height);
+		} catch (WriterException e) {
+			throw new UtilsException("Couldn't create QR matrix for bar code", e);
+		}
+		
+		File png = null;
+		String absPath = null;
+		
+		String prefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
+		if (prefix == null || prefix.length() == 0)
+			prefix = "beetrootweb-";
+		
+		try {
+			
+			png = File.createTempFile(prefix, ".png", new File(getTemporaryDirectory()));
+			png.deleteOnExit();
+	        absPath = png.getAbsolutePath();
+			final FileOutputStream out = new FileOutputStream(png);
+	        MatrixToImageWriter.writeToStream(matrix, "png", out);
+	        
+	    } catch (Exception e) {
+			throw new UtilsException("Couldn't write QR matrix to: '"+absPath+"'!", e);
+		}		
+		
+		return absPath;
+	}
+	
+	
+	
+	// DB
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Access result set value and HTML escape it.
+	 * 
+	 * @param set result set
+	 * @param dbColumnName db column name
+	 * @return escaped db value
+	 * @throws SQLException
+	 */
+	public static String getValue(ResultSet set, String dbColumnName) throws SQLException {
+
+		String v = set.getString(dbColumnName);
+		if (v != null && v.length() != 0)
+			return escapeHtml(v);
+		
+		return v;
 	}
 	
 	/**
@@ -1033,7 +682,443 @@ public class Utils {
 		}
 		return value;
 	}
+	
+	/**
+	 * Update secret user key.
+	 * 
+	 * @param userId DB user id
+	 * @param newSecretUserKey new secret user key
+	 * @throws SQLException
+	 */
+	public static void updateSecretUserKey(int userId, String newSecretUserKey) throws SQLException {
+		
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try {
+			
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = "UPDATE users SET secretkey='"+newSecretUserKey+"' WHERE id=" + userId;
+			stmt.executeUpdate(stmtStr);
+		
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}		
+	}	
+	
+	/**
+	 * Load user settings map into user session.
+	 *  
+	 * @param userSession user session
+	 * @return user settings map
+	 * @throws SQLException
+	 */
+	public static Map<String, String> loadUserSettings(Session userSession) throws SQLException {
 
+		Map<String, String> map = userSession.getUserSettings();
+		if (map != null)
+			return map;
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null; 
+		String settingsString = null;
+		
+		try {
+			
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = "SELECT settings FROM users WHERE id="+userSession.getUserId();
+			set = stmt.executeQuery(stmtStr);
+			
+			set.next(); // one record !
+			settingsString = set.getString(1);
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		
+		if (settingsString == null || settingsString.length() == 0) {
+			map = new HashMap<String, String>();
+			userSession.setUserSettings(map);
+			return map;
+		}
+		
+		final String pairs[] = settingsString.replace(" ", "").trim().split(",");
+		final Map<String, String> settingsMap = new HashMap<String, String>();
+		for (int i = 0; i < pairs.length; i++) {
+			String pair[] = pairs[i].split("=");
+			settingsMap.put(pair[0], pair[1]);
+		}
+		
+		userSession.setUserSettings(settingsMap);
+		return settingsMap;
+	}
+
+	/**
+	 * Store user setting from user session settings.
+	 * 
+	 * @param userSession user session
+	 * @throws SQLException
+	 */
+	public static void storeUserSettings(Session userSession) throws SQLException {
+		
+		final Map<String, String> map = userSession.getUserSettings();
+		if (map == null)
+			return;
+		
+		String settingsStr = "";
+		
+		final Set<String> keys = map.keySet();
+		int i = 1;
+		int s = keys.size();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			String val = map.get(key);
+			if (i == s)
+				settingsStr += (key+"="+val);
+			else
+				settingsStr += (key+"="+val+",");
+			i++;
+		}
+		
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try {
+			
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = "UPDATE users SET settings='"+settingsStr+"' WHERE id=" + userSession.getUserId();
+			stmt.executeUpdate(stmtStr);
+		
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+	}
+    
+	/**
+	 * Count rows of type clz (entity class).
+	 * @param clz entity class
+	 * @return amount of rows or -1 if something bad happens
+	 * @throws SQLException
+	 */
+	public static int countRows(Class<?> clz) throws SQLException {
+
+		final String table = classToTable(clz);
+		return countRows(table);
+	}
+	
+	/**
+	 * Count rows of table.
+	 * @param table table DB name
+	 * @return amount of rows or -1 if something bad happens
+	 * @throws SQLException
+	 */
+	public static int countRows(String table) throws SQLException {
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		int amount = -1;
+		
+		try {
+			
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			set = stmt.executeQuery("SELECT count(*) FROM " + table);
+			
+			if(!set.next()) {
+				
+				set.close();
+				stmt.close();
+				conn.close();
+				return -1;
+			}
+			
+			amount =  set.getInt(1);
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+
+		return amount;
+	}	
+	
+	/**
+	 * Select a record of type clz (entity class).
+	 * 
+	 * @param clz entity class
+	 * @param id DB record id
+	 * @return entity bean
+	 * @throws SQLException
+	 */
+	public static Entity selectRecord(Class<?> clz, int id) throws SQLException {
+		
+		final String table = classToTable(clz);
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		Entity entity = null;
+		
+		try {
+			
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
+			set = stmt.executeQuery(stmtStr);
+	
+			set.next(); // one record !
+			entity = createBean(clz, set);
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		
+		return entity;
+	}
+	
+	/**
+	 * Class to DB table.
+	 * @param clz class
+	 * @return name of table in DB
+	 */
+	public static String classToTable(Class<?> clz) {
+		
+		final String c = clz.getName().toLowerCase();
+		String table = c.substring(c.lastIndexOf(".") + 1, c.length());
+		if (table.endsWith("y"))
+			table = (table.substring(0, table.length() - 1)) + "ies";
+		else
+			table += "s";
+		
+		return table;
+	}
+	
+	
+	/**
+	 * Create bean.
+	 * 
+	 * @param beanClass bean class, must be of type  {@link Entity}.
+	 * @param set result set at current position the data is taken from
+	 * @return entity bean or null
+	 * @throws SQLException
+	 */
+	public static Entity createBean(Class<?> beanClass, ResultSet set) throws SQLException {
+		return createBean(beanClass, set, new BeanProcessor());
+	}
+	
+	/**
+	 * Create bean.
+	 * 
+	 * @param beanClass bean class, must be of type  {@link Entity}.
+	 * @param set result set at current position the data is taken from
+	 * @param processor bean processor
+	 * @return entity bean or null
+	 * @throws SQLException
+	 */
+	public static Entity createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
+		
+		Entity entity = null;
+		if (beanClass != null)
+			entity = (Entity) processor.toBean(set, beanClass);
+		
+		return entity;
+	}
+	
+	/**
+	 * Check if this SQL type is a html-input text type.
+	 * 
+	 * @param sqlType SQL type
+	 * @return true if it is a html-input text type.
+	 */
+	public static boolean isSqlTextType(int sqlType) {
+		for (int i = 0; i < Constants.SQL_TEXT_TYPES.length; i++) {
+			if (Constants.SQL_TEXT_TYPES[i] == sqlType)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if this SQL type is a html-input number type.
+	 * 
+	 * @param sqlType SQL type
+	 * @return true if it is a html-input number type.
+	 */
+	public static boolean isSqlNumberType(int sqlType) {
+		for (int i = 0; i < Constants.SQL_NUMBER_TYPES.length; i++) {
+			if (Constants.SQL_NUMBER_TYPES[i] == sqlType)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if this SQL type is a html-input date type.
+	 * 
+	 * @param sqlType SQL type
+	 * @return true if it is a html-input date type.
+	 */
+	public static boolean isSqlDateTimeType(int sqlType) {
+		for (int i = 0; i < Constants.SQL_DATE_TYPES.length; i++) {
+			if (Constants.SQL_DATE_TYPES[i] == sqlType)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if this SQL type is a html-input binary type.
+	 * 
+	 * @param sqlType SQL type
+	 * @return true if it is a html-input binary type.
+	 */
+	public static boolean isSqlBinaryType(int sqlType) {
+		for (int i = 0; i < Constants.SQL_BINARY_TYPES.length; i++) {
+			if (Constants.SQL_BINARY_TYPES[i] == sqlType)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if this SQL type is a html-input boolean type.
+	 * 
+	 * @param sqlType SQL type
+	 * @return true if it is a html-input boolean type.
+	 */
+	public static boolean isSqlBooelanType(int sqlType) {
+		for (int i = 0; i < Constants.SQL_BOOLEAN_TYPES.length; i++) {
+			if (Constants.SQL_BOOLEAN_TYPES[i] == sqlType)
+				return true;
+		}
+		return false;
+	}	
+	
+	/**
+	 * Get correct DB value for a boolean.
+	 * @param value boolean value
+	 * @return DB boolean value as string
+	 */
+	public static String getBooleanDatabaseMappingValue(boolean value) {
+		
+    	String val = null;
+    	
+    	// Informix uses 't' or 'f'
+		if (value) {
+			val = "1";
+		} else {
+			val = "0";
+		}
+		return val;
+	}
+	
+	
+	
+	// MIME types
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Is supported text mime type?
+	 * 
+	 * @param mimeType mime type
+	 * @return true if so
+	 */
+	public static boolean isMimeTypeText(String mimeType) {
+		
+		if (mimeTextList == null)
+			mimeTextList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_text");
+		return mimeTextList.contains(mimeType);
+	}
+
+	/**
+	 * Is supported octet-stream mime type?
+	 * 
+	 * @param mimeType mime type
+	 * @return true if so
+	 */
+	public static boolean isMimeTypeOctet(String mimeType) {
+		if (mimeOctetList == null)
+			mimeOctetList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_octet");
+		return mimeOctetList.contains(mimeType);
+	}
+	
+	/**
+	 * Is supported archive mime type?
+	 * 
+	 * @param mimeType mime type
+	 * @return true if so
+	 */
+	public static boolean isMimeTypeArchive(String mimeType) {
+		if (mimeArchiveList == null)
+			mimeArchiveList = BeetRootConfigurationManager.getInstance().getMimeTypes("ws_mime_allowed_archive");
+		return mimeArchiveList.contains(mimeType);
+	}
+
+
+		
+	// Time
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Get readable duration.
+	 * 
+	 * @param durationInMilliseconds duration in ms
+	 * @param printUpTo The maximum timeunit that should be printed
+	 * @return readable duration
+	 */
+	public static String getReadableDuration(long durationInMilliseconds, TimeUnit printUpTo) {
+		
+		long dy = TimeUnit.MILLISECONDS.toDays(durationInMilliseconds);
+		long allHours = TimeUnit.MILLISECONDS.toHours(durationInMilliseconds);
+		long allMinutes = TimeUnit.MILLISECONDS.toMinutes(durationInMilliseconds);
+		long allSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMilliseconds);
+		long allMilliSeconds = TimeUnit.MILLISECONDS.toMillis(durationInMilliseconds);
+		
+		final long hr = allHours - TimeUnit.DAYS.toHours(dy);
+		final long min = allMinutes - TimeUnit.HOURS.toMinutes(allHours);
+		final long sec = allSeconds - TimeUnit.MINUTES.toSeconds(allMinutes);
+		final long ms = allMilliSeconds - TimeUnit.SECONDS.toMillis(allSeconds);
+		
+		switch (printUpTo) {
+			case DAYS: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
+			case HOURS: return String.format("%d Hours %d Minutes %d Seconds %d Milliseconds", hr, min, sec, ms);
+			case MINUTES: return String.format("%d Minutes %d Seconds %d Milliseconds", min, sec, ms);
+			case SECONDS: return String.format("%d Seconds %d Milliseconds", sec, ms);
+			case MILLISECONDS: return String.format("%d Milliseconds", ms);
+			default: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
+		}
+	}	
+	
 	/**
 	 * Get a timestamp representation that can be shown in GUI
 	 * 
@@ -1050,7 +1135,7 @@ public class Utils {
 		
 		return output.replace("T", " ");
 	}
-	
+
 	/**
 	 * Get a time-stamp representation that can be stored in DB.
 	 * 
@@ -1100,11 +1185,52 @@ public class Utils {
 		
 		return ts_str;
 	}
+
+
+	
+	// JVM exits.
+	//------------------------------------------------------------------------------
+	
+    /**
+     * Exit console program, due to unprocessable error.
+     */
+	public static void fatalExit() {
+		exit(1);
+	}
+    /**
+     * Exit console program, due to an error.
+     */
+	public static void errorExit() {
+		exit(1);
+	}
+    /**
+     * Exit because of invalid argument use.
+     */
+	public static void invalidArgumentsExit() {
+		exit(128);
+	}
+    /**
+     * Exit console program, due desired end.
+     */
+	public static void normalExit() {
+		exit(0);
+	}
+    /**
+     * Exit console program.
+     */
+	public static void exit(int code) {
+		System.exit(code);
+	}
+
+		
+	
+	// Encoding / Decoding
+	//------------------------------------------------------------------------------
 	
 	/**
 	 * Generates a CSRF token.
 	 * 
-	 * @param secureApplication a secure appp is needed!
+	 * @param secureApplication a secure app is needed!
 	 * @return The generated CSRF.
 	 * @throws UtilsException
 	 */
@@ -1115,7 +1241,7 @@ public class Utils {
 
 	/**
 	 * 
-	 * Encode data. It is the algorithm 3, see 'encoder.sh' from ifaceX.
+	 * Encode data. It is the algorithm 2.
 	 * 
 	 * @param data data
 	 * @param secureApplication secure application
@@ -1123,7 +1249,20 @@ public class Utils {
 	 * @throws UtilsException
 	 */
 	public static String encode(String data, SecureApplication secureApplication) throws UtilsException {
-		return encodeBase64_PBE_MD5_DES(data, secureApplication);
+		return encodeBase64_SHA256_AES(data, secureApplication);
+	}
+
+	/**
+	 * 
+	 * Decode data. It is the algorithm 1.
+	 * 
+	 * @param data data
+	 * @param secureApplication secure application
+	 * @return decoded PW
+	 * @throws UtilsException
+	 */
+	public static String decode(String data, SecureApplication secureApplication) throws UtilsException {
+		return decodeBase64_SHA256_AES(data, secureApplication);
 	}
 
 	/**
@@ -1138,6 +1277,48 @@ public class Utils {
 	public static String encodeCom(String data, SecureApplication secureApplication) throws UtilsException {
 		return encodeBase64_SHA3_256_AES(data, secureApplication);
 	}
+	
+	/**
+	 * 
+	 * Decode com data.
+	 * 
+	 * @param data data
+	 * @param secureApplication secure application
+	 * @return decoded data
+	 * @throws UtilsException
+	 */
+	public static String decodeCom(String data, SecureApplication secureApplication) throws UtilsException {
+		return decodeBase64_SHA3_256_AES(data, secureApplication);
+	}	
+	
+	
+	
+	// Internal encoding / decoding
+	//------------------------------------------------------------------------------
+	
+	private static String encodeBase64_SHA256_AES(String data, SecureApplication app) throws UtilsException {
+    	byte[] key = null;
+    	byte[] encrypted = null;
+		try {
+			key = app.getUniqueSecurityKey().getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance("SHA-256");
+	    	key = sha.digest(key);
+	    	//key = Arrays.copyOf(key, KEYDATA.LEN_3); 
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+	    	Cipher cipher = Cipher.getInstance("AES");
+	    	cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+	    	encrypted = cipher.doFinal(data.getBytes());
+		} catch (Exception e) {
+			throw new UtilsException("Couldn't encode password/key!", e);
+		}
+		String result;
+    	//----
+    	//BASE64Encoder encoder = new BASE64Encoder();
+    	//result = encoder.encode(encrypted);
+    	result = Base64.encodeBase64String(encrypted);
+    	//----
+    	return result;
+    }	
 	
 	private static String encodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
     	byte[] key = null;
@@ -1178,31 +1359,28 @@ public class Utils {
         }
     }	
 
-	/**
-	 * 
-	 * Decode data. It is the algorithm 3, see 'encoder.sh' from ifaceX.
-	 * 
-	 * @param data data
-	 * @param secureApplication secure application
-	 * @return decoded PW
-	 * @throws UtilsException
-	 */
-	public static String decode(String data, SecureApplication secureApplication) throws UtilsException {
-		return decodeBase64_PBE_MD5_DES(data, secureApplication);
-	}
-
-	/**
-	 * 
-	 * Decode com data.
-	 * 
-	 * @param data data
-	 * @param secureApplication secure application
-	 * @return decoded data
-	 * @throws UtilsException
-	 */
-	public static String decodeCom(String data, SecureApplication secureApplication) throws UtilsException {
-		return decodeBase64_SHA3_256_AES(data, secureApplication);
-	}
+	private static String decodeBase64_SHA256_AES(String data, SecureApplication app) throws UtilsException {
+    	byte[] key = null;
+    	byte[] cipherData = null;
+		try {
+			key = app.getUniqueSecurityKey().getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance("SHA-256");
+	    	key = sha.digest(key);
+	    	//key = Arrays.copyOf(key, KEYDATA.LEN_3); 
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+	    	byte[] crypted;	    	//----
+	    	//BASE64Decoder decoder = new BASE64Decoder();
+	    	//crypted = decoder.decodeBuffer(data);
+	    	crypted = Base64.decodeBase64(data);
+	    	//----
+	    	Cipher cipher = Cipher.getInstance("AES");
+	    	cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+	    	cipherData = cipher.doFinal(crypted);
+		} catch (Exception e) {
+			throw new UtilsException("Couldn't decode password/key!", e);
+		}
+    	return new String(cipherData);
+    }
 	
 	private static String decodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
     	
@@ -1228,6 +1406,7 @@ public class Utils {
     	return new String(cipherData);
     }
 	
+	@SuppressWarnings("unused")
 	private static String decodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {
     	
         try {
@@ -1249,83 +1428,6 @@ public class Utils {
         }
 	}	
 	
-    /**
-     * Exit console program, due to unprocessable error.
-     */
-	public static void fatalExit() {
-		exit(1);
-	}
-    /**
-     * Exit console program, due to an error.
-     */
-	public static void errorExit() {
-		exit(1);
-	}
-    /**
-     * Exit because of invalid argument use.
-     */
-	public static void invalidArgumentsExit() {
-		exit(128);
-	}
-    /**
-     * Exit console program, due desired end.
-     */
-	public static void normalExit() {
-		exit(0);
-	}
-    /**
-     * Exit console program.
-     */
-	public static void exit(int code) {
-		System.exit(code);
-	}
-	
-	/**
-	 * Get readable duration.
-	 * 
-	 * @param durationInMilliseconds duration in ms
-	 * @param printUpTo The maximum timeunit that should be printed
-	 * @return readable duration
-	 */
-	public static String getReadableDuration(long durationInMilliseconds, TimeUnit printUpTo) {
-		
-		long dy = TimeUnit.MILLISECONDS.toDays(durationInMilliseconds);
-		long allHours = TimeUnit.MILLISECONDS.toHours(durationInMilliseconds);
-		long allMinutes = TimeUnit.MILLISECONDS.toMinutes(durationInMilliseconds);
-		long allSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMilliseconds);
-		long allMilliSeconds = TimeUnit.MILLISECONDS.toMillis(durationInMilliseconds);
-		
-		final long hr = allHours - TimeUnit.DAYS.toHours(dy);
-		final long min = allMinutes - TimeUnit.HOURS.toMinutes(allHours);
-		final long sec = allSeconds - TimeUnit.MINUTES.toSeconds(allMinutes);
-		final long ms = allMilliSeconds - TimeUnit.SECONDS.toMillis(allSeconds);
-		
-		switch (printUpTo) {
-			case DAYS: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
-			case HOURS: return String.format("%d Hours %d Minutes %d Seconds %d Milliseconds", hr, min, sec, ms);
-			case MINUTES: return String.format("%d Minutes %d Seconds %d Milliseconds", min, sec, ms);
-			case SECONDS: return String.format("%d Seconds %d Milliseconds", sec, ms);
-			case MILLISECONDS: return String.format("%d Milliseconds", ms);
-			default: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
-		}
-	}	
-
-	/**
-	 * Bytes 2 Hex.
-	 * 
-	 * @param bytes bytes
-	 * @return Hex representation
-	 */
-	public static String bytesToHex(byte[] bytes) {
-	    char[] hexChars = new char[bytes.length * 2];
-	    for (int j = 0; j < bytes.length; j++) {
-	        int v = bytes[j] & 0xFF;
-	        hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-	        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-	    }
-	    return new String(hexChars);
-	}
-	
 	/**
 	 * Internal keys.
 	 */
@@ -1340,6 +1442,10 @@ public class Utils {
 	}
 
 	
+	
+	//------------------------------------------------------------------------------
+	
+	/*
 	public static void main(String[] args) throws Exception {
 		BeetRootConfigurationManager.getInstance().initialize();
 		String e = encodeCom("This would be crazy!", SecureApplicationHolder.getInstance().getSecApp());
@@ -1347,5 +1453,6 @@ public class Utils {
 		String d = decodeCom(e, SecureApplicationHolder.getInstance().getSecApp());
 		System.out.println("DEC:"+d);
 	}
+	*/
 	
 }
