@@ -609,7 +609,7 @@ A few words about existing stylesheets:
 
 If you run beetRoot as a stand-alone server and you want to run it with the HTTPS protocol, there's a prepared and self-signed keystore file: `ssl/beetroot.jks` that is valid forever.
 
-If you configure beetRoot to run with the HTTPS protocol (configuration parameter `ws_https`), you can use this keystore file and it is specified by default in the configuration (`ws_ks`). Your browser will still complain, because it is not issued by a valid Certificate Authority (CA), but you can force the browser to still load the web-app by adding this exception. If you run beetRoot in productive mode, you have to acquire a valid certificate and store it this keystore or in a an own; Java supports the PKCS\#12 format and Java keystore can be opened with tools such as this one: https://keystore-explorer.org. The password for `ssl/beetroot.jks` is **`beetroot`**.  
+If you configure beetRoot to run with the HTTPS protocol (configuration parameter `ws_https`), you can use this keystore file and it is specified by default in the configuration (`keystore`). Your browser will still complain, because it is not issued by a valid Certificate Authority (CA), but you can force the browser to still load the web-app by adding this exception. If you run beetRoot in productive mode, you have to acquire a valid certificate and store it this keystore or in a an own; Java supports the PKCS\#12 format and Java keystore can be opened with tools such as this one: https://keystore-explorer.org. The password for `ssl/beetroot.jks` is **`beetroot`**.  
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
