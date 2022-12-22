@@ -90,7 +90,7 @@
 
 beetRoot is a rapid Java web development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model! The client-server frameworks supports encrypted communication (SSL), provides a file download and upload interface and can be extended with own modules.
 
-Note that the client-server framework is not documented here; it focuses only on the web development part.
+Note that the client-server framework is not documented in this document; it focuses only on the web development part.
 
 The Web framework is shipped with the following features ready to use:
 
