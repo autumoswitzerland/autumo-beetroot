@@ -33,6 +33,7 @@ package ch.autumo.beetroot.server.message;
 import java.io.IOException;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 
@@ -63,7 +64,7 @@ public class ServerCommand extends AbstractMessage {
 	protected static void reInit() {
 		// we must read these configs always, in some applications this may
 		// be changed by the user! 
-		cfgServerName = BeetRootConfigurationManager.getInstance().getString("server_name");
+		cfgServerName = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_SERVER_NAME);
 		if (cfgServerName == null || cfgServerName.length() == 0)
 			cfgServerName = "solothurn";
 		

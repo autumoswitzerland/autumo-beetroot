@@ -188,7 +188,7 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 
-		this.name = BeetRootConfigurationManager.getInstance().getString("server_name");
+		this.name = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_SERVER_NAME);
 		ansiServerName = Colors.cyan("["+ name +"]");
 		ansiErrServerName = Colors.red("["+ name +"]");
 		

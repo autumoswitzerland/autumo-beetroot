@@ -32,7 +32,9 @@ package ch.autumo.beetroot.handler.users;
 
 import org.passay.RuleResult;
 
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultEditHandler;
@@ -55,10 +57,14 @@ public class UsersEditHandler extends DefaultEditHandler {
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 		
 		final String pass = session.getParms().get("password");
-		final RuleResult rr = PasswordHelper.isValid(pass);
-		if (!rr.isValid()) {
-			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
-		}		
+		
+		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+		if (jsPwValidator) {
+			final RuleResult rr = PasswordHelper.isValid(pass);
+			if (!rr.isValid())
+				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+		}
+		
 		return super.updateData(session, id);
 	}
 

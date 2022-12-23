@@ -55,7 +55,7 @@ public class BeetRootDatabaseManager {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootDatabaseManager.class.getName());
 	
-	public static final String POOL_NAME = "beetRoot-DB-Pool";
+	public static final String POOL_NAME_PEFIX = "-DB-Pool";
 	
 	public static final String CFG_KEY_DS_EXT_JNDI = "db_ds_ext_jndi";
 	public static final String CFG_KEY_DS_INT_DSCN = "db_ds_int_dataSourceClassName";
@@ -214,8 +214,9 @@ public class BeetRootDatabaseManager {
 		}
 
 		
+		
 		// 2. set pool name for internal data-source
-		dataSource.setPoolName(POOL_NAME);
+		dataSource.setPoolName(cm.getString(Constants.KEY_SERVER_NAME) + POOL_NAME_PEFIX);
 
 		
 		// 3 optional settings?

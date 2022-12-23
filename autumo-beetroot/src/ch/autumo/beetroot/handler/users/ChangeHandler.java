@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Session;
@@ -181,10 +182,12 @@ public class ChangeHandler extends BaseHandler {
 		
 		String pass = session.getParms().get("password");
 		
-		final RuleResult rr = PasswordHelper.isValid(pass);
-		if (!rr.isValid()) {
-			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
-		}		
+		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+		if (jsPwValidator) {
+			final RuleResult rr = PasswordHelper.isValid(pass);
+			if (!rr.isValid())
+				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+		}
 		
 		try {
 			if (pass != null && pass.length() != 0) { // && suserid != null && suserid.length() != 0) {
@@ -223,6 +226,19 @@ public class ChangeHandler extends BaseHandler {
 		return new HandlerResponse(HandlerResponse.STATE_NOT_OK, "Password reset failed!");
 	}
 	
+	@Override
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+		
+		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+		if (text.indexOf("{$passElem}") != -1) {
+			if (jsPwValidator)
+				text = text.replace("{$passElem}", "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\"></div>");
+			else
+				text = text.replace("{$passElem}", "<input type=\"password\" name=\"password\" id=\"password\" />");
+		}
+		return text;
+	}
+
 	@Override
 	public Class<?> getRedirectHandler() {
 		return LoginHandler.class;

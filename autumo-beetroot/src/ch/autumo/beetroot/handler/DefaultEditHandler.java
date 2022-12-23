@@ -254,7 +254,12 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		if (!isCheck) {
 		
-			if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+			final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+			if (jsPwValidator && columnName.equals("password")) {
+				
+				result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\" data-val=\""+val+"\"></div>";
+				
+			} else if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 				
 				final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";

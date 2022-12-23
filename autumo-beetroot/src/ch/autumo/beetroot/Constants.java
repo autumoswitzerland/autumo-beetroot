@@ -115,6 +115,11 @@ public class Constants {
 	//------------------------------------------------------------------------------
 
 	/**
+	 * Server/Servlet name.
+	 */
+	public static final String KEY_SERVER_NAME = "server_name";
+	
+	/**
 	 * Admin server/shutdown port.
 	 */
 	public static final String KEY_ADMIN_PORT = "admin_port";
@@ -237,6 +242,11 @@ public class Constants {
 	 */
 	public static final String KEY_WEB_DEFAULT_ENTITY = "web_default_entity";
 
+	/**
+	 * Use password validator?
+	 */
+	public static final String KEY_WEB_PASSWORD_VALIDATOR = "web_pw_validator";
+	
 	
 	// SQL specific
 	//------------------------------------------------------------------------------
