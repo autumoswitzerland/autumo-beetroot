@@ -222,15 +222,22 @@ public class BeetRootConfigurationManager {
 		// read general config
 		final String file = configFilePath;
 		
-		// Get path only
 		final File f = new File(file);
-		fullConfigBasePath = f.getParent();
-		if (!fullConfigBasePath.endsWith(Utils.FILE_SEPARATOR))
-			fullConfigBasePath += Utils.FILE_SEPARATOR;
+		if (f.exists()) {
+			// Get path only
+			fullConfigBasePath = f.getParent();
+			if (!fullConfigBasePath.endsWith(Utils.FILE_SEPARATOR))
+				fullConfigBasePath += Utils.FILE_SEPARATOR;
+		} else {
+			fullConfigBasePath = file;
+		}
 		
 		try {
 			
-			generalProps.load(new FileInputStream(file));
+			if (f.exists())
+				generalProps.load(new FileInputStream(file));
+			else
+				generalProps.load(BeetRootConfigurationManager.class.getResourceAsStream(file));
 			
 		} catch (IOException e) {
 			
