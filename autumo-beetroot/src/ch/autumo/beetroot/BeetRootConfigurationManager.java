@@ -152,21 +152,8 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
-	 * Initialize with absolute path.
-	 * 
-	 * @param absolutePath absolute path
-	 * @param servletContext true, if it runs in a servlet context
-	 * @throws Exception
-	 */
-	public void initializeWithFullPath(String absolutePath, ServletContext servletContext) throws Exception {
-		
-		this.initializeWithFullPath(absolutePath);
-		
-		this.servletContext = servletContext;
-	}
-	
-	/**
 	 * Initialize with path 'ROOTPATH/<given-path-and-file>'.
+	 * No resource paths!
 	 * 
 	 * @param relativePath relative path
 	 * @throws Exception
@@ -176,18 +163,33 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
-	 * Initialize with standard config path 'ROOTPATH/cfg/beetroot.cfg'.
+	 * Initialize with standard configuration path 'ROOTPATH/cfg/beetroot.cfg'.
+	 * No resource paths!
 	 * 
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
 		this.initializeWithFullPath(rootPath + Constants.CONFIG_PATH + Constants.GENERAL_SRV_CFG_FILE);
 	}
+
+	/**
+	 * Initialize with absolute path.
+	 * Resource path works too!
+	 * 
+	 * @param absolutePath absolute path
+	 * @param servletContext true, if it runs in a servlet context
+	 * @throws Exception
+	 */
+	public void initializeWithFullPath(String absolutePath, ServletContext servletContext) throws Exception {
+		this.initializeWithFullPath(absolutePath);
+		this.servletContext = servletContext;
+	}
 	
 	/**
-	 * Customized initialization with specific full config file path.
+	 * Customized initialization with specific full configuration file path.
+	 * Resource path works too!
 	 * 
-	 * @param configFilePath full path to specific full config file path
+	 * @param configFilePath full path to specific full configuration file path
 	 * @throws Exception
 	 */
 	private synchronized void initializeWithFullPath(String configFilePath) throws Exception {
@@ -229,7 +231,7 @@ public class BeetRootConfigurationManager {
 			if (!fullConfigBasePath.endsWith(Utils.FILE_SEPARATOR))
 				fullConfigBasePath += Utils.FILE_SEPARATOR;
 		} else {
-			fullConfigBasePath = file;
+			fullConfigBasePath = file; // resource: don't add any file separators! Could mix things up, e.g., "/\"
 		}
 		
 		try {
