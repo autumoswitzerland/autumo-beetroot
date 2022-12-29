@@ -1445,12 +1445,12 @@ public class Utils {
 	
 	//------------------------------------------------------------------------------
 	
-	/*
+	/**
 	public static void main(String[] args) throws Exception {
 		BeetRootConfigurationManager.getInstance().initialize();
-		String e = encodeCom("This would be crazy!", SecureApplicationHolder.getInstance().getSecApp());
+		String e = encode("ifacex", SecureApplicationHolder.getInstance().getSecApp());
 		System.out.println("ENC:"+e);
-		String d = decodeCom(e, SecureApplicationHolder.getInstance().getSecApp());
+		String d = decode(e, SecureApplicationHolder.getInstance().getSecApp());
 		System.out.println("DEC:"+d);
 	}
 	*/
