@@ -237,6 +237,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-$VERSION/ssl
 
 	cp -r ../ssl autumo-beetRoot-$VERSION/
+
+	cp -r ../ssl autumo-beetRoot-web-$VERSION/
 	
 # --------- Copy scripts
 

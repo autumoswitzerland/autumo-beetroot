@@ -30,6 +30,8 @@
  */
 package ch.autumo.beetroot.utils.security;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -90,18 +92,34 @@ public class SSLUtils {
      * Creates an SSLServerSocketFactory. Pass a KeyStore resource with your
      * certificate and pass-phrase.
 	 * 
-	 * @param keyAndTrustStoreClasspathPath key-store file class-path reference
+	 * @param keyAndTrustStore key-store file class-path reference or full path
 	 * @param passphrase pass phrase
 	 * @return SSL server socket factory
 	 * @throws IOException
 	 */
-    public static SSLServerSocketFactory makeSSLServerSocketFactory(String keyAndTrustStoreClasspathPath, char passphrase[]) throws IOException {
+    public static SSLServerSocketFactory makeSSLServerSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
+        	
             final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            final InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStoreClasspathPath);
+            InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
+            
             if (keystoreStream == null) {
-                throw new IOException("Unable to load keystore from classpath: " + keyAndTrustStoreClasspathPath);
+            	if (keyAndTrustStore != null) {
+            		// get as file
+            		File f = new File(keyAndTrustStore);
+            		if (f.exists()) {
+            			keystoreStream = new FileInputStream(f);
+            		} else {
+	            		if (keyAndTrustStore.startsWith("/"))
+	            			keyAndTrustStore = keyAndTrustStore.substring(1, keyAndTrustStore.length());
+	            		f = new File(keyAndTrustStore);
+            			keystoreStream = new FileInputStream(f);
+            		}
+            	}
+            	if (keystoreStream == null) // still null ?
+            		throw new IOException("Unable to load keystore from classpath/path: " + keyAndTrustStore);
             }
+            
             keystore.load(keystoreStream, passphrase);
             final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keystore, passphrase);
@@ -120,18 +138,33 @@ public class SSLUtils {
      * Creates an SSLSocketFactory. Pass a KeyStore resource with your
      * certificate and pass-phrase.
 	 * 
-	 * @param keyAndTrustStoreClasspathPath key-store file class-path reference
+	 * @param keyAndTrustStore key-store file class-path reference or full path
 	 * @param passphrase pass phrase
 	 * @return SSL socket factory
 	 * @throws IOException
 	 */
-    public static SSLSocketFactory makeSSLSocketFactory(String keyAndTrustStoreClasspathPath, char passphrase[]) throws IOException {
+    public static SSLSocketFactory makeSSLSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
             final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            final InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStoreClasspathPath);
+            InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
+            
             if (keystoreStream == null) {
-                throw new IOException("Unable to load keystore from classpath: " + keyAndTrustStoreClasspathPath);
+            	if (keyAndTrustStore != null) {
+            		// get as file
+            		File f = new File(keyAndTrustStore);
+            		if (f.exists()) {
+            			keystoreStream = new FileInputStream(f);
+            		} else {
+	            		if (keyAndTrustStore.startsWith("/"))
+	            			keyAndTrustStore = keyAndTrustStore.substring(1, keyAndTrustStore.length());
+	            		f = new File(keyAndTrustStore);
+            			keystoreStream = new FileInputStream(f);
+            		}
+            	}
+            	if (keystoreStream == null) // still null ?
+            		throw new IOException("Unable to load keystore from classpath/path: " + keyAndTrustStore);
             }
+            
             keystore.load(keystoreStream, passphrase);
             final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keystore, passphrase);
