@@ -243,7 +243,7 @@ public class BeetRootDatabaseManager {
 				dsProps.put(dsPropKey, value);
 			}
 			dataSource.setDataSourceProperties(dsProps);
-			// Int his case, we are finished too!
+			// In his case, we are finished too!
 			return;
 		}
 				

@@ -20,6 +20,20 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>autumo.beetroot</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+						
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
@@ -27,6 +41,7 @@
 					<release>8</release>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 			    <artifactId>maven-resources-plugin</artifactId>
 			    <version>3.0.2</version>
@@ -96,6 +111,7 @@
 			        </execution>
 			    </executions>
 			</plugin>
+			
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
@@ -111,6 +127,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			
 		</plugins>
 	</build>
 
