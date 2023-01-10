@@ -32,6 +32,8 @@ package ch.autumo.beetroot.server.message;
 
 import java.io.IOException;
 
+import org.json.JSONObject;
+
 import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 
@@ -115,7 +117,7 @@ public class ClientAnswer extends AbstractMessage {
 	 * Create a new client answer out of transfer string.
 	 * 
 	 * @param transferString transfer string
-	 * @return parsed server command
+	 * @return parsed client answer command
 	 * @throws IOException
 	 */
 	public static ClientAnswer parse(String transferString) throws IOException {
@@ -134,6 +136,63 @@ public class ClientAnswer extends AbstractMessage {
 		answer.errorReason = parts[5];
 		if (parts.length == 7) {
 			answer.deserializeObject(parts[6]);
+		}
+		
+		return answer;
+	}	
+
+	@Override
+	public String getJsonTransferString() throws IOException {
+		final StringBuffer json = new StringBuffer();
+		json.append("\"type\":\""+type+"\",");
+		json.append("\"message\":\""+message.trim()+"\",");
+		json.append("\"entity\":\""+entity.trim()+"\",");
+		json.append("\"id\": \""+id+"\",");
+		json.append("\"fileId\":\""+fileId+"\",");
+		json.append("\"errorReason\":\""+errorReason.trim()+"\"");
+		if (super.object != null) {
+			json.append(",");
+			json.append("\"object\":\""+super.serializeObject()+"\"");
+		}
+		
+		String result = "{";
+		if (ENCRYPT) {
+			String data = Utils.encodeCom(json.toString(), SecureApplicationHolder.getInstance().getSecApp());
+			result += "\"data\":\""+data+"\"";
+		} else {
+			result += json.toString();
+		}
+		result += "}";
+		
+		return result;
+	}
+	
+	/**
+	 * Create a new client answer out of JSON transfer string.
+	 * 
+	 * @param transferString JSON transfer string
+	 * @return parsed client answer
+	 * @throws IOException
+	 */
+	public static ClientAnswer parseJson(String transferString) throws IOException {
+
+		final ClientAnswer answer = new ClientAnswer();
+		JSONObject o = new JSONObject(transferString);
+		
+		if (ENCRYPT) {
+			String data = o.getString("data");
+			data = Utils.decodeCom(data, SecureApplicationHolder.getInstance().getSecApp());
+			o = new JSONObject("{"+data+"}");
+		}
+		
+		answer.type = o.getInt("type");
+		answer.message = o.getString("message");
+		answer.entity = o.getString("entity");
+		answer.id = o.getInt("id");
+		answer.fileId = o.getString("fileId");
+		answer.errorReason = o.getString("errorReason");
+		if (o.has("object")) {
+			answer.deserializeObject(o.getString("object"));
 		}
 		
 		return answer;

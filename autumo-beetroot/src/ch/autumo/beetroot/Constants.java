@@ -86,6 +86,11 @@ public class Constants {
 	public static final String JSON_EXT = ".json";
 
 	/**
+	 * Server Command URI.
+	 */
+	public static final String URI_SRV_CMD = "srvcmd";
+	
+	/**
 	 * Search page.
 	 */
 	public static final String SEARCH_PAGE = "search.html";
@@ -118,12 +123,32 @@ public class Constants {
 	 * Server/Servlet name.
 	 */
 	public static final String KEY_SERVER_NAME = "server_name";
+
+	/**
+	 * Admin server communication mode.
+	 */
+	public static final String KEY_ADMIN_COM_MODE = "admin_com_mode";
+
+	/**
+	 * Admin server communication in web tunnel mode: Verify host-name when using SSL certificates (HTTPS)?
+	 */
+	public static final String KEY_ADMIN_COM_HOSTNAME_VERIFY = "admin_com_host_verify";
+	
+	/**
+	 * Communication encryption mode; none|sha3|ssl
+	 */
+	public static final String KEY_ADMIN_COM_ENC = "admin_com_encrypt";
+	
+	/**
+	 * Admin server/shutdown host.
+	 */
+	public static final String KEY_ADMIN_HOST = "admin_host";
 	
 	/**
 	 * Admin server/shutdown port.
 	 */
 	public static final String KEY_ADMIN_PORT = "admin_port";
-
+	
 	/**
 	 * Start file server?
 	 */
@@ -148,16 +173,6 @@ public class Constants {
 	 * File receiver port (file-store end-point).
 	 */
 	public static final String KEY_ADMIN_FILE_RECEIVER_PORT = "admin_file_receiver_port";
-	
-	/**
-	 * Admin server/shutdown host.
-	 */
-	public static final String KEY_ADMIN_HOST = "admin_host";
-	
-	/**
-	 * Communication encryption mode; none|sha3|ssl
-	 */
-	public static final String KEY_ADMIN_COM_ENC = "admin_com_encrypt";
 	
 	/**
 	 * Passwords in configuration encoded?

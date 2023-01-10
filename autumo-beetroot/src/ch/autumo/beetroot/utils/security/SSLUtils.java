@@ -42,6 +42,18 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
@@ -52,6 +64,32 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
  */
 public class SSLUtils {
 
+	/**
+	 * HTTP/HTTPS socket factory registry.
+	 * 
+	 * Used for http/https tunneling of server command on the client side.
+	 * We create it once if needed!
+	 */
+	private static Registry<ConnectionSocketFactory> httpSocketFactoryRegistry = null;
+	
+	/**
+	 * SSL client connection factory.
+	 * 
+	 * Used for http/https tunneling of server command on the client side.
+	 * We create it once if needed!
+	 */
+	private static SSLConnectionSocketFactory httpSslSf = null;
+	
+	/**
+	 * Host-name verification when an SSL/HTTPS certificate is used?
+	 * Usually with self-signed certificates and on localhost this is
+	 * turned off, because the verification doesn't work.
+	 */
+	private static final boolean verifyHost;
+	static {
+		verifyHost = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_COM_HOSTNAME_VERIFY);
+	} 
+	
 	/**
 	 * Get key-store file.
 	 * 
@@ -129,7 +167,7 @@ public class SSLUtils {
             ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
             return ctx.getServerSocketFactory();
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            throw new IOException(e.getMessage(), e);
         }
     }
 
@@ -174,8 +212,76 @@ public class SSLUtils {
             ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
             return  ctx.getSocketFactory();
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            throw new IOException(e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Creates an SSL HTTP client. Pass a KeyStore resource with your
+     * certificate and pass-phrase. Don't forget to close the client if it has been used.
+	 * 
+	 * @param keyAndTrustStore key-store file class-path reference or full path
+	 * @param passphrase pass phrase
+	 * @param config request configuration phrase
+	 * @return SSL HTTP Client
+	 * @throws IOException
+	 */
+    public static CloseableHttpClient makeSSLHttpClient(String keyAndTrustStore, char passphrase[], RequestConfig config) throws IOException {
+    
+    	if (httpSslSf == null) {
+    	
+	    	try {
+	            final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+	            InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
+	            
+	            if (keystoreStream == null) {
+	            	if (keyAndTrustStore != null) {
+	            		// get as file
+	            		File f = new File(keyAndTrustStore);
+	            		if (f.exists()) {
+	            			keystoreStream = new FileInputStream(f);
+	            		} else {
+		            		if (keyAndTrustStore.startsWith("/"))
+		            			keyAndTrustStore = keyAndTrustStore.substring(1, keyAndTrustStore.length());
+		            		f = new File(keyAndTrustStore);
+	            			keystoreStream = new FileInputStream(f);
+	            		}
+	            	}
+	            	if (keystoreStream == null) // still null ?
+	            		throw new IOException("Unable to load keystore from classpath/path: " + keyAndTrustStore);
+	            }
+	            
+	            keystore.load(keystoreStream, passphrase);
+	
+	            final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+	            keyManagerFactory.init(keystore, passphrase);
+	        	final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+	            trustManagerFactory.init(keystore);
+	            
+	            final SSLContext ctx = SSLContext.getInstance("TLS"); 
+	            ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+	            
+	            if (verifyHost)
+	            	httpSslSf = new SSLConnectionSocketFactory(ctx, new DefaultHostnameVerifier());
+	            else
+	            	httpSslSf = new SSLConnectionSocketFactory(ctx, NoopHostnameVerifier.INSTANCE);
+	            
+	    	    httpSocketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+	    	    			.register("https", httpSslSf)
+	    	    			.register("http", new PlainConnectionSocketFactory())
+	    	    			.build();
+	    	    
+	        } catch (Exception e) {
+	            throw new IOException(e.getMessage(), e);
+	        }    	    
+    	}
+
+    	// Get a fresh client.
+		final BasicHttpClientConnectionManager httpConnectionManager = new BasicHttpClientConnectionManager(httpSocketFactoryRegistry);
+	    return HttpClients.custom()
+	    		.setSSLSocketFactory(httpSslSf)
+	    		.setConnectionManager(httpConnectionManager)
+	    		.setDefaultRequestConfig(config).build();
     }
     
 }

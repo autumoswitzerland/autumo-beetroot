@@ -164,7 +164,7 @@ public class BeetRootDatabaseManager {
 		}
 		if (isMariaDb) {
 			dataSourceClassName = "org.mariadb.jdbc.MariaDbDataSource";
-			dataSourceDriverClassName = "org.mariadb.jdbc.MariaDbDataSource";
+			dataSourceDriverClassName = "org.mariadb.jdbc.Driver";
 		}
 		if (isOracleDb) {
 			dataSourceClassName = "oracle.jdbc.pool.OracleDataSource";

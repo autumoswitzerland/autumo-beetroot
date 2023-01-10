@@ -207,7 +207,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 
 		// read some undocumented settings if available
-		serverTimeout = configMan.getIntNoWarn("server_timeout"); // in ms !
+		serverTimeout = configMan.getIntNoWarn("server_timeout"); // in seconds !
 		
 		//------------------------------------------------------------------------------
 
@@ -347,7 +347,7 @@ public abstract class BaseServer {
 	 * 
 	 * @return server name
 	 */
-	protected String getServerName() {
+	public String getServerName() {
 		return this.name;
 	}
 	
@@ -374,6 +374,9 @@ public abstract class BaseServer {
 		LOG.info("Server starting...");
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server starting...");
+
+		// Protocol if web serevr is used
+		final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 		
 		// Start web server
 		if (startWebServer) {
@@ -402,8 +405,8 @@ public abstract class BaseServer {
 				}				
 				
 				webServer = new BeetRootWebServer(portWebServer);
+				webServer.setBaseServer(this);
 				
-				final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 				if (https) {
 					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
 					LOG.info("Web-Server communication is SSL (TLS) secured!");
@@ -446,6 +449,21 @@ public abstract class BaseServer {
 			}
 		} else {
 	        this.serverSocketFactory = new DefaultServerSocketFactory();
+		}
+		
+		final String comMode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_MODE, "sockets");
+		if (comMode.equalsIgnoreCase("web")) {
+			final String prot = https ? "HTTPS" : "HTTP";
+			if (startWebServer) { // good
+				LOG.info("Client-Server communication is tunneled through "+prot+".");
+				if (LOG.isErrorEnabled())
+					System.out.println(ansiServerName + " Client-Server communication is tunneled through "+prot+".");
+			} else {
+				LOG.error("You have specified to tunnel Client-Server communication through "+prot+" (admin_com_mode=web),");
+				LOG.error("but you don't start the web-server; this will NOT work!");
+				System.err.println(ansiErrServerName + " You have specified to tunnel Client-Server communication through "+prot+" (admin_com_mode=web),");
+				System.err.println(ansiErrServerName + " but you don't start the web-server; this will NOT work!");
+			}
 		}
 		
 		if (sha3Com) {
@@ -654,7 +672,7 @@ public abstract class BaseServer {
 	 * @param command received server command
 	 * @return client answer
 	 */
-	protected ClientAnswer processServerCommand(ServerCommand command) {
+	public ClientAnswer processServerCommand(ServerCommand command) {
 		
 		// --- 1. Internal commands without components/modules
 		if (command.getDispatcherId().equals(ServerCommand.DISPATCHER_ID_INTERNAL)) {
@@ -833,7 +851,7 @@ public abstract class BaseServer {
 			try {
 				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
-					serverSocket.setSoTimeout(serverTimeout);
+					serverSocket.setSoTimeout(serverTimeout * 1000);
 					
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
@@ -943,16 +961,7 @@ public abstract class BaseServer {
 				return;
 	        }	
 			
-			
-			// Security checks:
-			// 0. invalid server command?
-			if (command == null) {
-				LOG.error("Server command: received command is too long, command is ignored!");
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket); //
-				return;
-			}
-			// 1. correct server name?
+			// Correct server name?
 			final String serverName = command.getServerName();
 			if (!serverName.equals(BaseServer.this.getServerName())) {
 				LOG.error("Server command: Wrong server name received, command is ignored!");

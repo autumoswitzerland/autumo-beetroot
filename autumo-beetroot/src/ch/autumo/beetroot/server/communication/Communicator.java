@@ -34,11 +34,13 @@ import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,22 @@ public class Communicator {
 	public final static String CMD_FILE_REQUEST = "FILE_REQUEST";
 	/** File receive request for upload */
 	public final static String CMD_FILE_RECEIVE_REQUEST = "FILE_RECEIVE_REQUEST";
+	
+	/**
+	 * User agents used for tunneled server commands. 
+	 */
+	public static final String USER_AGENT = "beetRoot-Client";
+	
+	/**
+	 * HTTP Header accept with 'application/json'.
+	 */
+	public static final String[] HTTP_HEADER_ACCEPT_JSON = new String[] {"Accept", "application/json"};
+	
+	/**
+	 * HTTP Header accept with 'application/json; charset=utf-8'.
+	 */
+	public static final String[] HTTP_HEADER_CONTENTTYPE_JSON_UTF8 = new String[] {"Content-Type", "application/json; charset=UTF-8"};
+	
 	
 	// Server-side
 	//------------------------------------------------------------------------------
@@ -96,6 +114,39 @@ public class Communicator {
 	 */
 	public static ServerCommand readCommand(DataInputStream in) throws IOException {
 	    return ServerCommand.parse(read(in));
+	}
+
+	/**
+	 * Read a JSON server command server side.
+	 * 
+	 * @param in (body) input stream from HTTP/HTTPS request
+	 * @param length length of content
+	 * @return server command or null, if command received was invalid
+	 * @throws IOException
+	 */
+	public static ServerCommand readJsonCommand(InputStream in, int length) throws IOException {
+		
+		final byte[] messageByte = new byte[length];
+	    boolean end = false;
+	    final StringBuilder dataString = new StringBuilder(length);
+	    int totalBytesRead = 0;
+	    
+	    while (!end) {
+	    	
+	        int currentBytesRead = in.read(messageByte);
+	        totalBytesRead = currentBytesRead + totalBytesRead;
+	        if(totalBytesRead <= length) {
+	            dataString.append(new String(messageByte, 0, currentBytesRead, StandardCharsets.UTF_8));
+	        } else {
+	            dataString.append(new String(messageByte, 0, length - totalBytesRead + currentBytesRead, StandardCharsets.UTF_8));
+	        }
+	        
+	        if (dataString.length() >= length) {
+	            end = true;
+	        }
+	    }
+	    
+	    return ServerCommand.parseJson(dataString.toString());
 	}
 	
 	
@@ -159,4 +210,36 @@ public class Communicator {
         }
     }
     
+	/**
+	 * Check closeable HTTP response with HttpResponse.
+	 * 
+	 * @param resp HTTP response
+	 * @throws Exception
+	 */
+	public static void checkHttpResponse(CloseableHttpResponse resp) throws Exception {
+		
+		final int code = resp.getStatusLine().getStatusCode();
+		final String reason = resp.getStatusLine().getReasonPhrase();
+		
+		if (204 != code && 200 != code) {
+			
+			if (reason != null && reason.length() > 0) {
+				throw new Exception(reason + " / HTTP Status: " + code);
+			} else {
+				throw new Exception(resp.toString() + " / HTTP Status: " + code);
+			}
+		}
+	}
+	
+	/**
+	 * Is it an internal command?
+	 * 
+	 * @param command server command
+	 * @return true if so
+	 */
+	protected static boolean isInternalCommand(ServerCommand command) {
+		return command.getCommand().equals(Communicator.CMD_HEALTH)
+				|| command.getCommand().equals(Communicator.CMD_STOP);
+	}
+	
 }

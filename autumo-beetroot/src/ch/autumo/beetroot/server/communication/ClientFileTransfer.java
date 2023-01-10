@@ -66,7 +66,7 @@ public class ClientFileTransfer extends FileTransfer {
 		}
 		
 		// read some undocumented settings if available
-		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in ms !
+		clientTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("client_timeout"); // in seconds !
 		
 		// File server host
 		hostAdmin = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_HOST);

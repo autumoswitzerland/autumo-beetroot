@@ -190,5 +190,12 @@ public abstract class AbstractMessage {
 	 * @throws IOExcpetion
 	 */
 	public abstract String getTransferString() throws IOException;
+
+	/**
+	 * Get JSON transfer string for transferring.
+	 * @return transfer string
+	 * @throws IOExcpetion
+	 */
+	public abstract String getJsonTransferString() throws IOException;
 	
 }

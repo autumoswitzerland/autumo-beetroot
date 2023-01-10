@@ -71,6 +71,10 @@ import ch.autumo.beetroot.handler.users.OtpHandler;
 import ch.autumo.beetroot.routing.Route;
 import ch.autumo.beetroot.routing.Router;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.server.BaseServer;
+import ch.autumo.beetroot.server.communication.Communicator;
+import ch.autumo.beetroot.server.message.ClientAnswer;
+import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.utils.Utils;
 import ch.autumo.beetroot.utils.UtilsException;
 
@@ -84,9 +88,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	private Class<?> defaultHandlerClass = TasksIndexHandler.class;
 	private String defaultHandlerEntity = "tasks";
 	
+	private boolean pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
 	private boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
+	private String cmdMode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_MODE, "sockets");
 	
 	private boolean csrf = true;
+	private boolean isWebCmdMode = false;
 	
     private boolean insertServletNameInTemplateRefs = false;
     private String servletName = null;
@@ -95,6 +102,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     
     private String tmpFilePrefix = "beetrootweb-";
 	
+    private String apiKeyName = null;
+    private String webApiKey = null;    
+    
+    // A reference to the base server; only outside servlet context! 
+    private BaseServer baseServer = null;
+    
     
     /**
      * Server.
@@ -114,6 +127,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	public BeetRootWebServer(int port) throws Exception {
 
 		super(port);
+
+		apiKeyName = BeetRootConfigurationManager.getInstance().getString("web_api_key_name"); // may be used or not
+		
+		// Server commands tunneled over HTTP/HTTPS?
+		this.isWebCmdMode = cmdMode.equalsIgnoreCase("web");
+		if (this.isWebCmdMode) {
+			if (pwEncoded)
+				webApiKey = BeetRootConfigurationManager.getInstance().getDecodedString("admin_com_web_api_key", SecureApplicationHolder.getInstance().getSecApp());
+			else
+				webApiKey = BeetRootConfigurationManager.getInstance().getString("admin_com_web_api_key");
+		}
 		
 		try {
 			
@@ -134,7 +158,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			this.addMappings();
 			
 			// init any other modules
-			this.initModules(BeetRootConfigurationManager.getInstance().getServletContext() != null, BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
+			this.initModules(BeetRootConfigurationManager.getInstance().runsWithinServletContext(), BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
 			
 		} catch (Exception ex) {
 			
@@ -175,6 +199,14 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 */
 	public IAsyncRunner getAsyncRunner() {
 		return super.asyncRunner;
+	}
+	
+	/**
+	 * Set base server.
+	 * @param baseServer base server
+	 */
+	public void setBaseServer(BaseServer baseServer) {
+		this.baseServer = baseServer;
 	}
 	
     /**
@@ -263,7 +295,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     }	
   
 	/**
-	 * Main serve method for the beetroot-engine.
+	 * Main serve method for the beetRoot-engine.
 	 * 
 	 * @param session nano session.
 	 * @return response response
@@ -294,18 +326,63 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	public Response serve(BeetRootHTTPSession session, HttpServletRequest request) {
 		
 		final String uri = Utils.normalizeUri(session.getUri());
-		String uriWithoutServlet = uri;
+
 		
-		// servlet magic :)
+		// Servlet magic :)
+		String uriWithoutServlet = uri;
 		if (insertServletNameInTemplateRefs && uri.startsWith(servletName+"/")) {
 			uriWithoutServlet = uri.replaceFirst(servletName+"/", "");
+		}
+		
+		
+		// JSON server command without login, but with API key - only outside servlet context!
+		if (!BeetRootConfigurationManager.getInstance().runsWithinServletContext()
+				&& this.isWebCmdMode
+				&& uriWithoutServlet.startsWith(Constants.URI_SRV_CMD)
+				&& session.getHeaders().get("user-agent").equals(Communicator.USER_AGENT)) { 
+
+			/*
+			Map<String, String> m = session.getHeaders();
+			Set<String> s = m.keySet();
+			for (Iterator<String> iterator = s.iterator(); iterator.hasNext();) {
+				String k = iterator.next();
+				System.err.println("K:"+k+", V:"+m.get(k));
+			}	
+			*/	
+			
+			// check API key
+			final String webApiKeyInReq = session.getParms().get(apiKeyName);
+			if (!webApiKeyInReq.equalsIgnoreCase(webApiKey)) {
+				LOG.warn("Server command: HTTP/HTTPS Server Command: Web API key invalid!");
+				return serverCommandResponse(session, new ClientAnswer("HTTP/HTTPS Server Command: Web API key invalid!", ClientAnswer.TYPE_ERROR));
+			}
+
+			// parse server command
+			ServerCommand command;
+			try {
+				command = Communicator.readJsonCommand(session.getInputStream(), (int) session.getBodySize());
+			} catch (IOException e) {
+				LOG.error("Server command: Couldn't parse server command from HTTP/HTTPS request!", e);
+				return serverCommandResponse(session, new ClientAnswer("Couldn't parse server command from HTTP/HTTPS request!", ClientAnswer.TYPE_ERROR));
+			}
+			
+			// Correct server name?
+			final String serverName = command.getServerName();
+			if (!serverName.equals(baseServer.getServerName())) {
+				LOG.error("Server command: Wrong server name received, command is ignored!");
+				return serverCommandResponse(session, new ClientAnswer("Wrong server name received, command is ignored!", ClientAnswer.TYPE_ERROR));
+			}
+			
+			// process command for module dispatchers
+			final ClientAnswer answer = baseServer.processServerCommand(command);
+			// answer !
+			return serverCommandResponse(session, answer);
 		}
 
 		
 		// JSON
 		if (uriWithoutServlet.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
 			
-			final String apiKeyName = BeetRootConfigurationManager.getInstance().getString("web_json_api_key_name");
 			final String apiKey = session.getParms().get(apiKeyName);
 			String dbApiKey = null;
 			try {
@@ -884,6 +961,25 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    userSession.setFormCsrfToken(formCsrfToken);
 	    
 	    return true;
+	}
+	
+	public static Response serverCommandResponse(BeetRootHTTPSession session, ClientAnswer answer) {
+		Status stat = Status.OK;
+		if (answer.getType() == ClientAnswer.TYPE_ERROR)
+			stat = Status.BAD_REQUEST;
+		try {
+			return Response.newFixedLengthResponse(stat, Communicator.HTTP_HEADER_CONTENTTYPE_JSON_UTF8[1], answer.getJsonTransferString());
+		} catch (IOException e) {
+			String err = "Server comand error! - Couldn't create JSON transfer string!";
+			LOG.error(err, e);
+			final ClientAnswer errAnswer = new ClientAnswer("Couldn't create JSON transfer string!", ClientAnswer.TYPE_ERROR);
+			try {
+				return Response.newFixedLengthResponse(Status.BAD_REQUEST, Communicator.HTTP_HEADER_ACCEPT_JSON[1], errAnswer.getJsonTransferString());
+			} catch (IOException e1) {
+				// NADA!
+				return null;
+			}
+		}
 	}
 	
 	public static Response serverResponse(
