@@ -65,8 +65,8 @@ footer {
  * Further customization & overrides.
  */
 .header {
-	display: table;
-	width:100%;	
+	display: inline-block;
+	width: 100%;	
 }
 .mainlogo {
 	margin-right: 10px;
@@ -80,7 +80,9 @@ footer {
 	float: right;
 }
 .mainslogan {
-	font-family: 'Aileron-light', sans-serif !important;
+	position: absolute;
+	right: 0px;
+	font-family: 'Gill Sans', sans-serif !important;
 	font-size: 1.6rem !important;
 	font-style: italic;
 	line-height: 1.6 !important;
