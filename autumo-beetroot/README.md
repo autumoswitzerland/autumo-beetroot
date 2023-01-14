@@ -103,12 +103,12 @@ The Web framework is shipped with the following features ready to use:
 - Password reset mechanism
 - Extendable user settings
 - Dark theme and theme support
-- Interface for SMS notifictaions
+- Interface for SMS notifications
 - Mailing inclusive mail templates
 - URL routing with language support
 - File caching (resources and templates)
 - Easy to understand HTML template engine
-- Password encryption (PBE with MD5 and DES)
+- Password encryption (SHA-256)
 - HTTPS protocol and TLS for mail if configured
 - User roles & access control on controller level
 - User session are stored when servers are stopped
@@ -119,7 +119,7 @@ The Web framework is shipped with the following features ready to use:
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
 - Database connecton pooling (internal and external JNDI data sources)
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
-- Runs stand-alone as well as in common servlet containers such as apache Tomcat and jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
+- Runs stand-alone as well as in common servlet containers such as Apache Tomcat and Jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
 - Secure client-server communication, if beetRoot is installed in a servlet container apart from beetRoot server and if there's need for such communication to steer backend processes
 - Hierarchical resource loader; e.g. German language requested, if not found, use configured default language, then use no language at all; "lookup till you find something usable" is the 
   algorithm for everything. As well, load resources from file system (first), then as a resource within packages (jar, war) if not found beforehand.
