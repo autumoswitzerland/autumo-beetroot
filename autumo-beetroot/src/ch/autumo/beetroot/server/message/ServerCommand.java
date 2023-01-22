@@ -58,6 +58,8 @@ public class ServerCommand extends AbstractMessage {
 	private String serverName = null;
 	private String dispatcherId = null;
 	
+	private transient boolean forceSockets = false;
+	
 	static {
 		reInit();
 	}
@@ -207,6 +209,15 @@ public class ServerCommand extends AbstractMessage {
 		return message;
 	}
 
+	
+	public void forceSockets() {
+		this.forceSockets = true;
+	}
+	public boolean isForceSockets() {
+		return forceSockets;
+	}
+
+	
 	@Override
 	public String getTransferString() throws IOException {
 		

@@ -192,7 +192,7 @@ public class BeetRootConfigurationManager {
 	 * @param configFilePath full path to specific full configuration file path
 	 * @throws Exception
 	 */
-	private synchronized void initializeWithFullPath(String configFilePath) throws Exception {
+	public synchronized void initializeWithFullPath(String configFilePath) throws Exception {
 		
 		if (isInitialized) {
     		LOG.warn("WARNING: Initialisation of configuration manager is called more than once!");

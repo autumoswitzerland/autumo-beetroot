@@ -105,7 +105,7 @@ public class ClientCommunicator extends Communicator {
 			ClientAnswer answer = null;
 			
 			// A) HTTP / HTTPS tunneling - not for internal commands!
-			if (!isInternalCommand(command) && command.getMode().equalsIgnoreCase("web")) {
+			if (!isInternalCommand(command) && command.getMode().equalsIgnoreCase("web") && !command.isForceSockets()) {
 				
 				final RequestConfig config = RequestConfig.custom()
 						  .setConnectTimeout(timeout)

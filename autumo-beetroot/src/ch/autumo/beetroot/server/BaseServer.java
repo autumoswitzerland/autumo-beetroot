@@ -39,7 +39,10 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -113,6 +116,9 @@ public abstract class BaseServer {
 	protected static String ansiServerName = null;
 	protected static String ansiErrServerName = null;
 	
+	// custom operations if any
+	private final List<String> customOperations = new ArrayList<>();
+	
 	static {
     	
     	rootPath = System.getProperty("ROOTPATH");
@@ -161,10 +167,34 @@ public abstract class BaseServer {
 			Utils.invalidArgumentsExit();
 		}
 
-		// check op
-		if (!(params[0].equalsIgnoreCase("start") || params[0].equalsIgnoreCase("stop") || params[0].equalsIgnoreCase("health"))) {
+		
+		// OPERATION
+		final String operation = params[0].trim().toLowerCase();
+		
+		// Check custom operations
+		final String cops[] = this.getValidCustomOperations();
+		if (cops != null && cops.length > 0) {
+			for (int i = 0; i < cops.length; i++)
+				customOperations.add(cops[i].trim().toLowerCase());
+		}
+		
+		// validate given operation with all possible operations (standard and custom operations)
+		if (! (params[0].equals("start") || params[0].equals("stop") || params[0].equals("health") || customOperations.contains(params[0])) ) {
+			
 			System.out.println(this.getHelpText());
 			System.out.println("Valid server operations are 'health', 'start' or 'stop'!");
+			
+			if (customOperations.size() > 0) {
+				String strCops = "";
+				for (Iterator<String> iterator = customOperations.iterator(); iterator.hasNext();) {
+					String c = iterator.next();
+					if (iterator.hasNext())
+						strCops += "'"+c+"', ";
+					else
+						strCops += "'"+c+"'";
+				}
+				System.out.println("Valid custom operations are also "+strCops+".");
+			}
 			System.out.println("");
 			Utils.invalidArgumentsExit();
 		}
@@ -294,8 +324,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 		
 		
-		// OPERATION
-		final String operation = params[0];
+		// Evaluate operation
 		
 		if (operation.equalsIgnoreCase("health")) {
 			
@@ -312,9 +341,15 @@ public abstract class BaseServer {
 		} else if (operation.equalsIgnoreCase("stop")) {
 			
 			this.sendServerCommand(Communicator.CMD_STOP);
-		}		
+			
+		} else {
+			// custom operation called, what to do?
+			if (customOperations.size() > 0) { // if no custom ops, no call!
+				this.customOperation(operation, params);
+			}
+		}
 	}
-	
+
 	/**
 	 * Initialize logging. Can be overwritten.
 	 * 
@@ -651,7 +686,9 @@ public abstract class BaseServer {
 	}
 	
     /**
-     * Send a server command.
+     * You can send internal server commands to be send to the running server!
+     * Internal server commands are always send over sockets.
+     * 
      * @param command server command
      */
 	private void sendServerCommand(String command) {
@@ -660,6 +697,43 @@ public abstract class BaseServer {
 		} catch (Exception e) {
 			LOG.error("Send "+command+" server command failed!", e);
 		}
+	}
+
+	/**
+	 * You can send local server commands to be send to the running server
+	 * for possible custom operations. You might want to force them over sockets, 
+	 * see {@link ServerCommand#forceSockets()}.
+	 * 
+	 * @param command server command
+	 */
+	protected void sendServerCommand(ServerCommand command) {
+		try {
+			ClientCommunicator.sendServerCommand(command);
+		} catch (Exception e) {
+			LOG.error("Send "+command.getCommand()+" server command failed!", e);
+		}
+	}
+	
+	/**
+	 * Return a list of valid custom operations
+	 * 
+	 * @return custom operations possible
+	 */
+	protected String[] getValidCustomOperations() {
+		return null;
+	}
+	
+	/**
+	 * Custom operation has been defined when starting the server,
+	 * we possibly want to do something else. Overwrite if needed.
+	 * Of you overwrite, you have to implement
+	 * {@link #customOperation(String, String[])}!
+	 * 
+	 * @param operation the operation = params[0], 1st argument
+	 * 			of all program arguments
+	 * @param params all program arguments
+	 */
+	protected void customOperation(String operation, String params[]) {
 	}
 	
 	/**
