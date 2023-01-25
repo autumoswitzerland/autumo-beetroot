@@ -522,7 +522,7 @@ public abstract class BaseServer {
 		            fileStorage = (FileStorage) constructor.newInstance();
 		            
 				} catch (Exception e) {
-					LOG.error("File server is not started, because configured file storage couldn't be created!");
+					LOG.error("File server is not started, because configured file storage couldn't be created!", e);
 					System.out.println(ansiErrServerName + " File server is not started, because configured file storage couldn't be created!");
 					startFileServer = false;
 				}
