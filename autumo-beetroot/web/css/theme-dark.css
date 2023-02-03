@@ -38,6 +38,7 @@
  */
 body {
 	background: url('/img/tiles-back-dark.png');
+	background-color: #444444;
 }
 .content {
     background-color: #222222;

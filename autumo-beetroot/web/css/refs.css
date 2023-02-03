@@ -54,6 +54,7 @@
 body {
 	background: url('/img/tiles-back.png');
 	background-repeat: repeat;
+	background-color: #666666;
 }
 
 /**
