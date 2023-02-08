@@ -739,9 +739,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             		Connection conn = null;
             		Statement stmt = null;
             		ResultSet rs = null;
-            		
 					try {
-						
 						conn = BeetRootDatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
 						//NO SEMICOLON
@@ -757,7 +755,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            			dbSecKey = rs.getString("secretkey");
 	            			dbTwoFa = rs.getBoolean("two_fa");
 	            		}
-	            		
 					} catch (SQLException e) {
 						
 						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
@@ -770,7 +767,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 						
 					} finally {
-
 						try {
 							if (rs != null)
 								rs.close();
@@ -782,24 +778,31 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							// no need
 						}
 					}
+
 					
+					// 0. LOGIN
+					boolean loginSuccess = false;
 					if (dbPwEnc) {
+						// A) Hashed password check
 						try {
-							postParamPass = Utils.hashPw(postParamPass);
+							loginSuccess = Utils.verifyPw(postParamPass, dbPass);
 						} catch (UtilsException e) {
 							final String err = "Server Internal Error - Exception: " + e.getMessage();
 							LOG.error(err, e);
-							
+
 	            			userSession.clearUserData();
 							
 							String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userSession);
 							String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userSession, e.getMessage());
 							return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 						}
+					} else {
+						// B) Clear password check
+						loginSuccess = postParamPass.equals(dbPass);
 					}
 					
-					// LOGIN
-            		if (postParamPass.equals(dbPass)) { 
+					// 1. GO !
+            		if (loginSuccess) { 
             			
             			userSession.setUserData(dbId, postParamUsername, dbRole, dbFirstName, dbLastName, dbEmail, dbSecKey, dbTwoFa);
             			userSession.createIdPair(dbId, "users");

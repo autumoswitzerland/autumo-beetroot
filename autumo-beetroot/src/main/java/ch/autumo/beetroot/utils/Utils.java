@@ -1244,26 +1244,9 @@ public class Utils {
 	 * @throws UtilsException
 	 */
 	public static String hashPw(String password) throws UtilsException {
-		
 		// initialize first?
-		if (hashProvider == null) {
-			final boolean db_pw_enc = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC);
-			final String impl = BeetRootConfigurationManager.getInstance().getString("hash_implementation");
-			if (db_pw_enc && (impl == null || impl.length() == 0)) {
-				LOG.error("No HASH implementation defined, but passwords must be encoded (db_pw_encoded=yes)!");
-				throw new UtilsException("No HASH implementation defined, but passwords must be encoded (db_pw_encoded=yes)!");
-			}
-	        Constructor<?> constructor;
-			try {
-				constructor = Class.forName(impl).getDeclaredConstructor();
-		        constructor.setAccessible(true);
-		        hashProvider = (PasswordHashProvider) constructor.newInstance();
-			} catch (Exception e) {
-				LOG.error("Can't instantiate HASH provider '"+impl+"'!");
-				throw new UtilsException("Can't instantiate HASH provider '"+impl+"'!");
-			}
-			
-		}
+		if (hashProvider == null)
+			initializeHashProvider();
 		
 		try {
 			return hashProvider.hash(password);
@@ -1271,6 +1254,26 @@ public class Utils {
 			throw new UtilsException("Can't hash password!", e);
 		}
 	}
+	
+	/**
+	 * Verify password with configured HASH algorithm implementation.
+	 * 
+	 * @param password password to check
+	 * @param hashedPassword hashed password previously loaded
+	 * @return true if password match
+	 * @throws UtilsException
+	 */
+	public static boolean verifyPw(String password, String hashedPassword) throws UtilsException {
+		// initialize first?
+		if (hashProvider == null)
+			initializeHashProvider();
+		
+		try {
+			return hashProvider.verify(password, hashedPassword);
+		} catch (Exception e) {
+			throw new UtilsException("Can't hash password!", e);
+		}
+	}	
 	
 	/**
 	 * Generates a CSRF token.
@@ -1336,6 +1339,23 @@ public class Utils {
 		return decodeBase64_SHA3_256_AES(data, secureApplication);
 	}	
 	
+	private static void initializeHashProvider() throws UtilsException {
+		final boolean db_pw_enc = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC);
+		final String impl = BeetRootConfigurationManager.getInstance().getString("hash_implementation");
+		if (db_pw_enc && (impl == null || impl.length() == 0)) {
+			LOG.error("No HASH implementation defined, but passwords must be encoded (db_pw_encoded=yes)!");
+			throw new UtilsException("No HASH implementation defined, but passwords must be encoded (db_pw_encoded=yes)!");
+		}
+        Constructor<?> constructor;
+		try {
+			constructor = Class.forName(impl).getDeclaredConstructor();
+	        constructor.setAccessible(true);
+	        hashProvider = (PasswordHashProvider) constructor.newInstance();
+		} catch (Exception e) {
+			LOG.error("Can't instantiate HASH provider '"+impl+"'!");
+			throw new UtilsException("Can't instantiate HASH provider '"+impl+"'!");
+		}
+	}
 	
 	
 	// Internal encoding / decoding
