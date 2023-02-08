@@ -48,7 +48,10 @@ public class PWEncoder {
 		try {
 			BeetRootConfigurationManager.getInstance().initialize();
 		} catch (Exception e) {
-			System.err.println("ERROR (Initialization): " + e.getMessage());
+			System.err.println(Colors.red("Couldn't initialize configuration 'cfg/beetroot.cfg' !"));
+			System.err.println(Colors.red("ERROR") + ": " + e.getMessage());
+			e.printStackTrace();
+			Utils.fatalExit();
 		}		
 	}
 	
@@ -67,16 +70,6 @@ public class PWEncoder {
 		if (args.length != 2) {
 			System.out.println(Help.TEXT);
 			Utils.invalidArgumentsExit();
-		}
-
-		// Must !
-		try {
-			BeetRootConfigurationManager.getInstance().initialize();
-		} catch (Exception e) {
-			System.err.println(Colors.red("Couldn't initialize configuration 'cfg/beetroot.cfg' !"));
-			System.err.println(Colors.red("ERROR") + ": " + e.getMessage());
-			e.printStackTrace();
-			Utils.fatalExit();
 		}
 
 		// MODE
@@ -111,7 +104,7 @@ public class PWEncoder {
 		try {
 				
 			if (mode == 0)
-				encoded = Utils.hashPw(data, app);
+				encoded = Utils.hashPw(data);
 			else
 				encoded = Utils.encode(data, app);
 				
@@ -153,7 +146,8 @@ public class PWEncoder {
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"  " + USAGEA									 									+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
-				"     mode  :  0  -->  For beetRoot user passwords only"							+ Utils.LINE_SEPARATOR +
+				"     mode  :  0  -->  For beetRoot user passwords only,"							+ Utils.LINE_SEPARATOR +
+				"                      hashed by configured hash provider"							+ Utils.LINE_SEPARATOR +
 				"     mode  :  1  -->  For configuration parameters only (beetroot.cfg)"			+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +

@@ -15,7 +15,7 @@ CREATE TABLE users (
     username VARCHAR(50) not NULL,
     firstname VARCHAR(50) default '',
     lastname VARCHAR(50) default '',
-    password VARCHAR(255) not NULL,
+    password VARCHAR(1024) not NULL,
     email VARCHAR(255) not NULL,
     lasttoken varchar(255) not NULL default 'NONE',
     settings varchar(1024) default '',

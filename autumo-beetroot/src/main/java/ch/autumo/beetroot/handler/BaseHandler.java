@@ -78,7 +78,6 @@ import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 import jakarta.activation.MimeType;
 
@@ -591,7 +590,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			val = Utils.escapeValuesForDb(val);
 			
 			if (dbPwEnc && col[0].equals("password")) {
-				val = Utils.hashPw(val, SecureApplicationHolder.getInstance().getSecApp());
+				val = Utils.hashPw(val);
 			}
 
 			// Informix wants 't' or 'f'

@@ -33,6 +33,7 @@ package ch.autumo.beetroot.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -79,6 +80,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -92,14 +95,17 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.security.SecureApplication;
+import ch.autumo.beetroot.security.password.PasswordHashProvider;
 import de.taimos.totp.TOTP;
 
 
 /**
- * Utils - A long story.
+ * Utilities - A long story.
  */
 public class Utils {
 
+	private final static Logger LOG = LoggerFactory.getLogger(Utils.class.getName());
+	
 	/** alpha-numeric HEX characters */
 	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 	
@@ -109,7 +115,9 @@ public class Utils {
 	public static List<String> mimeOctetList;
 	/** Allowed archive mime types. */
 	public static List<String> mimeArchiveList;
-	
+
+	/** Initialize HASH provider */
+	private static PasswordHashProvider hashProvider = null;
 	
 	/**
 	 * OS.
@@ -1226,40 +1234,42 @@ public class Utils {
 	
 	// Hashing / Encoding / Decoding
 	//------------------------------------------------------------------------------
-
-	/**
-	 * Hash a password with default HASH algorithm for this beetRoot version.
-	 * Cannot be reversed.
-	 * 
-	 * @param pw password to hash
-	 * @param app secure application
-	 * @return hashed password
-	 * @throws UtilsException
-	 */
-	public static String hashPw(String pw, SecureApplication app) throws UtilsException {
-		return hashPwPBKDF2(pw, app);
-	}
 	
 	/**
-	 * Hash a password with PBKDF2 with HMAC/SHA-256. Cannot be reversed.
+	 * Hash a password with configured HASH algorithm implementation.
+	 * Cannot be reversed.
 	 * 
-	 * @param pw password to hash
-	 * @param app secure application
+	 * @param password password to hash
 	 * @return hashed password
 	 * @throws UtilsException
 	 */
-	private static String hashPwPBKDF2(String pw, SecureApplication app) throws UtilsException {
-		// external key
-    	final String k = app.getUniqueSecurityKey();
+	public static String hashPw(String password) throws UtilsException {
+		
+		// initialize first?
+		if (hashProvider == null) {
+			final boolean db_pw_enc = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC);
+			final String impl = BeetRootConfigurationManager.getInstance().getString("hash_implementation");
+			if (db_pw_enc && (impl == null || impl.length() == 0)) {
+				LOG.error("No HASH implementation defined, but passwords must be encoded (db_pw_encoded=yes)!");
+				throw new UtilsException("No HASH implementation defined, but passwords must be encoded (db_pw_encoded=yes)!");
+			}
+	        Constructor<?> constructor;
+			try {
+				constructor = Class.forName(impl).getDeclaredConstructor();
+		        constructor.setAccessible(true);
+		        hashProvider = (PasswordHashProvider) constructor.newInstance();
+			} catch (Exception e) {
+				LOG.error("Can't instantiate HASH provider '"+impl+"'!");
+				throw new UtilsException("Can't instantiate HASH provider '"+impl+"'!");
+			}
+			
+		}
+		
 		try {
-			final byte salt[] = Base64.decodeBase64(k);
-			final KeySpec spec = new PBEKeySpec(pw.toCharArray(), salt, KEYDATA.ITER_1, 256);
-			final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-			final byte hash[] = factory.generateSecret(spec).getEncoded();
-			return new String(Base64.encodeBase64(hash));
-        } catch (Exception e) {
-			throw new UtilsException("Couldn't hash password/key!", e);
-        }
+			return hashProvider.hash(password);
+		} catch (Exception e) {
+			throw new UtilsException("Can't hash password!", e);
+		}
 	}
 	
 	/**
@@ -1438,25 +1448,7 @@ public class Utils {
 		public static final int LEN_3 = 16;	
 		public static final int LEN_4 = 32;
 		//private static final int ITER_1 = 19;
-		private static final int ITER_1 = 65536;
+		public static final int ITER_1 = 65536;
 	}
 
-	
-	
-	//------------------------------------------------------------------------------
-	
-	/**
-	public static void main(String[] args) throws Exception {
-		
-		BeetRootConfigurationManager.getInstance().initialize();
-		String e = hashPwPBKDF2("ifacex", ch.autumo.beetroot.security.SecureApplicationHolder.getInstance().getSecApp());
-		System.out.println("ENC:"+e);
-		e = hashPwPBKDF2("ifacex", ch.autumo.beetroot.security.SecureApplicationHolder.getInstance().getSecApp());
-		System.out.println("ENC:"+e);
-
-		//String d = decode(e, ch.autumo.beetroot.security.SecureApplicationHolder.getInstance().getSecApp());
-		//System.out.println("DEC:"+d);
-	}
-	*/
-	
 }

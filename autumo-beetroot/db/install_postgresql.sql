@@ -33,7 +33,7 @@ CREATE TABLE users (
     username VARCHAR(50) not NULL,
     firstname VARCHAR(50) DEFAULT '',
     lastname VARCHAR(50) DEFAULT '',
-    password VARCHAR(256) not NULL,
+    password VARCHAR(1024) not NULL,
     email VARCHAR(256) not NULL,
     lasttoken varchar(256) not NULL DEFAULT 'NONE',
     settings varchar(1024) DEFAULT '',

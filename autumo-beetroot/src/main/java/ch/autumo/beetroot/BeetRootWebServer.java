@@ -784,13 +784,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					}
 					
 					if (dbPwEnc) {
-						
 						try {
-							
-							postParamPass = Utils.hashPw(postParamPass, SecureApplicationHolder.getInstance().getSecApp());
-							
+							postParamPass = Utils.hashPw(postParamPass);
 						} catch (UtilsException e) {
-							
 							final String err = "Server Internal Error - Exception: " + e.getMessage();
 							LOG.error(err, e);
 							

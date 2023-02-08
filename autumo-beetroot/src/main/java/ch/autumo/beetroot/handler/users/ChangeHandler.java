@@ -48,7 +48,6 @@ import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 
 /**
@@ -196,7 +195,7 @@ public class ChangeHandler extends BaseHandler {
 			if (pass != null && pass.length() != 0) { // && user-id != null && suserid.length() != 0) {
 				
 				if (BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded")) {
-					pass = Utils.hashPw(pass, SecureApplicationHolder.getInstance().getSecApp());
+					pass = Utils.hashPw(pass);
 				};
 				
 				final Session s = session.getUserSession();
