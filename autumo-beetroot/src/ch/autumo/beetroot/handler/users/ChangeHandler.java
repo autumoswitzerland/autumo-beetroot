@@ -40,10 +40,10 @@ import org.passay.RuleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.BaseHandler;
@@ -79,6 +79,9 @@ public class ChangeHandler extends BaseHandler {
 			
 			final Session s = session.getUserSession();
 			userid = ((Integer) s.get("resetid")).intValue();
+
+			// remove reset ID !!
+			s.remove("resetid");
 			
 			Connection conn = null;
 			Statement stmt = null;
@@ -94,7 +97,7 @@ public class ChangeHandler extends BaseHandler {
 				else
 					stmtStr = "UPDATE users SET lasttoken='NONE', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
 				stmt.executeUpdate(stmtStr);
-			
+				
 			} finally {
 				
 				if (stmt != null)
@@ -190,14 +193,17 @@ public class ChangeHandler extends BaseHandler {
 		}
 		
 		try {
-			if (pass != null && pass.length() != 0) { // && suserid != null && suserid.length() != 0) {
+			if (pass != null && pass.length() != 0) { // && user-id != null && suserid.length() != 0) {
 				
 				if (BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded")) {
-					pass = Utils.encode(pass, SecureApplicationHolder.getInstance().getSecApp());
+					pass = Utils.hashPw(pass, SecureApplicationHolder.getInstance().getSecApp());
 				};
 				
 				final Session s = session.getUserSession();
 				userid = ((Integer) s.get("resetid")).intValue();
+
+				// remove reset ID !!
+				s.remove("resetid");
 				
 				Connection conn = null;
 				Statement stmt = null;

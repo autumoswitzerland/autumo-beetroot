@@ -36,12 +36,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Map;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
-import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Utils;
 
 /**
@@ -190,7 +189,7 @@ public class DefaultEditHandler extends BaseHandler {
 	private String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
 
 		final String val = this.formatSingleValueForGUI(session, set.getObject(idx).toString().trim(), columnName, idx, entity);
-		return this.extractSingleInputDiv(session, val, set, columnName, guiColName, idx, true);
+		return this.extractSingleInputDiv(session, val, set, columnName, guiColName, idx, false); // true); // ->no PW from DB anymore
 	}
 	
 	/**
@@ -212,6 +211,10 @@ public class DefaultEditHandler extends BaseHandler {
 	}
 	
 	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSet set, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
+
+		// No PWs anymore
+		if (columnName.toLowerCase().equals("password"))
+			return "";
 		
 		String result = "";
 		boolean isCheck = false;
@@ -228,12 +231,14 @@ public class DefaultEditHandler extends BaseHandler {
 			result += "<div class=\"input "+divType+" required\">\n";
 		else
 			result += "<div class=\"input "+divType+"\">\n";
-		
-		// we have to decode the password for edit, even it is obfuscted by stars
+
+		/**
+		// we have to decode the password for edit, even it is obfuscated by stars
 		// -> if the user presses save it would be double-encoded otherwise!
 		if (pwFromDb && inputType.equals("password") && BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_DB_PW_ENC)) {
 			val = Utils.decode(val, SecureApplicationHolder.getInstance().getSecApp());
 		}
+		*/
 		
 		result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n"; 
 		
@@ -254,12 +259,15 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		if (!isCheck) {
 		
-			final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+			//final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+			/*
 			if (jsPwValidator && columnName.equals("password")) {
 				
 				result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\" data-val=\""+val+"\"></div>";
 				
-			} else if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+			} else */
+			
+			if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 				
 				final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
@@ -284,7 +292,7 @@ public class DefaultEditHandler extends BaseHandler {
 				result += "</select>";				
 				
 			} else {
-			
+				
 				if (nullable == ResultSetMetaData.columnNoNulls) {
 					
 					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";

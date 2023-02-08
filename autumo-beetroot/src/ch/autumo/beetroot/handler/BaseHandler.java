@@ -591,7 +591,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			val = Utils.escapeValuesForDb(val);
 			
 			if (dbPwEnc && col[0].equals("password")) {
-				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
+				val = Utils.hashPw(val, SecureApplicationHolder.getInstance().getSecApp());
 			}
 
 			// Informix wants 't' or 'f'
@@ -632,14 +632,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Get SQL update set clause.
+	 * Get SQL update set clause. Passwords will NOT be updated!
 	 * 
 	 * @param session HTTP session
 	 * @return SQL update clause
 	 */
 	public String getUpdateSetClause(BeetRootHTTPSession session) throws Exception {
 
-		final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
+		//final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 		final boolean dbAutoMod = BeetRootConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
 		
 		final Session userSession = session.getUserSession();
@@ -662,14 +662,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			if (transientFields.contains(col[0]))
 				continue LOOP;
+
+			if (col[0].equals("password")) // passwords are not allowed to be updated!
+				continue LOOP;
+			
 			
 			String val = session.getParms().get(col[0]);
-			
 			val = Utils.escapeValuesForDb(val);
 			
+			/*
 			if (dbPwEnc && col[0].equals("password")) {
 				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
 			}
+			*/
 			
 			// Informix wants 't' or 'f'
 			if (val.equalsIgnoreCase("true")) {

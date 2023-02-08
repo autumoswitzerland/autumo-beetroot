@@ -787,7 +787,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						
 						try {
 							
-							postParamPass = Utils.encode(postParamPass, SecureApplicationHolder.getInstance().getSecApp());
+							postParamPass = Utils.hashPw(postParamPass, SecureApplicationHolder.getInstance().getSecApp());
 							
 						} catch (UtilsException e) {
 							

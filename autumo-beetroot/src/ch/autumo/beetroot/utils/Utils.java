@@ -1224,8 +1224,43 @@ public class Utils {
 
 		
 	
-	// Encoding / Decoding
+	// Hashing / Encoding / Decoding
 	//------------------------------------------------------------------------------
+
+	/**
+	 * Hash a password with default HASH algorithm for this beetRoot version.
+	 * Cannot be reversed.
+	 * 
+	 * @param pw password to hash
+	 * @param app secure application
+	 * @return hashed password
+	 * @throws UtilsException
+	 */
+	public static String hashPw(String pw, SecureApplication app) throws UtilsException {
+		return hashPwPBKDF2(pw, app);
+	}
+	
+	/**
+	 * Hash a password with PBKDF2 with HMAC/SHA-256. Cannot be reversed.
+	 * 
+	 * @param pw password to hash
+	 * @param app secure application
+	 * @return hashed password
+	 * @throws UtilsException
+	 */
+	private static String hashPwPBKDF2(String pw, SecureApplication app) throws UtilsException {
+		// external key
+    	final String k = app.getUniqueSecurityKey();
+		try {
+			final byte salt[] = Base64.decodeBase64(k);
+			final KeySpec spec = new PBEKeySpec(pw.toCharArray(), salt, KEYDATA.ITER_1, 256);
+			final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+			final byte hash[] = factory.generateSecret(spec).getEncoded();
+			return new String(Base64.encodeBase64(hash));
+        } catch (Exception e) {
+			throw new UtilsException("Couldn't hash password/key!", e);
+        }
+	}
 	
 	/**
 	 * Generates a CSRF token.
@@ -1241,7 +1276,7 @@ public class Utils {
 
 	/**
 	 * 
-	 * Encode data. It is the algorithm 2.
+	 * Encode data. It is the algorithm 1.
 	 * 
 	 * @param data data
 	 * @param secureApplication secure application
@@ -1249,7 +1284,7 @@ public class Utils {
 	 * @throws UtilsException
 	 */
 	public static String encode(String data, SecureApplication secureApplication) throws UtilsException {
-		return encodeBase64_SHA256_AES(data, secureApplication);
+		return encodeBase64_SHA3_256_AES(data, secureApplication);
 	}
 
 	/**
@@ -1262,7 +1297,7 @@ public class Utils {
 	 * @throws UtilsException
 	 */
 	public static String decode(String data, SecureApplication secureApplication) throws UtilsException {
-		return decodeBase64_SHA256_AES(data, secureApplication);
+		return decodeBase64_SHA3_256_AES(data, secureApplication);
 	}
 
 	/**
@@ -1295,47 +1330,24 @@ public class Utils {
 	
 	// Internal encoding / decoding
 	//------------------------------------------------------------------------------
-	
+
+	@SuppressWarnings("unused")
 	private static String encodeBase64_SHA256_AES(String data, SecureApplication app) throws UtilsException {
-    	byte[] key = null;
-    	byte[] encrypted = null;
-		try {
-			key = app.getUniqueSecurityKey().getBytes("UTF-8");
-	    	MessageDigest sha = MessageDigest.getInstance("SHA-256");
-	    	key = sha.digest(key);
-	    	//key = Arrays.copyOf(key, KEYDATA.LEN_3); 
-	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-	    	Cipher cipher = Cipher.getInstance("AES");
-	    	cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-	    	encrypted = cipher.doFinal(data.getBytes());
-		} catch (Exception e) {
-			throw new UtilsException("Couldn't encode password/key!", e);
-		}
-		String result;
-    	//----
-    	//BASE64Encoder encoder = new BASE64Encoder();
-    	//result = encoder.encode(encrypted);
-    	result = Base64.encodeBase64String(encrypted);
-    	//----
-    	return result;
+		return encodeBase64_ANY_AES("SHA-256", data, app);
     }	
+	
+	@SuppressWarnings("unused")
+	private static String decodeBase64_SHA256_AES(String data, SecureApplication app) throws UtilsException {
+		return decodeBase64_ANY_AES("SHA-256", data, app);
+    }
 	
 	private static String encodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
-    	byte[] key = null;
-    	byte[] encrypted = null;
-		try {
-			key = (app.getUniqueSecurityKey()).getBytes("UTF-8");
-	    	MessageDigest sha = MessageDigest.getInstance("SHA3-256");
-	    	key = sha.digest(key);
-	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-	    	Cipher cipher = Cipher.getInstance("AES");
-	    	cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-	    	encrypted = cipher.doFinal(data.getBytes());
-		} catch (Exception e) {
-			throw new UtilsException("Couldn't encode password/key!", e);
-		}
-    	return Base64.encodeBase64String(encrypted);
+		return encodeBase64_ANY_AES("SHA3-256", data, app);
     }	
+	
+	private static String decodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
+		return decodeBase64_ANY_AES("SHA3-256", data, app);
+    }
 	
 	private static String encodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {
     	
@@ -1358,53 +1370,6 @@ public class Utils {
 			throw new UtilsException("Couldn't encode password/key!", e);
         }
     }	
-
-	private static String decodeBase64_SHA256_AES(String data, SecureApplication app) throws UtilsException {
-    	byte[] key = null;
-    	byte[] cipherData = null;
-		try {
-			key = app.getUniqueSecurityKey().getBytes("UTF-8");
-	    	MessageDigest sha = MessageDigest.getInstance("SHA-256");
-	    	key = sha.digest(key);
-	    	//key = Arrays.copyOf(key, KEYDATA.LEN_3); 
-	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-	    	byte[] crypted;	    	//----
-	    	//BASE64Decoder decoder = new BASE64Decoder();
-	    	//crypted = decoder.decodeBuffer(data);
-	    	crypted = Base64.decodeBase64(data);
-	    	//----
-	    	Cipher cipher = Cipher.getInstance("AES");
-	    	cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-	    	cipherData = cipher.doFinal(crypted);
-		} catch (Exception e) {
-			throw new UtilsException("Couldn't decode password/key!", e);
-		}
-    	return new String(cipherData);
-    }
-	
-	private static String decodeBase64_SHA3_256_AES(String data, SecureApplication app) throws UtilsException {
-    	
-    	byte[] key = null;
-    	byte[] cipherData = null;
-		try {
-			key = (app.getUniqueSecurityKey()).getBytes("UTF-8");
-	    	MessageDigest sha = MessageDigest.getInstance("SHA3-256");
-	    	key = sha.digest(key);
-	    	//key = Arrays.copyOf(key, KEYDATA.LEN_3); 
-	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-	    	byte[] crypted;	    	//----
-	    	//BASE64Decoder decoder = new BASE64Decoder();
-	    	//crypted = decoder.decodeBuffer(data);
-	    	crypted = Base64.decodeBase64(data);
-	    	//----
-	    	Cipher cipher = Cipher.getInstance("AES");
-	    	cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-	    	cipherData = cipher.doFinal(crypted);
-		} catch (Exception e) {
-			throw new UtilsException("Couldn't decode password/key!", e);
-		}
-    	return new String(cipherData);
-    }
 	
 	@SuppressWarnings("unused")
 	private static String decodeBase64_PBE_MD5_DES(String data, SecureApplication app) throws UtilsException {
@@ -1428,6 +1393,40 @@ public class Utils {
         }
 	}	
 	
+	private static String decodeBase64_ANY_AES(String algo, String data, SecureApplication app) throws UtilsException {
+    	byte[] cipherData = null;
+		try {
+			byte key[] = (app.getUniqueSecurityKey()).getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance(algo);
+	    	key = sha.digest(key);
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+	    	byte[] crypted;
+	    	crypted = Base64.decodeBase64(data);
+	    	Cipher cipher = Cipher.getInstance("AES");
+	    	cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+	    	cipherData = cipher.doFinal(crypted);
+		} catch (Exception e) {
+			throw new UtilsException("Couldn't decode password/key!", e);
+		}
+    	return new String(cipherData);
+    }
+	
+	private static String encodeBase64_ANY_AES(String algo, String data, SecureApplication app) throws UtilsException {
+    	byte[] encrypted = null;
+		try {
+			byte key[] = (app.getUniqueSecurityKey()).getBytes("UTF-8");
+	    	MessageDigest sha = MessageDigest.getInstance(algo);
+	    	key = sha.digest(key);
+	    	SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+	    	Cipher cipher = Cipher.getInstance("AES");
+	    	cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+	    	encrypted = cipher.doFinal(data.getBytes());
+		} catch (Exception e) {
+			throw new UtilsException("Couldn't encode password/key!", e);
+		}
+    	return Base64.encodeBase64String(encrypted);
+    }	
+	
 	/**
 	 * Internal keys.
 	 */
@@ -1438,7 +1437,8 @@ public class Utils {
 			};
 		public static final int LEN_3 = 16;	
 		public static final int LEN_4 = 32;
-		private static final int ITER_1 = 19;	
+		//private static final int ITER_1 = 19;
+		private static final int ITER_1 = 65536;
 	}
 
 	
@@ -1447,11 +1447,15 @@ public class Utils {
 	
 	/**
 	public static void main(String[] args) throws Exception {
+		
 		BeetRootConfigurationManager.getInstance().initialize();
-		String e = encode("ifacex", SecureApplicationHolder.getInstance().getSecApp());
+		String e = hashPwPBKDF2("ifacex", ch.autumo.beetroot.security.SecureApplicationHolder.getInstance().getSecApp());
 		System.out.println("ENC:"+e);
-		String d = decode(e, SecureApplicationHolder.getInstance().getSecApp());
-		System.out.println("DEC:"+d);
+		e = hashPwPBKDF2("ifacex", ch.autumo.beetroot.security.SecureApplicationHolder.getInstance().getSecApp());
+		System.out.println("ENC:"+e);
+
+		//String d = decode(e, ch.autumo.beetroot.security.SecureApplicationHolder.getInstance().getSecApp());
+		//System.out.println("DEC:"+d);
 	}
 	*/
 	

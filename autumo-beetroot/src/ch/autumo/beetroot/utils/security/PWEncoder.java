@@ -58,17 +58,15 @@ public class PWEncoder {
 	 * @param args command line args
 	 */
 	private PWEncoder(String args[]) {
-		
-		if (args.length != 1) {
 
-			System.out.println(Help.TEXT);
-			Utils.invalidArgumentsExit();
-		}
-		
-		if (args[0].equals("-help") || args[0].equals("-h")) {
-
+		if (args.length > 0 && (args[0].equals("-help") || args[0].equals("-h"))) {
 			System.out.println(Help.TEXT);
 			Utils.normalExit();
+		}
+		
+		if (args.length != 2) {
+			System.out.println(Help.TEXT);
+			Utils.invalidArgumentsExit();
 		}
 
 		// Must !
@@ -80,14 +78,29 @@ public class PWEncoder {
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
+
+		// MODE
+		String strMode = args[0].trim();
+		int mode = -1;
+		try {
+			mode = Integer.valueOf(strMode).intValue();
+		} catch (Exception e) {
+			System.err.println(Colors.red("Mode '"+strMode+"' is invalid!"));
+			Utils.fatalExit();
+		}
+		if (mode < 0 || mode > 1) {
+			System.err.println(Colors.red("Mode '"+mode+"' is invalid!"));
+			Utils.fatalExit();
+		}
+		
+		// VALUE
+		String data = args[1].trim();
 		
 		// get the app
 		final SecureApplication app = SecureApplicationHolder.getInstance().getSecApp();
 
 		System.out.println("");
 				
-		// value
-		String data = args[0].trim();
 		
 		
 		System.out.println("beetRoot Password Encoder Result:");
@@ -97,7 +110,10 @@ public class PWEncoder {
 		String encoded = null;
 		try {
 				
-			encoded = Utils.encode(data, app);
+			if (mode == 0)
+				encoded = Utils.hashPw(data, app);
+			else
+				encoded = Utils.encode(data, app);
 				
 		} catch (UtilsException e) {
 			System.err.println(Colors.red("Couldn't encode!"));
@@ -117,8 +133,8 @@ public class PWEncoder {
 
     private static final class Help {
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
-		private static final String USAGEA = Colors.yellow("pwencoder."+SHELL_EXT+" \"<password to encode>\"");
-		private static final String USAGE0 = Colors.yellow("pwencoder.sh \"mySecretPass\"");
+		private static final String USAGEA = Colors.yellow("pwencoder."+SHELL_EXT+" <mode> \"<password to encode>\"");
+		private static final String USAGE0 = Colors.yellow("pwencoder.sh 1 \"mySecretPass\"");
     	public static final String TEXT =
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
@@ -128,14 +144,17 @@ public class PWEncoder {
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Help:" 																			+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
-				"In the beetRoot configuration file and database, passwords can be encoded." 		+ Utils.LINE_SEPARATOR +
-				"This tool does the enconding. Keep the passwords in a password store, this" 		+ Utils.LINE_SEPARATOR +
-				"tool doesn't decode encoded passwords!" 											+ Utils.LINE_SEPARATOR +
+				"In the beetRoot configuration file and database, keys & passwords can be encoded." + Utils.LINE_SEPARATOR +
+				"This tool does the enconding. Keep the passwords in a password store, this tool" 	+ Utils.LINE_SEPARATOR +
+				"doesn't decode encoded passwords!" 												+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Usage:" 																			+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"  " + USAGEA									 									+ Utils.LINE_SEPARATOR +
+				"" 																					+ Utils.LINE_SEPARATOR +
+				"     mode  :  0  -->  For beetRoot user passwords only"							+ Utils.LINE_SEPARATOR +
+				"     mode  :  1  -->  For configuration parameters only (beetroot.cfg)"			+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"" 																					+ Utils.LINE_SEPARATOR +
 				"Important notes:" 																	+ Utils.LINE_SEPARATOR +
