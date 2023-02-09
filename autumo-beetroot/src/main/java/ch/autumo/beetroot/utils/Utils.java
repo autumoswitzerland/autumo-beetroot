@@ -1467,8 +1467,7 @@ public class Utils {
 			};
 		public static final int LEN_3 = 16;	
 		public static final int LEN_4 = 32;
-		//private static final int ITER_1 = 19;
-		public static final int ITER_1 = 65536;
+		private static final int ITER_1 = 65536;
 	}
 
 }

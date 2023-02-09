@@ -30,35 +30,22 @@
  */
 package ch.autumo.beetroot.security.password;
 
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm;
-
-import ch.autumo.beetroot.security.SecureApplicationHolder;
-
 /**
- * Provides a hash with PBKDF2 with HMAC and SHA256.
+ * Provides NO hash, just returns the value! 
  */
-public class PBKPD2HashProvider implements PasswordHashProvider {
+public class NOOPHashProvider implements PasswordHashProvider {
 
-	private static final int DEFAULT_SALT_LENGTH = 16;
-    private static final int DEFAULT_ITERATIONS = 185000;
-	private static final SecretKeyFactoryAlgorithm DEFAULT_ALGORITHM = SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256;
-
-	
-	private Pbkdf2PasswordEncoder encoder = null;
-	
-	public PBKPD2HashProvider() {
-		encoder = new Pbkdf2PasswordEncoder(SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey(), DEFAULT_SALT_LENGTH, DEFAULT_ITERATIONS, DEFAULT_ALGORITHM);
+	public NOOPHashProvider() {
 	}
 
 	@Override
 	public String hash(String password) throws Exception {
-		return encoder.encode(password);
+		return password;
 	}
 
 	@Override
-	public boolean verify(String password, String hashedPassword) throws Exception {
-		return encoder.matches(password, hashedPassword);
+	public boolean verify(String password, String loadedPassword) throws Exception {
+		return password.equals(loadedPassword);
 	}
-	
+
 }
