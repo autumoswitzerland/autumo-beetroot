@@ -153,7 +153,7 @@ with third parties: All licenses are covered by the license for this product (se
 				https://mariadb.com/kb/en/licensing-faq
 
 
-NOTE: All specific licenses of the third-party-software distributed within this product above can be
+NOTE: All generic licenses of the third-party-software distributed within this product above can be
 found in the directory: 'etc/licenses'.
 
 
