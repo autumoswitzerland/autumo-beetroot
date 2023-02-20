@@ -143,7 +143,7 @@ Enjoy!
 * [JQuery](https://jquery.com)
 * [HikariCP](https://github.com/brettwooldridge/HikariCP)
 * [normalize.css](https://necolas.github.io/normalize.css)
-* ...and some more; see [THIRDPARTYLICENSES.txt](https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/THIRDPARTYLICENSES.txt)
+* ...and some more; see [THIRDPARTYLICENSES.html](https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/THIRDPARTYLICENSES.html)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
