@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package ch.autumo.beetroot.server;
+package ch.autumo.beetroot.server.message.file;
 
 import ch.autumo.beetroot.server.message.ClientAnswer;
 

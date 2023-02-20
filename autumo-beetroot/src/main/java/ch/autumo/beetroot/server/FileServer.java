@@ -57,6 +57,7 @@ import ch.autumo.beetroot.server.communication.Communicator;
 import ch.autumo.beetroot.server.communication.FileTransfer;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
+import ch.autumo.beetroot.server.message.file.FileAnswer;
 import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.utils.UtilsException;
 
