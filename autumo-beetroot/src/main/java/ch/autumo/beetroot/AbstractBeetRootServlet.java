@@ -67,14 +67,8 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		super.init(config);
 		
 		final String webAppRoot = Utils.getRealPath(config.getServletContext());
-		
-		String webAppRootWithoutSlash = webAppRoot;
-		if (webAppRoot.endsWith(Utils.FILE_SEPARATOR))
-			webAppRootWithoutSlash = webAppRoot.substring(0, webAppRoot.length() - 1);
-		
-		
-		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 		final String configFilePath = config.getInitParameter("beetRootConfig");
+		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 
 
 		// Read general config
@@ -87,7 +81,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		}		
 
 		
-		// logging configuration
+		// Logging configuration
 		final String servletContainer = config.getInitParameter("servletContainer");
 		if (servletContainer == null || !servletContainer.equals("jetty")) {
 			// configure logging
@@ -100,15 +94,11 @@ public class AbstractBeetRootServlet extends HttpServlet {
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
 		}
-		
-		String dbUrl = configMan.getString("db_url");
-		if (dbUrl.contains("[WEB-CONTEXT-PATH]")) {
-			dbUrl = dbUrl.replace("[WEB-CONTEXT-PATH]", webAppRootWithoutSlash);
-		}
+
 		
 		// DB connection manager
 		try {
-			BeetRootDatabaseManager.getInstance().initialize();
+			BeetRootDatabaseManager.getInstance().initialize(webAppRoot);
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
 			throw new ServletException("Couldn't decrypt DB password!", e);
@@ -117,15 +107,13 @@ public class AbstractBeetRootServlet extends HttpServlet {
 			throw new ServletException("Couldn't create DB manager!", e);
 		}
 
-		// create the beetRoot server running in a passive serve mode,
+		
+		// Create the beetRoot server running in a passive server mode,
 		// basically only parsing and sending the body
 		try {
-			
 			final Class<?> clz = Class.forName(beetRootServiceClass);
 			beetRootService = (BeetRootService) clz.getDeclaredConstructor().newInstance();
-			
 		} catch (Exception e) {
-			
 			LOG.error("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
 			throw new ServletException("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
 		}

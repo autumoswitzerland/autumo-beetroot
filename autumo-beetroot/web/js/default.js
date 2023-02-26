@@ -194,7 +194,7 @@ function checkUpload(maxSizeMb) {
 	// Check if any file is selected.
 	if (fi.files.length > 0) {
 		
-		for (const i = 0; i <= fi.files.length - 1; i++) {
+		for (i = 0; i <= fi.files.length - 1; i++) {
 
 			const fsize = fi.files.item(i).size; //
 			const fileMb = Math.round((fsize / 1024 / 1024));

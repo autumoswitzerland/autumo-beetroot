@@ -243,6 +243,11 @@ public class Constants {
 	//------------------------------------------------------------------------------
 	
 	/**
+	 * Placeholder variable for DB URL web context path.
+	 */
+	public static final String KEY_DB_URL_WEB_CONTEXT_PATH = "[WEB-CONTEXT-PATH]";
+	
+	/**
 	 * How many records should be shown per index web page?
 	 */
 	public static final String KEY_WEB_MAX_RECORDS_PER_PAGE = "web_max_records_per_page";

@@ -49,7 +49,9 @@ import ch.autumo.beetroot.utils.Utils;
 
 /**
  * Database manager.
- * Supported databases: H2, MySQL, MariaDB, Oracle, PostgreSQL.
+ * 
+ * Supported databases: H2, MySQL, MariaDB, Oracle, PostgreSQL and
+ * unsupported databases.
  */
 public class BeetRootDatabaseManager {
 
@@ -105,6 +107,28 @@ public class BeetRootDatabaseManager {
 	public boolean isInitialized() {
 		return isInitialized;
 	}
+
+	/**
+	 * Initialize DB manager.
+	 * 
+	 * @param webAppRootPath Web app root path
+	 * @throws Exception
+	 */
+	public void initialize(String webAppRootPath) throws Exception {
+		
+		String webAppRootWithoutSlash = webAppRootPath;
+		if (webAppRootPath.endsWith(Utils.FILE_SEPARATOR))
+			webAppRootWithoutSlash = webAppRootPath.substring(0, webAppRootPath.length() - 1);
+
+		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
+		
+		this.url = configMan.getString("db_url");
+		if (this.url.contains(Constants.KEY_DB_URL_WEB_CONTEXT_PATH)) {
+			this.url = this.url.replace(Constants.KEY_DB_URL_WEB_CONTEXT_PATH, webAppRootWithoutSlash);
+		}
+		
+		this.initialize();
+	}
 	
 	/**
 	 * Initialize DB manager.
@@ -129,7 +153,12 @@ public class BeetRootDatabaseManager {
 
 		// default parameters
 		final boolean pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
-		this.url = configMan.getString("db_url");
+		
+		if (this.url == null) {
+			// Not yet initialized by a web-app context
+			this.url = configMan.getString("db_url");
+		}
+		
 		this.user = configMan.getString("db_user");
 		this.pass = pwEncoded ? configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password");
 		
