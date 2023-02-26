@@ -12,7 +12,7 @@
 [license-url]: https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/company/autumo
-[product-screenshot]: https://raw.githubusercontent.com/autumoswitzerland/autumo/master/autumo-beetroot/web/img/autumo-beetroot-screen.png
+[product-screenshot]: https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png
 
 <div id="top"></div>
 
@@ -30,7 +30,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/autumoswitzerland/autumo/tree/master/autumo-beetroot">
-    <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo/master/autumo-beetroot/web/img/beetroot.png" alt="Logo" width="200" height="200">
+    <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png" alt="Logo" width="200" height="200">
   </a>
 
 <h1 align="center">autumo beetRoot</h1>
@@ -97,6 +97,7 @@ The Web framework is shipped with the following features ready to use:
 - Add, edit, view, list and delete functionality for entities
 - Bean support with transient and unique fields
 - Language management
+- Exchangeable logging
 - File up- and download
 - Full MIME types control
 - 2-Factor-Authentication
@@ -108,7 +109,7 @@ The Web framework is shipped with the following features ready to use:
 - URL routing with language support
 - File caching (resources and templates)
 - Easy to understand HTML template engine
-- Password encryption (SHA-256)
+- Argon2/PBKPD2 password encryption
 - HTTPS protocol and TLS for mail if configured
 - User roles & access control on controller level
 - User session are stored when servers are stopped
@@ -117,8 +118,8 @@ The Web framework is shipped with the following features ready to use:
 - Servlet API 4.0 Java EE 8 (prepared for 5.0 Jakarta EE 8)
 - Full CRUD-Generator **PLANT** for views, models and handlers
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
-- Database connecton pooling (internal and external JNDI data sources)
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
+- Database connection pooling (HikariCP, with internal and external JNDI data sources)
 - Runs stand-alone as well as in common servlet containers such as Apache Tomcat and Jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
 - Secure client-server communication, if beetRoot is installed in a servlet container apart from beetRoot server and if there's need for such communication to steer backend processes
 - Hierarchical resource loader; e.g. German language requested, if not found, use configured default language, then use no language at all; "lookup till you find something usable" is the 
