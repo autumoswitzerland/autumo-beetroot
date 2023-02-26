@@ -1,2 +1,5 @@
-/.DS_Store
-
+/.settings/
+/target/
+/product/
+**/.DS_Store
+/.apt_generated_tests/
