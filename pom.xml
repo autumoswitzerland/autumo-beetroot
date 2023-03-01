@@ -55,7 +55,7 @@
 			                <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
 			                <resources>
 			                    <resource>
-			                        <include>LICENSE.txt</include>
+			                        <include>LICENSE.md</include>
 				                    <directory>${basedir}</directory>
 			                    </resource>
 			                </resources>
