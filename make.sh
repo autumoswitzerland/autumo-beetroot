@@ -3,7 +3,7 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.2
+#  Version: 4.3
 #
 #  Notes:
 #   -
@@ -55,16 +55,37 @@ then
 	cd product
 	
 	# remove working directory
-	rm -Rf autumo-beetRoot-$VERSION
-	rm -Rf autumo-beetRoot-web-$VERSION
-	
+	if [ -d "autumo-beetRoot-$VERSION" ]
+	then
+		rm -Rf autumo-beetRoot-$VERSION
+	fi
+	if [ -d "autumo-beetRoot-web-$VERSION" ]
+	then
+		rm -Rf autumo-beetRoot-web-$VERSION
+	fi
+		
 	# remove package
-	rm autumo-beetRoot-$VERSION.zip
-	rm autumo-beetRoot-web-$VERSION.zip
+	if [ -f "autumo-beetRoot-$VERSION.zip" ]
+	then
+    	rm autumo-beetRoot-$VERSION.zip
+	fi		
+	if [ -f "rm autumo-beetRoot-web-$VERSION.zip" ]
+	then
+    	rm autumo-beetRoot-web-$VERSION.zip
+	fi		
+	if [ -f "beetroot.war" ]
+	then
+    	rm beetroot.war
+	fi		
+	if [ -f "beetroot-jetty.war" ]
+	then
+    	rm beetroot-jetty.war
+	fi		
+	if [ -f "beetroot-weblogic.zip" ]
+	then
+    	rm beetroot-weblogic.zip
+	fi		
 
-	rm beetroot.war
-	rm beetroot-jetty.war
-	rm beetroot-weblogic.zip
 	
 	exit 1
 fi
