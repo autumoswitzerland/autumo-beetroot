@@ -63,4 +63,14 @@ public class SecureServerSocketFactory implements ServerSocketFactory {
         ss.setNeedClientAuth(false);
         return ss;
     }
+    
+	/**
+	 * Return the base (java.net) SSL server socket factory.
+	 * 
+	 * @return base (java.net) SSL server socket factory
+	 */
+	public SSLServerSocketFactory getBaseServerSocketFactory() {
+		return this.sslServerSocketFactory;
+	}
+    
 }

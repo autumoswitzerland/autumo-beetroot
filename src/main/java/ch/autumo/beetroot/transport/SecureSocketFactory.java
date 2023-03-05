@@ -60,5 +60,14 @@ public class SecureSocketFactory implements SocketFactory {
         }
         return ss;
 	}
+	
+	/**
+	 * Return the base (java.net) SSL socket factory.
+	 * 
+	 * @return base (java.net) SSL socket factory
+	 */
+	public SSLSocketFactory getBaseSocketFactory() {
+		return this.sslSocketFactory;
+	}
 
 }
