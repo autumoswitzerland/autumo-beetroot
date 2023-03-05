@@ -125,19 +125,18 @@ public class SSLUtils {
 					BeetRootConfigurationManager.getInstance().getString(Constants.KEY_KEYSTORE_PW);
 		return keystorepw.toCharArray();
 	}
-	
+
     /**
-     * Creates an SSLServerSocketFactory. Pass a KeyStore resource with your
+     * Creates an SSLContext. Pass a KeyStore resource with your
      * certificate and pass-phrase.
 	 * 
 	 * @param keyAndTrustStore key-store file class-path reference or full path
 	 * @param passphrase pass phrase
-	 * @return SSL server socket factory
+	 * @return SSL context
 	 * @throws IOException
 	 */
-    public static SSLServerSocketFactory makeSSLServerSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
+    public static SSLContext makeSSLContext(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
-        	
             final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
             
@@ -165,13 +164,12 @@ public class SSLUtils {
             trustManagerFactory.init(keystore);
             final SSLContext ctx = SSLContext.getInstance("SSL");
             ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-            return ctx.getServerSocketFactory();
+            return  ctx;
         } catch (Exception e) {
             throw new IOException(e.getMessage(), e);
         }
     }
-
-
+    
     /**
      * Creates an SSLSocketFactory. Pass a KeyStore resource with your
      * certificate and pass-phrase.
@@ -183,34 +181,24 @@ public class SSLUtils {
 	 */
     public static SSLSocketFactory makeSSLSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
-            final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
-            
-            if (keystoreStream == null) {
-            	if (keyAndTrustStore != null) {
-            		// get as file
-            		File f = new File(keyAndTrustStore);
-            		if (f.exists()) {
-            			keystoreStream = new FileInputStream(f);
-            		} else {
-	            		if (keyAndTrustStore.startsWith("/"))
-	            			keyAndTrustStore = keyAndTrustStore.substring(1, keyAndTrustStore.length());
-	            		f = new File(keyAndTrustStore);
-            			keystoreStream = new FileInputStream(f);
-            		}
-            	}
-            	if (keystoreStream == null) // still null ?
-            		throw new IOException("Unable to load keystore from classpath/path: " + keyAndTrustStore);
-            }
-            
-            keystore.load(keystoreStream, passphrase);
-            final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keystore, passphrase);
-        	final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keystore);
-            final SSLContext ctx = SSLContext.getInstance("SSL");
-            ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-            return  ctx.getSocketFactory();
+        	return makeSSLContext(keyAndTrustStore, passphrase).getSocketFactory();
+        } catch (Exception e) {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Creates an SSLServerSocketFactory. Pass a KeyStore resource with your
+     * certificate and pass-phrase.
+	 * 
+	 * @param keyAndTrustStore key-store file class-path reference or full path
+	 * @param passphrase pass phrase
+	 * @return SSL server socket factory
+	 * @throws IOException
+	 */
+    public static SSLServerSocketFactory makeSSLServerSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
+        try {
+            return makeSSLContext(keyAndTrustStore, passphrase).getServerSocketFactory();
         } catch (Exception e) {
             throw new IOException(e.getMessage(), e);
         }
