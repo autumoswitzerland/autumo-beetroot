@@ -128,6 +128,17 @@ public class SSLUtils {
 
     /**
      * Creates an SSLContext. Pass a KeyStore resource with your
+     * certificate and pass-phrase. Parameters read from configuration. 
+	 * 
+	 * @return SSL context
+	 * @throws Exception
+	 */
+    public static SSLContext makeSSLContext() throws Exception {
+    	return makeSSLContext(getKeystoreFile(), getKeystorePw());
+    }
+	
+    /**
+     * Creates an SSLContext. Pass a KeyStore resource with your
      * certificate and pass-phrase.
 	 * 
 	 * @param keyAndTrustStore key-store file class-path reference or full path
@@ -169,6 +180,17 @@ public class SSLUtils {
             throw new IOException(e.getMessage(), e);
         }
     }
+
+    /**
+     * Creates an SSLSocketFactory. Pass a KeyStore resource with your
+     * certificate and pass-phrase. Parameters read from configuration. 
+	 * 
+	 * @return SSL socket factory
+	 * @throws IOException
+	 */
+    public static SSLSocketFactory makeSSLSocketFactory() throws Exception {
+    	return makeSSLSocketFactory(getKeystoreFile(), getKeystorePw());
+    }
     
     /**
      * Creates an SSLSocketFactory. Pass a KeyStore resource with your
@@ -185,6 +207,17 @@ public class SSLUtils {
         } catch (Exception e) {
             throw new IOException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates an SSLServerSocketFactory. Pass a KeyStore resource with your
+     * certificate and pass-phrase. Parameters read from configuration.
+	 * 
+	 * @return SSL server socket factory
+	 * @throws IOException
+	 */
+    public static SSLServerSocketFactory makeSSLServerSocketFactory() throws Exception {
+    	return makeSSLServerSocketFactory(getKeystoreFile(), getKeystorePw());
     }
     
     /**
