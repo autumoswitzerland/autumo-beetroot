@@ -44,7 +44,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.server.BaseServer;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 
@@ -53,7 +52,7 @@ import ch.autumo.beetroot.server.message.ServerCommand;
  */
 public class Communicator {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
+	protected final static Logger LOG = LoggerFactory.getLogger(Communicator.class.getName());
 	
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
