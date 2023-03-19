@@ -123,8 +123,12 @@ public class BeetRootDatabaseManager {
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
 		
 		this.url = configMan.getString("db_url");
-		if (this.url.contains(Constants.KEY_DB_URL_WEB_CONTEXT_PATH)) {
-			this.url = this.url.replace(Constants.KEY_DB_URL_WEB_CONTEXT_PATH, webAppRootWithoutSlash);
+
+		// Might NULL be here, lets continue for a while... 
+		if (this.url != null && 
+			this.url.length() > 0 && 
+			this.url.contains(Constants.KEY_DB_URL_WEB_CONTEXT_PATH)) {
+				this.url = this.url.replace(Constants.KEY_DB_URL_WEB_CONTEXT_PATH, webAppRootWithoutSlash);
 		}
 		
 		this.initialize();
@@ -138,7 +142,7 @@ public class BeetRootDatabaseManager {
 	public void initialize() throws Exception {
 		
 		if (isInitialized) {
-    		LOG.warn("WARNING: Initialisation of database manager is called more than once!");
+    		LOG.warn("Initialisation of database manager is called more than once!");
     		return;
 		}
 		
@@ -157,6 +161,14 @@ public class BeetRootDatabaseManager {
 		if (this.url == null) {
 			// Not yet initialized by a web-app context
 			this.url = configMan.getString("db_url");
+			
+			// If the URL is still Null, this is not OK! 
+			// We still need a JDBC-prefix 'jdbc:<db-name>';
+			// it is used internally to determine what DB is 
+			// used for specific vendor-operations.
+			if (this.url == null || this.url.length() == 0) {
+				throw new Exception("'db_url' is not specified; at least 'jdbc:<db-name>' is required if a sole external JNDI or an own internal data source is used for vendor specific operations!");
+			}
 		}
 		
 		this.user = configMan.getString("db_user");
@@ -241,7 +253,6 @@ public class BeetRootDatabaseManager {
 			// --> All done!
 			return;
 		}
-
 		
 		
 		// 2. set pool name for internal data-source
