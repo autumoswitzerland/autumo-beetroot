@@ -214,12 +214,17 @@ public class DefaultIndexHandler extends BaseHandler {
 					final String cfgLine = columns().get(Integer.valueOf(i));
 					final String params[] = cfgLine.split("=");
 					int dbIdx = i + 1; // because of additional id!
+
+					final String columnName = params[0].trim();
 					
-					final String guiColTitle = params[0].trim();
+					String guiColTitle = null;
+					if (params.length > 0)
+						guiColTitle = params[1].trim();
+					
 					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 						continue LOOP;
 					
-					htmlData += extractSingleTableData(session, set, guiColTitle, dbIdx, entity)+ "\n";
+					htmlData += extractSingleTableData(session, set, columnName, dbIdx, entity)+ "\n";
 				}
 				
 				// generate actions
@@ -240,9 +245,13 @@ public class DefaultIndexHandler extends BaseHandler {
 		final List<String> transientFields = super.getTransientFields();
 		
 		// table head
-		for (int i = 1; i <= columns().size(); i++) {
+		HEAD: for (int i = 1; i <= columns().size(); i++) {
 			
 			final String col[] = getColumn(i);
+			
+			// No show option!
+			if (col[1].equals(Constants.GUI_COL_NO_SHOW))
+				continue HEAD;
 			
 			if (sortField != null && sortField.length() != 0) {
 				

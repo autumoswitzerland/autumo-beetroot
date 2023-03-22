@@ -310,15 +310,27 @@ The model configuration `columns.cfg` does the following for every entity:
 
 - It defines what columns you see for every view (add, edit, view/single-record, index/list) and defines a value for the field name. See existing files for sample entities `Task` and/or `User`. E.g.:
 
-	`adbfield=GUI Name for that Field`
-
+	index.html: `list.aDbfield=GUI Name for that Field`
+	
+	view.html: `view.aDbfield=GUI Name for that Field`
+	
+	edit.html: `edit.aDbfield=GUI Name for that Field`
+	
+	add.html: `add.aDbfield=GUI Name for that Field`
+	
 - It also defines which columns are UNIQUE in the database by defining them with the key `unique`, e.g.:
 
 	`unique=name, path`
 	
 - If you want to load a value from a database field into the entity bean to use it in a handler, but you do not want it to be displayed in the GUI, define the constant 'NO_SHOW' as the GUI field name, for example:
 
-	`secretkey=NO_SHOW`
+	index.html: `list.secretDbField=NO_SHOW`
+	
+	view.html: `view.secretDbField=NO_SHOW`
+	
+	edit.html: `edit.secretDbField=NO_SHOW`
+	
+	add.html: `add.secretDbField=NO_SHOW`
 
 - Furthermore, you can manually define transient values that are nor read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
 
