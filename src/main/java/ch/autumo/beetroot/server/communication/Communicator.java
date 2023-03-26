@@ -53,6 +53,9 @@ import ch.autumo.beetroot.server.message.ServerCommand;
 public class Communicator {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(Communicator.class.getName());
+
+	/** Max. message size: 64 kBytes */
+	public final static int MAX_MSG_SIZE = 64 * 1024;
 	
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
@@ -163,9 +166,19 @@ public class Communicator {
 		
 		final int length = in.readInt();
 		
+		// In any case, if the length read is too big, e.g., when a malformed client request is sent,
+		// this could lead to a out-of-memory-error in the heap space!
+		// --> Taking care of this: In any case the max. message size must be 64Kb,
+		//     considering also it contains an additional serialized object.
+		if (length > MAX_MSG_SIZE) {
+			// We could do many things here, but in fact it is an invalid message,
+			// therefore raise an exception!
+			throw new IOException("The communication message received is bigger than '"+MAX_MSG_SIZE+"' bytes, that's an invalid message!");
+		}
+		
 		final byte[] messageByte = new byte[length];
 	    boolean end = false;
-	    final StringBuilder dataString = new StringBuilder(length);
+	    final StringBuilder dataString = new StringBuilder(length); //TODO !
 	    int totalBytesRead = 0;
 	    
 	    while (!end) {
