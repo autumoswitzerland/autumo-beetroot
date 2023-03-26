@@ -1021,10 +1021,10 @@ public abstract class BaseServer {
 	        catch (UtilsException e) {
 	        	
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
-				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode) or");
-				LOG.error("     different encrypt modes have been defined on boths side, or the server's");
+				LOG.error("  -> Either the secret key seed doesn't match or different encrypt modes");
+				LOG.error("     have been defined within client/server-configuration, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
-				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
+				LOG.error("  -> Check config 'admin_com_encrypt' on both sides!");
 				//LOG.error("  -> Exception: " + e);
 				e.printStackTrace();
 				return;
