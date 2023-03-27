@@ -284,17 +284,20 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		else
 			result += "<div class=\"input "+divType+"\">\n";
 		
-		result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n"; 
+		if (isCheck)
+			result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
+		else
+			result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
 		
 		if (isCheck) {
 			
 			if (val.equals("true") || val.equals("1")) {
 				result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"true\" checked>\n";
-				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"true\" />";
+				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"true\">";
 			}
 			else {
 				result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"false\">\n";
-				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"false\" />";
+				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"false\">";
 			}
 			
 			// Must !
@@ -338,13 +341,17 @@ public abstract class DefaultAddHandler extends BaseHandler {
 					
 					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";
 					result += "    data-validity-message=\"This field cannot be left empty\" oninvalid=\"this.setCustomValidity(''); if (!this.value) this.setCustomValidity(this.dataset.validityMessage)\"\n";
-					result += "    oninput=\"this.setCustomValidity('')\"\n"; 
-					result += "    id=\""+columnName+"\" aria-required=\"true\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
-					
+					result += "    oninput=\"this.setCustomValidity('')\"\n";
+					if (super.isPrecisionInputType(inputType))
+						result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
+					else
+						result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
 				} else {
-					
 					result += "<input type=\""+inputType+"\" name=\""+columnName+"\"\n";
-					result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
+					if (super.isPrecisionInputType(inputType))
+						result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
+					else
+						result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
 				}
 			}
 		}

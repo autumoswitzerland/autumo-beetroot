@@ -27,7 +27,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
-<br />
+<br>
 <div align="center">
   <a href="https://github.com/autumoswitzerland/autumo/tree/master/autumo-beetroot">
     <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png" alt="Logo" width="200" height="200">
@@ -37,7 +37,7 @@
 
   <p align="center">
     A slim & rapid Java web-dev framework
-    <br />
+    <br>
     <a href="https://github.com/autumoswitzerland/autumo/issues">Report Bug</a>
     ·
     <a href="https://github.com/autumoswitzerland/autumo/issues">Request Feature</a>
@@ -48,7 +48,7 @@
 
 <!-- TABLE OF CONTENTS -->
 
-<br />
+<br>
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -79,7 +79,7 @@
     <li><a href="#toc_20">Acknowledgments</a></li>
   </ol>
 </details>
-<br />
+<br>
 
 
 
@@ -675,8 +675,8 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=WWDWJG7Z4WJZC)
 
-<br />
-<br />
+<br>
+<br>
 Copyright 2022, autumo Ltd., Switzerland
 
 

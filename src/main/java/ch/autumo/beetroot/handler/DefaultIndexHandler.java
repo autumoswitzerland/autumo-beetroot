@@ -318,11 +318,11 @@ public class DefaultIndexHandler extends BaseHandler {
 		// DELETE
 		if (this.deleteAllowed(userSession)) {
 			htmlData += "<form name=\"post_"+getEntity()+"_delete_"+modifyID+"\" style=\"display:none;\" method=\"post\" action=\"/"+getEntity()+"/delete?id="+modifyID+"\">\n";
-			htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\"/>\n";
+			htmlData += "<input type=\"hidden\" name=\"_method\" value=\"POST\">\n";
 			if (BeetRootConfigurationManager.getInstance().useCsrf()) {
 				
 				final String formCsrfToken = userSession.getFormCsrfToken();
-				htmlData += "<input type=\"hidden\" name=\"_csrfToken\" autocomplete=\"off\" value=\""+formCsrfToken+"\"/>\n";
+				htmlData += "<input type=\"hidden\" name=\"_csrfToken\" value=\""+formCsrfToken+"\">\n";
 			}
 			htmlData += "</form>\n";
 			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""

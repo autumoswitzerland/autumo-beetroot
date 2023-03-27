@@ -9,8 +9,7 @@
 	<div class="tasks form content">
 		<form method="post" accept-charset="utf-8" action="/tasks/add">
 			<div style="display: none;">
-				<input type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</div>
 			<fieldset>
 				<legend>Add Task</legend>
@@ -18,7 +17,7 @@
 			</fieldset>
 			<a href="/{$lang}/tasks/index" class="button right">Cancel</a>
 			<button type="submit">Save</button>
-			<br /> <br /> <br />
+			<br><br><br>
 		</form>
 	</div>
 </div>

@@ -4,9 +4,8 @@
 		<li>
 			<form name="post_##entitynameplural##_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="POST">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</form> <a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}??"
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_##entitynameplural##_delete_{$id}.submit(); } event.preventDefault();">Delete
@@ -21,9 +20,8 @@
 		<form method="post" accept-charset="utf-8"
 			action="/{$lang}/##entitynameplural##/edit?id={$id}">
 			<div style="display: none;">
-				<input type="hidden" name="_method" value="PUT" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="PUT">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</div>
 			<fieldset>
 				<legend>Edit ##Entityname##</legend>
@@ -31,7 +29,7 @@
 			</fieldset>
 			<a href="/{$lang}/##entitynameplural##/index" class="button right">Cancel</a>
 			<button type="submit">Submit</button>
-			<br /> <br /> <br />
+			<br><br><br>
 		</form>
 	</div>
 </div>

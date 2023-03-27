@@ -4,9 +4,8 @@
 		<li>
 			<form name="post_properties_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/properties/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="POST">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</form> <a href="/{$lang}/properties/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}??"
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.preventDefault();">Delete
@@ -21,9 +20,8 @@
 		<form method="post" accept-charset="utf-8"
 			action="/{$lang}/properties/edit?id={$id}">
 			<div style="display: none;">
-				<input type="hidden" name="_method" value="PUT" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="PUT">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</div>
 			<fieldset>
 				<legend>Edit Setting</legend>
@@ -31,7 +29,7 @@
 			</fieldset>
 			<a href="/{$lang}/properties/index" class="button right">Cancel</a>
 			<button type="submit">Save</button>
-			<br /> <br /> <br />
+			<br><br><br>
 		</form>
 	</div>
 </div>

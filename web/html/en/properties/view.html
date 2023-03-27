@@ -7,9 +7,8 @@
 		<li>
 			<form name="post_properties_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/properties/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="POST">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</form> <a href="/{$lang}/properties/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}?"
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.preventDefault();">Delete

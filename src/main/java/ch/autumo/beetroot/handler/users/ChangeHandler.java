@@ -239,7 +239,7 @@ public class ChangeHandler extends BaseHandler {
 			if (jsPwValidator)
 				text = text.replace("{$passElem}", "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\"></div>");
 			else
-				text = text.replace("{$passElem}", "<input type=\"password\" name=\"password\" id=\"password\" />");
+				text = text.replace("{$passElem}", "<input type=\"password\" name=\"password\" id=\"password\">");
 		}
 		return text;
 	}

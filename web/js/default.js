@@ -34,16 +34,21 @@
 var rotmap = r13init();
 
 /**
-* Prepare all.
-*/
+ * Prepare all.
+ */
 function prepareAll() {
-
 	prepareGetInTouch();
 	prepareTelInTouch();
+	prepareYear();
+}
 
+/**
+ * Prepare year.
+ */
+function prepareYear() {
 	var now = new Date();
 	var year = now.getFullYear();
-	document.getElementById('year').innerHTML += year;
+	document.getElementById('footeryear').innerHTML += year;
 }
 
 /**

@@ -88,6 +88,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
+	// Precisiosn HTML input types
+	protected static List<String> PRECISION_INPUT_TYPES = Arrays.asList(new String[] {"email", "password", "search", "tel", "text", "url"});
+	
 	// link reference patterns 
 	private static Pattern PATTERN_HREF = Pattern.compile("href=\\\"(?!#.*)(?!\\{.*)");
 	private static Pattern PATTERN_SRC = Pattern.compile("src=\\\"(?!#.*)(?!\\{.*)");
@@ -1366,9 +1369,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						final String langs[] = LanguageManager.getInstance().getConfiguredLanguages();
 						for (int i = 0; i < langs.length; i++) {
 							if (i+1 == langs.length) {
-								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
 							} else {
-								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
 								entries += "<hr class=\"menusep\">\n";
 							}
 						}
@@ -2596,6 +2599,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				+ "		$('#"+columnName+"').val(\"false\");\n"
 				+ "	}\n"
 				+ "});\n");
+	}
+	
+	/**
+	 * Is the given HTML input type a precision input type?
+	 * They are allowed to have a 'maxLength' attribute.
+	 * 
+	 * @param inputType HTML input type
+	 * @return true, if it is a precision HTML input type
+	 */
+	protected boolean isPrecisionInputType(String inputType) {
+		return PRECISION_INPUT_TYPES.contains(inputType.toLowerCase());
 	}
 	
 	/**

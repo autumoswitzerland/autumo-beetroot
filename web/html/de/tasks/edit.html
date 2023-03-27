@@ -4,9 +4,8 @@
 		<li>
 			<form name="post_tasks_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/tasks/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="POST">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</form> <a href="/{$lang}/tasks/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Wollen Sie # {$dbid} wirklich löschen?"
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.preventDefault();">Task
@@ -22,9 +21,8 @@
 		<form method="post" accept-charset="utf-8"
 			action="/{$lang}/tasks/edit?id={$id}">
 			<div style="display: none;">
-				<input type="hidden" name="_method" value="PUT" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="PUT">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</div>
 			<fieldset>
 				<legend>Task editieren</legend>
@@ -32,7 +30,7 @@
 			</fieldset>
 			<a href="/{$lang}/tasks/index" class="button right">Abbrechen</a>
 			<button type="submit">Speichern</button>
-			<br /> <br /> <br />
+			<br><br><br>
 		</form>
 	</div>
 </div>

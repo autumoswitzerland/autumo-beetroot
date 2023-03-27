@@ -5,9 +5,8 @@
 		<li>
 			<form name="post_users_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/users/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="POST">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</form> <a href="/{$lang}/users/delete?id={$id}" class="side-nav-item"
 			data-confirm-message="Are you sure you want to delete # {$dbid}??"
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.preventDefault();">Delete
@@ -23,9 +22,8 @@
 		<form method="post" accept-charset="utf-8"
 			action="/{$lang}/users/edit?id={$id}">
 			<div style="display: none;">
-				<input type="hidden" name="_method" value="PUT" /> <input
-					type="hidden" name="_csrfToken" autocomplete="off"
-					value="{$csrfToken}" />
+				<input type="hidden" name="_method" value="PUT">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
 			</div>
 			<fieldset>
 				<legend>Edit User</legend>
@@ -40,7 +38,7 @@
 				title="Generate a new QR code; you have to re-scan the new code with the Google Authenticator"
 				class="button right twofabtn">New 2FA QR code</a>
 			{$endifrole;}
-			<br /> <br /> <br />
+			<br><br><br>
 		</form>
 	</div>
 </div>
