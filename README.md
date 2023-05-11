@@ -673,7 +673,7 @@ Project Link: [https://github.com/autumoswitzerland/autumo/tree/master/autumo-be
 
 Your donation helps to develop autumo beetRoot further. Thank you!
 
-[![paypal](https://products.autumo.ch/DonateWithPayPal.png)](https://www.paypal.com/donate/?hosted_button_id=WWDWJG7Z4WJZC)
+[![paypal](https://products.autumo.ch/img/DonateWithPayPal.png)](https://www.paypal.com/donate/?hosted_button_id=WWDWJG7Z4WJZC)
 
 <br>
 <br>
