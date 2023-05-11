@@ -677,6 +677,6 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 
 <br>
 <br>
-Copyright 2022, autumo Ltd., Switzerland
+Copyright 2023, autumo Ltd., Switzerland
 
 
