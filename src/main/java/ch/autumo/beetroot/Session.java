@@ -428,6 +428,54 @@ public class Session implements Serializable {
 		
 		data.put("_csrfToken", token);
 	}
+
+	/**
+	 * Get map value.
+	 * @param mapKey map key
+	 * @param key key
+	 * @return value
+	 */
+	@SuppressWarnings("unchecked")
+	public Serializable getMapValue(String mapKey, String key) {
+		
+		final Serializable obj = data.get("map."+mapKey);
+		if (obj instanceof ConcurrentHashMap && obj != null) {
+			final ConcurrentHashMap<String, Serializable> map = (ConcurrentHashMap<String, Serializable>) obj;
+			return map.get(key);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Set a key/value pair to a map.
+	 * This will internally create the map first if non-existent.
+	 * @param mapKey map key
+	 * @param key key
+	 * @param value add a value to the map and key
+	 */
+	@SuppressWarnings("unchecked")
+	public void setMapValue(String mapKey, String key, String value){
+		
+		ConcurrentHashMap<String, Serializable> map = null;
+		
+		final Serializable obj = data.get("map."+mapKey);
+		if (obj instanceof ConcurrentHashMap) {
+			map = (ConcurrentHashMap<String, Serializable>) obj;
+		} else if (obj == null) {
+			map = new ConcurrentHashMap<String, Serializable>();
+			data.put("map."+mapKey, map);
+		}
+		map.put(key, value);
+	}
+
+	/**
+	 * Remove a specific map key.
+	 * @param mapKey map key
+	 */
+	public void removeMap(String mapKey){
+		data.remove("map."+mapKey);
+	}	
 	
 	/**
 	 * Get value.

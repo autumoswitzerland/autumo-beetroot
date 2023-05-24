@@ -632,7 +632,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 		return clause;
 	}
-	
+
 	/**
 	 * Get SQL update set clause. Passwords will NOT be updated!
 	 * 
@@ -640,6 +640,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @return SQL update clause
 	 */
 	public String getUpdateSetClause(BeetRootHTTPSession session) throws Exception {
+		return this.getUpdateSetClause(session, null);
+	}
+	
+	/**
+	 * Get SQL update set clause. Passwords will NOT be updated!
+	 * 
+	 * @param session HTTP session
+	 * @param onOffMapName name of on/off value map if any, otherwise null.
+	 * @return SQL update clause
+	 */
+	public String getUpdateSetClause(BeetRootHTTPSession session, String onOffMapName) throws Exception {
 
 		//final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 		final boolean dbAutoMod = BeetRootConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
@@ -680,10 +691,26 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// Informix wants 't' or 'f'
 			if (val.equalsIgnoreCase("true")) {
-				val = "1";
+				if (onOffMapName != null) {
+					final String exists = (String) session.getUserSession().getMapValue(onOffMapName, col[0]);
+					if (exists != null)
+						val = "On";
+					else
+						val = "1";
+				} else {
+					val = "1";
+				}
 			}
 			if (val.equalsIgnoreCase("false")) {
-				val = "0";
+				if (onOffMapName != null) {
+					final String exists = (String) session.getUserSession().getMapValue(onOffMapName, col[0]);
+					if (exists != null)
+						val = "Off";
+					else
+						val = "0";
+				} else {
+					val = "0";
+				}
 			}
 
 			// Only the logged in user must be updated with new session data if data is changed

@@ -48,6 +48,9 @@ import ch.autumo.beetroot.utils.Utils;
  */
 public class DefaultEditHandler extends BaseHandler {
 
+	private static final String ON_OFF_MAP_NAME = "OnOffCols";
+	
+	
 	public DefaultEditHandler(String entity) {
 		super(entity);
 	}
@@ -59,6 +62,9 @@ public class DefaultEditHandler extends BaseHandler {
 	
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
+		
+		// Remove On/Off map from session if still present
+		session.getUserSession().removeMap(ON_OFF_MAP_NAME + "." + super.getEntity());
 		
 		// RETRY case!
 		final Map<String, String> params = session.getParms();
@@ -151,10 +157,10 @@ public class DefaultEditHandler extends BaseHandler {
 			
 			// Now save edited data !
 			stmt = conn.createStatement();
-			
-			String stmtStr = "UPDATE "+getEntity()+" SET "+this.getUpdateSetClause(session)+" WHERE id=" + id;
+			String stmtStr = "UPDATE "+getEntity()+" SET "+this.getUpdateSetClause(session, ON_OFF_MAP_NAME + "." + super.getEntity())+" WHERE id=" + id;
+			session.getUserSession().removeMap(ON_OFF_MAP_NAME + "." + super.getEntity()); // clear map here
 			stmt.executeUpdate(stmtStr);
-		
+			
 		} finally {
 			if (stmt != null)
 				stmt.close();
@@ -240,14 +246,16 @@ public class DefaultEditHandler extends BaseHandler {
 		}
 		*/
 		
-		if (isCheck)
-			result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
-		else
-			result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
 		
-		if (isCheck) {
+		// On/Off switches
+		if (val.equalsIgnoreCase("Off") || val.equalsIgnoreCase("On")) {
 			
-			if (val.equals("true") || val.equals("1")) {
+			// Add On/Off column to map
+			session.getUserSession().setMapValue(ON_OFF_MAP_NAME + "." + super.getEntity(), columnName, val);
+			
+			result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
+
+			if (val.equalsIgnoreCase("On")) {
 				result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"true\" checked>\n";
 				result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"true\">";
 			}
@@ -258,58 +266,80 @@ public class DefaultEditHandler extends BaseHandler {
 			
 			// Must !
 			super.addCheckBox(session, columnName);
-		} 
-		
-		if (!isCheck) {
-		
-			//final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
-			/*
-			if (jsPwValidator && columnName.equals("password")) {
-				
-				result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\" data-val=\""+val+"\"></div>";
-				
-			} else */
 			
-			if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+		} else {
+		
+			if (isCheck)
+				result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
+			else
+				result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
+			
+			if (isCheck) {
 				
-				final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
-				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
-				for (int i = 0; i < roles.length; i++) {
-					if (val.equals(roles[i]))
-						result += "    <option value=\""+roles[i]+"\" selected>"+roles[i]+"</option>\n";
-					else
-						result += "    <option value=\""+roles[i]+"\">"+roles[i]+"</option>\n";
+				if (val.equals("true") || val.equals("1")) {
+					result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"true\" checked>\n";
+					result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"true\">";
 				}
-				result += "</select>";
-				
-			} else if (this.isSelect(columnName)) {
-				
-				final String entries[] = this.getSelectValues(columnName);
-				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
-				for (int i = 0; i < entries.length; i++) {
-					if (val.equals(entries[i]))
-						result += "    <option value=\""+entries[i]+"\" selected>"+entries[i]+"</option>\n";
-					else
-						result += "    <option value=\""+entries[i]+"\">"+entries[i]+"</option>\n";
+				else {
+					result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"false\">\n";
+					result += "<input type=\"hidden\" name=\""+columnName+"\" id=\""+columnName+"\" value=\"false\">";
 				}
-				result += "</select>";				
 				
-			} else {
+				// Must !
+				super.addCheckBox(session, columnName);
+			} 
+			
+			if (!isCheck) {
+			
+				//final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+				/*
+				if (jsPwValidator && columnName.equals("password")) {
+					
+					result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\" data-val=\""+val+"\"></div>";
+					
+				} else */
 				
-				if (nullable == ResultSetMetaData.columnNoNulls) {
-					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";
-					result += "    data-validity-message=\"This field cannot be left empty\" oninvalid=\"this.setCustomValidity(''); if (!this.value) this.setCustomValidity(this.dataset.validityMessage)\"\n";
-					result += "    oninput=\"this.setCustomValidity('')\"\n";
-					if (super.isPrecisionInputType(inputType))
-						result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
-					else
-						result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
+				if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+					
+					final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
+					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
+					for (int i = 0; i < roles.length; i++) {
+						if (val.equals(roles[i]))
+							result += "    <option value=\""+roles[i]+"\" selected>"+roles[i]+"</option>\n";
+						else
+							result += "    <option value=\""+roles[i]+"\">"+roles[i]+"</option>\n";
+					}
+					result += "</select>";
+					
+				} else if (this.isSelect(columnName)) {
+					
+					final String entries[] = this.getSelectValues(columnName);
+					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
+					for (int i = 0; i < entries.length; i++) {
+						if (val.equals(entries[i]))
+							result += "    <option value=\""+entries[i]+"\" selected>"+entries[i]+"</option>\n";
+						else
+							result += "    <option value=\""+entries[i]+"\">"+entries[i]+"</option>\n";
+					}
+					result += "</select>";				
+					
 				} else {
-					result += "<input type=\""+inputType+"\" name=\""+columnName+"\"\n";
-					if (super.isPrecisionInputType(inputType))
-						result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
-					else
-						result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
+					
+					if (nullable == ResultSetMetaData.columnNoNulls) {
+						result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";
+						result += "    data-validity-message=\"This field cannot be left empty\" oninvalid=\"this.setCustomValidity(''); if (!this.value) this.setCustomValidity(this.dataset.validityMessage)\"\n";
+						result += "    oninput=\"this.setCustomValidity('')\"\n";
+						if (super.isPrecisionInputType(inputType))
+							result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
+						else
+							result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
+					} else {
+						result += "<input type=\""+inputType+"\" name=\""+columnName+"\"\n";
+						if (super.isPrecisionInputType(inputType))
+							result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
+						else
+							result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
+					}
 				}
 			}
 		}
