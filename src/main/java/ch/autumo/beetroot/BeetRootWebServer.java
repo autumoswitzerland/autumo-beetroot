@@ -669,7 +669,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userSession));
 			
 			userSession.deleteAllParameters();
-			userSession.destroy(session.getCookies());
+			userSession.destroyDelete(session.getCookies());
 			
 			return end;
 		}

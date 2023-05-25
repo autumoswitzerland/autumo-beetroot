@@ -40,6 +40,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.utils.Utils;
 
@@ -49,7 +51,8 @@ import ch.autumo.beetroot.utils.Utils;
  */
 public class SessionManager {
 	
-	//protected final static Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
+	protected final static Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
+	
 	
 	private static SessionManager instance = null;	
 	
@@ -180,6 +183,22 @@ public class SessionManager {
 	public void destroy(String token, CookieHandler cookies) {
 		sessions.remove(token);
 		cookies.delete(webContainerSessionIdName);
+	}
+	
+	/**
+	 * Destroy session and delete in storage file!
+	 * 
+	 * @param token token to destroy
+	 * @param cookies nano cookie handler
+	 */
+	public void destroyDelete(String token, CookieHandler cookies) {
+		this.destroy(token, cookies);
+		// session is remove from memory, write them out
+		try {
+			this.save();
+		} catch (Exception e) {
+			LOG.warn("Couldn't save sessions after deleting session with token: " + token);
+		}
 	}
 	
 	/**

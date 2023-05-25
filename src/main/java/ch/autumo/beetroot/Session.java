@@ -515,6 +515,15 @@ public class Session implements Serializable {
 	}
 
 	/**
+	 * Destroy session by given cookie handler holding the '__SESSION_UD__'
+	 * and delete stored session.
+	 * @param cookies cookie handler
+	 */
+	public void destroyDelete(CookieHandler cookies) {
+		SessionManager.getInstance().destroyDelete(sessionID, cookies);
+	}
+	
+	/**
 	 * Set internal generated 2FA code.
 	 * 
 	 * @param genCode generated 2FA code
