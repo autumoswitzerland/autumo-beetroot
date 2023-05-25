@@ -106,6 +106,21 @@ public class Constants {
 	public static final String YES = "yes";
 
 	/**
+	 * No!
+	 */
+	public static final String NO = "no";
+	
+	/**
+	 * On Switch.
+	 */
+	public static final String ON = "On";
+
+	/**
+	 * Off Switch.
+	 */
+	public static final String OFF = "Off";
+	
+	/**
 	 * No show identifier for not showing certain columns and values defined in 'columns.cfg'.
 	 */
 	public static final String GUI_COL_NO_SHOW = "NO_SHOW";

@@ -694,7 +694,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (onOffMapName != null) {
 					final String exists = (String) session.getUserSession().getMapValue(onOffMapName, col[0]);
 					if (exists != null)
-						val = "On";
+						val = Constants.ON;
 					else
 						val = "1";
 				} else {
@@ -705,7 +705,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (onOffMapName != null) {
 					final String exists = (String) session.getUserSession().getMapValue(onOffMapName, col[0]);
 					if (exists != null)
-						val = "Off";
+						val = Constants.OFF;
 					else
 						val = "0";
 				} else {

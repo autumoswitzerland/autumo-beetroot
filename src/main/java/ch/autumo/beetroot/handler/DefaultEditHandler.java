@@ -248,7 +248,7 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		
 		// On/Off switches
-		if (val.equalsIgnoreCase("Off") || val.equalsIgnoreCase("On")) {
+		if (val.equalsIgnoreCase(Constants.ON) || val.equalsIgnoreCase(Constants.OFF)) {
 			
 			// Add On/Off column to map
 			session.getUserSession().setMapValue(ON_OFF_MAP_NAME + "." + super.getEntity(), columnName, val);
