@@ -64,8 +64,8 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 			case "minute"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			case "hour"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			case "dayofmonth"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "monthofYear"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "dayofWeek"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "monthofyear"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "dayofweek"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			
 			case "active"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
 			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"greenStatus\"></td>" : "<td class=\"redStatus\"></td>";
