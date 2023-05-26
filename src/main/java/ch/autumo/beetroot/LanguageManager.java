@@ -89,8 +89,7 @@ public class LanguageManager {
         		URL urls[] = null;
         		try {
         			urls = new URL[]{ uri.toURL()};
-        		}
-        		catch (MalformedURLException e) {
+        		} catch (MalformedURLException e) {
         			throw new RuntimeException("Cannot get resource bundles within servlet context extra loader!", e);
 				}
         		loader = new URLClassLoader(urls);
@@ -100,7 +99,6 @@ public class LanguageManager {
                 	defaultTrans = ResourceBundle.getBundle("/web/lang/lang", new Locale("default"), Thread.currentThread().getContextClassLoader());
         		
         	} else {
-        		
             	defaultTrans = ResourceBundle.getBundle("web/lang/lang", new Locale("default"));
         	}
         	
@@ -126,12 +124,9 @@ public class LanguageManager {
                 	if (bundle == null)
             			bundle = ResourceBundle.getBundle("/web/lang/lang", locale, Thread.currentThread().getContextClassLoader());
         		}
-            	
             	bundles.put(langs[i], bundle);
 			}
-
         }
- 
         return instance;
     }
 
@@ -153,41 +148,7 @@ public class LanguageManager {
 	public String translate(String key, Session userSession, Object... arguments) {
 		
 		final String lang = userSession.getUserLang();
-		ResourceBundle bundle = bundles.get(lang);
-		
-		String text = null;
-		try {
-			
-			text = bundle.getString(key);
-			
-		} catch (Exception e) {
-			
-	    	LOG.info("No translation for key '"+key+"' found! trying default language '"+DEFAULT_LANG+"'.");
-
-	    	bundle = bundles.get(DEFAULT_LANG);
-			
-	    	try {
-	    		
-				text = bundle.getString(key);
-				
-			} catch (Exception e2) {
-				
-		    	LOG.info("No translation for key '"+key+"' for default language found! trying default translations 'lang_default.properties'.");
-		    	
-		    	try {
-		    		
-					text = defaultTrans.getString(key);
-					
-				} catch (Exception e3) {
-					
-			    	LOG.warn("No translation found at all for key '"+key+"'! *Sniff*");
-					return "[NO TRANSLATION FOUND]";
-					
-				}
-			}
-		}
-		
-		return MessageFormat.format(text, arguments);
+		return this.translate(key, lang, arguments);
 	}
 
 	/**
@@ -205,8 +166,25 @@ public class LanguageManager {
 	public String translate(String key, String lang, Object... arguments) {
 		
 		ResourceBundle bundle = bundles.get(lang);
-		String text = bundle.getString(key);
+		String text = null;
 		
+		try {
+			text = bundle.getString(key);
+		} catch (Exception e) {
+	    	LOG.info("No translation for key '"+key+"' found! trying default language '"+DEFAULT_LANG+"'.");
+	    	bundle = bundles.get(DEFAULT_LANG);
+	    	try {
+				text = bundle.getString(key);
+			} catch (Exception e2) {
+		    	LOG.info("No translation for key '"+key+"' for default language found! trying default translations 'lang_default.properties'.");
+		    	try {
+					text = defaultTrans.getString(key);
+				} catch (Exception e3) {
+			    	LOG.warn("No translation found at all for key '"+key+"'! *Sniff*");
+					return "[NO TRANSLATION FOUND]";
+				}
+			}
+		}
 		return MessageFormat.format(text, arguments);
 	}
 	
@@ -289,7 +267,6 @@ public class LanguageManager {
 			else
 				res = configResource.replace(":lang/", "");
 		}		
-		
 		return res;
 	}
 	
@@ -308,7 +285,6 @@ public class LanguageManager {
 			
 			res = configResource.replace(":lang", lang);
 		}		
-		
 		return res;
 	}	
 	
@@ -327,7 +303,6 @@ public class LanguageManager {
 			
 			res = configResource.replace(":lang/", "");
 		}		
-		
 		return res;
 	}	
 	
@@ -349,12 +324,9 @@ public class LanguageManager {
 			Object ul = userSession.getUserLang();
 			
 			if (ul == null) {
-				
 				lang = defaultLang;
 				LOG.debug("No user language found in session, using '"+defaultLang+"'!");
-				
 			} else {
-				
 				lang = userSession.getUserLang();
 			}
 			
@@ -362,9 +334,7 @@ public class LanguageManager {
 				res = configResource.replace(":lang", lang);
 			else
 				res = configResource.replace(":lang/", "");
-			
 		}
-		
 		return res;
 	}
 
@@ -387,18 +357,12 @@ public class LanguageManager {
 		final File f = new File(possibleBlockResource);
 		
 		if (!f.exists()) {
-			
 			if (configResource.contains(":lang/")) {
-				
 				possibleBlockResource = configResource.replace(":lang/", "");	
-				
 			} else {
-				
 				possibleBlockResource = configResource;
-				
 			}
 		}
-	
 		return possibleBlockResource;
 	}
 
@@ -431,11 +395,9 @@ public class LanguageManager {
 		
 		String lang = (String) userSession.getUserLang();
 		if (lang == null || lang.length() == 0) {
-			
 			//from db
 			lang = this.getLanguageFromDb(userSession);
 		}
-		
 		return lang;
 	}
 
@@ -448,18 +410,13 @@ public class LanguageManager {
 	public String getLanguageFromDb(Session userSession) {
 		
 		String lang = null;
-			
 		//from db
 		Integer uid = (Integer) userSession.get("userid");
 		
 		if (uid != null) {
-			
 			try {
-				
 				lang = BeetRootDatabaseManager.getInstance().getLanguage(uid.intValue());
-				
 			} catch (Exception e) {
-				
 				LOG.warn("Cannot get language from user with id '"+uid.toString()+"'! Using default language.");
 			}
 		}
