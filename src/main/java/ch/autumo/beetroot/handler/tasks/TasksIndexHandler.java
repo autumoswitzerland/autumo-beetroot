@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
 import ch.autumo.beetroot.utils.Utils;
@@ -67,7 +68,10 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 			case "monthofyear"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			case "dayofweek"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
 			
-			case "active"		: return set.getBoolean(columnName) ? "<td>Yes</td>" : "<td>No</td>";
+			case "active"		: return set.getBoolean(columnName) ? 
+									"<td>" + LanguageManager.getInstance().translate("base.switch.yes", session.getUserSession()) + "</td>" : 
+									"<td>" + LanguageManager.getInstance().translate("base.switch.no", session.getUserSession()) + "</td>";
+			
 			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"greenStatus\"></td>" : "<td class=\"redStatus\"></td>";
 			case "lastexecuted"	: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			case "modified"		: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
