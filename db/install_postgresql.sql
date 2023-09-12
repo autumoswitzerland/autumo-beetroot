@@ -109,6 +109,8 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 -- basic settings
 INSERT INTO properties (id, name, value) values
 (nextval('properties_seq'),'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
+INSERT INTO properties (id, name, value) values
+(nextval('properties_seq'),'security.2fa.code.email', 'No');
 -- NOTE: some mail settings in the 'beetroot.cfg' can be overwritten here:
 -- INSERT INTO properties (id, name, value) values 
 -- (nextval('properties_seq'),'mail.host', 'localhost');

@@ -201,7 +201,7 @@ All batch files and shell scripts are located in the `bin` directory.
 
 	- Use `beetRoot.sh stop` / `beetRoot.bat stop` to properly stop the stand-alone server.
 	
-	- **NOTE**: We don't distribute the Java Servlet API. If you run beetRoot as a stand-alone server, you have to download this API yourself e.g. through maven-dependencies or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar.
+	- **NOTE**: We don't distribute the Java Servlet API. If you run beetRoot as a stand-alone server, you have to download this API yourself e.g. through maven-dependencies or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar. The same applies to jakarta's mail (jakarta.mail-x.y.z.jar) and activation (jakarta.activation-x.y.z.jar) implementation for the mailing component. If you want to uses Oracle's mail implementation (javax.mail-x.y.z.jar), you have to get that library by your own too. Always place additional libraries in the `lib/` folder.  
 
 2. Servlet-container:
 
@@ -535,7 +535,7 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). By default, Jakrata is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration.
+Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). By default, Jakarta is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration.
 
 Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwitten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
 

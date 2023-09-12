@@ -5,7 +5,7 @@
 -- FILE:        db/install_mysql.sql
 -----------------------------------------------------------------------------
 -- WHEN         WHO                             DESCRIPTION
--- 01-Oct-2022  Michael Gasche                  -
+-- 12-Sep-2023  Michael Gasche                  -
 -----------------------------------------------------------------------------
 
 
@@ -101,6 +101,8 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 -- basic settings
 INSERT INTO properties (id, name, value) values
 (1,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
+INSERT INTO properties (id, name, value) values
+(2,'security.2fa.code.email', 'No');
 -- NOTE: some mail settings in the 'beetroot.cfg' can be overwritten here:
 -- INSERT INTO properties (id, name, value) values 
 -- (2,'mail.host', 'localhost');

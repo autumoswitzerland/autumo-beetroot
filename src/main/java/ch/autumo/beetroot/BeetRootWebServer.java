@@ -68,6 +68,7 @@ import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.users.OtpHandler;
+import ch.autumo.beetroot.mailing.MailerFactory;
 import ch.autumo.beetroot.routing.Route;
 import ch.autumo.beetroot.routing.Router;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
@@ -822,6 +823,39 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			        		userSession.setInternalTOTPCode(genCode);
 					    	userSession.setTwoFaLogin(); 
 					    	
+					    	// Email 2FA code?
+					    	String codeEmailOn = null;
+							try {
+								codeEmailOn = BeetRootDatabaseManager.getInstance().getProperty("security.2fa.code.email");
+							} catch (Exception e) {
+								final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
+								LOG.error(err, e);
+								String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
+								String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
+								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+							}
+							
+							if (codeEmailOn != null && codeEmailOn.equalsIgnoreCase(Constants.ON)) {
+								
+								final Map<String, String> variables = new HashMap<String, String>();
+								variables.put("title", LanguageManager.getInstance().translate("base.mail.code.title", userSession));
+								variables.put("subtitle", LanguageManager.getInstance().translate("base.mail.code.subtitle", userSession));
+								variables.put("code", genCode);
+								variables.put("message", LanguageManager.getInstance().translate("base.mail.code.msg", userSession));
+								
+								try {
+									// Mail it!
+									MailerFactory.getInstance().mail(new String[] {dbEmail}, LanguageManager.getInstance().translate("base.mail.code.title", userSession), variables, "code", session);	
+						        } catch (Exception me) {
+									final String err = "Server Internal Error - Mail Exception: " + me.getMessage();
+									LOG.error(err, me);
+									String t = LanguageManager.getInstance().translate("base.err.srv.mail.title", userSession);
+									String m = LanguageManager.getInstance().translate("base.err.srv.mail.msg", userSession, me.getMessage());
+									return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+						        }
+							}
+
+							// Go to OTP handler
 							return serverResponse(session, OtpHandler.class, "2FA Code");
 					    }
             			
