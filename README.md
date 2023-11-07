@@ -653,7 +653,7 @@ Distributed under the BSD 3-Clause-License. See `LICENSE.txt` for more informati
 
 autumo Switzerland - [@autumo](https://twitter.com/autumo) - autumo.switzerland@gmail.com
 
-Project Link: [https://github.com/autumoswitzerland/autumo/tree/master/autumo-beetroot](https://github.com/autumoswitzerland/autumo/tree/master/autumo-beetroot)
+Project Link: [https://github.com/autumoswitzerland/autumo-beetroot](https://github.com/autumoswitzerland/autumo-beetroot)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
