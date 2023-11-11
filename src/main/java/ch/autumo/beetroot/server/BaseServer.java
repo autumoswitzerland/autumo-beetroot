@@ -356,18 +356,18 @@ public abstract class BaseServer {
 	 * @param logCfgFile logging config file
 	 */
 	protected void initializeLogging(String logCfgFile) {
+		String path = rootPath + "cfg/logging.xml";
+		if (logCfgFile != null && logCfgFile.length() != 0)
+			path = rootPath + logCfgFile;
 		try {
-			if (logCfgFile != null && logCfgFile.length() != 0)
-				LoggingFactory.getInstance().initialize(rootPath + logCfgFile, "");
-			else
-				LoggingFactory.getInstance().initialize(rootPath + "cfg/logging.xml");
+			LoggingFactory.getInstance().initialize(path, "BeetRootConfig");
 		} catch (Exception e) {
 			System.err.println(ansiErrServerName + " Logging configuration initialization failed!");
 			e.printStackTrace();
 			Utils.fatalExit();
 		}
 	}
-
+	
 	/**
 	 * Get argument help text.
 	 * 
