@@ -630,6 +630,7 @@ If you configure beetRoot to run with the HTTPS protocol (configuration paramete
 <!-- ROADMAP -->
 ## Roadmap | Backlog
 
+- Soon: Generate One-to-Many relations for all MVC layers based on DB schema
 - [Add SQLLite DB Connectivity](https://www.sqlite.org)
 - [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 
