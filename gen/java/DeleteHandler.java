@@ -29,9 +29,7 @@ public class ##Entitynameplural##DeleteHandler extends DefaultDeleteHandler {
 		// if you need the bean before deleting the database object
 		##Entityname## ##entityname## = (##Entityname##) Utils.selectRecord(##Entityname##.class, id);
 
-		super.deleteData(session, id); // delete it in the database
-		
-		return null; // ok
+		return super.deleteData(session, id); // delete it in the database
 	}
 	
 }

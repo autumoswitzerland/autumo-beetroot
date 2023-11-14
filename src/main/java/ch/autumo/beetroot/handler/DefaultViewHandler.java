@@ -1,42 +1,30 @@
 /**
- * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
- * All rights reserved.
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  */
 package ch.autumo.beetroot.handler;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Map;
 
+import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.utils.Utils;
 
@@ -44,6 +32,9 @@ import ch.autumo.beetroot.utils.Utils;
  * Default handler for 'web/html/<entity>/view.html' templates.
  */
 public class DefaultViewHandler extends BaseHandler {
+	
+	private Map<String, Class<?>> refs = null;
+	private String displayField = null;
 	
 	public DefaultViewHandler(String entity) {
 		super(entity);
@@ -54,6 +45,9 @@ public class DefaultViewHandler extends BaseHandler {
 		
 		Connection conn = null;
 		Statement stmt = null;
+		
+		// Foreign relations?
+		refs = Utils.getForeignReferences(super.getEmptyBean());
 		
 		try {
 		
@@ -66,6 +60,8 @@ public class DefaultViewHandler extends BaseHandler {
 			set.next(); // one record !
 			
 			final Entity entity = Utils.createBean(getBeanClass(), set);
+			displayField = Utils.getDisplayField(entity);
+			
 			this.prepare(session, entity);
 			
 			LOOP: for (int i = 1; i <= columns().size(); i++) {
@@ -77,7 +73,31 @@ public class DefaultViewHandler extends BaseHandler {
 				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 					continue LOOP;
 				
-				htmlData += "<tr><th>"+col[1]+"</th>"+extractSingleTableData(session, set, col[0], dbIdx, entity)+"</tr>\n";		
+				String val = null;
+				final Object o = set.getObject(dbIdx);
+				if (o == null || o.toString().equals("null"))
+					val = "";
+				else
+					val = o.toString();
+				
+				if (this.displayField != null && col[0].equals(this.displayField)) {
+					super.registerDisplayField(val);
+				}
+				
+				// If we have a reference table
+				Class<?> entityClass = null;
+				if (refs != null)
+					entityClass = refs.get(col[0]);
+				
+				// it's a foreign key
+				if (entityClass != null) {
+					final Map.Entry<Integer, String> e = Utils.getTableValue(entityClass, entity, Integer.valueOf(val).intValue());
+					val = e.getValue();
+					final String guiVal = Utils.adjustRefGuiName(col[1]);
+					htmlData += "<tr><th>"+guiVal+"</th><td>" + val + "</td></tr>\n";		
+				} else {
+					htmlData += "<tr><th>"+col[1]+"</th>" + extractSingleTableData(session, set, col[0], dbIdx, entity) + "</tr>\n";		
+				}
 			}		
 		} finally {
 			if (stmt != null)
@@ -115,10 +135,10 @@ public class DefaultViewHandler extends BaseHandler {
 		
 		if (transientFields.contains(columnName))
 			return "<td></td>"; // only a specific user implementation knows what to do with transient fields
-		
+
 		final Object o = set.getObject(idx);
-		
 		String val = null;
+		
 		if (o == null || o.toString().equals("null"))
 			val = "";
 		else

@@ -19,7 +19,7 @@
 
 
 # Vars
-VERSION=1.3.5
+VERSION=2.0.0
 
 
 
@@ -164,7 +164,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../cfg/web.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/context.xml autumo-beetRoot-web-$VERSION/META-INF/context.xml
 
-	cp ../LICENSE.txt autumo-beetRoot-web-$VERSION/META-INF/etc/
+	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/META-INF/etc/
 	cp ../etc/licenses/*.* autumo-beetRoot-web-$VERSION/META-INF/etc/licenses/
 	
 	
@@ -278,11 +278,11 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 # --------- Copy infos
 
 	cp ../README.md autumo-beetRoot-$VERSION/
-	cp ../LICENSE.txt autumo-beetRoot-$VERSION/
+	cp ../LICENSE.md autumo-beetRoot-$VERSION/
 	cp ../THIRDPARTYLICENSES.html autumo-beetRoot-$VERSION/
 
 	cp ../README.md autumo-beetRoot-web-$VERSION/
-	cp ../LICENSE.txt autumo-beetRoot-web-$VERSION/
+	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/
 	cp ../THIRDPARTYLICENSES.html autumo-beetRoot-web-$VERSION/
 
 

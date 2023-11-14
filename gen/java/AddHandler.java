@@ -33,6 +33,8 @@ public class ##Entitynameplural##AddHandler extends DefaultAddHandler {
 		
 		// NOTE: Provide default values for fields that are NOT
 		// nullable and that aren't present in the add GUI!
+		// If these fields are present in the GUI, you can remove
+		// them or simply return null here!
 ##mandfields##
 		return fields;
 	}

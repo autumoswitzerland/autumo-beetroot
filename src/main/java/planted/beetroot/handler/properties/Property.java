@@ -61,7 +61,5 @@ public class Property implements Entity {
     public void setValue(String value) {
         this.value = value;
     }
-
-	
 	
 }

@@ -1,32 +1,19 @@
 /**
- * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
- * All rights reserved.
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  */
 package ch.autumo.beetroot.handler;
 
@@ -50,6 +37,8 @@ public class DefaultEditHandler extends BaseHandler {
 
 	private static final String ON_OFF_MAP_NAME = "OnOffCols";
 	
+	private Map<String, Class<?>> refs = null;
+	
 	
 	public DefaultEditHandler(String entity) {
 		super(entity);
@@ -69,6 +58,9 @@ public class DefaultEditHandler extends BaseHandler {
 		// RETRY case!
 		final Map<String, String> params = session.getParms();
 		final String _method = params.get("_method");
+		
+		// Foreign relations?
+		refs = Utils.getForeignReferences(super.getEmptyBean());
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -147,7 +139,7 @@ public class DefaultEditHandler extends BaseHandler {
 			status.setId(id);
 			return status;
 		}
-
+		
 		Connection conn = null;
 		Statement stmt = null;
 		
@@ -225,10 +217,27 @@ public class DefaultEditHandler extends BaseHandler {
 		String result = "";
 		boolean isCheck = false;
 		final ResultSetMetaData rsmd = set.getMetaData();
-		final String inputType = Utils.getHtmlInputType(rsmd, idx, columnName);
-		final String divType = Utils.getHtmlDivType(rsmd, idx, columnName);
-		if (inputType == "checkbox")
-			isCheck = true;
+		
+		String inputType = null;
+		String divType = null;
+		
+		// If we have a reference table
+		 Class<?> entityClass = null;
+		if (refs != null)
+			entityClass = refs.get(columnName);
+		
+		if (entityClass != null) {
+			// it is a foreign key!
+			inputType = "select";
+			divType = "select";
+		} else {
+			// standard columns
+			inputType = Utils.getHtmlInputType(rsmd, idx, columnName);
+			divType = Utils.getHtmlDivType(rsmd, idx, columnName);
+			if (inputType == "checkbox")
+				isCheck = true;
+		}
+		
 		
 		int nullable = rsmd.isNullable(idx);
 		int precision = rsmd.getPrecision(idx);
@@ -247,7 +256,7 @@ public class DefaultEditHandler extends BaseHandler {
 		*/
 		
 		
-		// On/Off switches
+		// A. On/Off switches
 		if (val.equalsIgnoreCase(Constants.ON) || val.equalsIgnoreCase(Constants.OFF)) {
 			
 			// Add On/Off column to map
@@ -266,15 +275,23 @@ public class DefaultEditHandler extends BaseHandler {
 			
 			// Must !
 			super.addCheckBox(session, columnName);
-			
+
+		// B. All others
 		} else {
 		
+			// 1. Label
 			if (isCheck)
 				result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
-			else
+			else {
+				if (entityClass != null)
+					guiColName = Utils.adjustRefGuiName(guiColName);
 				result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
+			}
 			
+			// 2. Input
 			if (isCheck) {
+
+				// Check-Boxes
 				
 				if (val.equals("true") || val.equals("1")) {
 					result += "<input type=\"checkbox\" name=\"cb_"+columnName+"\" id=\"cb_"+columnName+"\" value=\"true\" checked>\n";
@@ -287,10 +304,11 @@ public class DefaultEditHandler extends BaseHandler {
 				
 				// Must !
 				super.addCheckBox(session, columnName);
-			} 
+				
+			} else {
 			
-			if (!isCheck) {
-			
+				// All other
+				
 				//final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 				/*
 				if (jsPwValidator && columnName.equals("password")) {
@@ -298,7 +316,8 @@ public class DefaultEditHandler extends BaseHandler {
 					result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\" data-val=\""+val+"\"></div>";
 					
 				} else */
-				
+
+				// a. Special case Users
 				if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 					
 					final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
@@ -311,6 +330,7 @@ public class DefaultEditHandler extends BaseHandler {
 					}
 					result += "</select>";
 					
+				// b. Custom select boxes
 				} else if (this.isSelect(columnName)) {
 					
 					final String entries[] = this.getSelectValues(columnName);
@@ -323,7 +343,25 @@ public class DefaultEditHandler extends BaseHandler {
 					}
 					result += "</select>";				
 					
+				// c. Foreign key boxes
+				} else if (entityClass != null) {
+					
+					final Map<Integer, String> entries = Utils.getTableValues(entityClass, super.getEmptyBean());
+					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
+					for (Integer id : entries.keySet()) {
+						final int i = id.intValue();
+						final String displayValue = entries.get(id);
+						if (id.equals(Integer.valueOf(val)))
+							result += "    <option value=\""+i+"\" selected>"+displayValue+"</option>\n";
+						else
+							result += "    <option value=\""+i+"\">"+displayValue+"</option>\n";
+				    }					
+					result += "</select>";				
+					
+				// d. Other standard input types 
 				} else {
+					
+					//val = Utils.escapeHtml(val);
 					
 					if (nullable == ResultSetMetaData.columnNoNulls) {
 						result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";
@@ -394,10 +432,11 @@ public class DefaultEditHandler extends BaseHandler {
 
 	/**
 	 * Get bean entity class that has been generated trough PLANT, 
-	 * self-written or null (then null in extract calls too).
+	 * overwritten or null.
 	 * 
 	 * @return bean entity class
 	 */
+	@Override
 	public Class<?> getBeanClass() {
 		return null;
 	}

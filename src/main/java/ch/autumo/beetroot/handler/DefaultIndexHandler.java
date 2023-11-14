@@ -1,32 +1,19 @@
 /**
- * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
- * All rights reserved.
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  */
 package ch.autumo.beetroot.handler;
 
@@ -34,6 +21,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
@@ -55,6 +43,8 @@ import ch.autumo.beetroot.utils.Utils;
 public class DefaultIndexHandler extends BaseHandler {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(DefaultIndexHandler.class.getName());
+	
+	private Map<String, Class<?>> refs = null;
 	
 	private int maxRecPerPage = 20;
 	
@@ -98,6 +88,35 @@ public class DefaultIndexHandler extends BaseHandler {
 		super.addSuccessMessage(msg);
 		super.redirectedMarker(true);
 	}
+
+	/**
+	 * New default index handler.
+	 * 
+	 * @param msg message
+	 * @param entity entity
+	 * @param messageType messagetype
+	 */
+	public DefaultIndexHandler(String entity, String msg, int messageType) {
+		
+		this(entity);
+		
+		switch (messageType) {
+			case MSG_TYPE_INFO:
+				super.addSuccessMessage(msg);
+				break;
+			case MSG_TYPE_WARN:
+				super.addWarningMessage(msg);
+				break;
+			case MSG_TYPE_ERR:
+				super.addErrorMessage(msg);
+				break;
+			default:
+				super.addWarningMessage(msg);
+				break;
+		}
+
+		super.redirectedMarker(true);
+	}
 	
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
@@ -126,6 +145,10 @@ public class DefaultIndexHandler extends BaseHandler {
 				page = 1;
 			}
 		}
+		
+		// Foreign relations?
+		refs = Utils.getForeignReferences(super.getEmptyBean());
+
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -211,20 +234,33 @@ public class DefaultIndexHandler extends BaseHandler {
 				htmlData += "<tr>";
 				LOOP: for (int i = 1; i <= columns().size(); i++) {
 					
-					final String cfgLine = columns().get(Integer.valueOf(i));
-					final String params[] = cfgLine.split("=");
+					final String col[] = getColumn(i);
 					int dbIdx = i + 1; // because of additional id!
-
-					final String columnName = params[0].trim();
 					
-					String guiColTitle = null;
-					if (params.length > 0)
-						guiColTitle = params[1].trim();
-					
+					final String guiColTitle = col[1];
 					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 						continue LOOP;
 					
-					htmlData += extractSingleTableData(session, set, columnName, dbIdx, entity)+ "\n";
+					String val = null;
+					final Object o = set.getObject(dbIdx);
+					if (o == null || o.toString().equals("null"))
+						val = "";
+					else
+						val = o.toString();
+					
+					// If we have a reference table
+					Class<?> entityClass = null;
+					if (refs != null)
+						entityClass = refs.get(col[0]);
+					
+					// it's a foreign key
+					if (entityClass != null) {
+						final Map.Entry<Integer, String> e = Utils.getTableValue(entityClass, entity, Integer.valueOf(val).intValue());
+						val = e.getValue();
+						htmlData += "<td>" + val + "</td>";		
+					} else {
+						htmlData += extractSingleTableData(session, set, col[0], dbIdx, entity)+ "\n";
+					}
 				}
 				
 				// generate actions
@@ -253,32 +289,37 @@ public class DefaultIndexHandler extends BaseHandler {
 			if (col[1].equals(Constants.GUI_COL_NO_SHOW))
 				continue HEAD;
 			
+			String displayName = col[1];
+			if (refs != null)
+				if(refs.get(col[0]) != null)
+					displayName = Utils.adjustRefGuiName(displayName);
+			
 			if (sortField != null && sortField.length() != 0) {
 				
 				if (sortField.equals(col[0])) {
 					if (sortDir != null && sortDir.length() != 0 && sortDir.equals("asc")) {
 						if (transientFields.contains(col[0]))
-							htmlHead += "<th>"+col[1]+"</th>\n";
+							htmlHead += "<th>"+displayName+"</th>\n";
 						else
-							htmlHead += "<th><a class=\"asc\" href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=desc\">"+col[1]+"</a></th>\n";
+							htmlHead += "<th><a class=\"asc\" href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=desc\">"+displayName+"</a></th>\n";
 					}
 					else if (sortDir != null && sortDir.length() != 0 && sortDir.equals("desc")) {
 						if (transientFields.contains(col[0]))
-							htmlHead += "<th>"+col[1]+"</th>\n";
+							htmlHead += "<th>"+displayName+"</th>\n";
 						else
-							htmlHead += "<th><a class=\"desc\" href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+							htmlHead += "<th><a class=\"desc\" href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+displayName+"</a></th>\n";
 					}
 				} else {
 					if (transientFields.contains(col[0]))
-						htmlHead += "<th>"+col[1]+"</th>\n";
+						htmlHead += "<th>"+displayName+"</th>\n";
 					else
-						htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+						htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+displayName+"</a></th>\n";
 				}
 			} else {
 				if (transientFields.contains(col[0]))
-					htmlHead += "<th>"+col[1]+"</th>\n";
+					htmlHead += "<th>"+displayName+"</th>\n";
 				else
-					htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+col[1]+"</a></th>\n";
+					htmlHead += "<th><a href=\"/"+lang+"/"+getEntity()+"?sort="+col[0]+"&amp;direction=asc\">"+displayName+"</a></th>\n";
 			}
 		}
 		
@@ -411,17 +452,17 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		if (transientFields.contains(columnName))
 			return "<td></td>"; // only a specific user implementation knows what to do with transient fields
-		
+
 		final Object o = set.getObject(idx);
-		
 		String val = null;
+		
 		if (o == null || o.toString().equals("null"))
 			val = "";
 		else
 			val = o.toString();
 		
 		val = Utils.escapeHtml(val);
-		
+
 		return "<td>" + val + "</td>";
 	}
 	

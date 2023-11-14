@@ -20,11 +20,11 @@ public class ##Entitynameplural##IndexHandler extends DefaultIndexHandler {
 	}
 
 	public ##Entitynameplural##IndexHandler(String entity, String msg) {
+		super(entity, msg);
+	}
 
-		super(entity);
-		
-		super.addSuccessMessage(msg);
-		super.redirectedMarker(true);
+	public ##Entitynameplural##IndexHandler(String entity, String msg, int messageType) {
+		super(entity, msg, messageType);
 	}
 	
 	@Override

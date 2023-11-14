@@ -1,32 +1,19 @@
 /**
- * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
- * All rights reserved.
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  */
 package ch.autumo.beetroot.utils;
 
@@ -34,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -118,6 +106,16 @@ public class Utils {
 
 	/** Initialize HASH provider */
 	private static PasswordHashProvider hashProvider = null;
+
+	/**
+	 * Sorting of foreign entities by ID.
+	 */
+	public static int SORT_BY_ID = 0;
+	
+	/**
+	 * Sorting of foreign entities by display value.
+	 */
+	public static int SORT_BY_VALUE = 1;
 	
 	/**
 	 * OS.
@@ -144,6 +142,10 @@ public class Utils {
 	 */
     public static final String WIN_APPDATA_FOLDER = System.getenv("APPDATA" /*"LOCALAPPDATA"*/);
 	
+    /**
+     * Maximum of referenced records to be loaded.
+     */
+    public static int maxRefRecords = 200;
     
     
 	// General
@@ -648,8 +650,189 @@ public class Utils {
 	
 	
 	
-	// DB
+	// DB and related & GUI
 	//------------------------------------------------------------------------------
+
+	/**
+	 * Create proper display name for reference entities by removing 
+	 * possible key prefixes or post-fixes.
+	 * 
+	 * @param displayName display name
+	 * @return proper display name
+	 */
+	public static String adjustRefGuiName(String displayName) {
+		if (displayName.length() > 3) {
+			if (displayName.endsWith(" Id") || displayName.endsWith(" Fk") || displayName.endsWith(" Pk"))
+				return displayName.substring(0, displayName.length() - 3);
+			else if (displayName.startsWith("Id ") || displayName.startsWith("Fk ") || displayName.startsWith("Pk "))
+				return displayName.substring(3, displayName.length());
+			else return displayName;
+		} else {
+			return displayName;
+		}
+	}
+	
+	/**
+	 * Get foreign references map if any or null.
+	 * The map holds pairs of DB foreign keys and referenced primary tabel names.
+	 * 
+	 * @param emptyBean an empty bean to access static references if any
+	 * @return foreign references map
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, Class<?>> getForeignReferences(Entity emptyBean) throws Exception {
+		Map<String, Class<?>> map = null;
+		Method getFR = null;
+		Class<?> clz = emptyBean.getClass();
+		try {
+			getFR = clz.getDeclaredMethod("getForeignReferences");
+		} catch (Exception e) {
+			// No refs, that's fine!
+			return null;
+		}
+		map = (Map<String, Class<?>>) getFR.invoke(emptyBean);
+		return map;
+	}
+	
+	/**
+	 * Get display field name of bean.
+	 * 
+	 * @param emptyBean an empty bean to access static references if any
+	 * @return display field name
+	 * @throws Exception
+	 */
+	public static String getDisplayField(Entity emptyBean) throws Exception {
+		String displayField = null;
+		Method getDV = null;
+		Class<?> clz = emptyBean.getClass();
+		try {
+			getDV = clz.getDeclaredMethod("getDisplayField");
+		} catch (Exception e) {
+			LOG.warn("No display value found in bean of type '"+clz.getName()+", but it is used to be shown as a referende entity' -> using 'id'!", e);
+			return "id";
+		}
+		displayField = (String) getDV.invoke(emptyBean);
+		return displayField;
+	}
+	
+	/**
+	 * Get primary table entries: <id:value>.
+	 * Max. 200 recotds to be returned.
+	 * 
+	 * @param entityClass class
+	 * @param emptyBean empty bean to access value that should be displayed
+	 * @return entries
+	 * @throws Exception
+	 */
+	public static Map<Integer, String> getTableValues(Class<?> entityClass, Entity emptyBean) throws Exception {
+		maxRefRecords = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_REF_REC, 200);
+		return getTableValues(entityClass, emptyBean, maxRefRecords);
+	}
+
+	/**
+	 * Get primary table entries: <id:value>.
+	 * Max. 200 recotds to be returned.
+	 * 
+	 * @param entityClass class
+	 * @param emptyBean empty bean to access value that should be displayed
+	 * @param amount max. amount of records to be loaded
+	 * @return entries
+	 * @throws SQLException
+	 */
+	public static Map<Integer, String> getTableValues(Class<?> entityClass, Entity emptyBean, int amount) throws Exception {
+		return getTableValues(entityClass, emptyBean, amount, SORT_BY_VALUE);
+	}
+	
+	/**
+	 * Get table entries: <id:value>.
+	 * 
+	 * @param entityClass class
+	 * @param emptyBean empty bean to access value that should be displayed
+	 * @param amount max. amount of records to be loaded
+	 * @param sortType sort entries by ID or by values, 
+	 * 			see {@link #SORT_BY_ID} and {@link #SORT_BY_VALUE}
+	 * @return entries
+	 * @throws Exception
+	 */
+	public static Map<Integer, String> getTableValues(Class<?> entityClass, Entity emptyBean, int amount, int sortType) throws Exception {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		
+		final String displayColumn =  getDisplayField(createBean(entityClass));
+		String orderFiled = (sortType == SORT_BY_VALUE) ? displayColumn : "id"; 
+		final String table = Utils.classToTable(entityClass);
+		
+		final Map<Integer, String> map = new HashMap<Integer, String>();
+		try {
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			
+			String stmtStr = null;
+			if (BeetRootDatabaseManager.getInstance().isOracleDb())
+				stmtStr = "SELECT id, " + displayColumn + " FROM " + table + " ORDER BY " + orderFiled + " OFFSET 0 ROWS FETCH NEXT " + amount + " ROWS ONLY";
+			else
+				stmtStr = "SELECT id, " + displayColumn + " FROM " + table + " ORDER BY " + orderFiled + " LIMIT " + amount;
+				
+			set = stmt.executeQuery(stmtStr);
+	
+			while (set.next())
+				map.put(Integer.valueOf(set.getInt(1)), set.getString(2));
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		
+		return map;		
+	}
+	
+	/**
+	 * Get table entry: <id:value>.
+	 * 
+	 * @param table DB table name
+	 * @param emptyBean empty bean to access value that should be displayed
+	 * @param id id
+	 * @return entry
+	 * @throws Exception
+	 */
+	public static Map.Entry<Integer, String> getTableValue(Class<?> entityClass, Entity emptyBean, int id) throws Exception {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+
+		final String displayColumn =  getDisplayField(createBean(entityClass));
+		final String table = Utils.classToTable(entityClass);
+		
+		Map.Entry<Integer, String> entry = null;
+		try {
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			
+			String stmtStr = "SELECT id, " + displayColumn + " FROM " + table + " WHERE id = " + id;
+			set = stmt.executeQuery(stmtStr);
+	
+			// One record!
+			set.next();
+			
+			entry = Map.entry(Integer.valueOf(set.getInt(1)), set.getString(2));
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		
+		return entry;		
+	}
 	
 	/**
 	 * Access result set value and HTML escape it.
@@ -931,6 +1114,35 @@ public class Utils {
 		return table;
 	}
 	
+	/**
+	 * Returns the class name without package or '.class'.extension.
+	 * 
+	 * @param tableName DB table name
+	 * @return class name
+	 */
+	public static String tableToClassName(String tableName) {
+		String cName = tableName.substring(0, 1).toUpperCase() + tableName.substring(1, tableName.length()).toLowerCase();
+		if (cName.endsWith("ies"))
+			cName = cName.substring(0, cName.length() - 3) + "y";
+		else
+			cName = cName.substring(0, cName.length() - 1);
+		
+		return cName;
+	}
+
+	/**
+	 * Create empty bean.
+	 * 
+	 * @param beanClass bean class, must be of type  {@link Entity}.
+	 * @return entity bean or null
+	 * @throws SQLException
+	 */
+	public static Entity createBean(Class<?> beanClass) throws Exception {
+		final Constructor<?> constructor = beanClass.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        final Entity bean = (Entity) constructor.newInstance();
+        return bean;
+	}
 	
 	/**
 	 * Create bean.

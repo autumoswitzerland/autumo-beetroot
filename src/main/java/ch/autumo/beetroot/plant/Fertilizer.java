@@ -1,32 +1,19 @@
 /**
- * Copyright (c) 2022, autumo Ltd. Switzerland, Michael Gasche
- * All rights reserved.
  * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 
- * 3. Neither the name of the copyright holder nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  */
 package ch.autumo.beetroot.plant;
 
@@ -35,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -74,6 +62,8 @@ public class Fertilizer {
 	String upperEntity = null;
 	
 	private Map<String, DBField> databaseFields = new HashMap<String, DBField>();
+	// foreign key mapping
+	private Map<String, String> foreignKeyMap = new HashMap<String, String>(); 
 	
 	final List<String> importList = new ArrayList<String>();
 	
@@ -98,12 +88,24 @@ public class Fertilizer {
 		try {
 			
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			
+			// Collect foreign keys
+			final DatabaseMetaData meta = conn.getMetaData();
+			final ResultSet rsk = meta.getImportedKeys(conn.getCatalog(), null, dbEntity);
+			while (rsk.next()) {
+				String fkColumnName = rsk.getString("FKCOLUMN_NAME");
+				String pkTableName = rsk.getString("PKTABLE_NAME");
+				String clz = "planted.beetroot.handler." + pkTableName + "." + Utils.tableToClassName(pkTableName) + ".class";
+				this.addForeignKeyMapping(fkColumnName, clz);
+			}
+			rsk.close();
+			
+			
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("DESC " + dbEntity + ";");
 			
 			DBField dbField = null;
 			while (rs.next()) {
-				
 				String name = rs.getString(1);
 				dbField = new DBField(
 					name, // Field
@@ -219,11 +221,28 @@ public class Fertilizer {
 			
 			for (int i = 0; i < cruds.length; i++) {
 				
-				for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+				LOOP: for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
 					final String name = iterator.next();
 					//final DBField field = databaseFields.get(name);
-					String upperName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
-					result.append(cruds[i]+"."+name+"="+upperName+"\n");
+
+					// Don't add 'id' columns to 'add' or 'edit', they are auto-generated!
+					if (name.equals("id") && (cruds[i].equals("add") || cruds[i].equals("edit")))
+						continue LOOP;
+					
+					String guiName = "";
+					if (name.contains("_")) {
+						String parts[] = name.split("_");
+						for (int j = 0; j < parts.length; j++) {
+							String s = parts[j];
+							if (j < parts.length - 1)
+								guiName += s.substring(0, 1).toUpperCase() + s.substring(1, s.length()) + " ";
+							else
+								guiName += s.substring(0, 1).toUpperCase() + s.substring(1, s.length());
+						}
+					} else {
+						guiName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
+					}
+					result.append(cruds[i]+"."+name+"="+guiName+"\n");
 				}
 				result.append("\n");
 			}
@@ -235,7 +254,8 @@ public class Fertilizer {
 				if (field.isUnique())
 					result.append(name+",");
 			}
-			result.delete(result.length()-1, result.length());
+			if (result.charAt(result.length()-1) != '=')
+				result.delete(result.length()-1, result.length());
 			result.append("\n");
 			return result.toString();
 		}
@@ -309,7 +329,7 @@ public class Fertilizer {
 							final String name = iterator.next();
 							final DBField field = databaseFields.get(name);
 							if (!field.isNullable())
-								mands += "		fields.put(\""+name+"\", \"<DEFAULT-VALUE>\");\n";
+								mands += "		// fields.put(\""+name+"\", \"<DEFAULT-VALUE>\");\n";
 						}
 						text = text.replace("##mandfields##", mands);
 					}
@@ -368,11 +388,12 @@ public class Fertilizer {
 			
 			String javaType = this.getJavaType(sqlType);
 
-			contents.append("    private " + javaType + " " + dbField.getName() + ";\n");
+			String propertyName = this.propertyName(dbField.getName());
+			
+			contents.append("    private " + javaType + " " + propertyName + ";\n");
 			contents.append("\n");
 			
 			String properyNameMethodPart = this.propertyNameMethodPath(dbField.getName());
-			String propertyName = this.propertyName(dbField.getName());
 			
 			contents.append("    public " + javaType + " get" + properyNameMethodPart + "() {\n");
 			contents.append("        return "+propertyName+";\n");
@@ -384,6 +405,39 @@ public class Fertilizer {
 			contents.append("    }\n");
 			contents.append("\n");
 			
+		}
+
+		// Display field
+		String displayField = "id";
+		final Set<String> dbColNames = this.databaseFields.keySet();
+		if (dbColNames.contains("email"))
+			displayField = "email";
+		else if (dbColNames.contains("name"))
+			displayField = "name";
+		else if (dbColNames.contains("description"))
+			displayField = "description";
+		contents.append("    public String getDisplayField() {\n");
+		contents.append("        return \""+displayField+"\";\n");
+		contents.append("    }");
+		
+
+		// Foreign key map <dbid:dbfield>
+		if (this.hasForeignKeys()) {
+			String fkMap = "        return java.util.Map.ofEntries(\n";
+			Set<String> keys = this.foreignKeyMap.keySet();
+			int i = 1;
+			for (String fkName : keys) {
+				if (i < keys.size())
+					fkMap +=  "                java.util.Map.entry(\"" + fkName + "\", " + this.foreignKeyMap.get(fkName) + "),\n";
+				else
+					fkMap +=  "                java.util.Map.entry(\"" + fkName + "\", " + this.foreignKeyMap.get(fkName) + ")\n";
+			}
+			fkMap +=  "            );\n";
+			contents.append("\n");
+			contents.append("\n");
+			contents.append("    public java.util.Map<String, Class<?>> getForeignReferences() {\n");
+			contents.append(fkMap);
+			contents.append("    }");
 		}
 		
 		return contents.toString();
@@ -461,6 +515,25 @@ public class Fertilizer {
 		}	
 		
 		return javaType;
+	}
+	
+	/**
+	 * Add a foreign key mapping.
+	 * 
+	 * @param foreignKeyName foreign key name
+	 * @param fullClassname full qualified class name of referenced object
+	 */
+	private void addForeignKeyMapping(String foreignKeyName, String fullClassName) {
+		this.foreignKeyMap.put(foreignKeyName, fullClassName);
+	}
+	
+	/**
+	 * Does the entity has foreign keys?
+	 * 
+	 * @return true if processd entity has at least one foreign key
+	 */
+	private boolean hasForeignKeys() {
+		return !this.foreignKeyMap.isEmpty();
 	}
 	
 	public class FertilizerException extends Exception {
