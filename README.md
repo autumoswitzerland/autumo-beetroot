@@ -144,7 +144,7 @@ Enjoy!
 * [JQuery](https://jquery.com)
 * [HikariCP](https://github.com/brettwooldridge/HikariCP)
 * [normalize.css](https://necolas.github.io/normalize.css)
-* ...and some more; see [THIRDPARTYLICENSES.html](https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/THIRDPARTYLICENSES.html)
+* ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -630,6 +630,7 @@ If you configure beetRoot to run with the HTTPS protocol (configuration paramete
 <!-- ROADMAP -->
 ## Roadmap | Backlog
 
+- Soon: Generate One-to-Many relations for all MVC layers based on DB schema
 - [Add SQLLite DB Connectivity](https://www.sqlite.org)
 - [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 
