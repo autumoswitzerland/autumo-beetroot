@@ -4,3 +4,6 @@
 **/.DS_Store
 /.apt_generated_tests/
 /.apt_generated/
+/.classpath
+/.project
+/build.properties
