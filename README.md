@@ -333,7 +333,7 @@ The model configuration `columns.cfg` does the following for every entity:
 	
 	add.html: `add.secretDbField=NO_SHOW`
 
-- Furthermore, you can manually define transient values that are nor read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
+- Furthermore, you can manually define transient values that are not read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
 
 	`transient=status`
 
