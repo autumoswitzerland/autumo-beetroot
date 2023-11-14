@@ -117,6 +117,7 @@ The Web framework is shipped with the following features ready to use:
 - Logging implementations other than log4j2 supported
 - Servlet API 4.0 Java EE 8 (prepared for 5.0 Jakarta EE 8)
 - Full CRUD-Generator **PLANT** for views, models and handlers
+- One-to-many database relationships are fully applied in MVC layers 
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
 - Database connection pooling (HikariCP, with internal and external JNDI data sources)
@@ -454,7 +455,7 @@ It never has been easier using a REST API!
 <!-- ROUTING -->
 ## Routing
 
-The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced for your own app. The define your router's java class in the `web_router` parameter. You simply have to implement the `Router` interface.
+The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced for your own app: Define your router's java class in the `web_router` parameter. You simply have to implement the `Router` interface.
 
 Let's have a look at some routes:
 
