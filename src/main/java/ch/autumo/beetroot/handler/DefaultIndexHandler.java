@@ -253,12 +253,24 @@ public class DefaultIndexHandler extends BaseHandler {
 					if (refs != null)
 						entityClass = refs.get(col[0]);
 					
+					
 					// it's a foreign key
 					if (entityClass != null) {
-						final Map.Entry<Integer, String> e = Utils.getTableValue(entityClass, entity, Integer.valueOf(val).intValue());
+						
+						final int refDbIdx = Integer.valueOf(val).intValue();
+						final Map.Entry<Integer, String> e = Utils.getDisplayValue(entityClass, refDbIdx);
 						val = e.getValue();
-						htmlData += "<td>" + val + "</td>";		
+						
+						final String foreignEntity = Utils.classToTable(entityClass);
+						String foreignModifyID = userSession.getModifyId(refDbIdx, foreignEntity);
+						if (foreignModifyID == null)
+							foreignModifyID = userSession.createIdPair(refDbIdx, foreignEntity);
+
+						final String valLink = "<a href=\"/"+lang+"/"+foreignEntity+"/view?id="+foreignModifyID+"\">" + val + "</a>\n";
+						htmlData += "<td>" + valLink + "</td>";
+						
 					} else {
+						
 						htmlData += extractSingleTableData(session, set, col[0], dbIdx, entity)+ "\n";
 					}
 				}
@@ -292,7 +304,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			String displayName = col[1];
 			if (refs != null)
 				if(refs.get(col[0]) != null)
-					displayName = Utils.adjustRefGuiName(displayName);
+					displayName = Utils.adjustRefDisplayName(displayName);
 			
 			if (sortField != null && sortField.length() != 0) {
 				

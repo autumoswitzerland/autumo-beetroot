@@ -300,7 +300,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
 		else {
 			if (entityClass != null)
-				guiColName = Utils.adjustRefGuiName(guiColName);
+				guiColName = Utils.adjustRefDisplayName(guiColName);
 			result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
 		}
 		
@@ -345,7 +345,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			// c. Foreign key boxes
 			} else if (entityClass != null) {
 				
-				final Map<Integer, String> entries = Utils.getTableValues(entityClass, super.getEmptyBean());
+				final Map<Integer, String> entries = Utils.getDisplayValues(entityClass);
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 				for (Integer id : entries.keySet()) {
 					final int i = id.intValue();

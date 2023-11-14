@@ -39,6 +39,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -660,7 +661,7 @@ public class Utils {
 	 * @param displayName display name
 	 * @return proper display name
 	 */
-	public static String adjustRefGuiName(String displayName) {
+	public static String adjustRefDisplayName(String displayName) {
 		if (displayName.length() > 3) {
 			if (displayName.endsWith(" Id") || displayName.endsWith(" Fk") || displayName.endsWith(" Pk"))
 				return displayName.substring(0, displayName.length() - 3);
@@ -717,45 +718,42 @@ public class Utils {
 	}
 	
 	/**
-	 * Get primary table entries: <id:value>.
-	 * Max. 200 recotds to be returned.
+	 * Get display values: <ID:displayValue>.
+	 * Max. 200 records to be returned.
 	 * 
 	 * @param entityClass class
-	 * @param emptyBean empty bean to access value that should be displayed
 	 * @return entries
 	 * @throws Exception
 	 */
-	public static Map<Integer, String> getTableValues(Class<?> entityClass, Entity emptyBean) throws Exception {
+	public static Map<Integer, String> getDisplayValues(Class<?> entityClass) throws Exception {
 		maxRefRecords = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_REF_REC, 200);
-		return getTableValues(entityClass, emptyBean, maxRefRecords);
+		return getDisplayValues(entityClass, maxRefRecords);
 	}
 
 	/**
-	 * Get primary table entries: <id:value>.
-	 * Max. 200 recotds to be returned.
+	 * Get display values: <ID:displayValue>.
+	 * Max. 200 records to be returned.
 	 * 
 	 * @param entityClass class
-	 * @param emptyBean empty bean to access value that should be displayed
 	 * @param amount max. amount of records to be loaded
 	 * @return entries
 	 * @throws SQLException
 	 */
-	public static Map<Integer, String> getTableValues(Class<?> entityClass, Entity emptyBean, int amount) throws Exception {
-		return getTableValues(entityClass, emptyBean, amount, SORT_BY_VALUE);
+	public static Map<Integer, String> getDisplayValues(Class<?> entityClass, int amount) throws Exception {
+		return getDisplayValues(entityClass, amount, SORT_BY_VALUE);
 	}
 	
 	/**
-	 * Get table entries: <id:value>.
+	 * Get display values: <ID:displayValue>.
 	 * 
 	 * @param entityClass class
-	 * @param emptyBean empty bean to access value that should be displayed
 	 * @param amount max. amount of records to be loaded
 	 * @param sortType sort entries by ID or by values, 
-	 * 			see {@link #SORT_BY_ID} and {@link #SORT_BY_VALUE}
+	 * 			see {@value #SORT_BY_ID} and {@value #SORT_BY_VALUE}
 	 * @return entries
 	 * @throws Exception
 	 */
-	public static Map<Integer, String> getTableValues(Class<?> entityClass, Entity emptyBean, int amount, int sortType) throws Exception {
+	public static Map<Integer, String> getDisplayValues(Class<?> entityClass, int amount, int sortType) throws Exception {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null;
@@ -793,15 +791,14 @@ public class Utils {
 	}
 	
 	/**
-	 * Get table entry: <id:value>.
+	 * Get display value: <ID:displayValue>.
 	 * 
-	 * @param table DB table name
-	 * @param emptyBean empty bean to access value that should be displayed
+	 * @param entityClass class
 	 * @param id id
 	 * @return entry
 	 * @throws Exception
 	 */
-	public static Map.Entry<Integer, String> getTableValue(Class<?> entityClass, Entity emptyBean, int id) throws Exception {
+	public static Map.Entry<Integer, String> getDisplayValue(Class<?> entityClass, int id) throws Exception {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null;
@@ -1060,14 +1057,14 @@ public class Utils {
 	/**
 	 * Select a record of type clz (entity class).
 	 * 
-	 * @param clz entity class
+	 * @param entityClass entity class
 	 * @param id DB record id
 	 * @return entity bean
 	 * @throws SQLException
 	 */
-	public static Entity selectRecord(Class<?> clz, int id) throws SQLException {
+	public static Entity selectRecord(Class<?> entityClass, int id) throws SQLException {
 		
-		final String table = classToTable(clz);
+		final String table = classToTable(entityClass);
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -1083,7 +1080,7 @@ public class Utils {
 			set = stmt.executeQuery(stmtStr);
 	
 			set.next(); // one record !
-			entity = createBean(clz, set);
+			entity = createBean(entityClass, set);
 		
 		} finally {
 			if (set != null)
@@ -1095,6 +1092,81 @@ public class Utils {
 		}
 		
 		return entity;
+	}
+	
+	/**
+	 * Select a records of type entityClass (entity class).
+	 * Max. 200 records to be returned.
+	 * 
+	 * @param entityClass class
+	 * @return entity beans
+	 * @throws Exception
+	 */
+	public static List<Entity> selectRecords(Class<?> entityClass) throws Exception {
+		maxRefRecords = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_REF_REC, 200);
+		return selectRecords(entityClass, maxRefRecords);
+	}
+
+	/**
+	 * Select a records of type entityClass (entity class).
+	 * Max. 200 records to be returned.
+	 * 
+	 * @param entityClass class
+	 * @param amount max. amount of records to be loaded
+	 * @return entity beans
+	 * @throws Exception
+	 */
+	public static List<Entity> selectRecords(Class<?> entityClass, int amount) throws Exception {
+		return selectRecords(entityClass, amount, SORT_BY_VALUE);
+	}
+	
+	/**
+	 * Select a records of type entityClass (entity class).
+	 * 
+	 * @param entityClass entity class
+	 * @param amount max. amount of records to be loaded
+	 * @param sortType sort entries by ID or by values, 
+	 * 			see {@value #SORT_BY_ID} and {@value #SORT_BY_VALUE}
+	 * @return entity beans
+	 * @throws Exception
+	 */
+	public static List<Entity> selectRecords(Class<?> entityClass, int amount, int sortType) throws Exception {
+		
+		final String displayColumn = getDisplayField(createBean(entityClass));
+		String orderFiled = (sortType == SORT_BY_VALUE) ? displayColumn : "id"; 
+		final String table = classToTable(entityClass);
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null;
+		List<Entity> entities = new ArrayList<Entity>();
+		
+		try {
+			
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
+		
+			String stmtStr = null;
+			if (BeetRootDatabaseManager.getInstance().isOracleDb())
+				stmtStr = "SELECT * FROM " + table + " ORDER BY " + orderFiled + " OFFSET 0 ROWS FETCH NEXT " + amount + " ROWS ONLY";
+			else
+				stmtStr = "SELECT * FROM " + table + " ORDER BY " + orderFiled + " LIMIT " + amount;
+				
+			set = stmt.executeQuery(stmtStr);
+	
+			while(set.next())
+				entities.add(createBean(entityClass, set));
+		
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		
+		return entities;
 	}
 	
 	/**

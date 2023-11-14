@@ -93,8 +93,9 @@ public class Session implements Serializable {
 	 * 
 	 * @param origId original id (database id)
 	 * @param entity entity
+	 * @return newly created modify ID
 	 */
-	public void createIdPair(int origId, String entity){
+	public String createIdPair(int origId, String entity) {
 	
 		String oldMod = getModifyId(origId, entity);
 		if (oldMod != null) {
@@ -105,6 +106,8 @@ public class Session implements Serializable {
 		
 		data.put("origId-" + entity + "-" + modifyId, Integer.valueOf(origId));
 		data.put("modifyId-" + entity + "-"+ origId, modifyId);
+		
+		return modifyId;
 	}
 	
 	public String getModifyId(int origId, String entity) {

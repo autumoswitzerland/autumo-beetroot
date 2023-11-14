@@ -26,6 +26,8 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.utils.Utils;
 
 /**
@@ -42,6 +44,9 @@ public class DefaultViewHandler extends BaseHandler {
 
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
+		
+		final Session userSession = session.getUserSession();
+		final String lang = LanguageManager.getInstance().getLanguage(userSession);
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -89,13 +94,26 @@ public class DefaultViewHandler extends BaseHandler {
 				if (refs != null)
 					entityClass = refs.get(col[0]);
 				
+				
 				// it's a foreign key
 				if (entityClass != null) {
-					final Map.Entry<Integer, String> e = Utils.getTableValue(entityClass, entity, Integer.valueOf(val).intValue());
+					
+					final int refDbIdx = Integer.valueOf(val).intValue();
+					final Map.Entry<Integer, String> e = Utils.getDisplayValue(entityClass, refDbIdx);
 					val = e.getValue();
-					final String guiVal = Utils.adjustRefGuiName(col[1]);
-					htmlData += "<tr><th>"+guiVal+"</th><td>" + val + "</td></tr>\n";		
+					
+					final String displayName = Utils.adjustRefDisplayName(col[1]);
+					final String foreignEntity = Utils.classToTable(entityClass);
+
+					String foreignModifyID = userSession.getModifyId(refDbIdx, foreignEntity);
+					if (foreignModifyID == null)
+						foreignModifyID = userSession.createIdPair(refDbIdx, foreignEntity);
+
+					String valLink = "<a href=\"/"+lang+"/"+foreignEntity+"/view?id="+foreignModifyID+"\">" + val + "</a>\n";
+					htmlData += "<tr><th>"+displayName+"</th><td>" + valLink + "</td></tr>\n";
+					
 				} else {
+					
 					htmlData += "<tr><th>"+col[1]+"</th>" + extractSingleTableData(session, set, col[0], dbIdx, entity) + "</tr>\n";		
 				}
 			}		
