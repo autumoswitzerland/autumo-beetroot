@@ -17,6 +17,8 @@
  */
 package ch.autumo.beetroot.routing;
 
+import java.util.Arrays;
+
 import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.ExampleDownloadHandler;
 import ch.autumo.beetroot.handler.ExampleUploadHandler;
@@ -133,6 +135,22 @@ public class BeetRootDefaultRouter implements Router {
 		    new Route("/:lang/properties/add", PropertiesAddHandler.class, "properties"),
 		    new Route("/:lang/properties/delete", PropertiesDeleteHandler.class, "properties")
 		};
+	}
+	
+	/**
+	 * Merge routes! Use this method within your custom router
+	 * and the overwritten {@link #getRoutes()} method to merge
+	 * the base routes in this class with your additional custom
+	 * routes, otherwise the base routes are not accessible!
+	 * 
+	 * @param baseRoutes base routes
+	 * @param customRoutes custom routes
+	 * @return
+	 */
+	protected static Route[] merge(Route baseRoutes[], Route customRoutes[]) {
+		Route result[] = Arrays.copyOf(baseRoutes, baseRoutes.length + customRoutes.length);
+	    System.arraycopy(customRoutes, 0, result, baseRoutes.length, customRoutes.length);
+	    return result;
 	}
 	
 }

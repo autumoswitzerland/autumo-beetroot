@@ -544,7 +544,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	/**
 	 * Access column values. '[1] [colName=GUI Col Name 1]'
-	 * Idx starts wiht 1!
+	 * Idx starts with 1!
 	 * 
 	 * @return colum values
 	 */
@@ -577,11 +577,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			final String colName = params[0].trim();
 			
 			if (transientFields.contains(colName)) {
-				// NOTE: if the transient field is the last column
-				// in 'columns.cfg' we must remove the ", " from the query !!!
-				if (columns.size() == i) {
-					queryfields = queryfields.substring(0, queryfields.length() - 2) +" ";
-				}
+				if (columns.size() == i)
+					queryfields += "'TRANSIENT'";
+				else
+					queryfields += "'TRANSIENT', ";
 				continue LOOP;
 			}
 			

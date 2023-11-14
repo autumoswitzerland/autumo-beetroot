@@ -710,7 +710,7 @@ public class Utils {
 		try {
 			getDV = clz.getDeclaredMethod("getDisplayField");
 		} catch (Exception e) {
-			LOG.warn("No display value found in bean of type '"+clz.getName()+", but it is used to be shown as a referende entity' -> using 'id'!", e);
+			LOG.info("No display field getter found in bean of type '"+clz.getName()+", but it might be used to be shown as a reference entity' -> using 'id'!");
 			return "id";
 		}
 		displayField = (String) getDV.invoke(emptyBean);
