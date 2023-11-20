@@ -34,6 +34,9 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.diogonunes.jcolor.Ansi;
+import com.diogonunes.jcolor.Attribute;
+
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
@@ -57,10 +60,36 @@ public class Plant {
 	
 	public Plant() {
 	}
+
+	private String getBanner() {
+		boolean coloredBanner = true;
+		if (Utils.isWindows()) {
+			int v = -1;
+			String vstr = System.getProperty("os.version");
+			try {
+				v = Integer.valueOf(vstr).intValue();
+				if (v < 10)
+					coloredBanner = false;
+			} catch (Exception e) {
+				coloredBanner = false;
+			}
+		}
+		String banner = CR + CR + 
+				" __________.____       _____    __________________" + CR +
+				" \\______   \\    |     /  _  \\   \\      \\__    ___/" + CR +
+				"  |     ___/    |    /  /_\\  \\  /   |   \\|    |" + CR +
+				"  |    |   |    |___/    |    \\/    |    \\    |" + CR + 
+				"  |____|   |_______ \\____|__  /\\____|__  /____|" + CR +  
+				"                   \\/       \\/         \\/";
+		if (coloredBanner)
+			banner = Ansi.colorize(banner, Attribute.BRIGHT_GREEN_TEXT());
+		
+		return banner;
+	}
 	
 	private String getDescription() {
-		final String all = CR + CR + getLine() + CR
-				+ Colors.cyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
+		final String all = 
+				Colors.cyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
 				+ " (c) 2023 autumo Ltd. Switzerland";
 		return all;
@@ -151,10 +180,10 @@ public class Plant {
 						tableList.add(rs.getString(1));
 					rs.close();
 				} else {
-					System.out.println(Colors.yellow("NOTE") + ":");
-					System.out.println("At this time CRUD generation is only possible with MySQL and MariaDB.");
-					System.out.println("We suggest setting up one of these databases for development and then");
-					System.out.println("using the generated templates and code for the target database.");
+					System.out.println(" "+Colors.yellow("NOTE") + ": At this time CRUD generation is only possible with MySQL and MariaDB.");
+					System.out.println(" We suggest setting up one of these databases for development and then using");
+					System.out.println(" the generated templates and code for the target database. Exit.");
+					this.printLine();
 					System.out.println("");
 					
 					// finish now!
@@ -322,6 +351,8 @@ public class Plant {
 		
 		CommandLine line = null;
 
+		System.out.println(getBanner());
+		this.printLine();
 		System.out.println(getDescription());
 		this.printLine();
 

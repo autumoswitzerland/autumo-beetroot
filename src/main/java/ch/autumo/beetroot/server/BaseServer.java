@@ -124,6 +124,10 @@ public abstract class BaseServer {
 	 */
 	public BaseServer(String params[]) {
 		
+    	// If not already defined
+		if (System.getProperty("https.protocols") == null)
+			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); // TLSv1.3 doesn't work yet with many interfaces out there...
+		
 		// Read general configuration
 		configMan = BeetRootConfigurationManager.getInstance();
 		// Must !
