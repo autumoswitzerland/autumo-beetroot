@@ -7,7 +7,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
 
 /**
  * Properties add handler. 
@@ -27,7 +27,7 @@ public class PropertiesDeleteHandler extends DefaultDeleteHandler {
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
 
 		// if you need the bean before deleting the database object
-		Property property = (Property) Utils.selectRecord(Property.class, id);
+		Property property = (Property) DB.selectRecord(Property.class, id);
 
 		super.deleteData(session, id); // delete it in the database
 		

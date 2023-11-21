@@ -24,7 +24,8 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Time;
 
 /**
  * Users index handler. 
@@ -48,16 +49,16 @@ public class UsersIndexHandler extends DefaultIndexHandler {
 		
 		switch (columnName) {
 		
-			case "username"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "email"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "role"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "username"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "email"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "role"			: return "<td>" + DB.getValue(set, columnName) + "</td>";
 			
 			case "two_fa"		: return set.getBoolean(columnName) ? 
 									"<td>" + LanguageManager.getInstance().translate("base.switch.yes", session.getUserSession()) + "</td>" : 
 									"<td>" + LanguageManager.getInstance().translate("base.switch.no", session.getUserSession()) + "</td>";
 			
-			case "created"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>";
-			case "modified"		: return "<td>" + Utils.getGUIDate(set.getTimestamp(columnName)) + "</td>";
+			case "created"		: return "<td>" + Time.getGUIDate(set.getTimestamp(columnName)) + "</td>";
+			case "modified"		: return "<td>" + Time.getGUIDate(set.getTimestamp(columnName)) + "</td>";
 			
 			default				: return "<td>" + set.getObject(columnName) + "</td>";
 		}		

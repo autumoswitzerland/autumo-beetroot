@@ -40,7 +40,7 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * Abstract mailer class.
@@ -135,12 +135,12 @@ public abstract class AbstractMailer implements Mailer {
 			res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/:lang/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
 		} else {
 			if (userSession == null)
-				res = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Utils.normalizeUri(session.getUri()));
+				res = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, Web.normalizeUri(session.getUri()));
 			else
 				res = LanguageManager.getInstance().getResource("web/"+extension+"/:lang/email/" + templateName + "." + extension, userSession);
 		}
 		if (context != null) {
-			f = new File(Utils.getRealPath(context) + res);
+			f = new File(Web.getRealPath(context) + res);
 			if (!f.exists()) {
 				is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
 				streamIt = true;
@@ -162,7 +162,7 @@ public abstract class AbstractMailer implements Mailer {
 					res = LanguageManager.getInstance().getResource("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, userSession);
 			}
 			if (context != null) {
-				f = new File(Utils.getRealPath(context) + res);
+				f = new File(Web.getRealPath(context) + res);
 				if (!f.exists()) {
 					is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
 					streamIt = true;
@@ -181,7 +181,7 @@ public abstract class AbstractMailer implements Mailer {
 					res = LanguageManager.getInstance().getResourceWithoutLang("web/"+extension+"/email/"+templateName+"."+extension, session.getUri());
 				}
 				if (context != null) {
-					f = new File(Utils.getRealPath(context) + res);
+					f = new File(Web.getRealPath(context) + res);
 					if (!f.exists()) {
 						is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + res);
 						streamIt = true;
@@ -203,7 +203,7 @@ public abstract class AbstractMailer implements Mailer {
 			if (is != null)
 				br = new BufferedReader(new InputStreamReader(is));
 			else
-				br = new BufferedReader(new FileReader(Utils.getRealPath(context) + res));
+				br = new BufferedReader(new FileReader(Web.getRealPath(context) + res));
 		} else {
 			if (is != null)
 				br = new BufferedReader(new InputStreamReader(is));

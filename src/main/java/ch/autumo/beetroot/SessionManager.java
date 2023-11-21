@@ -30,7 +30,7 @@ import org.nanohttpd.protocols.http.content.CookieHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Helper;
 
 
 /**
@@ -44,7 +44,7 @@ public class SessionManager {
 	private static SessionManager instance = null;	
 	
 	private static final char[] HEX = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-	private static final File SESSION_DATA = new File(Utils.USER_HOME + Utils.FILE_SEPARATOR +BeetRootConfigurationManager.getInstance().getString("ws_user_sessions"));
+	private static final File SESSION_DATA = new File(Helper.USER_HOME + Helper.FILE_SEPARATOR +BeetRootConfigurationManager.getInstance().getString("ws_user_sessions"));
 	private static final Random RANDOM = new Random();
 	private static final int TOKEN_SIZE = 24;
 	

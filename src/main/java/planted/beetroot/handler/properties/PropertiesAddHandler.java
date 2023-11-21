@@ -6,7 +6,6 @@ package planted.beetroot.handler.properties;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 

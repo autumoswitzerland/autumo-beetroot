@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
 
 /**
  * ##Entitynameplural## index handler.
@@ -35,7 +35,7 @@ public class ##Entitynameplural##IndexHandler extends DefaultIndexHandler {
 		
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
-			// The class 'Utils' provides some helper methods for this.
+			// The class 'DB' provides some helper methods for this.
 			// PS: Customize style for <td> if necessary.
 ##columns##
 			default: return "<td>" + set.getObject(columnName) + "</td>";

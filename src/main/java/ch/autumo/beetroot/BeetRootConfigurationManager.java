@@ -34,7 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.security.SecureApplication;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.Security;
 
 
 
@@ -63,10 +64,10 @@ public class BeetRootConfigurationManager {
     	rootPath = System.getProperty("ROOTPATH");
     	
     	if (rootPath == null || rootPath.length() == 0)
-    		rootPath = "." + Utils.FILE_SEPARATOR;
+    		rootPath = "." + Helper.FILE_SEPARATOR;
     	
-    	if (!rootPath.endsWith(Utils.FILE_SEPARATOR))
-    		rootPath += Utils.FILE_SEPARATOR;
+    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
+    		rootPath += Helper.FILE_SEPARATOR;
     }
 	
 	private BeetRootConfigurationManager() {
@@ -195,8 +196,8 @@ public class BeetRootConfigurationManager {
 	    	}
 		    	
 			// check root path
-	    	if (!rootPath.endsWith(Utils.FILE_SEPARATOR))
-	    		rootPath += Utils.FILE_SEPARATOR;
+	    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
+	    		rootPath += Helper.FILE_SEPARATOR;
 		    
 			final File dir = new File(rootPath);
 			if (!dir.exists() || !dir.isDirectory()) {
@@ -215,8 +216,8 @@ public class BeetRootConfigurationManager {
 		if (f.exists()) {
 			// Get path only
 			fullConfigBasePath = f.getParent();
-			if (!fullConfigBasePath.endsWith(Utils.FILE_SEPARATOR))
-				fullConfigBasePath += Utils.FILE_SEPARATOR;
+			if (!fullConfigBasePath.endsWith(Helper.FILE_SEPARATOR))
+				fullConfigBasePath += Helper.FILE_SEPARATOR;
 		} else {
 			fullConfigBasePath = file; // resource: don't add any file separators! Could mix things up, e.g., "/\"
 		}
@@ -254,7 +255,7 @@ public class BeetRootConfigurationManager {
 		
 		this.isWithinDesktop = true;
 		
-		final String path = Utils.getDesktopPropertiesPath(appName);
+		final String path = Helper.getDesktopPropertiesPath(appName);
 		final String filePath = path + desktopCfgFile;
         final File f = new File(filePath);
         Properties p = null;
@@ -500,7 +501,7 @@ public class BeetRootConfigurationManager {
 		if (v != null)
 			v = v.trim();
 		
-		return Utils.decode(v, app);
+		return Security.decode(v, app);
 	}
 	
 	/**

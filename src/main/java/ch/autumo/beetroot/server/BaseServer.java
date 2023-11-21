@@ -56,7 +56,8 @@ import ch.autumo.beetroot.transport.DefaultServerSocketFactory;
 import ch.autumo.beetroot.transport.SecureServerSocketFactory;
 import ch.autumo.beetroot.transport.ServerSocketFactory;
 import ch.autumo.beetroot.utils.Colors;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.OS;
+import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.security.SSLUtils;
 
@@ -111,10 +112,10 @@ public abstract class BaseServer {
     	rootPath = System.getProperty("ROOTPATH");
     	
     	if (rootPath == null || rootPath.length() == 0)
-    		rootPath = "." + Utils.FILE_SEPARATOR;
+    		rootPath = "." + Helper.FILE_SEPARATOR;
     	
-    	if (!rootPath.endsWith(Utils.FILE_SEPARATOR))
-    		rootPath += Utils.FILE_SEPARATOR;
+    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
+    		rootPath += Helper.FILE_SEPARATOR;
     }
 		
 	/**
@@ -138,7 +139,7 @@ public abstract class BaseServer {
 		} catch (Exception e) {
 			System.err.println("Configuration initialization failed !");
 			e.printStackTrace();
-			Utils.fatalExit();
+			Helper.fatalExit();
 		}
 		
 		//------------------------------------------------------------------------------
@@ -149,13 +150,13 @@ public abstract class BaseServer {
     	
 		if (params.length == 0 || (params[0].equals("-help") || params[0].equals("-h"))) {
 			System.out.println(this.getHelpText());
-			Utils.normalExit();
+			Helper.normalExit();
 		}
 		
 		// check args length
 		if (params.length < 1) {
 			System.out.println(this.getHelpText());
-			Utils.invalidArgumentsExit();
+			Helper.invalidArgumentsExit();
 		}
 
 		
@@ -187,24 +188,24 @@ public abstract class BaseServer {
 				System.out.println("Valid custom operations are also "+strCops+".");
 			}
 			System.out.println("");
-			Utils.invalidArgumentsExit();
+			Helper.invalidArgumentsExit();
 		}
 		
 		//------------------------------------------------------------------------------
     	
     	if (rootPath == null || rootPath.length() == 0) {
 			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
-			Utils.invalidArgumentsExit();
+			Helper.invalidArgumentsExit();
     	}
 	    	
 		// check root path
-    	if (!rootPath.endsWith(Utils.FILE_SEPARATOR))
-    		rootPath += Utils.FILE_SEPARATOR;
+    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
+    		rootPath += Helper.FILE_SEPARATOR;
 	    
 		final File dir = new File(rootPath);
 		if (!dir.exists() || !dir.isDirectory()) {
 			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
-			Utils.invalidArgumentsExit();
+			Helper.invalidArgumentsExit();
 		}		
 		
 		//------------------------------------------------------------------------------
@@ -248,12 +249,12 @@ public abstract class BaseServer {
 			if (portAdminServer == -1) {
 				LOG.error("Admin server port not specified!");
 				System.err.println(ansiErrServerName + " Admin server port not specified!");
-				Utils.fatalExit();
+				Helper.fatalExit();
 			}
 		} catch (Exception e) {
 			LOG.error("Admin server port has an invalid value: '" + v + "' !", e);
 			System.err.println(ansiErrServerName + " Admin server port has an invalid value: '" + v + "' !");
-			Utils.fatalExit();
+			Helper.fatalExit();
 		}
 		
 		try {
@@ -263,7 +264,7 @@ public abstract class BaseServer {
 		} catch (Exception e) {
 			LOG.error("Web server port has an invalid value: '" + v + "'!", e);
 			System.err.println(ansiErrServerName + " Web server port has an invalid value: '" + v + "'!");
-			Utils.fatalExit();
+			Helper.fatalExit();
 		}
 		
 		startWebServer = configMan.getYesOrNo(Constants.KEY_WS_START);
@@ -281,11 +282,11 @@ public abstract class BaseServer {
 		} catch (UtilsException e) {
 			LOG.error("Couldn't decrypt DB password!", e);
 			System.err.println(ansiErrServerName + " Couldn't decrypt DB password!");
-			Utils.fatalExit();
+			Helper.fatalExit();
 		} catch (Exception e) {
 			LOG.error("Couldn't create DB manager!", e);
 			System.err.println(ansiErrServerName + " Couldn't create DB manager!");
-			Utils.fatalExit();
+			Helper.fatalExit();
 		}
 
 		
@@ -307,7 +308,7 @@ public abstract class BaseServer {
 			} catch (Exception ex) {
 				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
 				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");
-				Utils.fatalExit();
+				Helper.fatalExit();
 			}			
 		}
 		
@@ -355,7 +356,7 @@ public abstract class BaseServer {
 		} catch (Exception e) {
 			System.err.println(ansiErrServerName + " Logging configuration initialization failed!");
 			e.printStackTrace();
-			Utils.fatalExit();
+			Helper.fatalExit();
 		}
 	}
 	
@@ -418,7 +419,7 @@ public abstract class BaseServer {
 					LOG.error("Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
 					System.err.println(ansiErrServerName + " Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
 					System.err.println(ansiErrServerName + " Shutting down!");
-					Utils.fatalExit();
+					Helper.fatalExit();
 				}
 				
 				try {
@@ -457,7 +458,7 @@ public abstract class BaseServer {
 	
 				LOG.error("Cannot start web-server on port "+portWebServer+" - Already running? Stopping.", e);
 				System.err.println(ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Already running? Stopping.");
-				Utils.fatalExit();
+				Helper.fatalExit();
 			}
 		}
 
@@ -471,7 +472,7 @@ public abstract class BaseServer {
 			} catch (Exception e) {
 				LOG.error("Cannot make server secure (SSL)! Stopping.", e);
 				System.err.println(ansiErrServerName + " Cannot make server secure (SSL)! Stopping.");
-				Utils.fatalExit();
+				Helper.fatalExit();
 			}
 		} else {
 	        this.serverSocketFactory = new DefaultServerSocketFactory();
@@ -921,7 +922,7 @@ public abstract class BaseServer {
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
 				System.err.println(BaseServer.ansiErrServerName + " Admin server listener cannot be created on port '" + this.listenerPort + "'!");
-				Utils.fatalExit();
+				Helper.fatalExit();
 			}
 		}
 		
@@ -1098,42 +1099,42 @@ public abstract class BaseServer {
 		private static final String USAGE0 = Colors.yellow("beetroot."+SHELL_EXT+" -help");
 		private static final String USAGE1 = Colors.yellow("beetroot."+SHELL_EXT+" -h");
 		public static final String TEXT =
-				"" 																						+ Utils.LINE_SEPARATOR +
-				"" 																						+ Utils.LINE_SEPARATOR +
-				TITLE									 												+ Utils.LINE_SEPARATOR +
-				"---------------------" 																+ Utils.LINE_SEPARATOR +
-    			"Usage:"																				+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"  Here's a detailed usage of the java-process, but you should use the server-script" 	+ Utils.LINE_SEPARATOR +
-    			"  in the root-directory that accepts the commands 'health', 'start' or 'stop'."		+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    " + USAGE								 											+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"  Without script - the Java processes:" 												+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ Utils.LINE_SEPARATOR +
-    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"      or" 																				+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ Utils.LINE_SEPARATOR +
-    			"         -Dlog4j.configuration=file:<log-cfg-path>/server-logging.cfg \\"		 		+ Utils.LINE_SEPARATOR +
-    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"      <root-path>      :  Root directory where ifaceX is installed." 					+ Utils.LINE_SEPARATOR +
-    			"                          Defined in run-script (Variable ROOT)."						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"      <classpath>      :  The Java classpath."								 			+ Utils.LINE_SEPARATOR +
-    			"                          Is build by the run-script."									+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"  or" 																					+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
-    			"    " + USAGE0					 														+ Utils.LINE_SEPARATOR +
-    			"    " + USAGE1					 														+ Utils.LINE_SEPARATOR +
-    			"" 																						+ Utils.LINE_SEPARATOR +
+				"" 																						+ OS.LINE_SEPARATOR +
+				"" 																						+ OS.LINE_SEPARATOR +
+				TITLE									 												+ OS.LINE_SEPARATOR +
+				"---------------------" 																+ OS.LINE_SEPARATOR +
+    			"Usage:"																				+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"  Here's a detailed usage of the java-process, but you should use the server-script" 	+ OS.LINE_SEPARATOR +
+    			"  in the root-directory that accepts the commands 'health', 'start' or 'stop'."		+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"    " + USAGE								 											+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"  Without script - the Java processes:" 												+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ OS.LINE_SEPARATOR +
+    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"      or" 																				+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"    "+JAVA+" -DROOTPATH=\"<root-path>\" \\"											+ OS.LINE_SEPARATOR +
+    			"         -Dlog4j.configuration=file:<log-cfg-path>/server-logging.cfg \\"		 		+ OS.LINE_SEPARATOR +
+    			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"      <root-path>      :  Root directory where ifaceX is installed." 					+ OS.LINE_SEPARATOR +
+    			"                          Defined in run-script (Variable ROOT)."						+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"      <classpath>      :  The Java classpath."								 			+ OS.LINE_SEPARATOR +
+    			"                          Is build by the run-script."									+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"  or" 																					+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
+    			"    " + USAGE0					 														+ OS.LINE_SEPARATOR +
+    			"    " + USAGE1					 														+ OS.LINE_SEPARATOR +
+    			"" 																						+ OS.LINE_SEPARATOR +
     			"";    	
 	}
 	

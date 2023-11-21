@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.MIME;
 
 /**
  * File cache.
@@ -105,9 +105,9 @@ public class FileCache  {
 
 		this.mimeType = contentType.getContentType();
 		
-		this.isArchive = Utils.isMimeTypeArchive(mimeType); 
-		this.isBinary = Utils.isMimeTypeOctet(mimeType); 
-		this.isText = Utils.isMimeTypeText(mimeType); 
+		this.isArchive = MIME.isMimeTypeArchive(mimeType); 
+		this.isBinary = MIME.isMimeTypeOctet(mimeType); 
+		this.isText = MIME.isMimeTypeText(mimeType); 
 		
 		this.file = filePath.toFile();
 		
@@ -164,9 +164,9 @@ public class FileCache  {
 
 		this.mimeType = contentType.getContentType();
 		
-		this.isArchive = Utils.isMimeTypeArchive(mimeType); 
-		this.isBinary = Utils.isMimeTypeOctet(mimeType); 
-		this.isText = Utils.isMimeTypeText(mimeType); 
+		this.isArchive = MIME.isMimeTypeArchive(mimeType); 
+		this.isBinary = MIME.isMimeTypeOctet(mimeType); 
+		this.isText = MIME.isMimeTypeText(mimeType); 
 		
 		this.forcedCaching = forcedCaching;
 		
@@ -234,9 +234,9 @@ public class FileCache  {
 		this.contentType = contentType;
 		this.mimeType = contentType.getContentType();
 		
-		this.isArchive = Utils.isMimeTypeArchive(mimeType); 
-		this.isBinary = Utils.isMimeTypeOctet(mimeType); 
-		this.isText = Utils.isMimeTypeText(mimeType); 
+		this.isArchive = MIME.isMimeTypeArchive(mimeType); 
+		this.isBinary = MIME.isMimeTypeOctet(mimeType); 
+		this.isText = MIME.isMimeTypeText(mimeType); 
 		
 		this.isResource = true;
 		

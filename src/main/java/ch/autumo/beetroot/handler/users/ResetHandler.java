@@ -26,17 +26,17 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.mailing.MailerFactory;
 import ch.autumo.beetroot.utils.GUIDGenerator;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Time;
 
 /**
  * Default login handler.
@@ -94,9 +94,9 @@ public class ResetHandler extends BaseHandler {
 			token = GUIDGenerator.generate();
 			
 			if (BeetRootDatabaseManager.getInstance().isOracleDb())
-				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified=" + Utils.nowTimeStamp() + " WHERE id=" + userid;
+				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified=" + Time.nowTimeStamp() + " WHERE id=" + userid;
 			else
-				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Utils.nowTimeStamp() + "' WHERE id=" + userid;
+				stmtStr = "UPDATE users SET lasttoken='" + token + "', modified='" + Time.nowTimeStamp() + "' WHERE id=" + userid;
 			stmt.executeUpdate(stmtStr);
 		
 		} finally {

@@ -21,7 +21,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.handler.NoContentAndConfigHandler;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
 
 /**
  * Settings handler.
@@ -48,7 +48,7 @@ public class SettingsHandler extends NoContentAndConfigHandler {
 		}
 		
 		if (somethingChanged)
-			Utils.storeUserSettings(userSession);
+			DB.storeUserSettings(userSession);
 		
 		return null;
 	}

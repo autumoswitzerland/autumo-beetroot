@@ -34,14 +34,14 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.utils.Colors;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.OS;
 
 /**
  * PLANT - beetRoot CRUD Generator.
@@ -52,7 +52,7 @@ public class Plant {
 
 	public static final String RELEASE = Constants.APP_VERSION;
 
-	private static final String CR = Utils.LINE_SEPARATOR;
+	private static final String CR = OS.LINE_SEPARATOR;
 	
 	private String tableNames[] = null;
 	private String singleEntity = null;
@@ -62,29 +62,14 @@ public class Plant {
 	}
 
 	private String getBanner() {
-		boolean coloredBanner = true;
-		if (Utils.isWindows()) {
-			int v = -1;
-			String vstr = System.getProperty("os.version");
-			try {
-				v = Integer.valueOf(vstr).intValue();
-				if (v < 10)
-					coloredBanner = false;
-			} catch (Exception e) {
-				coloredBanner = false;
-			}
-		}
-		String banner = CR + CR + 
+		final String banner = CR + CR + 
 				" __________.____       _____    __________________" + CR +
 				" \\______   \\    |     /  _  \\   \\      \\__    ___/" + CR +
 				"  |     ___/    |    /  /_\\  \\  /   |   \\|    |" + CR +
 				"  |    |   |    |___/    |    \\/    |    \\    |" + CR + 
 				"  |____|   |_______ \\____|__  /\\____|__  /____|" + CR +  
 				"                   \\/       \\/         \\/";
-		if (coloredBanner)
-			banner = Ansi.colorize(banner, Attribute.BRIGHT_GREEN_TEXT());
-		
-		return banner;
+		return Helper.createBanner(banner, Attribute.BRIGHT_GREEN_TEXT());
 	}
 	
 	private String getDescription() {
@@ -131,7 +116,7 @@ public class Plant {
 		
 		if (argsList.length > 1) {
 			usage();
-			Utils.invalidArgumentsExit();
+			Helper.invalidArgumentsExit();
 		}
         
 		// DB connection manager
@@ -187,7 +172,7 @@ public class Plant {
 					System.out.println("");
 					
 					// finish now!
-					Utils.normalExit();
+					Helper.normalExit();
 				} 
 				/*
 				else if (DatabaseManager.getInstance().isH2Db()) {
@@ -240,7 +225,7 @@ public class Plant {
 				} else if (val.trim().equalsIgnoreCase("x")) {
 					System.out.println("Bye.");
 					System.out.println("");
-					Utils.normalExit();
+					Helper.normalExit();
 				} else {
 					d = Integer.valueOf(val).intValue();
 					val = "one";
@@ -362,7 +347,7 @@ public class Plant {
 		} catch (ParseException exp) {
 			System.err.println(Colors.red("Couldn't read program argument.") + " Reason: " + exp.getMessage());
 			usage();
-			Utils.invalidArgumentsExit();
+			Helper.invalidArgumentsExit();
 		}
 
 		try {

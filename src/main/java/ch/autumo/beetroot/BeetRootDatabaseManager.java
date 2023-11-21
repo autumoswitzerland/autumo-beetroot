@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.OS;
 
 /**
  * Database manager.
@@ -104,7 +105,7 @@ public class BeetRootDatabaseManager {
 	public void initialize(String webAppRootPath) throws Exception {
 		
 		String webAppRootWithoutSlash = webAppRootPath;
-		if (webAppRootPath.endsWith(Utils.FILE_SEPARATOR))
+		if (webAppRootPath.endsWith(Helper.FILE_SEPARATOR))
 			webAppRootWithoutSlash = webAppRootPath.substring(0, webAppRootPath.length() - 1);
 
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
@@ -232,7 +233,7 @@ public class BeetRootDatabaseManager {
 			if (url == null || url.length() == 0)
 				throw new Exception("External JNDI data-source '"+dsExternalJndi+"' has been configured, but no JDBC-URL-prefix within 'db_url' " 
 									+ "configuration parameterhas been defined! "
-									+ Utils.LINE_SEPARATOR +
+									+ OS.LINE_SEPARATOR +
 									"It is used at least for determining what database is used; scheme 'jdbc:<database-id>'.");
 			
 			dataSource.setDataSourceJNDI(dsExternalJndi);

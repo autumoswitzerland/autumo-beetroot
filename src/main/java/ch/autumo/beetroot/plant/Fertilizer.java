@@ -35,7 +35,8 @@ import java.util.Scanner;
 import java.util.Set;
 
 import ch.autumo.beetroot.BeetRootDatabaseManager;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.OS;
 
 /**
  * Fertilizer for plant.
@@ -95,7 +96,7 @@ public class Fertilizer {
 			while (rsk.next()) {
 				String fkColumnName = rsk.getString("FKCOLUMN_NAME");
 				String pkTableName = rsk.getString("PKTABLE_NAME");
-				String clz = "planted.beetroot.handler." + pkTableName + "." + Utils.tableToClassName(pkTableName) + ".class";
+				String clz = "planted.beetroot.handler." + pkTableName + "." + Beans.tableToClassName(pkTableName) + ".class";
 				this.addForeignKeyMapping(fkColumnName, clz);
 			}
 			rsk.close();
@@ -370,7 +371,7 @@ public class Fertilizer {
 				
 			}
 
-			result.append(text + Utils.LINE_SEPARATOR);
+			result.append(text + OS.LINE_SEPARATOR);
 		}
 		
 		return result.toString();

@@ -21,7 +21,8 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.TwoFA;
 
 /**
  * New QR Code handler.
@@ -37,8 +38,8 @@ public class NewQRCodeHandler extends BaseHandler {
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		
-		final String newSecretUserKey = Utils.createSecretUserKey();
-		Utils.updateSecretUserKey(id, newSecretUserKey);
+		final String newSecretUserKey = TwoFA.createSecretUserKey();
+		DB.updateSecretUserKey(id, newSecretUserKey);
 		
 		uid = id;
 		

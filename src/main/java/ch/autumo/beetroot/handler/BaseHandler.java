@@ -66,7 +66,11 @@ import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Security;
+import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.Web;
 import jakarta.activation.MimeType;
 
 /**
@@ -202,7 +206,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final Class<?> entityClass = this.getBeanClass();
 		if (entityClass != null)
 			try {
-				this.emptyBean = Utils.createBean(entityClass);
+				this.emptyBean = Beans.createBean(entityClass);
 			} catch (Exception e) {
 				LOG.error("Couldn't create empty bean, this might be an error!", e);
 			}
@@ -224,7 +228,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			res = "web/html/"+entity+"/columns.cfg";
 		} else {
 			if (userSession == null)
-				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
+				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
 			else
 				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
 		}
@@ -238,7 +242,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (context == null)
 				fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 			else
-				fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + res);
+				fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + res);
 		} catch (IOException e) {
 			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 			try {
@@ -253,7 +257,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			LOG.trace("Resource '" + res + "' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			if (!session.getUri().endsWith(Constants.JSON_EXT)) {
 				if (userSession == null)
-					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
+					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
 				else
 					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
 			}
@@ -261,7 +265,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (context == null)
 					fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 				else
-					fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + res);
+					fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + res);
 			} catch (IOException e) {
 				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 				try {
@@ -274,12 +278,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (tryFurther) {
 				tryFurther = false;
 				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
-				res = LanguageManager.getInstance().getResourceWithoutLang("web/html/"+entity+"/columns.cfg", Utils.normalizeUri(session.getUri()));
+				res = LanguageManager.getInstance().getResourceWithoutLang("web/html/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
 				try {
 					if (context == null)
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 					else
-						fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + res);
+						fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + res);
 				} catch (IOException e) {
 					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
@@ -622,10 +626,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			String val = session.getParms().get(col[0]);		
 			
-			val = Utils.escapeValuesForDb(val);
+			val = DB.escapeValuesForDb(val);
 			
 			if (dbPwEnc && col[0].equals("password")) {
-				val = Utils.hashPw(val);
+				val = Security.hashPw(val);
 			}
 
 			// Informix wants 't' or 'f'
@@ -641,14 +645,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (col[1].equals("created")) {
 				if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 					if (columns.size() == i)
-						clause += Utils.nowTimeStamp();
+						clause += Time.nowTimeStamp();
 					else
-						clause += Utils.nowTimeStamp() + ", ";
+						clause += Time.nowTimeStamp() + ", ";
 				} else {
 					if (columns.size() == i)
-						clause += "'" + Utils.nowTimeStamp() + "'";
+						clause += "'" + Time.nowTimeStamp() + "'";
 					else
-						clause += "'" + Utils.nowTimeStamp() + "', ";
+						clause += "'" + Time.nowTimeStamp() + "', ";
 				}
 				// continue here with for-loop. otherwise we would get errors!
 				continue LOOP;
@@ -713,7 +717,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			
 			String val = session.getParms().get(col[0]);
-			val = Utils.escapeValuesForDb(val);
+			val = DB.escapeValuesForDb(val);
 			
 			/*
 			if (dbPwEnc && col[0].equals("password")) {
@@ -781,9 +785,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// But we don't update it, if the user choses to modify it by himself (GUI).
 		if (dbAutoMod && clause.indexOf("modified=") != 1 ) {
 			if (BeetRootDatabaseManager.getInstance().isOracleDb())
-				clause += ", modified=" + Utils.nowTimeStamp() + "";
+				clause += ", modified=" + Time.nowTimeStamp() + "";
 			else
-				clause += ", modified='" + Utils.nowTimeStamp() + "'";
+				clause += ", modified='" + Time.nowTimeStamp() + "'";
 		}
 		
 		return clause;
@@ -1603,7 +1607,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (context == null )
 				fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
 			else
-				fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + resource);
+				fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + resource);
 		} catch (IOException e) {
 			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 			try {
@@ -1621,7 +1625,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (context == null )
 					fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
 				else
-					fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + resource);
+					fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + resource);
 			} catch (IOException e) {
 				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 				try {
@@ -1639,7 +1643,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (context == null )
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
 					else
-						fc = FileCacheManager.getInstance().findOrCreate(Utils.getRealPath(context) + resource);
+						fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + resource);
 				} catch (IOException e) {
 					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
 					try {
@@ -2376,7 +2380,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// Page ?
         final String page = (String) userSession.get("page-"+entity);
 		if (page != null) {
-			url = Utils.enrichQuery(url, "page", page);
+			url = Web.enrichQuery(url, "page", page);
 			// consume!
 			userSession.remove("page-"+entity);
 		}
@@ -2384,11 +2388,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// Message?
 		if (msg != null && msg.length() !=0 ) {
 			try {
-				url = Utils.enrichQuery(url, "msg", msg);
+				url = Web.enrichQuery(url, "msg", msg);
 			} catch (Exception e) {
-				url = Utils.enrichQuery(url, "msg", LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession));
+				url = Web.enrichQuery(url, "msg", LanguageManager.getInstance().translate("base.info.session.inv.refresh", userSession));
 			}
-			url = Utils.enrichQuery(url, "sev", "w");
+			url = Web.enrichQuery(url, "sev", "w");
 		}
 		
 		String sn = "/";
@@ -2742,7 +2746,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// stop stop-watch and measure
 		final long ifaceXEnd = System.currentTimeMillis();
 		final long duration = ifaceXEnd - baseHandlerStart;
-		final String durStr = "BEETROOT handler process time: " + Utils.getReadableDuration(duration, TimeUnit.HOURS);
+		final String durStr = "BEETROOT handler process time: " + Time.getReadableDuration(duration, TimeUnit.HOURS);
 		LOG.info(durStr);
 	}
 	

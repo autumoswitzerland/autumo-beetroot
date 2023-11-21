@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Security;
 
 /**
  * Secure server command.
@@ -213,7 +213,7 @@ public class ServerCommand extends AbstractMessage {
 			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
 		if (ENCRYPT)
-			return Utils.encodeCom(ts, SecureApplicationHolder.getInstance().getSecApp());
+			return Security.encodeCom(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
 			return ts;
 	}
@@ -228,7 +228,7 @@ public class ServerCommand extends AbstractMessage {
 	public static ServerCommand parse(String transferString) throws IOException {
 	
 		if (ENCRYPT)
-			transferString = Utils.decodeCom(transferString, SecureApplicationHolder.getInstance().getSecApp());
+			transferString = Security.decodeCom(transferString, SecureApplicationHolder.getInstance().getSecApp());
 		
 		final ServerCommand command = new ServerCommand();
 		
@@ -265,7 +265,7 @@ public class ServerCommand extends AbstractMessage {
 
 		String result = "{";
 		if (ENCRYPT) {
-			String data = Utils.encodeCom(json.toString(), SecureApplicationHolder.getInstance().getSecApp());
+			String data = Security.encodeCom(json.toString(), SecureApplicationHolder.getInstance().getSecApp());
 			result += "\"data\":\""+data+"\"";
 		} else {
 			result += json.toString();
@@ -289,7 +289,7 @@ public class ServerCommand extends AbstractMessage {
 		
 		if (ENCRYPT) {
 			String data = o.getString("data");
-			data = Utils.decodeCom(data, SecureApplicationHolder.getInstance().getSecApp());
+			data = Security.decodeCom(data, SecureApplicationHolder.getInstance().getSecApp());
 			o = new JSONObject("{"+data+"}");
 		}
 		

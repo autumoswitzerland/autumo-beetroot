@@ -29,7 +29,7 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.TwoFA;
 
 /**
  * Users add handler. 
@@ -71,7 +71,7 @@ public class UsersAddHandler extends DefaultAddHandler {
 		
 		mand.put("created",  "NOW()");
 		mand.put("modified", "NOW()");
-		mand.put("secretkey", Utils.createSecretUserKey());
+		mand.put("secretkey", TwoFA.createSecretUserKey());
 	    
 		return mand;
 	}

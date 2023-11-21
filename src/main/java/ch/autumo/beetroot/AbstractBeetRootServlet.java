@@ -31,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.logging.LoggingFactory;
-import ch.autumo.beetroot.utils.Utils;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.Web;
 
 
 /**
@@ -53,7 +53,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 
 		super.init(config);
 		
-		final String webAppRoot = Utils.getRealPath(config.getServletContext());
+		final String webAppRoot = Web.getRealPath(config.getServletContext());
 		final String configFilePath = config.getInitParameter("beetRootConfig");
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 

@@ -29,7 +29,10 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.TwoFA;
+import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
 
 /**
@@ -55,15 +58,15 @@ public class UsersViewHandler extends DefaultViewHandler {
 			case "username"		: userName = set.getString(columnName); 
 								  return "<td>"+userName+"</td>";
 								  
-			case "email"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "role"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "email"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "role"			: return "<td>" + DB.getValue(set, columnName) + "</td>";
 			
 			case "two_fa"		: return set.getBoolean(columnName) ? 
 									"<td>" + LanguageManager.getInstance().translate("base.switch.yes", session.getUserSession()) + "</td>" : 
 									"<td>" + LanguageManager.getInstance().translate("base.switch.no", session.getUserSession()) + "</td>";
 					
-			case "created"		: return "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
-			case "modified"		: return "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
+			case "created"		: return "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
+			case "modified"		: return "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			
 			// transient field 'code'
 			case "code"			: return "<td>"+this.get2FAQRImage(session, user)+"</td>";
@@ -93,9 +96,9 @@ public class UsersViewHandler extends DefaultViewHandler {
 		try {
 
 			// Generate bar code from user shown, not logged in !!!!
-			barCode = Utils.getGoogleAuthenticatorBarCode(user.getSecretkey(), user.getEmail());
-			absPath = Utils.createQRCode(barCode, Constants.QR_IMG_SIZE, Constants.QR_IMG_SIZE);
-			tempFileName = absPath.substring(absPath.lastIndexOf(Utils.FILE_SEPARATOR) + 1, absPath.length());
+			barCode = TwoFA.getGoogleAuthenticatorBarCode(user.getSecretkey(), user.getEmail());
+			absPath = TwoFA.createQRCode(barCode, Constants.QR_IMG_SIZE, Constants.QR_IMG_SIZE);
+			tempFileName = absPath.substring(absPath.lastIndexOf(Helper.FILE_SEPARATOR) + 1, absPath.length());
 			
 			final String title = LanguageManager.getInstance().translate("base.2fa.title.text", SessionManager.getInstance().findOrCreate(session));			
 			

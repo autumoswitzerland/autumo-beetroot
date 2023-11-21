@@ -28,7 +28,10 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * Default handler for 'web/html/<entity>/view.html' templates.
@@ -52,7 +55,7 @@ public class DefaultViewHandler extends BaseHandler {
 		Statement stmt = null;
 		
 		// Foreign relations?
-		refs = Utils.getForeignReferences(super.getEmptyBean());
+		refs = Beans.getForeignReferences(super.getEmptyBean());
 		
 		try {
 		
@@ -64,8 +67,8 @@ public class DefaultViewHandler extends BaseHandler {
 	
 			set.next(); // one record !
 			
-			final Entity entity = Utils.createBean(getBeanClass(), set);
-			displayField = Utils.getDisplayField(entity);
+			final Entity entity = Beans.createBean(getBeanClass(), set);
+			displayField = Beans.getDisplayField(entity);
 			
 			this.prepare(session, entity);
 			
@@ -99,11 +102,11 @@ public class DefaultViewHandler extends BaseHandler {
 				if (entityClass != null) {
 					
 					final int refDbIdx = Integer.valueOf(val).intValue();
-					final Map.Entry<Integer, String> e = Utils.getDisplayValue(entityClass, refDbIdx);
+					final Map.Entry<Integer, String> e = DB.getDisplayValue(entityClass, refDbIdx);
 					val = e.getValue();
 					
-					final String displayName = Utils.adjustRefDisplayName(col[1]);
-					final String foreignEntity = Utils.classToTable(entityClass);
+					final String displayName = Helper.adjustRefDisplayName(col[1]);
+					final String foreignEntity = Beans.classToTable(entityClass);
 
 					String foreignModifyID = userSession.getModifyId(refDbIdx, foreignEntity);
 					if (foreignModifyID == null)
@@ -162,7 +165,7 @@ public class DefaultViewHandler extends BaseHandler {
 		else
 			val = o.toString();
 		
-		val = Utils.escapeHtml(val);
+		val = Web.escapeHtml(val);
 		
 		return "<td>" + val + "</td>";
 	}

@@ -28,7 +28,10 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * Default handler for 'web/html/<entity>/edit.html' templates.
@@ -60,7 +63,7 @@ public class DefaultEditHandler extends BaseHandler {
 		final String _method = params.get("_method");
 		
 		// Foreign relations?
-		refs = Utils.getForeignReferences(super.getEmptyBean());
+		refs = Beans.getForeignReferences(super.getEmptyBean());
 		
 		Connection conn = null;
 		Statement stmt = null;
@@ -103,7 +106,7 @@ public class DefaultEditHandler extends BaseHandler {
 	
 			set.next(); // one record !
 			
-			final Entity entity = Utils.createBean(getBeanClass(), set);
+			final Entity entity = Beans.createBean(getBeanClass(), set);
 			this.prepare(session, entity);
 			
 			LOOP: for (int i = 1; i <= columns().size(); i++) {
@@ -232,8 +235,8 @@ public class DefaultEditHandler extends BaseHandler {
 			divType = "select";
 		} else {
 			// standard columns
-			inputType = Utils.getHtmlInputType(rsmd, idx, columnName);
-			divType = Utils.getHtmlDivType(rsmd, idx, columnName);
+			inputType = Web.getHtmlInputType(rsmd, idx, columnName);
+			divType = Web.getHtmlDivType(rsmd, idx, columnName);
 			if (inputType == "checkbox")
 				isCheck = true;
 		}
@@ -284,7 +287,7 @@ public class DefaultEditHandler extends BaseHandler {
 				result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
 			else {
 				if (entityClass != null)
-					guiColName = Utils.adjustRefDisplayName(guiColName);
+					guiColName = Helper.adjustRefDisplayName(guiColName);
 				result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
 			}
 			
@@ -346,7 +349,7 @@ public class DefaultEditHandler extends BaseHandler {
 				// c. Foreign key boxes
 				} else if (entityClass != null) {
 					
-					final Map<Integer, String> entries = Utils.getDisplayValues(entityClass);
+					final Map<Integer, String> entries = DB.getDisplayValues(entityClass);
 					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 					for (Integer id : entries.keySet()) {
 						final int i = id.intValue();

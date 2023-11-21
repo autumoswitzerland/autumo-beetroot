@@ -63,8 +63,13 @@ import ch.autumo.beetroot.server.BaseServer;
 import ch.autumo.beetroot.server.communication.Communicator;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.MIME;
+import ch.autumo.beetroot.utils.OS;
+import ch.autumo.beetroot.utils.Security;
+import ch.autumo.beetroot.utils.TwoFA;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * autumo ifaceX web server and template engine.
@@ -313,7 +318,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 */
 	public Response serve(BeetRootHTTPSession session, HttpServletRequest request) {
 		
-		final String uri = Utils.normalizeUri(session.getUri());
+		final String uri = Web.normalizeUri(session.getUri());
 
 		
 		// Servlet magic :)
@@ -446,7 +451,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			// temporary file?
 			if (uriWithoutServlet.startsWith("tmp/" + tmpFilePrefix)) {
 				
-				final String tmpDir = Utils.getTemporaryDirectory();
+				final String tmpDir = OS.getTemporaryDirectory();
 				
 				final String fullTmpPath = tmpDir + requestedFile;
 				final File f = new File(fullTmpPath);
@@ -481,7 +486,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         	if (context != null) {
 
         		try {
-        			filePath = Utils.getRealPath(context) + dir + uriWithoutServlet;
+        			filePath = Web.getRealPath(context) + dir + uriWithoutServlet;
 					fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 				} catch (IOException e) {
 					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
@@ -528,12 +533,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				//final String ext = uri.substring(uri.lastIndexOf("."), uri.length());
 				
 				// archives
-				if (Utils.isMimeTypeArchive(mimeType)) {
+				if (MIME.isMimeTypeArchive(mimeType)) {
 					
 					return fc.createResponse();
 					
 				// binaries
-				} else if (Utils.isMimeTypeOctet(mimeType)) {
+				} else if (MIME.isMimeTypeOctet(mimeType)) {
 					
 					return fc.createResponse();
 					
@@ -564,7 +569,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					}
 					
 					// Everything else: Text data !
-					if (Utils.isMimeTypeText(mimeType))
+					if (MIME.isMimeTypeText(mimeType))
 						return fc.createResponse();
 	
 					
@@ -676,7 +681,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     		}
     		
 		    try {
-				Utils.loadUserSettings(userSession);
+				DB.loadUserSettings(userSession);
 			} catch (SQLException e) {
 				LOG.error("Couldn't load user settings!", e);
 			}
@@ -773,7 +778,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					if (dbPwEnc) {
 						// A) Hashed password check
 						try {
-							loginSuccess = Utils.verifyPw(postParamPass, dbPass);
+							loginSuccess = Security.verifyPw(postParamPass, dbPass);
 						} catch (UtilsException e) {
 							final String err = "Server Internal Error - Exception: " + e.getMessage();
 							LOG.error(err, e);
@@ -806,7 +811,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					    // 2FA enabled?: 1st Step!
 					    if (dbTwoFa) {
 					    	
-			        		final String genCode = Utils.create6DigitTOTPCode(userSession.getUserSecretKey());
+			        		final String genCode = TwoFA.create6DigitTOTPCode(userSession.getUserSecretKey());
 			        		userSession.setInternalTOTPCode(genCode);
 					    	userSession.setTwoFaLogin(); 
 					    	
@@ -908,7 +913,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	private Response postLogin(BeetRootHTTPSession session, Session userSession, int userId, String username) {
 		
 	    try {
-			Utils.loadUserSettings(userSession);
+			DB.loadUserSettings(userSession);
 		} catch (SQLException e) {
 			LOG.error("Couldn't load user settings from DB!", e);
 		}
@@ -952,7 +957,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		if (method == null || method.length() == 0) {
 			
 			// make a new CSRF token
-		    final String formCsrfToken = Utils.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
+		    final String formCsrfToken = Security.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
 		    userSession.setFormCsrfToken(formCsrfToken);
 			return true;
 		}
@@ -960,7 +965,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		if (method != null && method.length() != 0) {
 			if (!method.equals("POST")) {
 				// make a new CSRF token
-			    final String formCsrfToken = Utils.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
+			    final String formCsrfToken = Security.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
 			    userSession.setFormCsrfToken(formCsrfToken);
 				return true;
 			}
@@ -977,7 +982,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 
 		// make a new CSRF token
-	    final String formCsrfToken = Utils.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
+	    final String formCsrfToken = Security.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
 	    userSession.setFormCsrfToken(formCsrfToken);
 	    
 	    return true;

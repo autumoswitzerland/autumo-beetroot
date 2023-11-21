@@ -22,7 +22,7 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Security;
 
 /**
  * Client answer.
@@ -95,7 +95,7 @@ public class ClientAnswer extends AbstractMessage {
 			ts = ts + MSG_PART_SEPARATOR + super.serializeObject();
 		
 		if (ENCRYPT)
-			return Utils.encodeCom(ts, SecureApplicationHolder.getInstance().getSecApp());
+			return Security.encodeCom(ts, SecureApplicationHolder.getInstance().getSecApp());
 		else
 			return ts;
 	}
@@ -110,7 +110,7 @@ public class ClientAnswer extends AbstractMessage {
 	public static ClientAnswer parse(String transferString) throws IOException {
 	
 		if (ENCRYPT)
-			transferString = Utils.decodeCom(transferString, SecureApplicationHolder.getInstance().getSecApp());
+			transferString = Security.decodeCom(transferString, SecureApplicationHolder.getInstance().getSecApp());
 		
 		final ClientAnswer answer = new ClientAnswer();
 		
@@ -144,7 +144,7 @@ public class ClientAnswer extends AbstractMessage {
 		
 		String result = "{";
 		if (ENCRYPT) {
-			String data = Utils.encodeCom(json.toString(), SecureApplicationHolder.getInstance().getSecApp());
+			String data = Security.encodeCom(json.toString(), SecureApplicationHolder.getInstance().getSecApp());
 			result += "\"data\":\""+data+"\"";
 		} else {
 			result += json.toString();
@@ -168,7 +168,7 @@ public class ClientAnswer extends AbstractMessage {
 		
 		if (ENCRYPT) {
 			String data = o.getString("data");
-			data = Utils.decodeCom(data, SecureApplicationHolder.getInstance().getSecApp());
+			data = Security.decodeCom(data, SecureApplicationHolder.getInstance().getSecApp());
 			o = new JSONObject("{"+data+"}");
 		}
 		

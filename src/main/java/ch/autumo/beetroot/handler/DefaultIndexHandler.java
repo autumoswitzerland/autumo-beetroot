@@ -35,7 +35,10 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * Default handler for 'web/html/<entity>/index.html' templates.
@@ -147,7 +150,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		}
 		
 		// Foreign relations?
-		refs = Utils.getForeignReferences(super.getEmptyBean());
+		refs = Beans.getForeignReferences(super.getEmptyBean());
 
 		
 		Connection conn = null;
@@ -221,7 +224,7 @@ public class DefaultIndexHandler extends BaseHandler {
 				userSession.createIdPair(idr, getEntity());
 				String modifyID = userSession.getModifyId(idr, getEntity());
 				
-				final Entity entity = Utils.createBean(getBeanClass(), set, processor);
+				final Entity entity = Beans.createBean(getBeanClass(), set, processor);
 				this.prepare(session, entity);
 				
 				// NOTE: We could deliver the whole bean which could be extracted by the
@@ -258,10 +261,10 @@ public class DefaultIndexHandler extends BaseHandler {
 					if (entityClass != null) {
 						
 						final int refDbIdx = Integer.valueOf(val).intValue();
-						final Map.Entry<Integer, String> e = Utils.getDisplayValue(entityClass, refDbIdx);
+						final Map.Entry<Integer, String> e = DB.getDisplayValue(entityClass, refDbIdx);
 						val = e.getValue();
 						
-						final String foreignEntity = Utils.classToTable(entityClass);
+						final String foreignEntity = Beans.classToTable(entityClass);
 						String foreignModifyID = userSession.getModifyId(refDbIdx, foreignEntity);
 						if (foreignModifyID == null)
 							foreignModifyID = userSession.createIdPair(refDbIdx, foreignEntity);
@@ -304,7 +307,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			String displayName = col[1];
 			if (refs != null)
 				if(refs.get(col[0]) != null)
-					displayName = Utils.adjustRefDisplayName(displayName);
+					displayName = Helper.adjustRefDisplayName(displayName);
 			
 			if (sortField != null && sortField.length() != 0) {
 				
@@ -473,7 +476,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		else
 			val = o.toString();
 		
-		val = Utils.escapeHtml(val);
+		val = Web.escapeHtml(val);
 
 		return "<td>" + val + "</td>";
 	}

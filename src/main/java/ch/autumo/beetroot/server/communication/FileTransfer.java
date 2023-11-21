@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.server.action.Download;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.OS;
 
 /**
  * Client/Server file transfer.
@@ -111,7 +111,7 @@ public class FileTransfer {
 	public static File readFile(DataInputStream in, String fileName, long size) throws IOException {
 
 		long length = size;
-		final File f = new File(Utils.getTemporaryDirectory() + fileName);
+		final File f = new File(OS.getTemporaryDirectory() + fileName);
 		final FileOutputStream fileOutputStream = new FileOutputStream(f);
 		final byte buffer[] = new byte[bufferLen];
 		int bytes = 0;

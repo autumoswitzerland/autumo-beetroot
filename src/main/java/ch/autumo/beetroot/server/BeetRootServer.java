@@ -20,11 +20,10 @@ package ch.autumo.beetroot.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
 
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Helper;
 
 /**
  * beetRoot stand-alone server.
@@ -66,29 +65,14 @@ public class BeetRootServer extends BaseServer {
 		if (!args[0].equals("start"))
 			return;
 		
-		boolean coloredBanner = true;
-		if (Utils.isWindows()) {
-			int v = -1;
-			String vstr = System.getProperty("os.version");
-			try {
-				v = Integer.valueOf(vstr).intValue();
-				if (v < 10)
-					coloredBanner = false;
-			} catch (Exception e) {
-				coloredBanner = false;
-			}
-		}
-		String banner = "\n\n" + 
+		final String banner = "\n\n" + 
 				" ___.                  __ __________               __\n" +   
 				" \\_ |__   ____   _____/  |\\______   \\ ____   _____/  |_\n" + 
 				"  | __ \\_/ __ \\_/ __ \\   __\\       _//  _ \\ /  _ \\   __\\\n" +
 				"  | \\_\\ \\  ___/\\  ___/|  | |    |   (  <_> |  <_> )  |\n" +
 				"  |___  /\\___/  \\___/ |__| |____|_  /\\____/ \\____/|__|\n" +
 				"      \\/                          \\/";
-		if (coloredBanner)
-			banner = Ansi.colorize(banner, Attribute.BRIGHT_MAGENTA_TEXT());
-		
-		System.out.println(banner);
+		System.out.println(Helper.createBanner(banner, Attribute.BRIGHT_MAGENTA_TEXT()));
 		System.out.println("  autumo beetRoot " + Constants.APP_VERSION);
 		System.out.println("");
 	}

@@ -17,7 +17,7 @@
  */
 package ch.autumo.beetroot.logging;
 
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Helper;
 
 /**
  * Abstract logging class.
@@ -28,9 +28,9 @@ public abstract class AbstractLogging implements Logging {
     static {
     	rootPath = System.getProperty("ROOTPATH");
     	if (rootPath == null || rootPath.length() == 0)
-    		rootPath = "." + Utils.FILE_SEPARATOR;
-    	if (!rootPath.endsWith(Utils.FILE_SEPARATOR))
-    		rootPath += Utils.FILE_SEPARATOR;
+    		rootPath = "." + Helper.FILE_SEPARATOR;
+    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
+    		rootPath += Helper.FILE_SEPARATOR;
     }
     
 }

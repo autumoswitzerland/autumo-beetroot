@@ -35,7 +35,11 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * Default handler for 'web/html/<entity>/add.html' templates.
@@ -64,7 +68,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		
 		// Foreign relations?
-		refs = Utils.getForeignReferences(super.getEmptyBean());
+		refs = Beans.getForeignReferences(super.getEmptyBean());
 		
 		// RETRY case!
 		final Map<String, String> params = session.getParms();
@@ -155,9 +159,9 @@ public abstract class DefaultAddHandler extends BaseHandler {
 					if (val != null) {
 						if (val.equalsIgnoreCase("NOW()")) {
 							if (BeetRootDatabaseManager.getInstance().isOracleDb())
-								values += ", " + Utils.nowTimeStamp();
+								values += ", " + Time.nowTimeStamp();
 							else
-								values += ", '" + Utils.nowTimeStamp() + "'";
+								values += ", '" + Time.nowTimeStamp() + "'";
 						}
 						else
 							values += ", '"+val+"'";
@@ -267,8 +271,8 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			divType = "select";
 		} else {
 			// standard columns
-			inputType = Utils.getHtmlInputType(rsmd, idx, columnName);
-			divType = Utils.getHtmlDivType(rsmd, idx, columnName);
+			inputType = Web.getHtmlInputType(rsmd, idx, columnName);
+			divType = Web.getHtmlDivType(rsmd, idx, columnName);
 			if (inputType == "checkbox")
 				isCheck = true;
 		}
@@ -300,7 +304,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			result += "<label for=\"cb_"+columnName+"\">"+guiColName+"</label>\n";
 		else {
 			if (entityClass != null)
-				guiColName = Utils.adjustRefDisplayName(guiColName);
+				guiColName = Helper.adjustRefDisplayName(guiColName);
 			result += "<label for=\""+columnName+"\">"+guiColName+"</label>\n";
 		}
 		
@@ -345,7 +349,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			// c. Foreign key boxes
 			} else if (entityClass != null) {
 				
-				final Map<Integer, String> entries = Utils.getDisplayValues(entityClass);
+				final Map<Integer, String> entries = DB.getDisplayValues(entityClass);
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 				for (Integer id : entries.keySet()) {
 					final int i = id.intValue();

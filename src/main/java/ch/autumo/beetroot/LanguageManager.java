@@ -33,7 +33,7 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Web;
 
 /**
  * Language manager.
@@ -69,7 +69,7 @@ public class LanguageManager {
         	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
         	if (context != null) {
         		
-    			final String cp = Utils.getRealPath(context) + "web/lang/";
+    			final String cp = Web.getRealPath(context) + "web/lang/";
         		
         		File file = new File(cp);
         		URI uri = file.toURI();

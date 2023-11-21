@@ -5,7 +5,7 @@ package planted.beetroot.handler.##entitynameplural##;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
 
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 
@@ -27,7 +27,7 @@ public class ##Entitynameplural##DeleteHandler extends DefaultDeleteHandler {
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
 
 		// if you need the bean before deleting the database object
-		##Entityname## ##entityname## = (##Entityname##) Utils.selectRecord(##Entityname##.class, id);
+		##Entityname## ##entityname## = (##Entityname##) DB.selectRecord(##Entityname##.class, id);
 
 		return super.deleteData(session, id); // delete it in the database
 	}

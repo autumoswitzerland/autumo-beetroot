@@ -24,7 +24,8 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Time;
 
 /**
  * Tasks index handler.
@@ -48,20 +49,20 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 		
 		switch (columnName) {
 		
-			case "name"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "minute"		: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "hour"			: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "dayofmonth"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "monthofyear"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
-			case "dayofweek"	: return "<td>" + Utils.getValue(set, columnName) + "</td>";
+			case "name"			: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "minute"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "hour"			: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "dayofmonth"	: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "monthofyear"	: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "dayofweek"	: return "<td>" + DB.getValue(set, columnName) + "</td>";
 			
 			case "active"		: return set.getBoolean(columnName) ? 
 									"<td>" + LanguageManager.getInstance().translate("base.switch.yes", session.getUserSession()) + "</td>" : 
 									"<td>" + LanguageManager.getInstance().translate("base.switch.no", session.getUserSession()) + "</td>";
 			
 			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"greenStatus\"></td>" : "<td class=\"redStatus\"></td>";
-			case "lastexecuted"	: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
-			case "modified"		: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Utils.getGUIDate(set.getTimestamp(columnName))+"</td>";
+			case "lastexecuted"	: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
+			case "modified"		: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			
 			default				: return "<td>" + set.getObject(columnName) + "</td>";
 		}

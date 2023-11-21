@@ -30,7 +30,7 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
-import ch.autumo.beetroot.utils.Utils;
+import ch.autumo.beetroot.utils.Beans;
 
 /**
  * Default JSON-REST handler for listing entities.
@@ -160,7 +160,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 			// table data
 			while (set.next() && counter < maxRecPerPage) {
 				
-				final Entity entity = Utils.createBean(getBeanClass(), set, processor);
+				final Entity entity = Beans.createBean(getBeanClass(), set, processor);
 				this.prepare(session, entity);
 				
 				// columns
