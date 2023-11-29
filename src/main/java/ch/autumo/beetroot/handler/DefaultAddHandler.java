@@ -209,6 +209,8 @@ public abstract class DefaultAddHandler extends BaseHandler {
 				keySet.close();
 			if (stmt != null)
 				stmt.close();
+			if (stmt2 != null)
+				stmt2.close();
 			if (conn != null)
 				conn.close();
 		}

@@ -3,12 +3,12 @@
  */
 package planted.beetroot.handler.##entitynameplural##;
 
-import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Model;
 
 /**
  * ##Entityname##. 
  */
-public class ##Entityname## implements Entity {
+public class ##Entityname## extends Model {
 
     private static final long serialVersionUID = 1L;
 	

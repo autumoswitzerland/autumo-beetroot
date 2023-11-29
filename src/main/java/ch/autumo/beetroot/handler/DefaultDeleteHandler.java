@@ -17,13 +17,11 @@
  */
 package ch.autumo.beetroot.handler;
 
-import java.sql.Connection;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.Statement;
 
-import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.utils.DB;
 
 /**
  * Default delete handler.
@@ -36,31 +34,12 @@ public class DefaultDeleteHandler extends BaseHandler {
 
 	@Override
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
-
-		Connection conn = null;
-		Statement stmt = null;
-		
 		try {
-			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			
-			// Delete data !
-			stmt = conn.createStatement();
-			
-			String stmtStr = "DELETE FROM "+getEntity()+" WHERE id=" + id;
-			stmt.executeUpdate(stmtStr);
-		
+			DB.delete(getEntity(), id);
 		} catch (SQLIntegrityConstraintViolationException ex) {
-			
 			// In this case, the entity references another
 			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.delete.integrity", session.getUserSession()));
-			
-		} finally {
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();
 		}
-		
 		return null;
 	}
 	

@@ -27,7 +27,10 @@ import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
+
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Model;
 
 
 /**
@@ -37,6 +40,45 @@ public class Beans {
 
 	private final static Logger LOG = LoggerFactory.getLogger(Beans.class.getName());
 
+	/**
+	 * Snake case converter (AKA camel-case to database naming convention with underscore characters).
+	 */
+	private final static SnakeCaseStrategy SNAKE_CASE = new SnakeCaseStrategy();
+	
+	/**
+	 * Get database table column name by bean property name.
+	 * 
+	 * @param beanPropName bean property name
+	 * @return database table column name
+	 */
+	public static String beanPropertyName2DbName(String beanPropName) {
+		return SNAKE_CASE.translate(beanPropName);
+	}
+	
+	/**
+	 * Class to bean reference ID name.
+	 * 
+	 * @param clz class
+	 * @return name of the bean reference ID.
+	 */
+	public static String classToRefBeanId(Class<?> clz) {
+		final String c = clz.getName().toLowerCase();
+		final String table = c.substring(c.lastIndexOf(".") + 1, c.length());
+		return table.toLowerCase() + "Id";
+	}
+
+	/**
+	 * Class to database reference ID name.
+	 * 
+	 * @param clz class
+	 * @return name of the database reference ID.
+	 */
+	public static String classToRefDbId(Class<?> clz) {
+		final String c = clz.getName().toLowerCase();
+		final String table = c.substring(c.lastIndexOf(".") + 1, c.length());
+		return table.toLowerCase() + "_id";
+	}
+	
 	/**
 	 * Class to DB table.
 	 * @param clz class
@@ -77,10 +119,10 @@ public class Beans {
 	 * @return entity bean or null
 	 * @throws SQLException
 	 */
-	public static Entity createBean(Class<?> beanClass) throws Exception {
+	public static Model createBean(Class<?> beanClass) throws Exception {
 		final Constructor<?> constructor = beanClass.getDeclaredConstructor();
         constructor.setAccessible(true);
-        final Entity bean = (Entity) constructor.newInstance();
+        final Model bean = (Model) constructor.newInstance();
         return bean;
 	}
 	
@@ -92,7 +134,7 @@ public class Beans {
 	 * @return entity bean or null
 	 * @throws SQLException
 	 */
-	public static Entity createBean(Class<?> beanClass, ResultSet set) throws SQLException {
+	public static Model createBean(Class<?> beanClass, ResultSet set) throws SQLException {
 		return createBean(beanClass, set, new BeanProcessor());
 	}
 	
@@ -105,11 +147,11 @@ public class Beans {
 	 * @return entity bean or null
 	 * @throws SQLException
 	 */
-	public static Entity createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
+	public static Model createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
 		
-		Entity entity = null;
+		Model entity = null;
 		if (beanClass != null)
-			entity = (Entity) processor.toBean(set, beanClass);
+			entity = (Model) processor.toBean(set, beanClass);
 		
 		return entity;
 	}

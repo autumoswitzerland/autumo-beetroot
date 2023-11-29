@@ -36,6 +36,7 @@ import java.util.Set;
 
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.DBField;
 import ch.autumo.beetroot.utils.OS;
 
 /**
@@ -346,9 +347,9 @@ public class Fertilizer {
 							c++;
 							final String name = iterator.next();
 							if (c == amountOfFields)
-								cols += "			case \""+name+"\": return \"<td>\" + Utils.getValue(set, columnName) + \"</td>\";";
+								cols += "			case \""+name+"\": return \"<td>\" + DB.getValue(set, columnName) + \"</td>\";";
 							else
-								cols += "			case \""+name+"\": return \"<td>\" + Utils.getValue(set, columnName) + \"</td>\";\n";
+								cols += "			case \""+name+"\": return \"<td>\" + DB.getValue(set, columnName) + \"</td>\";\n";
 						}
 						text = text.replace("##columns##", cols);
 					}
@@ -380,6 +381,13 @@ public class Fertilizer {
 	private String processBean() {
 
 		final StringBuffer contents = new StringBuffer();
+	
+		/*
+		contents.append("    public " + Beans.tableToClassName(this.dbEntity) + "() {\n");
+		contents.append("    }\n");
+		contents.append("\n");
+		*/
+		
 		
 		for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
 			
@@ -389,12 +397,16 @@ public class Fertilizer {
 			
 			String javaType = this.getJavaType(sqlType);
 
-			String propertyName = this.propertyName(dbField.getName());
+			String dbFieldName = dbField.getName();
+			if (dbFieldName.equals("id")) // The ID is defined within the model!
+				continue;
+			
+			String propertyName = this.propertyName(dbFieldName);
 			
 			contents.append("    private " + javaType + " " + propertyName + ";\n");
 			contents.append("\n");
 			
-			String properyNameMethodPart = this.propertyNameMethodPath(dbField.getName());
+			String properyNameMethodPart = this.propertyNameMethodPath(dbFieldName);
 			
 			contents.append("    public " + javaType + " get" + properyNameMethodPart + "() {\n");
 			contents.append("        return "+propertyName+";\n");
@@ -417,6 +429,7 @@ public class Fertilizer {
 			displayField = "name";
 		else if (dbColNames.contains("description"))
 			displayField = "description";
+		contents.append("    @Override\n");
 		contents.append("    public String getDisplayField() {\n");
 		contents.append("        return \""+displayField+"\";\n");
 		contents.append("    }");
@@ -436,10 +449,21 @@ public class Fertilizer {
 			fkMap +=  "            );\n";
 			contents.append("\n");
 			contents.append("\n");
+			contents.append("    @Override\n");
 			contents.append("    public java.util.Map<String, Class<?>> getForeignReferences() {\n");
 			contents.append(fkMap);
 			contents.append("    }");
 		}
+
+		
+		// Model class
+		contents.append("\n");
+		contents.append("\n");
+		contents.append("    @Override\n");
+		contents.append("    public Class<?> modelClass() {\n");
+		contents.append("        return " + Beans.tableToClassName(this.dbEntity) + ".class;\n");
+		contents.append("    }");
+		
 		
 		return contents.toString();
 	}

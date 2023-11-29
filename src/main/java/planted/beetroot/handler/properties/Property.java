@@ -3,12 +3,12 @@
  */
 package planted.beetroot.handler.properties;
 
-import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Model;
 
 /**
  * Property. 
  */
-public class Property implements Entity {
+public class Property extends Model {
 
     private static final long serialVersionUID = 1L;
 	
@@ -42,16 +42,6 @@ public class Property implements Entity {
         this.modified = modified;
     }
 
-    private int id;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     private String value;
 
     public String getValue() {
@@ -61,5 +51,15 @@ public class Property implements Entity {
     public void setValue(String value) {
         this.value = value;
     }
+
+	@Override
+	public String getDisplayField() {
+		return "name";
+	}
+    
+	@Override
+	public Class<?> modelClass() {
+		return Property.class;
+	}
 	
 }

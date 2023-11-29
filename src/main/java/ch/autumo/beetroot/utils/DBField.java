@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.plant;
+package ch.autumo.beetroot.utils;
 
 /**
   * DB field.
