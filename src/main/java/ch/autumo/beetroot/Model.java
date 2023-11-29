@@ -53,6 +53,9 @@ import ch.autumo.beetroot.utils.UtilsException;
  * - Select referenced entities
  * - List and find entities 
  * - Save, update and delete
+ * 
+ * Note that all bean property names used within methods are
+ * case sensitive!
  */
 public abstract class Model implements Entity {
 	
@@ -102,6 +105,33 @@ public abstract class Model implements Entity {
         this.id = id;
     }
 
+    /**
+     * Is the field specified by the bean property name nullable?
+     * 
+     * @param beanPropertyName bean property name
+     * @return true if so
+     */
+    public boolean isNullable(String beanPropertyName) {
+    	DB.updateModel(this, MODEL);
+    	final String tableName = Beans.classToTable(modelClass());
+		final Map<String, DBField> dbFields = MODEL.get(tableName);
+    	final DBField field = dbFields.get(Beans.beanPropertyName2DbName(beanPropertyName));
+    	return field.isNullable();
+    }
+
+    /**
+     * Is the field specified by the bean property name unique?
+     * 
+     * @param beanPropertyName bean property name
+     * @return true if so
+     */
+    public boolean isUnique(String beanPropertyName) {
+    	DB.updateModel(this, MODEL);
+    	final String tableName = Beans.classToTable(modelClass());
+		final Map<String, DBField> dbFields = MODEL.get(tableName);
+    	final DBField field = dbFields.get(Beans.beanPropertyName2DbName(beanPropertyName));
+    	return field.isUnique();
+    }
     
     /**
      * Get a value from this entity except the id.
@@ -259,7 +289,7 @@ public abstract class Model implements Entity {
 	 * @return JSON string
 	 * @throws JsonProcessingException
 	 */
-	public String serialize(Entity entity) throws JsonProcessingException {
+	public String serialize(Model entity) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(entity);
 	}
@@ -271,9 +301,9 @@ public abstract class Model implements Entity {
 	 * @return entity
 	 * @throws JsonProcessingException
 	 */
-	public Entity deserialize(String json) throws JsonProcessingException {
+	public Model deserialize(String json) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();
-		return (Entity) mapper.readValue(json, modelClass());
+		return (Model) mapper.readValue(json, modelClass());
 	}
 
 	/**
