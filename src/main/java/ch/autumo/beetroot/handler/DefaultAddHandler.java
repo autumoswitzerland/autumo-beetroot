@@ -37,8 +37,8 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.utils.Beans;
 import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.Time;
 import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.Time;
 import ch.autumo.beetroot.utils.Web;
 
 /**
@@ -67,23 +67,52 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		
-		// Foreign relations?
-		refs = Beans.getForeignReferences(super.getEmptyBean());
-		
 		// RETRY case!
 		final Map<String, String> params = session.getParms();
 		final String _method = params.get("_method");
-		if (_method != null && _method.equals("RETRY")) {
 
-			final Connection conn = BeetRootDatabaseManager.getInstance().getConnection();
-			final Statement stmt = conn.createStatement();
+		// Foreign relations?
+		refs = Beans.getForeignReferences(super.getEmptyBean());
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet set = null; 
+		try {
+		
+			if (_method != null && _method.equals("RETRY")) {
+	
+				conn = BeetRootDatabaseManager.getInstance().getConnection();
+				stmt = conn.createStatement();
+				
+				// we only need the result set for the column meta data
+				stmt.setFetchSize(1);
+				
+				String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity;
+				set = stmt.executeQuery(stmtStr);
+	
+				LOOP: for (int i = 1; i <= columns().size(); i++) {
+					
+					final String col[] = getColumn(i);
+					
+					final String guiColTitle = col[1];
+					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+						continue LOOP;
+					
+					htmlData += this.extractSingleInputDiv(session, params, set, col[0], guiColTitle, i);
+				}
+				set.close();
+				stmt.close();
+				conn.close();
+				return null;
+			}
 			
-			// we only need the result set for the column meta data
-			stmt.setFetchSize(1);
+			// NORMAL case: first call case
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.createStatement();
 			
-			String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity;
-			final ResultSet set = stmt.executeQuery(stmtStr);
-
+			String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
+			set = stmt.executeQuery(stmtStr); // NOTE: call only for types, make this better!
+			
 			LOOP: for (int i = 1; i <= columns().size(); i++) {
 				
 				final String col[] = getColumn(i);
@@ -92,29 +121,17 @@ public abstract class DefaultAddHandler extends BaseHandler {
 				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 					continue LOOP;
 				
-				htmlData += this.extractSingleInputDiv(session, params, set, col[0], guiColTitle, i);
+				htmlData += extractSingleInputDiv(session, set, col[0], guiColTitle, i);
 			}
-			return null;
-		}
-		
-		// NORMAL case: first call case
-		final Connection conn = BeetRootDatabaseManager.getInstance().getConnection();
-		final Statement stmt = conn.createStatement();
-		
-		String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
-		final ResultSet set = stmt.executeQuery(stmtStr); // NOTE: call only for types, make this better!
-		
-		LOOP: for (int i = 1; i <= columns().size(); i++) {
 			
-			final String col[] = getColumn(i);
-			
-			final String guiColTitle = col[1];
-			if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
-				continue LOOP;
-			
-			htmlData += extractSingleInputDiv(session, set, col[0], guiColTitle, i);
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
 		}		
-		
 		return null;
 	}
 

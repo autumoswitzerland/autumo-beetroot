@@ -56,15 +56,14 @@ public class DefaultViewHandler extends BaseHandler {
 		
 		// Foreign relations?
 		refs = Beans.getForeignReferences(super.getEmptyBean());
-		
+		ResultSet set = null;
 		try {
 		
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			
 			String stmtStr = "SELECT id, "+super.getColumnsForSql()+" FROM " + this.entity + " WHERE id="+id;
-			final ResultSet set = stmt.executeQuery(stmtStr);
-	
+			set = stmt.executeQuery(stmtStr);
 			set.next(); // one record !
 			
 			final Entity entity = Beans.createBean(getBeanClass(), set);
@@ -121,6 +120,8 @@ public class DefaultViewHandler extends BaseHandler {
 				}
 			}		
 		} finally {
+			if (set != null)
+				set.close();
 			if (stmt != null)
 				stmt.close();
 			if (conn != null)

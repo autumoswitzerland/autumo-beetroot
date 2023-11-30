@@ -68,7 +68,6 @@ public class DefaultEditHandler extends BaseHandler {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null; 
-		
 		try {
 		
 			if (_method != null && _method.equals("RETRY")) {
@@ -92,6 +91,7 @@ public class DefaultEditHandler extends BaseHandler {
 					
 					htmlData += this.extractSingleInputDiv(session, params, set, col[0], guiColTitle, i);
 				}
+				set.close();
 				stmt.close();
 				conn.close();
 				return null;

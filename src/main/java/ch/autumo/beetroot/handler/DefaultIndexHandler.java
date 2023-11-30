@@ -155,7 +155,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		Connection conn = null;
 		Statement stmt = null;
-		
+		ResultSet set = null;
 		try {
 
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
@@ -185,7 +185,7 @@ public class DefaultIndexHandler extends BaseHandler {
 			// NO SEMICOLON
 			//stmtStr += ";";
 			
-			final ResultSet set = stmt.executeQuery(stmtStr);
+			set = stmt.executeQuery(stmtStr);
 			
 	        if (set.last()) { 
 	        	rowCount = set.getRow();
@@ -287,6 +287,8 @@ public class DefaultIndexHandler extends BaseHandler {
 			}
 		
 		} finally {
+			if (set != null)
+				set.close();
 			if (stmt != null)
 				stmt.close();
 			if (conn != null)

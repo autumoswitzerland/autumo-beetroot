@@ -107,7 +107,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 		
 		Connection conn = null;
 		Statement stmt = null;
-		
+		ResultSet set = null; 
 		try {
 
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
@@ -127,7 +127,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 			if (sortDir != null && sortDir.length() != 0)
 				stmtStr += " " + sortDir.toUpperCase();
 			
-			final ResultSet set = stmt.executeQuery(stmtStr);
+			set = stmt.executeQuery(stmtStr);
 			
 	        if (set.last()) { 
 	        	rowCount = set.getRow();
@@ -190,6 +190,8 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 			}
 		
 		} finally {
+			if (set != null)
+				set.close();
 			if (stmt != null)
 				stmt.close();
 			if (conn != null)
