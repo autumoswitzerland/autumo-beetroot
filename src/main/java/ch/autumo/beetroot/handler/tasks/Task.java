@@ -3,18 +3,22 @@
  */
 package ch.autumo.beetroot.handler.tasks;
 
-import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Nullable;
+import ch.autumo.beetroot.annotations.Unique;
 
 /**
  * Task. 
  */
-public class Task implements Entity {
+public class Task extends Model {
 
     private static final long serialVersionUID = 1L;
     
+	@Column(name = "monthofyear")
 	private String monthofyear;
 
-    public String getMonthofyear() {
+	public String getMonthofyear() {
         return monthofyear;
     }
 
@@ -22,6 +26,8 @@ public class Task implements Entity {
         this.monthofyear = monthofyear;
     }
 
+	@Nullable
+	@Column(name = "created")
     private java.sql.Timestamp created;
 
     public java.sql.Timestamp getCreated() {
@@ -32,6 +38,7 @@ public class Task implements Entity {
         this.created = created;
     }
 
+	@Column(name = "active")
     private boolean active;
 
     public boolean getActive() {
@@ -42,6 +49,7 @@ public class Task implements Entity {
         this.active = active;
     }
 
+	@Column(name = "minute")
     private String minute;
 
     public String getMinute() {
@@ -52,6 +60,7 @@ public class Task implements Entity {
         this.minute = minute;
     }
 
+	@Column(name = "dayofmonth")
     private String dayofmonth;
 
     public String getDayofmonth() {
@@ -62,6 +71,7 @@ public class Task implements Entity {
         this.dayofmonth = dayofmonth;
     }
 
+	@Column(name = "path")
     private String path;
 
     public String getPath() {
@@ -72,6 +82,7 @@ public class Task implements Entity {
         this.path = path;
     }
 
+	@Column(name = "hour")
     private String hour;
 
     public String getHour() {
@@ -82,6 +93,8 @@ public class Task implements Entity {
         this.hour = hour;
     }
 
+	@Unique
+	@Column(name = "name")
     private String name;
 
     public String getName() {
@@ -92,6 +105,8 @@ public class Task implements Entity {
         this.name = name;
     }
 
+	@Nullable
+	@Column(name = "guid")
     private String guid;
 
     public String getGuid() {
@@ -102,6 +117,7 @@ public class Task implements Entity {
         this.guid = guid;
     }
 
+	@Column(name = "dayofweek")
     private String dayofweek;
 
     public String getDayofweek() {
@@ -112,6 +128,7 @@ public class Task implements Entity {
         this.dayofweek = dayofweek;
     }
 
+	@Column(name = "laststatus")
     private boolean laststatus;
 
     public boolean getLaststatus() {
@@ -122,6 +139,8 @@ public class Task implements Entity {
         this.laststatus = laststatus;
     }
 
+	@Nullable
+	@Column(name = "modified")
     private java.sql.Timestamp modified;
 
     public java.sql.Timestamp getModified() {
@@ -132,6 +151,8 @@ public class Task implements Entity {
         this.modified = modified;
     }
 
+	@Nullable
+	@Column(name = "lastexecuted")
     private java.sql.Timestamp lastexecuted;
 
     public java.sql.Timestamp getLastexecuted() {
@@ -142,16 +163,15 @@ public class Task implements Entity {
         this.lastexecuted = lastexecuted;
     }
 
-    private int id;
+	@Override
+	public String getDisplayField() {
+		return "name";
+	}
+    
+	@Override
+	public Class<?> modelClass() {
+		return Task.class;
+	}
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-	
 	
 }

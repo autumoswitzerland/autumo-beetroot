@@ -3,15 +3,18 @@
  */
 package ch.autumo.beetroot.handler.users;
 
-import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Unique;
 
 /**
  * User. 
  */
-public class User implements Entity {
+public class User extends Model {
 
     private static final long serialVersionUID = 1L;
     
+    @Column (name = "firstname")
 	private String firstname;
 
     public String getFirstname() {
@@ -22,6 +25,7 @@ public class User implements Entity {
         this.firstname = firstname;
     }
 
+    @Column (name = "password")
     private String password;
 
     public String getPassword() {
@@ -32,6 +36,7 @@ public class User implements Entity {
         this.password = password;
     }
 
+    @Column (name = "role")
     private String role;
 
     public String getRole() {
@@ -42,6 +47,7 @@ public class User implements Entity {
         this.role = role;
     }
 
+    @Column (name = "lasttoken")
     private String lasttoken;
 
     public String getLasttoken() {
@@ -52,6 +58,7 @@ public class User implements Entity {
         this.lasttoken = lasttoken;
     }
 
+    @Column (name = "created")
     private java.sql.Timestamp created;
 
     public java.sql.Timestamp getCreated() {
@@ -62,6 +69,7 @@ public class User implements Entity {
         this.created = created;
     }
 
+    @Column (name = "modified")
     private java.sql.Timestamp modified;
 
     public java.sql.Timestamp getModified() {
@@ -72,16 +80,7 @@ public class User implements Entity {
         this.modified = modified;
     }
 
-    private int id;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    @Column (name = "modified")
     private String lang;
 
     public String getLang() {
@@ -92,6 +91,8 @@ public class User implements Entity {
         this.lang = lang;
     }
 
+    @Unique
+    @Column (name = "email")
     private String email;
 
     public String getEmail() {
@@ -102,6 +103,8 @@ public class User implements Entity {
         this.email = email;
     }
 
+    @Unique
+    @Column (name = "username")
     private String username;
 
     public String getUsername() {
@@ -112,6 +115,7 @@ public class User implements Entity {
         this.username = username;
     }
 
+    @Column (name = "lastname")
     private String lastname;
 
     public String getLastname() {
@@ -122,6 +126,7 @@ public class User implements Entity {
         this.lastname = lastname;
     }
 
+    @Column (name = "secretkey")
     private String secretkey;
     
     public String getSecretkey() {
@@ -132,6 +137,7 @@ public class User implements Entity {
 		this.secretkey = secretkey;		
 	}
     
+    @Column (name = "twoFa")
     private boolean twoFa;
     
     public boolean getTwoFa() {
@@ -141,5 +147,15 @@ public class User implements Entity {
     public void setTwoFa(boolean twoFa) {
     	this.twoFa = twoFa;
     }
+
+	@Override
+	public String getDisplayField() {
+		return "username";
+	}
+
+	@Override
+	public Class<?> modelClass() {
+		return User.class;
+	}
     
 }

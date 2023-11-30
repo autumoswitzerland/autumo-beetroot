@@ -1120,6 +1120,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 							if (displayNameValue != null)
 								text = PATTERN_DISPLAY_NAME.matcher(text).replaceAll(displayNameValue);
+							else
+								text = PATTERN_DISPLAY_NAME.matcher(text).replaceAll(""+origId);
 						}
 						
 						// template specific variables
