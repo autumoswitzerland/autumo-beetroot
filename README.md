@@ -9,7 +9,7 @@
 [issues-shield]: https://img.shields.io/github/issues/autumoswitzerland/autumo.svg?style=for-the-badge
 [issues-url]: https://github.com/autumoswitzerland/autumo/issues
 [license-shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge
-[license-url]: https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/LICENSE.md
+[license-url]: https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/LICENSE.md
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/company/autumo
 [product-screenshot]: https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png
