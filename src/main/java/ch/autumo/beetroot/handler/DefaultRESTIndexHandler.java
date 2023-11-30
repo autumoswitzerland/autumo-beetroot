@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +29,7 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.utils.BeanProcessor;
 import ch.autumo.beetroot.utils.Beans;
 
 /**

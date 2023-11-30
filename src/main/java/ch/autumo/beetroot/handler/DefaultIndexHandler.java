@@ -23,7 +23,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.dbutils.BeanProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +34,7 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
+import ch.autumo.beetroot.utils.BeanProcessor;
 import ch.autumo.beetroot.utils.Beans;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Helper;
