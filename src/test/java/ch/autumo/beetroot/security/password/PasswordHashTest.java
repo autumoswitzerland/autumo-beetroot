@@ -31,7 +31,7 @@ public class PasswordHashTest {
 
 
 		// needed for seed
-		BeetRootConfigurationManager.getInstance().initialize("cfg/beetroot.cfg");
+		BeetRootConfigurationManager.getInstance().initialize("cfg/beetroot_test.cfg");
 		
 		PBKPD2HashProvider p = new PBKPD2HashProvider();
 		

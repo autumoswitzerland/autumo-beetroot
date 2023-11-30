@@ -17,10 +17,18 @@
  */
 package ch.autumo.beetroot.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
   * DB field.
   */
 public class DBField {
+
+	protected final static Logger LOG = LoggerFactory.getLogger(DBField.class.getName());
 	
 	String name;
 	String type;
@@ -30,6 +38,15 @@ public class DBField {
 	String foreignTable = null;
 	boolean isForeignKey = false;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name column name
+	 * @param type column type
+	 * @param isNullable is nullable? 
+	 * @param unique is unique?
+	 * @param defaultVal column default value
+	 */
 	public DBField(String name, String type, boolean isNullable, boolean unique, String defaultVal) {
 		this.name = name;
 		this.type = type;
@@ -37,19 +54,47 @@ public class DBField {
 		this.unique = unique;
 		this.defaultVal = defaultVal;
 	}		
+	
 	public String getDefaultVal() {
 		return defaultVal;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public String getType() {
 		return type;
 	}
+	
 	public boolean isUnique() {
 		return unique;
 	}
+	
 	public boolean isNullable() {
 		return isNullable;
 	}
+	
+	@Override
+	public String toString() {
+		try {
+			return this.serialize(this);
+		} catch (JsonProcessingException e) {
+			LOG.error("Couldn't serialize (JSON) DB field!", e);
+			return super.toString();
+		}
+	}
+
+	/**
+	 * Serialize this field to JSON.
+	 * 
+	 * @param field field
+	 * @return JSON string
+	 * @throws JsonProcessingException
+	 */
+	public String serialize(DBField field) throws JsonProcessingException {
+		final ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(field);
+	}
+	
 }

@@ -150,52 +150,38 @@ public class Plant {
 		} else {
 			
 			List<String> tableList = new ArrayList<String>();
-
 			Connection conn = null;
 			Statement stmt = null;
-			
 			try {
-				
 				conn = BeetRootDatabaseManager.getInstance().getConnection();
 				stmt = conn.createStatement();
 			
-				if (BeetRootDatabaseManager.getInstance().isMysqlDb() || BeetRootDatabaseManager.getInstance().isMariaDb()) {
-					ResultSet rs = stmt.executeQuery("SHOW TABLES;");
-					while (rs.next())
-						tableList.add(rs.getString(1));
-					rs.close();
-				} else {
-					System.out.println(" "+Colors.yellow("NOTE") + ": At this time CRUD generation is only possible with MySQL and MariaDB.");
-					System.out.println(" We suggest setting up one of these databases for development and then using");
-					System.out.println(" the generated templates and code for the target database. Exit.");
-					this.printLine();
-					System.out.println("");
-					
-					// finish now!
-					Helper.normalExit();
-				} 
-				/*
-				else if (DatabaseManager.getInstance().isH2Db()) {
-					ResultSet rs = stmt.executeQuery("SHOW TABLES;");
-					while (rs.next())
-						tableList.add(rs.getString(1));
-					rs.close();
-				} else if (DatabaseManager.getInstance().isPostgreDb()) {
-					
-					ResultSet rs = stmt.executeQuery("\\dt");
-					while (rs.next())
-						tableList.add(rs.getString("name"));
-					rs.close();
-				} else if (DatabaseManager.getInstance().isOracleDb()) {
-					ResultSet rs = stmt.executeQuery("SELECT table_name FROM user_tables;");
-					while (rs.next())
-						tableList.add(rs.getString("table_name"));
-					rs.close();
-				}
-				*/
-			
-			} finally {
+				String statement = null;
 				
+				if (BeetRootDatabaseManager.getInstance().isMysqlDb() || BeetRootDatabaseManager.getInstance().isMariaDb() || BeetRootDatabaseManager.getInstance().isH2Db())
+					statement = "SHOW TABLES";
+				else if (BeetRootDatabaseManager.getInstance().isPostgreDb() || BeetRootDatabaseManager.getInstance().isPostgreDbWithNGDriver())  
+					statement = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'";
+				else if (BeetRootDatabaseManager.getInstance().isOracleDb())
+					statement = "SELECT table_name FROM user_tables ORDER BY table_name";
+				else
+					statement = "SHOW TABLES";
+				
+				final ResultSet rs = stmt.executeQuery(statement);
+				while (rs.next())
+					tableList.add(rs.getString(1));
+				rs.close();
+					
+				/**
+				System.out.println(" "+Colors.yellow("NOTE") + ": At this time CRUD generation is only possible with MySQL and MariaDB.");
+				System.out.println(" We suggest setting up one of these databases for development and then using");
+				System.out.println(" the generated templates and code for the target database. Exit.");
+				this.printLine();
+				System.out.println("");
+				// finish now!
+				Helper.normalExit();
+				*/
+			} finally {
 				if (stmt != null)
 					stmt.close();
 				if (conn != null)
@@ -207,7 +193,7 @@ public class Plant {
 
 			int d = -1;
 
-			// Shoe entity names
+			// Show entity names
 			do {
 				System.out.println("");
 				System.out.println(Colors.yellow("Input entity name") + ": ");

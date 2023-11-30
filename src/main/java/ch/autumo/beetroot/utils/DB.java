@@ -598,9 +598,12 @@ public class DB {
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			final String stmtStr = "UPDATE "+tabelName+" SET " + updateClause + " WHERE id=" + entity.getId();
+			
+			System.out.println(stmtStr);
+			
 			stmt.executeUpdate(stmtStr);
 		} catch (Exception e) {
-			LOG.error("Couldn't update Entity!", e);
+			LOG.error("Couldn't update entity!", e);
 		} finally {
 			try {
 				if (stmt != null)
@@ -647,7 +650,7 @@ public class DB {
 				
 			}
 		} catch (SQLException e) {
-			LOG.error("Couldn't save Entity!", e);
+			LOG.error("Couldn't save entity!", e);
 			return Integer.valueOf(-1);
 		} finally {
 			try {
@@ -776,41 +779,16 @@ public class DB {
 		final String tableName = Beans.classToTable(entity.getClass());
 		if (!model.containsKey(tableName)) {
 			final Map<String, DBField> databaseFields = new HashMap<String, DBField>();
-			Connection conn = null;
-			Statement stmt = null;
-			ResultSet rs = null;
 			try {
-				try {
-					conn = BeetRootDatabaseManager.getInstance().getConnection();
-					stmt = conn.createStatement();
-					rs = stmt.executeQuery("DESC " + tableName + ";");
-					DBField dbField = null;
-					while (rs.next()) {
-						String name = rs.getString(1);
-						dbField = new DBField(
-							name, // Field
-							rs.getString(2), // Type
-							rs.getString(3).toLowerCase().equals("yes") ? true : false, // Null
-							rs.getString(4).toLowerCase().equals("uni") ? true : false, // Null
-							rs.getString(5) // default val
-						);
-						databaseFields.put(name, dbField);
-					}		
-				} catch (SQLException e) {
-					LOG.error("Couldn't update static database model!", e);
+				final List<DBField> fields= BeetRootDatabaseManager.getInstance().describeTable(tableName);
+				for (Iterator<DBField> iterator = fields.iterator(); iterator.hasNext();) {
+					final DBField dbField = iterator.next();
+					databaseFields.put(dbField.getName(), dbField);
 				}
-				model.put(tableName, databaseFields);
-			} finally {
-				try {
-					if (rs != null)
-						rs.close();
-					if (stmt != null)
-						stmt.close();
-					if (conn != null)
-						conn.close();
-				} catch (SQLException e) {
-				}
-			}			
+			} catch (SQLException e) {
+				LOG.error("Couldn't update static database model!", e);
+			}
+			model.put(tableName, databaseFields);
 		}
 	}
 		

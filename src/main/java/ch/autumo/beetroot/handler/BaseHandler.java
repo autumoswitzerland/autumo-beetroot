@@ -628,7 +628,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			val = DB.escapeValuesForDb(val);
 			
-			if (dbPwEnc && col[0].equals("password")) {
+			if (dbPwEnc && col[0].equalsIgnoreCase("password")) {
 				val = Security.hashPw(val);
 			}
 
@@ -642,7 +642,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// if there's really a column in the GUI that is mapped 
 			// to the db column 'created', overwrite it!
-			if (col[1].equals("created")) {
+			if (col[1].equalsIgnoreCase("created")) {
 				if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 					if (columns.size() == i)
 						clause += Time.nowTimeStamp();
@@ -712,7 +712,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (transientFields.contains(col[0]))
 				continue LOOP;
 
-			if (col[0].equals("password")) // passwords are not allowed to be updated!
+			if (col[0].equalsIgnoreCase("password")) // passwords are not allowed to be updated!
 				continue LOOP;
 			
 			
@@ -782,7 +782,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 		// Doesn't matter, if 'modified' is configured in 'colums.cfg' or not
 		// And we assume the column exists as specified by design!
-		// But we don't update it, if the user choses to modify it by himself (GUI).
+		// But we don't update it, if the user chooses to modify it by himself (GUI).
 		if (dbAutoMod && clause.indexOf("modified=") != 1 ) {
 			if (BeetRootDatabaseManager.getInstance().isOracleDb())
 				clause += ", modified=" + Time.nowTimeStamp() + "";

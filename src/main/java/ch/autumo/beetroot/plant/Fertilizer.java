@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,59 +83,34 @@ public class Fertilizer {
 		this.type = type.toLowerCase().trim();
 		
 		Connection conn = null;
-		Statement stmt = null;
 		ResultSet rs = null;
-		
 		try {
-			
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			
 			// Collect foreign keys
 			final DatabaseMetaData meta = conn.getMetaData();
-			final ResultSet rsk = meta.getImportedKeys(conn.getCatalog(), null, dbEntity);
-			while (rsk.next()) {
-				String fkColumnName = rsk.getString("FKCOLUMN_NAME");
-				String pkTableName = rsk.getString("PKTABLE_NAME");
+			rs = meta.getImportedKeys(conn.getCatalog(), null, dbEntity);
+			while (rs.next()) {
+				String fkColumnName = rs.getString("FKCOLUMN_NAME");
+				String pkTableName = rs.getString("PKTABLE_NAME");
 				String clz = "planted.beetroot.handler." + pkTableName + "." + Beans.tableToClassName(pkTableName) + ".class";
 				this.addForeignKeyMapping(fkColumnName, clz);
 			}
-			rsk.close();
-			
-			
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery("DESC " + dbEntity + ";");
-			
-			DBField dbField = null;
-			while (rs.next()) {
-				String name = rs.getString(1);
-				dbField = new DBField(
-					name, // Field
-					rs.getString(2), // Type
-					rs.getString(3).toLowerCase().equals("yes") ? true : false, // Null
-					rs.getString(4).toLowerCase().equals("uni") ? true : false, // Null
-					rs.getString(5) // default val
-				);
-				
-				databaseFields.put(name, dbField);
+			final List<DBField> fields = BeetRootDatabaseManager.getInstance().describeTable(dbEntity);
+			for (Iterator<DBField> iterator = fields.iterator(); iterator.hasNext();) {
+				final DBField dbField = iterator.next();
+				databaseFields.put(dbField.getName(), dbField);
 			}
-			
 		} catch (SQLException e) {
-			
 			throw new FertilizerException("Couldn't read DB fields for entity '"+dbEntity+"'!", e);
-			
 		} finally {
 			try {
 				if (rs != null)
 					rs.close();
-				if (stmt != null)
-					stmt.close();
 				if (conn != null)
 					conn.close();
 			} catch (SQLException e) {
-				// nothing to do
 			}
 		}
-		
 		fieldNames = databaseFields.keySet();
 		amountOfFields = fieldNames.size();
 	}
@@ -512,6 +486,10 @@ public class Fertilizer {
 			javaType= "java.sql.Timestamp";
 			if (!importList.contains(javaType))
 				importList.add(javaType);
+		} else if (sqlType.startsWith("timestamp")) {
+			javaType= "java.sql.Timestamp";
+			if (!importList.contains(javaType))
+				importList.add(javaType);
 		} else if (sqlType.startsWith("date")) { // don't overwrite date-time!
 			javaType= "java.sql.Date";
 			if (!importList.contains(javaType))
@@ -529,7 +507,7 @@ public class Fertilizer {
 		if (sqlType.startsWith("smallfloat")) {
 			javaType= "float";
 		}
-		if (sqlType.startsWith("int") || sqlType.startsWith("integer") || sqlType.equals("serial")) { // overwrite serial8 if necessary
+		if (sqlType.startsWith("number") || sqlType.startsWith("int") || sqlType.startsWith("integer") || sqlType.equals("serial")) { // overwrite serial8 if necessary
 			javaType = "int";
 		}
 		if (sqlType.startsWith("smallint")) {

@@ -23,7 +23,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.DBField;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.OS;
 
@@ -346,26 +349,20 @@ public class BeetRootDatabaseManager {
 	}
 	
 	/**
-	 * Rest users token.
+	 * Reset users token.
+	 * 
 	 * @param dbId user id
 	 * @throws Exception
 	 */
 	public void resetToken(int dbId) throws Exception {
-
 		Connection conn = null;
 		Statement stmt = null;
-		
 		try {
 			conn = instance.getConnection();
 			// Now save edited data !
 			stmt = conn.createStatement();
-			
-			String stmtStr = "UPDATE users SET lasttoken='NONE' WHERE id=" + dbId;
-			//int a = 
+			final String stmtStr = "UPDATE users SET lasttoken='NONE' WHERE id=" + dbId;
 			stmt.executeUpdate(stmtStr);
-			
-			//LOG.debug("Token resetted for "+a+" users.");
-		
 		} finally {
 			if (stmt != null)
 				stmt.close();
@@ -382,16 +379,12 @@ public class BeetRootDatabaseManager {
 	 * @throws SQLException
 	 */
 	public int countRecords(String entity) throws SQLException {
-
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null; 
 		int amount = -1;
-				
 		try {
-
 			String stmtStr = "SELECT count(1) AS amount FROM " + entity;
-			
 			conn = instance.getConnection();
 			stmt = conn.createStatement();
 			set = stmt.executeQuery(stmtStr);
@@ -401,7 +394,6 @@ public class BeetRootDatabaseManager {
 				amount = set.getInt("amount");
 			else
 				amount = 0;
-		
 		} finally {
 			if (set != null)
 				set.close();
@@ -410,7 +402,6 @@ public class BeetRootDatabaseManager {
 			if (conn != null)
 				conn.close();
 		}
-		
 		return amount;		
 	}
 	
@@ -423,24 +414,18 @@ public class BeetRootDatabaseManager {
 	 * @throws SQLException
 	 */
 	public String getProperty(String name) throws SQLException {
-		
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null; 
 		String value = null;
-				
 		try {
-
 			conn = instance.getConnection();
-			
 			stmt = conn.createStatement();
-			String stmtStr = "SELECT value FROM properties WHERE name='" + name +"'";
+			final String stmtStr = "SELECT value FROM properties WHERE name='" + name +"'";
 			set = stmt.executeQuery(stmtStr);
 			boolean found = set.next();
-			
 			if (found)
 				value = set.getString("value");
-		
 		} finally {
 			if (set != null)
 				set.close();
@@ -449,7 +434,6 @@ public class BeetRootDatabaseManager {
 			if (conn != null)
 				conn.close();
 		}
-		
 		return value;
 	}
 	
@@ -460,27 +444,18 @@ public class BeetRootDatabaseManager {
 	 * @throws Exception
 	 */
 	public String getLanguage(int dbId) throws Exception {
-
 		String lang = null;
-		
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null;
-		
 		try {
-		
 			conn = instance.getConnection();
-			
 			// Now save edited data !
 			stmt = conn.createStatement();
-			
-			String stmtStr = "SELECT lang FROM users WHERE id=" + dbId;
+			final String stmtStr = "SELECT lang FROM users WHERE id=" + dbId;
 			set = stmt.executeQuery(stmtStr);
-			
-			if (set.next()) {
+			if (set.next())
 				lang = set.getString("lang");
-			}
-		
 		} finally {
 			if (set != null)
 				set.close();
@@ -489,7 +464,6 @@ public class BeetRootDatabaseManager {
 			if (conn != null)
 				conn.close();
 		}
-		
 		return lang;
 	}
 
@@ -500,18 +474,13 @@ public class BeetRootDatabaseManager {
 	 * @throws Exception
 	 */
 	public void updateLanguage(String lang, int dbId) throws Exception {
-		
 		Connection conn = null;
 		Statement stmt = null;
-		
 		try {
-			
 			conn = instance.getConnection();
 			stmt = conn.createStatement();
-			
-			String stmtStr = "UPDATE users SET lang='"+lang+"' WHERE id=" + dbId;
+			final String stmtStr = "UPDATE users SET lang='"+lang+"' WHERE id=" + dbId;
 			stmt.executeUpdate(stmtStr);
-		
 		} finally {
 			if (stmt != null)
 				stmt.close();
@@ -520,6 +489,100 @@ public class BeetRootDatabaseManager {
 		}
 	}
 
+	/**
+	 * Describe table columns for given table.
+	 * 
+	 * @param table database table
+	 * @return list of DB fields with table column descriptions
+	 * @throws SQLException
+	 */
+	public List<DBField> describeTable(String table) throws SQLException {
+		String statement = null;
+		if (isMariaDb || isMysqlDb) {
+			statement = "DESC " + table;
+		} else if (isH2Db) {
+			statement = "SHOW columns FROM " + table;
+		} else if (isOracleDb) {
+			statement = "SELECT "
+					  + "  column_name, "
+					  + "  data_type, "
+					  + "  nullable, "
+					  + "  (select "
+					  + "      'UNI' "
+					  + "    FROM "
+					  + "      user_constraints uc, "
+					  + "      USER_IND_COLUMNS uic "
+					  + "    WHERE "
+					  + "      uc.table_name='"+table.toUpperCase()+"' "
+					  + "        AND uic.table_name='"+table.toUpperCase()+"' "
+					  + "        AND uc.constraint_type='U' "
+					  + "        AND uic.COLUMN_NAME=utc.column_name "
+					  + "        AND uc.constraint_name = uic.index_name) AS is_uique, "
+					  + "  data_default "
+					  + "FROM "
+					  + "  user_tab_columns utc "
+					  + "WHERE "
+					  + "  table_name = '"+table.toUpperCase()+"'"
+					  + "ORDER BY"
+					  + "  column_id";
+		} else if (isPostgreDb || isPostgreNGDb) {
+			statement = "SELECT "
+					  + "  column_name, "
+					  + "  data_type, "
+					  + "  is_nullable, " // 'NO' or 'YES'
+					  + "  (SELECT "
+					  + "      constraint_type "
+					  + "    FROM "
+					  + "      information_schema.table_constraints "
+					  + "    WHERE "
+					  + "      table_name = '"+table+"' "
+					  + "    AND "
+					  + "      constraint_name = '"+table+"_' || column_name || '_key'), " // 'UNIQUE' or NULL
+					  + "  column_default "
+					  + "FROM "
+					  + "  information_schema.columns "
+					  + "WHERE "
+					  + " table_name = '"+table+"'";
+		} else {
+			statement = "DESC " + table; // Wild guess!
+		}
+		final List<DBField> fields = new ArrayList<DBField>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = instance.getConnection();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(statement);
+			while (rs.next()) {
+				final String name = rs.getString(1);
+				final String type = rs.getString(2);
+				final String nullable = rs.getString(3).toLowerCase();
+				final String unique = rs.getString(4); // Unique 'UNI', Primary (PRI) or NULL!
+				final String defVal = rs.getString(5); 
+				final DBField dbField = new DBField(
+					name,
+					type,
+					nullable.equals("yes") || nullable.equals("y") ? true : false,
+					unique == null || !unique.toLowerCase().startsWith("uni") ? false : true, 
+					defVal
+				);
+				fields.add(dbField);
+			}			
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException e) {
+			}
+		}			
+		return fields;
+	}
+	
 	public String getUrl() {
 		return url;
 	}

@@ -38,3 +38,543 @@ Feature not supported: "getFunctions" [50100-200]
 	at net.sourceforge.squirrel_sql.client.session.Session$1.run(Session.java:253)
 	at net.sourceforge.squirrel_sql.fw.util.TaskExecuter.run(TaskExecuter.java:82)
 	at java.base/java.lang.Thread.run(Thread.java:830)
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:02:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:12:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:13:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:16:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:17:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:33:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:38:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:41:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:44:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:45:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:46:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:48:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:49:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:53:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+INSERT INTO variants () VALUES () [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id=-1 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants WHERE id = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=2 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY name [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE name = ? ORDER BY id LIMIT 1 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products ORDER BY name LIMIT 200 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "VARIANTS" nicht gefunden
+Table "VARIANTS" not found; SQL statement:
+SELECT * FROM variants ORDER BY description LIMIT 200 [42102-200]
+2023-11-30 00:55:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "PRODUCTS" nicht gefunden
+Table "PRODUCTS" not found; SQL statement:
+SELECT * FROM products WHERE id=1 [42102-200]

@@ -165,7 +165,7 @@ public abstract class Model implements Entity {
 	public Integer save() {
 		String stmtParts[] = null;
 		try {
-			stmtParts = this.getStatementParts();
+			stmtParts = this.getStatementParts(true);
 		} catch (Exception e) {
 			LOG.error("Entity not saved!", e);
 			Integer.valueOf(-1);
@@ -182,7 +182,7 @@ public abstract class Model implements Entity {
 	public void update() {
 		String stmtParts[] = null;
 		try {
-			stmtParts = this.getStatementParts();
+			stmtParts = this.getStatementParts(false);
 		} catch (Exception e) {
 			LOG.error("Entity not updated!", e);
 			Integer.valueOf(-1);
@@ -311,10 +311,11 @@ public abstract class Model implements Entity {
 	 * - column clause part; "a,b,c"
 	 * - value clause part; "'1','2','3'"
 	 *
+	 * @param insert true if insert, false if update
 	 * @return database statements clause parts
 	 * @throws Exception
 	 */
-	private String[] getStatementParts() throws Exception {
+	private String[] getStatementParts(boolean insert) throws Exception {
 		// Update database model with this bean model if not already cached
 		DB.updateModel(this, MODEL);
 		String columns = "";
@@ -327,15 +328,19 @@ public abstract class Model implements Entity {
 			// 1. Column names
 			final String name = iterator.next();
 			final boolean next = iterator.hasNext();
-			if (name.equals("id"))
+			
+			if (name.equalsIgnoreCase("id"))
 				continue;
+			if (name.equalsIgnoreCase("created") && !insert)
+				continue;
+			
 			if (next)
 				columns += name + ",";		
 			else
 				columns += name;
 			
 			// 2. Values
-			String val = "null";
+			String val = null;
 			BeanInfo info;
 			try {
 				info = Introspector.getBeanInfo(modelClass());
@@ -350,7 +355,7 @@ public abstract class Model implements Entity {
 					continue;
 				
 				final String tColName = Beans.beanPropertyName2DbName(beanPropName);
-				if (tColName.equals(name)) { // DB field found!
+				if (tColName.equalsIgnoreCase(name)) { // DB field found!
 					
 					Method method;
 					String mName = null;
@@ -359,7 +364,8 @@ public abstract class Model implements Entity {
 						method = modelClass().getDeclaredMethod(mName);
 						if (method != null) { // good!
 							final Object oVal = method.invoke(this);
-							val = oVal.toString();
+							if (oVal != null)
+								val = oVal.toString();
 						}
 					} catch (Exception e) {
 						throw new Exception("Couldnt' access bean value from method '"+mName+"' in bean class '"+modelClass().getName()+"'!", e);
@@ -367,23 +373,24 @@ public abstract class Model implements Entity {
 				}
 			}
 			val = DB.escapeValuesForDb(val);
-			if (dbPwEnc && name.equals("password")) {
+			if (dbPwEnc && name.equalsIgnoreCase("password")) {
 				try {
 					val = Security.hashPw(val);
 				} catch (UtilsException e) {
 					throw new Exception("Couldnt' hash password in bean class '"+getClass()+"'!", e);
 				}
 			}
-			// Informix wants 't' or 'f'
-			if (val.equalsIgnoreCase("true")) {
-				val = "1";
+			if (val != null) {
+				// Informix wants 't' or 'f'
+				if (val.equalsIgnoreCase("true")) {
+					val = "1";
+				}
+				if (val.equalsIgnoreCase("false")) {
+					val = "0";
+				}
 			}
-			if (val.equalsIgnoreCase("false")) {
-				val = "0";
-			}
-			// if there's a column that is mapped 
-			// to the DB column 'created', overwrite it!
-			if (name.equals("created")) {
+			
+			if ((name.equalsIgnoreCase("created") && insert) || name.equalsIgnoreCase("modified")) {
 				if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 					if (next)
 						values += Time.nowTimeStamp() + ",";
