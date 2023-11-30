@@ -8,8 +8,8 @@
 [stars-url]: https://github.com/autumoswitzerland/autumo/stargazers
 [issues-shield]: https://img.shields.io/github/issues/autumoswitzerland/autumo.svg?style=for-the-badge
 [issues-url]: https://github.com/autumoswitzerland/autumo/issues
-[license-shield]: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg?style=for-the-badge
-[license-url]: https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/LICENSE.txt
+[license-shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge
+[license-url]: https://github.com/autumoswitzerland/autumo/blob/master/autumo-beetroot/LICENSE.md
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/company/autumo
 [product-screenshot]: https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png
@@ -645,7 +645,7 @@ See also the [open issues](https://github.com/autumoswitzerland/autumo/issues) f
 <!-- LICENSE -->
 ## License
 
-Distributed under the BSD 3-Clause-License. See `LICENSE.txt` for more information.
+Distributed under the Apache License 2.0. See `LICENSE.md` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
