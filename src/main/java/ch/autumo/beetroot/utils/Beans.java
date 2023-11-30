@@ -152,7 +152,7 @@ public class Beans {
 	public static Model createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
 		Model entity = null;
 		if (beanClass != null) {
-			entity = (Model) new BeanProcessor().toBean(set, beanClass);
+			entity = (Model) processor.toBean(set, beanClass);
 			entity.setStored(true);
 		}
 		return entity;

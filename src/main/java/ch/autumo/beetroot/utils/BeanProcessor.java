@@ -31,6 +31,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
+
+import org.apache.commons.dbutils.ColumnHandler;
+import org.apache.commons.dbutils.PropertyHandler;
 
 import ch.autumo.beetroot.Entity;
 
@@ -60,6 +64,9 @@ public class BeanProcessor {
 	 */
 	protected static final int PROPERTY_NOT_FOUND = -1;
 
+    private static final List<ColumnHandler<?>> COLUMN_HANDLERS = new ArrayList<>();
+    private static final List<PropertyHandler> PROPERTY_HANDLERS = new ArrayList<>();
+    
 	/**
 	 * Set a bean's primitive properties to these defaults when SQL NULL is
 	 * returned. These are the same as the defaults that ResultSet get* methods
@@ -75,6 +82,10 @@ public class BeanProcessor {
 		PRIMITIV_TYPES.put(Long.TYPE, Long.valueOf(0L));
 		PRIMITIV_TYPES.put(Boolean.TYPE, Boolean.FALSE);
 		PRIMITIV_TYPES.put(Character.TYPE, Character.valueOf((char) 0));
+		// Use a ServiceLoader to find implementations
+        ServiceLoader.load(ColumnHandler.class).forEach(COLUMN_HANDLERS::add);
+        // Use a ServiceLoader to find implementations
+        ServiceLoader.load(PropertyHandler.class).forEach(PROPERTY_HANDLERS::add);		
 	}
 
 	/**
@@ -236,6 +247,12 @@ public class BeanProcessor {
 			return;
 		try {
 			final Class<?> firstParam = setter.getParameterTypes()[0];
+            for (final PropertyHandler handler : PROPERTY_HANDLERS) {
+                if (handler.match(firstParam, value)) {
+                    value = handler.apply(firstParam, value);
+                    break;
+                }
+            }			
 			// Don't call setter if the value object isn't the right type
 			if (!this.isCompatibleType(value, firstParam)) {
 				throw new SQLException("Cannot set " + prop.getName() + ": incompatible types, cannot convert "
@@ -451,11 +468,17 @@ public class BeanProcessor {
 	 *         NULL.
 	 */
 	protected Object processColumn(final ResultSet rs, final int index, final Class<?> propType) throws SQLException {
-		Object retval = rs.getObject(index);
-		if (!propType.isPrimitive() && retval == null) {
-			return null;
-		}
-		return retval;
+        Object retval = rs.getObject(index);
+        if (!propType.isPrimitive() && retval == null) {
+            return null;
+        }
+        for (final ColumnHandler<?> handler : COLUMN_HANDLERS) {
+            if (handler.match(propType)) {
+                retval = handler.apply(rs, index);
+                break;
+            }
+        }
+        return retval;
 	}
 
 }
