@@ -377,6 +377,13 @@ public class Fertilizer {
 			
 			String propertyName = this.propertyName(dbFieldName);
 			
+			if (dbField.isUnique())
+				contents.append("    @Unique\n");
+			if (dbField.isNullable())
+				contents.append("    @Nullable\n");
+			
+			contents.append("    @Column (name = \""+dbFieldName+"\")\n");
+			
 			contents.append("    private " + javaType + " " + propertyName + ";\n");
 			contents.append("\n");
 			

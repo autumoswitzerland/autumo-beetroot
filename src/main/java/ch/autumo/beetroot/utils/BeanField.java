@@ -17,6 +17,8 @@
  */
 package ch.autumo.beetroot.utils;
 
+import java.lang.reflect.Method;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,45 +26,46 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
-  * DB field.
+  * Bean field.
   */
-public class DBField {
+public class BeanField {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(DBField.class.getName());
+	protected final static Logger LOG = LoggerFactory.getLogger(BeanField.class.getName());
 	
-	private String name;
-	private String type;
+	private String dbName;
+	private String beanName;
 	private boolean isNullable = true;
 	private boolean unique = false;
-	private String defaultVal;
 
+	private Method getterMethod = null;
+	
 	/**
 	 * Constructor.
 	 * 
-	 * @param name column name
-	 * @param type column type
+	 * @param dbName column name
+	 * @param name attribute name
 	 * @param isNullable is nullable? 
 	 * @param unique is unique?
-	 * @param defaultVal column default value
+	 * @param getterMethod getter method
 	 */
-	public DBField(String name, String type, boolean isNullable, boolean unique, String defaultVal) {
-		this.name = name;
-		this.type = type;
+	public BeanField(String dbName, String beanName, boolean isNullable, boolean unique, Method getterMethod) {
+		this.dbName = dbName;
+		this.beanName = beanName;
 		this.isNullable = isNullable;
 		this.unique = unique;
-		this.defaultVal = defaultVal;
+		this.getterMethod = getterMethod;
 	}		
-	
-	public String getDefaultVal() {
-		return defaultVal;
+
+	public Method getGetterMethod() {
+		return getterMethod;
 	}
 	
-	public String getName() {
-		return name;
+	public String getDbName() {
+		return dbName;
 	}
 	
-	public String getType() {
-		return type;
+	public String getBeanName() {
+		return beanName;
 	}
 	
 	public boolean isUnique() {
@@ -90,7 +93,7 @@ public class DBField {
 	 * @return JSON string
 	 * @throws JsonProcessingException
 	 */
-	public String serialize(DBField field) throws JsonProcessingException {
+	public String serialize(BeanField field) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(field);
 	}

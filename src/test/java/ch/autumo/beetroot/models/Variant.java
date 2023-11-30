@@ -4,6 +4,8 @@
 package ch.autumo.beetroot.models;
 
 import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Nullable;
 
 /**
  * Variant. 
@@ -12,6 +14,7 @@ public class Variant extends Model {
 
     private static final long serialVersionUID = 1L;
 	
+    @Column (name = "identifier")
     private String identifier;
 
     public String getIdentifier() {
@@ -22,6 +25,8 @@ public class Variant extends Model {
         this.identifier = identifier;
     }
 
+    @Nullable
+    @Column (name = "created")
     private java.sql.Timestamp created;
 
     public java.sql.Timestamp getCreated() {
@@ -32,6 +37,7 @@ public class Variant extends Model {
         this.created = created;
     }
 
+    @Column (name = "product_id")
     private int productId;
 
     public int getProductId() {
@@ -42,6 +48,8 @@ public class Variant extends Model {
         this.productId = productId;
     }
 
+    @Nullable
+    @Column (name = "description")
     private String description;
 
     public String getDescription() {
@@ -52,6 +60,8 @@ public class Variant extends Model {
         this.description = description;
     }
 
+    @Nullable
+    @Column (name = "modified")
     private java.sql.Timestamp modified;
 
     public java.sql.Timestamp getModified() {
@@ -62,6 +72,7 @@ public class Variant extends Model {
         this.modified = modified;
     }
 
+    @Column (name = "license_rt_type")
     private String licenseRtType;
 
     public String getLicenseRtType() {
@@ -71,7 +82,7 @@ public class Variant extends Model {
     public void setLicenseRtType(String licenseRtType) {
         this.licenseRtType = licenseRtType;
     }
-
+    
     @Override
     public String getDisplayField() {
         return "description";

@@ -4,6 +4,9 @@
 package ch.autumo.beetroot.models;
 
 import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Nullable;
+import ch.autumo.beetroot.annotations.Unique;
 
 /**
  * Product. 
@@ -12,6 +15,7 @@ public class Product extends Model {
 
     private static final long serialVersionUID = 1L;
 	
+    @Column (name = "int_sec_key")
     private String intSecKey;
 
     public String getIntSecKey() {
@@ -22,6 +26,8 @@ public class Product extends Model {
         this.intSecKey = intSecKey;
     }
 
+    @Nullable
+    @Column (name = "email_notes")
     private String emailNotes;
 
     public String getEmailNotes() {
@@ -32,6 +38,8 @@ public class Product extends Model {
         this.emailNotes = emailNotes;
     }
 
+    @Nullable
+    @Column (name = "created")
     private java.sql.Timestamp created;
 
     public java.sql.Timestamp getCreated() {
@@ -42,6 +50,8 @@ public class Product extends Model {
         this.created = created;
     }
 
+    @Unique
+    @Column (name = "name")
     private String name;
 
     public String getName() {
@@ -52,6 +62,8 @@ public class Product extends Model {
         this.name = name;
     }
 
+    @Nullable
+    @Column (name = "modified")
     private java.sql.Timestamp modified;
 
     public java.sql.Timestamp getModified() {
@@ -62,16 +74,13 @@ public class Product extends Model {
         this.modified = modified;
     }
 
+    @Column (name = "create_user")
     private boolean createUser;
 
     public boolean getCreateUser() {
         return createUser;
     }
-
-    public void setCreateUser(boolean createUser) {
-        this.createUser = createUser;
-    }
-
+    
     @Override
     public String getDisplayField() {
         return "name";

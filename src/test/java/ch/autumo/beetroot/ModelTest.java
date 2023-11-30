@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.autumo.beetroot.models.Product;

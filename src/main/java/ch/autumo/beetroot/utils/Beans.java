@@ -18,9 +18,11 @@
 package ch.autumo.beetroot.utils;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.dbutils.BeanProcessor;
@@ -31,6 +33,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy
 
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Nullable;
+import ch.autumo.beetroot.annotations.Unique;
 
 
 /**
@@ -92,7 +97,6 @@ public class Beans {
 			table = (table.substring(0, table.length() - 1)) + "ies";
 		else
 			table += "s";
-		
 		return table;
 	}
 	
@@ -108,7 +112,6 @@ public class Beans {
 			cName = cName.substring(0, cName.length() - 3) + "y";
 		else
 			cName = cName.substring(0, cName.length() - 1);
-		
 		return cName;
 	}
 
@@ -148,11 +151,11 @@ public class Beans {
 	 * @throws SQLException
 	 */
 	public static Model createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
-		
 		Model entity = null;
-		if (beanClass != null)
-			entity = (Model) processor.toBean(set, beanClass);
-		
+		if (beanClass != null) {
+			entity = (Model) new BeanProcessor().toBean(set, beanClass);
+			entity.setStored(true);
+		}
 		return entity;
 	}
 	
@@ -198,6 +201,68 @@ public class Beans {
 		displayField = (String) getDV.invoke(emptyBean);
 		return displayField;
 	}
-	
-}
 
+	/**
+	 * Update the given model with entity from bean/model annotations,
+	 * if it hasn't been updated yet.
+	 * 
+	 * We access information PLANt has generated us with annotations, so
+	 * don't have to access database for meta data again!
+	 * 
+	 * @param entity entity
+	 * @param model model
+	 */
+	public static void updateModel(Entity entity, Map<String, Map<String, BeanField>> model) {
+		
+		Class<?> clz = entity.getClass();
+		final String tableName = Beans.classToTable(clz);
+		if (!model.containsKey(tableName)) {
+			
+			final Map<String, BeanField> databaseFields = new HashMap<String, BeanField>();
+			
+			while (clz != null) {
+			
+		    	for (Field field : clz.getDeclaredFields()) {
+		    		
+		    		final String beanName = field.getName();
+	                String dbColumnName = null;
+	                boolean isNullable = false;
+	                boolean isUnique = false;
+		    		
+		    		if (field.isAnnotationPresent(Column.class))
+		    			dbColumnName = field.getAnnotation(Column.class).name();
+		    		else
+	                	continue; // We only put database columns as Bean fields!
+		    		
+		    		if (field.isAnnotationPresent(Nullable.class))
+		    			isNullable = true;
+		    		
+		    		if (field.isAnnotationPresent(Unique.class))
+		    			isUnique = true;
+		    	
+		    		final String methodName = "get" + beanName.substring(0, 1).toUpperCase() + beanName.substring(1, beanName.length());
+		    		Method method = null;
+					try {
+						method = clz.getDeclaredMethod(methodName);
+					} catch (Exception e) {
+						LOG.error("Method '"+methodName+"' not found in class'"+clz.getName()+"! Your bean is corrupted!", e);
+						throw new RuntimeException(e); // not good!
+					}
+		    		
+	                // We don't need type or default value here -> null
+	                final BeanField beanField = new BeanField(dbColumnName, beanName, isNullable, isUnique, method);
+	                databaseFields.putIfAbsent(dbColumnName, beanField);
+		    	}
+	    	
+		    	clz = clz.getSuperclass(); // process super-classes!
+	    	
+			}
+			// Only when we have columns, we have a table so to speak!
+	    	// If there are no bean field for this table, something is wrong,
+	    	// it is not a beetRoot model then!
+			if (databaseFields.size() > 0)
+				model.put(tableName, databaseFields);
+		}
+	}
+  
+}

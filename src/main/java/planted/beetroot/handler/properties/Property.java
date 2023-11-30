@@ -4,6 +4,9 @@
 package planted.beetroot.handler.properties;
 
 import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Nullable;
+import ch.autumo.beetroot.annotations.Unique;
 
 /**
  * Property. 
@@ -12,6 +15,8 @@ public class Property extends Model {
 
     private static final long serialVersionUID = 1L;
 	
+    @Nullable
+    @Column (name = "created")
     private java.sql.Timestamp created;
 
     public java.sql.Timestamp getCreated() {
@@ -22,6 +27,8 @@ public class Property extends Model {
         this.created = created;
     }
 
+    @Unique
+    @Column (name = "name")
     private String name;
 
     public String getName() {
@@ -32,6 +39,8 @@ public class Property extends Model {
         this.name = name;
     }
 
+    @Nullable
+    @Column (name = "modified")
     private java.sql.Timestamp modified;
 
     public java.sql.Timestamp getModified() {
@@ -42,6 +51,8 @@ public class Property extends Model {
         this.modified = modified;
     }
 
+    @Nullable
+    @Column (name = "value")
     private String value;
 
     public String getValue() {

@@ -4,6 +4,9 @@
 package planted.beetroot.handler.##entitynameplural##;
 
 import ch.autumo.beetroot.Model;
+import ch.autumo.beetroot.annotations.Column;
+import ch.autumo.beetroot.annotations.Nullable;
+import ch.autumo.beetroot.annotations.Unique;
 
 /**
  * ##Entityname##. 

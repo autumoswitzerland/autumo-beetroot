@@ -779,6 +779,7 @@ public class DB {
 		final String tableName = Beans.classToTable(entity.getClass());
 		if (!model.containsKey(tableName)) {
 			final Map<String, DBField> databaseFields = new HashMap<String, DBField>();
+			
 			try {
 				final List<DBField> fields= BeetRootDatabaseManager.getInstance().describeTable(tableName);
 				for (Iterator<DBField> iterator = fields.iterator(); iterator.hasNext();) {
