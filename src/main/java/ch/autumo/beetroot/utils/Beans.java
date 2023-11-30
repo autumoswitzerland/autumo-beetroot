@@ -212,56 +212,75 @@ public class Beans {
 	 * @param model model
 	 */
 	public static void updateModel(Entity entity, Map<String, Map<String, BeanField>> model) {
-		
 		Class<?> clz = entity.getClass();
 		final String tableName = Beans.classToTable(clz);
 		if (!model.containsKey(tableName)) {
-			
-			final Map<String, BeanField> databaseFields = new HashMap<String, BeanField>();
-			
-			while (clz != null) {
-			
-		    	for (Field field : clz.getDeclaredFields()) {
-		    		
-		    		final String beanName = field.getName();
-	                String dbColumnName = null;
-	                boolean isNullable = false;
-	                boolean isUnique = false;
-		    		
-		    		if (field.isAnnotationPresent(Column.class))
-		    			dbColumnName = field.getAnnotation(Column.class).name();
-		    		else
-	                	continue; // We only put database columns as Bean fields!
-		    		
-		    		if (field.isAnnotationPresent(Nullable.class))
-		    			isNullable = true;
-		    		
-		    		if (field.isAnnotationPresent(Unique.class))
-		    			isUnique = true;
-		    	
-		    		final String methodName = "get" + beanName.substring(0, 1).toUpperCase() + beanName.substring(1, beanName.length());
-		    		Method method = null;
-					try {
-						method = clz.getDeclaredMethod(methodName);
-					} catch (Exception e) {
-						LOG.error("Method '"+methodName+"' not found in class'"+clz.getName()+"! Your bean is corrupted!", e);
-						throw new RuntimeException(e); // not good!
-					}
-		    		
-	                // We don't need type or default value here -> null
-	                final BeanField beanField = new BeanField(dbColumnName, beanName, isNullable, isUnique, method);
-	                databaseFields.putIfAbsent(dbColumnName, beanField);
-		    	}
-	    	
-		    	clz = clz.getSuperclass(); // process super-classes!
-	    	
-			}
+			final Map<String, BeanField> beanFields = Beans.getBeanFields(clz);
 			// Only when we have columns, we have a table so to speak!
 	    	// If there are no bean field for this table, something is wrong,
 	    	// it is not a beetRoot model then!
-			if (databaseFields.size() > 0)
-				model.put(tableName, databaseFields);
+			if (beanFields.size() > 0)
+				model.put(tableName, beanFields);
 		}
 	}
-  
+
+	/**
+	 * Get bean fields.
+	 * 
+	 * @param clz bean class
+	 * @return bean fields map
+	 */
+	public static  Map<String, BeanField> getBeanFields(Class<?> clz) {
+		
+		final Map<String, BeanField> beanFields = new HashMap<String, BeanField>();
+		while (clz != null) {
+		
+	    	for (Field field : clz.getDeclaredFields()) {
+	    		
+	    		final String beanName = field.getName();
+                String dbColumnName = null;
+                boolean isNullable = false;
+                boolean isUnique = false;
+	    		
+	    		if (field.isAnnotationPresent(Column.class))
+	    			dbColumnName = field.getAnnotation(Column.class).name();
+	    		else
+                	continue; // We only put database columns as Bean fields!
+	    		
+	    		if (field.isAnnotationPresent(Nullable.class))
+	    			isNullable = true;
+	    		
+	    		if (field.isAnnotationPresent(Unique.class))
+	    			isUnique = true;
+	    	
+	    		final String methodName = "get" + beanName.substring(0, 1).toUpperCase() + beanName.substring(1, beanName.length());
+	    		Method method = null;
+				try {
+					method = clz.getDeclaredMethod(methodName);
+				} catch (Exception e) {
+					LOG.error("Method '"+methodName+"' not found in class'"+clz.getName()+"! Your bean is corrupted!", e);
+					throw new RuntimeException(e); // not good!
+				}
+	    		
+                // We don't need type or default value here -> null
+                final BeanField beanField = new BeanField(dbColumnName, beanName, field.getType(), isNullable, isUnique, method);
+                beanFields.putIfAbsent(dbColumnName, beanField);
+	    	}
+	    	
+	    	clz = clz.getSuperclass(); // process super-classes!
+		}
+		return beanFields;
+	}
+
+	/**
+	 * Get bean fields as array.
+	 * 
+	 * @param clz bean class
+	 * @return bean fields array
+	 */
+	public static BeanField[] getBeanFieldsAsArray(Class<?> clz) {
+		final Map<String, BeanField> beanFields = Beans.getBeanFields(clz);
+		return beanFields.values().toArray(new BeanField[beanFields.size()]);
+	}
+	
 }

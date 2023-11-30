@@ -80,6 +80,10 @@ public class Product extends Model {
     public boolean getCreateUser() {
         return createUser;
     }
+
+    public void setCreateUser(boolean createUser) {
+        this.createUser = createUser;
+    }
     
     @Override
     public String getDisplayField() {

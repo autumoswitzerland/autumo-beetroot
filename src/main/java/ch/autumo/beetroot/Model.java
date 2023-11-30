@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.autumo.beetroot.annotations.Column;
 import ch.autumo.beetroot.plant.Plant;
 import ch.autumo.beetroot.utils.BeanField;
 import ch.autumo.beetroot.utils.Beans;
@@ -79,6 +80,7 @@ public abstract class Model implements Entity {
 	/**
 	 * Unique ID.
 	 */
+	@Column (name = "id")
 	private int id;
 	
 	/**

@@ -34,6 +34,7 @@ public class BeanField {
 	
 	private String dbName;
 	private String beanName;
+	private Class<?> type;
 	private boolean isNullable = true;
 	private boolean unique = false;
 
@@ -44,13 +45,15 @@ public class BeanField {
 	 * 
 	 * @param dbName column name
 	 * @param name attribute name
+	 * @param type Java type
 	 * @param isNullable is nullable? 
 	 * @param unique is unique?
 	 * @param getterMethod getter method
 	 */
-	public BeanField(String dbName, String beanName, boolean isNullable, boolean unique, Method getterMethod) {
+	public BeanField(String dbName, String beanName, Class<?> type, boolean isNullable, boolean unique, Method getterMethod) {
 		this.dbName = dbName;
 		this.beanName = beanName;
+		this.type = type;
 		this.isNullable = isNullable;
 		this.unique = unique;
 		this.getterMethod = getterMethod;
@@ -66,6 +69,10 @@ public class BeanField {
 	
 	public String getBeanName() {
 		return beanName;
+	}
+
+	public Class<?> getType() {
+		return type;
 	}
 	
 	public boolean isUnique() {

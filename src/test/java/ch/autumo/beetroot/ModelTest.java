@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.autumo.beetroot.models.Product;
@@ -74,8 +73,7 @@ public class ModelTest {
 		Model object2 = Model.read(Product.class, 1);
 		Product p2 = (Product) object2;
 		
-		System.out.println(p2.getIntSecKey());
-		
+		System.out.println("TEST:" + p2.getIntSecKey() + " = 1111111111");
 		assertEquals(p2.getIntSecKey(), "1111111111");
 		
 		p2.setIntSecKey(old);
