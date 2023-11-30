@@ -267,7 +267,7 @@ A word when using MySQL: Due to the GPL license, we don't distribute or create a
 
 Start the CRUD generator with the script `plant.sh` / `plant.bat` and follow the steps!
 
-The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with another database conenction), you can specify that configuration file as an argument in the shell / batch scripts above. PLANT supports the MySsql/MariaDB database at the moment; use such a DB during the app development and change to your desired target DB for production.
+The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with another database connection), you can specify that configuration file as an argument in the shell / batch scripts above. PLANT supports the MySQL, MariaDB, H2, Oracle and PostgreSQL databases.
 
 **NOTE**: Entities for beetRoot MUST be named in plural form in the database, e.g.: tasks, users, cities, properties, cars, etc.
 
