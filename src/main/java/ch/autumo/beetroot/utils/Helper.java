@@ -97,7 +97,7 @@ public class Helper {
 	}
 	
 	/**
-	 * Create banner, colorized or not.
+	 * Create banner; colorized or not.
 	 *  
 	 * @param banner banner text
 	 * @return adjusted banner text
@@ -108,7 +108,7 @@ public class Helper {
 			int v = -1;
 			String vstr = System.getProperty("os.version");
 			try {
-				v = Integer.valueOf(vstr).intValue();
+				v = Double.valueOf(vstr).intValue();
 				if (v < 10)
 					coloredBanner = false;
 			} catch (Exception e) {
