@@ -183,7 +183,7 @@ $PACKAGE/bin/beetroot.sh start
 
 **Windows**
 
-```Batchfile
+```NuShell
 SET VERSION=2.1.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
@@ -206,7 +206,7 @@ cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta
 
 1. Clone the repository:
 
-```
+```NuShell
 git clone https://github.com/autumoswitzerland/autumo-beetroot.git
 ```
 
