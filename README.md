@@ -58,25 +58,26 @@
         <li><a href="#toc_1">Built With</a></li>
       </ul>
     </li>
-    <li><a href="#toc_2">Distributions</a></li>
-    <li><a href="#toc_3">Running Modes</a></li>
-    <li><a href="#toc_4">Running</a></li>
-    <li><a href="#toc_5">Configuration and Passwords</a></li>
-    <li><a href="#toc_6">Default Database and Schema</a></li>
-    <li><a href="#toc_7">CRUD Generator PLANT</a></li>
-    <li><a href="#toc_8">Standard HTML Templates</a></li>
-    <li><a href="#toc_9">JSON REST API</a></li>
-    <li><a href="#toc_10">Routing</a></li>
-    <li><a href="#toc_11">Logging</a></li>
-    <li><a href="#toc_12">Mailing</a></li>
-    <li><a href="#toc_13">Mail Templates</a></li>
-    <li><a href="#toc_14">Java Translations</a></li>
-    <li><a href="#toc_15">Webapp Design and Javascript</a></li>
-    <li><a href="#toc_16">HTTPS</a></li>
-    <li><a href="#toc_17">Roadmap | Backlog</a></li>
-    <li><a href="#toc_18">License</a></li>
-    <li><a href="#toc_19">Contact</a></li>
-    <li><a href="#toc_20">Acknowledgments</a></li>
+    <li><a href="#toc_2">Quickstart</a></li>
+    <li><a href="#toc_3">Distributions</a></li>
+    <li><a href="#toc_4">Running Modes</a></li>
+    <li><a href="#toc_5">Running</a></li>
+    <li><a href="#toc_6">Configuration and Passwords</a></li>
+    <li><a href="#toc_7">Default Database and Schema</a></li>
+    <li><a href="#toc_8">CRUD Generator PLANT</a></li>
+    <li><a href="#toc_9">Standard HTML Templates</a></li>
+    <li><a href="#toc_10">JSON REST API</a></li>
+    <li><a href="#toc_11">Routing</a></li>
+    <li><a href="#toc_12">Logging</a></li>
+    <li><a href="#toc_13">Mailing</a></li>
+    <li><a href="#toc_14">Mail Templates</a></li>
+    <li><a href="#toc_15">Java Translations</a></li>
+    <li><a href="#toc_16">Webapp Design and Javascript</a></li>
+    <li><a href="#toc_17">HTTPS</a></li>
+    <li><a href="#toc_18">Roadmap | Backlog</a></li>
+    <li><a href="#toc_19">License</a></li>
+    <li><a href="#toc_20">Contact</a></li>
+    <li><a href="#toc_21">Acknowledgments</a></li>
   </ol>
 </details>
 <br>
@@ -86,9 +87,9 @@
 <!-- WAHT IS BEETROOT -->
 ## What is beetRoot ?
 
-[![autumo beetRoot 2.0 - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)](https://www.youtube.com/watch?v=ruZrP-7yCDY)
+[![autumo beetRoot 2.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)](https://www.youtube.com/watch?v=ruZrP-7yCDY)
 
-<p style="text-align: center;"><strong><a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.0 - Quickstart Video</a></strong></p>
+<p style="text-align: center;"><strong><a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.x - Quickstart Video</a></strong></p>
 
 beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model! The client-server framework supports encrypted communication (SSL) as well as HTTP/HTTPS-tunneling, provides a file download and upload interface and it can be extended with own (distributed) modules.
 
@@ -153,6 +154,70 @@ Enjoy!
 
 
 
+<!-- QUICKSTART -->
+## Quickstart
+
+### Running
+
+Enter the following statements into your terminal.
+
+**Linux, macOS**
+
+```
+VERSION=2.1.0
+PACKAGE=autumo-beetRoot-$VERSION
+
+curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
+
+unzip $PACKAGE.zip
+rm $PACKAGE.zip
+
+# Servlet API necessary for standalone execution without a web-container
+(cd $PACKAGE/lib && curl -LO https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar)
+# Optional libraries to send emails (needed for password reset)
+(cd $PACKAGE/lib && curl -LO https://repo1.maven.org/maven2/com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar)
+(cd $PACKAGE/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta.mail/2.0.1/jakarta.mail-2.0.1.jar)
+
+$PACKAGE/bin/beetroot.sh start
+```
+
+**Windows**
+
+```
+SET VERSION=2.1.0
+SET PACKAGE=autumo-beetRoot-%VERSION%
+
+curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
+
+tar -xf %PACKAGE%.zip
+del %PACKAGE%.zip
+
+REM Servlet API necessary for standalone execution without a web-container
+cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar && cd ..\..
+REM Optional libraries to send emails (needed for password reset)
+cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar && cd ..\..
+cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta.mail/2.0.1/jakarta.mail-2.0.1.jar && cd ..\..
+
+%PACKAGE%\bin\beetroot.bat start
+```
+
+
+### Developing
+
+1. Clone the repository:
+
+```
+git clone https://github.com/autumoswitzerland/autumo-beetroot.git
+```
+
+2. Import the maven-project into your favourite development IDE.
+
+3. Start developing/customizing: <a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.x - Quickstart Video</a>.
+
+<p align="right">(<a href="#top">back to top</a>)</p> 
+
+
+
 <!-- DISTRIBUTIONS -->
 ## Distributions
 
@@ -163,7 +228,7 @@ Enjoy!
 
 Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p> 
 
 
 
