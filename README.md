@@ -183,7 +183,7 @@ $PACKAGE/bin/beetroot.sh start
 
 **Windows**
 
-```NuShell
+```Batchfile
 SET VERSION=2.1.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
