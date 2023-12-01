@@ -183,7 +183,7 @@ $PACKAGE/bin/beetroot.sh start
 
 **Windows**
 
-```batchfile
+```PowerShell
 SET VERSION=2.1.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
