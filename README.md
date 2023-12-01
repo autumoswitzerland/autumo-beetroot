@@ -503,16 +503,16 @@ JSON templates can be handled like HTML templates: Put them into the directory `
 
 ```JSON
 	{
-    	"tasks": [
-			{$data}    
-    	],
-			{$paginator}    
+        "tasks": [
+	        {$data}    
+        ],
+        {$paginator}    
 	}
 ```
 
 Also, you can create an own `columns.cfg` that is specific for the JSON request in this directory, for example looking like this:
 
-```Java Properties
+```JavaProperties
 	list_json.id=is
 	list_json.name=name
 	list_json.active=active
@@ -554,14 +554,18 @@ Let's have a look at some routes:
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
 
+```Java
 	public  String getResource();
+```
 
 For generated handlers (with the CRUD generator) this is usually not necessary, because they have a standard implementation:
 
+```Java
 	@Override
 	public  String getResource() {
 	    return "web/html/:lang/"+entity+"/index.html";
 	}
+```
 
 If your handlers need customization, just overwrite this method. As you can see, here the translation of the requested URL takes place and points to the `web/html`-directory structure!
 
