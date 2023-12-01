@@ -163,7 +163,7 @@ Enter the following statements into your terminal.
 
 **Linux, macOS**
 
-```Shell
+```shell
 VERSION=2.1.0
 PACKAGE=autumo-beetRoot-$VERSION
 
@@ -183,7 +183,7 @@ $PACKAGE/bin/beetroot.sh start
 
 **Windows**
 
-```Batchfile
+```batchfile
 SET VERSION=2.1.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
@@ -506,7 +506,7 @@ JSON templates can be handled like HTML templates: Put them into the directory `
 	    "tasks": [
 	        {$data}    
 	    ],
-        {$paginator}    
+	    {$paginator}    
 	}
 ```
 
