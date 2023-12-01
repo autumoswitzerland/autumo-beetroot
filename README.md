@@ -503,16 +503,16 @@ JSON templates can be handled like HTML templates: Put them into the directory `
 
 ```JSON
 	{
-        "tasks": [
+	    "tasks": [
 	        {$data}    
-        ],
+	    ],
         {$paginator}    
 	}
 ```
 
 Also, you can create an own `columns.cfg` that is specific for the JSON request in this directory, for example looking like this:
 
-```JavaProperties
+```properties
 	list_json.id=is
 	list_json.name=name
 	list_json.active=active
