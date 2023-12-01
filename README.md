@@ -602,8 +602,10 @@ beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app
 
 As for jetty, they stand above all that "log-framework-soup" and they just simply use a SLF4j implementation that needs no further configuration. Hence, the library `slf4j.simple-x.y.z.jar` is packed into `beetroot-jetty.war`. The only concern is to add your package to the the jetty basic logging configuration in `{JETTY_BASE}/resources/jetty-logging.properties`:
 
+```properties
 	## Configure a level for specific logger
 	ch.autumo.beetroot.LEVEL=INFO
+```
 
 
 **NOTE**: All logging levels are set to `INFO` in the beginning!
