@@ -163,7 +163,7 @@ Enter the following statements into your terminal.
 
 **Linux, macOS**
 
-```shell
+```NuShell
 VERSION=2.1.0
 PACKAGE=autumo-beetRoot-$VERSION
 
@@ -183,7 +183,7 @@ $PACKAGE/bin/beetroot.sh start
 
 **Windows**
 
-```PowerShell
+```Batchfile
 SET VERSION=2.1.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
