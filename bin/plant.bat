@@ -2,17 +2,18 @@ echo OFF
 REM ------------------------------------------------------------------------------
 REM 
 REM   PLANT - beetRoot CRUD generator
-REM   Version: 1.0
+REM   Version: 2.0
 REM 
 REM ------------------------------------------------------------------------------
 
 
+pushd %cd%
 
 REM 
 REM  ROOT path
 REM 
 for %%d in (%~dp0..) do set ROOT=%%~fd
-cd ..
+cd %ROOT%
 
 REM 
 REM  Build the classpath
@@ -26,3 +27,4 @@ REM  Encode
 REM 
 java -DROOTPATH="%ROOT%" -classpath "%CLASSPATH%" ch.autumo.beetroot.plant.Plant %*
 
+popd

@@ -4,17 +4,25 @@
 #------------------------------------------------------------------------------
 #
 #  PLANT - beetRoot CRUD generator
-#  Version: 1.0
+#  Version: 2.0
 #
 #------------------------------------------------------------------------------
 
 
+pushd() {
+  command pushd "$@" > /dev/null
+}
+popd() {
+  command popd > /dev/null
+}
+
+pushd `pwd`
 
 #
 # ROOT path
 #
-ROOT="$(dirname "`pwd`")"
-cd ..
+cd "$(dirname "$0")/.."
+ROOT=`pwd`
 
 #
 # Base classpath
@@ -47,3 +55,4 @@ java \
 	-cp "${CLASSPATH}" \
 	ch.autumo.beetroot.plant.Plant $*
 
+popd

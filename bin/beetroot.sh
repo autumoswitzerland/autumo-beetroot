@@ -4,17 +4,25 @@
 #------------------------------------------------------------------------------
 #
 #  beetRoot Server
-#  Version: 1.0
+#  Version: 2.0
 #
 #------------------------------------------------------------------------------
 
 
+pushd() {
+  command pushd "$@" > /dev/null
+}
+popd() {
+  command popd > /dev/null
+}
+
+pushd `pwd`
 
 #
 # ROOT path
 #
-ROOT="$(dirname "`pwd`")"
-cd ..
+cd "$(dirname "$0")/.."
+ROOT=`pwd`
 
 #
 # Base classpath
@@ -47,3 +55,4 @@ java \
 	-Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2 \
 	-cp "${CLASSPATH}" ch.autumo.beetroot.server.BeetRootServer $* &
 
+popd
