@@ -163,7 +163,7 @@ Enter the following statements into your terminal.
 
 **Linux, macOS**
 
-```
+```Shell
 VERSION=2.1.0
 PACKAGE=autumo-beetRoot-$VERSION
 
@@ -183,7 +183,7 @@ $PACKAGE/bin/beetroot.sh start
 
 **Windows**
 
-```
+```Batchfile
 SET VERSION=2.1.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
@@ -473,6 +473,7 @@ A REST API call looks like this:
 
 Example Answer:
 
+```JSON
 	{
 	    "tasks": [
 	        {
@@ -494,24 +495,29 @@ Example Answer:
 	        "lastPage": 1,
 	    }    
 	}
+```
 
 As you can see, you can iterate with the `paginator` object through pages with your REST calls - the same way as you would navigate within an HTML `index` page.
 
 JSON templates can be handled like HTML templates: Put them into the directory `web/html/..`. No user languages are used in any way by using this API. Therefore, you can dismiss the HTML template language directories and place the template, e.g. for entity `tasks`, directly here `web/html/tasks/index.json`; it looks like this:
 
+```JSON
 	{
     	"tasks": [
 			{$data}    
     	],
 			{$paginator}    
 	}
+```
 
 Also, you can create an own `columns.cfg` that is specific for the JSON request in this directory, for example looking like this:
 
+```Java Properties
 	list_json.id=is
 	list_json.name=name
 	list_json.active=active
 	list_json.laststatus=laststatus
+```
 
 It never has been easier using a REST API!
 
@@ -526,6 +532,7 @@ The router defines which resources are served by the requested URL of a web-app 
 
 Let's have a look at some routes:
 
+```Java
 	/** Home stuff */
 	new Route("/:lang/home", HomeHandler.class, "home"),
 	new Route("/:lang/home/index", HomeHandler.class, "home"),
@@ -542,6 +549,7 @@ Let's have a look at some routes:
 	new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
 	new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
 	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks")
+```
 
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
