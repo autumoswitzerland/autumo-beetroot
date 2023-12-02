@@ -53,7 +53,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#what-is-beetroot">What is beetRoot ?</a>
+      <a href="#what-is-beetroot-">What is beetRoot ?</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
@@ -62,7 +62,7 @@
     <li><a href="#distributions">Distributions</a></li>
     <li><a href="#running-modes">Running Modes</a></li>
     <li><a href="#running-1">Running</a></li>
-    <li><a href="#configurations-and-passwords">Configuration and Passwords</a></li>
+    <li><a href="#configuration-and-passwords">Configuration and Passwords</a></li>
     <li><a href="#default-database-and-schema">Default Database and Schema</a></li>
     <li><a href="#crud-generator-plant">CRUD Generator PLANT</a></li>
     <li><a href="#standard-html-templates">Standard HTML Templates</a></li>
@@ -84,7 +84,7 @@
 
 
 
-<!-- WAHT IS BEETROOT -->
+<!-- WHAT IS BEETROOT -->
 ## What is beetRoot ?
 
 [![autumo beetRoot 2.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)](https://www.youtube.com/watch?v=ruZrP-7yCDY)
