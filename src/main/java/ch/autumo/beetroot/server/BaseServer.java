@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,7 +52,8 @@ import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.HealthAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.server.message.StopAnswer;
-import ch.autumo.beetroot.server.message.file.PingRequest;
+import ch.autumo.beetroot.server.message.file.PingDownloadRequest;
+import ch.autumo.beetroot.server.message.file.PingUploadRequest;
 import ch.autumo.beetroot.server.modules.Dispatcher;
 import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.transport.DefaultServerSocketFactory;
@@ -758,30 +760,47 @@ public abstract class BaseServer {
 			if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 				
 				if (startFileServer) {
-					Download download = null;
-					try {
-						
-						String domain = "default";
-						if (command.getDomain() != null)
-							domain = command.getDomain();
-						
-						if (fileStorage != null)
-							download = fileStorage.findFile(command.getFileId(), domain);
-						else
-							download = this.findFile(command.getFileId(), domain);
-						
-					} catch (Exception e) {
-						LOG.error("Find file request failed for file ID '"+command.getFileId()+"'!", e);
-						System.err.println(BaseServer.ansiErrServerName + " Find file request failed for file ID '"+command.getFileId()+"'!");
-						download = null;
-					}
 					
+					final String fileId = command.getFileId();
+					Download download = null;
+					
+					String domain = "default";
+					if (command.getDomain() != null)
+						domain = command.getDomain();
+					
+					if (fileId.equals(PingDownloadRequest.PING_FILE_ID)) {
+						
+						try {
+							final Path path = OS.createTemporaryFile(PingDownloadRequest.PING_FILE_PREFIX);
+							download = new Download(fileId, path.getFileName().toString(), path.toFile(), domain);
+						} catch (Exception e) {
+							LOG.error("Ping file request failed for file ID '"+fileId+"'!", e);
+							System.err.println(BaseServer.ansiErrServerName + " Find file request failed for file ID '"+fileId+"'!");
+							download = null;
+						}
+						
+					} else { // Default case, really find a file!
+						
+						try {
+							if (fileStorage != null)
+								download = fileStorage.findFile(fileId, domain);
+							else
+								download = this.findFile(fileId, domain);
+							
+						} catch (Exception e) {
+							LOG.error("Find file request failed for file ID '"+fileId+"'!", e);
+							System.err.println(BaseServer.ansiErrServerName + " Find file request failed for file ID '"+fileId+"'!");
+							download = null;
+						}
+					}
+
 					if (download != null) { 
 						fileServer.addToDownloadQueue(download);
 						return new ClientAnswer(download.getFileName(), download.getFileId());
 					} else {
-						return new ClientAnswer("No file found with unique file ID '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
+						return new ClientAnswer("No file found with unique file ID '" + fileId + "'!", ClientAnswer.TYPE_FILE_NOK);
 					}
+					
 				} else {
 					LOG.error("A client requested a file, but file server is not running!");
 					return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
@@ -888,37 +907,52 @@ public abstract class BaseServer {
 	 */
 	protected boolean printHealthStatus(boolean hasNoIssues) {
 		
-		boolean isAdminPortListening = false;
-		boolean isFileServerPortListening = false;
-		boolean isWebServerPortListening = false;
-
-		PingRequest pingRequest = null;
-		try {
-			pingRequest = new PingRequest();
-		} catch (IOException e) {
-			// Well...
-		}
-		
-		ClientAnswer answer = null;
-		try {
-			answer = ClientCommunicator.sendServerCommand(pingRequest);
-			isAdminPortListening = answer != null;
-		} catch (Exception e) {
-			isAdminPortListening = false;
-		}
+		// If the call made it here, the admin-port is listening!
+		boolean isAdminPortListening = true;
 		hasNoIssues = hasNoIssues && isAdminPortListening;
 
+		boolean isFileDownloadPortListening = false;
+		boolean isFileUploadPortListening = false;
+		boolean isWebServerPortListening = false;
+
 		if (startFileServer) {
+
+			ClientAnswer answer = null;
+			
+			// File server (Download)
+			final PingDownloadRequest pingDownloadRequest = new PingDownloadRequest();
 			try {
-				answer = ClientFileTransfer.sendFile(pingRequest.getFile());			
-				isFileServerPortListening = answer != null;
+				answer = ClientCommunicator.sendServerCommand(pingDownloadRequest);
 			} catch (Exception e) {
-				isFileServerPortListening = false;
 			}
+			try {
+				final File file = ClientFileTransfer.getFile(pingDownloadRequest.getFileId(), PingDownloadRequest.PING_FILE_PREFIX + "del.tmp");			
+				isFileDownloadPortListening = file != null && file.exists();
+				file.delete();
+			} catch (Exception e) {
+				isFileDownloadPortListening = false;
+			}
+			
+			// File server (Upload)
+			PingUploadRequest pingUploadRequest = null;
+			try {
+				pingUploadRequest = new PingUploadRequest();
+				answer = ClientCommunicator.sendServerCommand(pingUploadRequest);
+			} catch (Exception e) {
+			}
+			try {
+				answer = ClientFileTransfer.sendFile(pingUploadRequest.getFile());			
+				isFileUploadPortListening = answer != null && answer.getType() > 0;
+			} catch (Exception e) {
+				isFileUploadPortListening = false;
+			}
+			
 		} else {
-			isFileServerPortListening = true;
+			isFileDownloadPortListening = true;
+			isFileUploadPortListening = true;
 		}
-		hasNoIssues = hasNoIssues && isFileServerPortListening;
+		hasNoIssues = hasNoIssues && isFileDownloadPortListening;
+		hasNoIssues = hasNoIssues && isFileUploadPortListening;
 		
 		if (startWebServer) {
 			final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
@@ -941,10 +975,16 @@ public abstract class BaseServer {
 			LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): ERROR; Port not listening!");
 		
 		if (startFileServer) {
-			if (isFileServerPortListening)
-				LOG.info("* File-Server (Port: " + fileServer.portFileServer + "): Started");
+			
+			if (isFileDownloadPortListening)
+				LOG.info("* File-Server [Download] (Port: " + fileServer.portFileServer + "): Started");
 			else
-				LOG.info("* File-Server (Port: " + fileServer.portFileServer + "): ERROR; Port not listening!");
+				LOG.info("* File-Server [Download] (Port: " + fileServer.portFileServer + "): ERROR; Port not listening!");
+			
+			if (isFileUploadPortListening)
+				LOG.info("* File-Server [Upload]   (Port: " + fileServer.portFileReceiver + "): Started");
+			else
+				LOG.info("* File-Server [Upload]   (Port: " + fileServer.portFileReceiver + "): ERROR; Port not listening!");
 		}
 		if (startWebServer) {
 			if (isWebServerPortListening)
@@ -958,6 +998,8 @@ public abstract class BaseServer {
 		// messes up the logging of a probe, e.g. Windows service manager logs.
 		if (LOG.isErrorEnabled()) {
 			
+			System.out.println("");
+			
 			if (hasNoIssues)
 				System.out.println(ansiServerName + " " + Colors.green("Server is running and healthy!"));
 			else
@@ -969,10 +1011,16 @@ public abstract class BaseServer {
 				System.out.println(ansiErrServerName + " * Admin-Interface (Port: " + this.portAdminServer + "): "+Colors.red("ERROR")+"; Port not listening!");
 				
 			if (startFileServer) {
-				if (isFileServerPortListening)
-					System.out.println(ansiServerName + " * File-Server (Port: " + fileServer.portFileServer + "): Started");
+				
+				if (isFileDownloadPortListening)
+					System.out.println(ansiServerName + " * File-Server [Download] (Port: " + fileServer.portFileServer + "): Started");
 				else
-					System.out.println(ansiErrServerName + " * File-Server (Port: " + fileServer.portFileServer + "): "+Colors.red("ERROR")+"; Port not listening!");
+					System.out.println(ansiErrServerName + " * File-Server [Download] (Port: " + fileServer.portFileServer + "): "+Colors.red("ERROR")+"; Port not listening!");
+				
+				if (isFileUploadPortListening)
+					System.out.println(ansiServerName + " * File-Server [Upload]   (Port: " + fileServer.portFileReceiver + "): Started");
+				else
+					System.out.println(ansiErrServerName + " * File-Server [Upload]   (Port: " + fileServer.portFileReceiver + "): "+Colors.red("ERROR")+"; Port not listening!");
 			}
 			if (startWebServer) {
 				if (isWebServerPortListening)

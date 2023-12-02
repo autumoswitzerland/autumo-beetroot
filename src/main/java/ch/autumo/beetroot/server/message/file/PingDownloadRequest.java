@@ -17,23 +17,26 @@
  */
 package ch.autumo.beetroot.server.message.file;
 
-import java.io.IOException;
-
-import ch.autumo.beetroot.utils.OS;
-
-public class PingRequest extends UploadRequest {
+/**
+ * Ping download request.
+ */
+public class PingDownloadRequest extends DownloadRequest {
 
 	/**
-	 * Ping file name.
+	 * Ping file name prefix.
 	 */
 	public static final String PING_FILE_PREFIX = "P_I_N_G_";
 	
 	/**
-	 * Ping request.
-	 * @throws IOException
+	 * Ping file ID.
 	 */
-	public PingRequest() throws IOException {
-		super(OS.createTemporaryFile(PING_FILE_PREFIX).toFile(), null, null);
+	public static final String PING_FILE_ID = "PING";
+	
+	/**
+	 * Ping download request.
+	 */
+	public PingDownloadRequest() {
+		super(PING_FILE_ID, null);
 	}
 
 }

@@ -50,7 +50,7 @@ import ch.autumo.beetroot.server.communication.FileTransfer;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.server.message.file.FileAnswer;
-import ch.autumo.beetroot.server.message.file.PingRequest;
+import ch.autumo.beetroot.server.message.file.PingUploadRequest;
 import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.utils.UtilsException;
 
@@ -520,7 +520,7 @@ public class FileServer {
 				return;
 	        }	
 			
-			if (upload.getFileName().startsWith(PingRequest.PING_FILE_PREFIX)) {
+			if (upload.getFileName().startsWith(PingUploadRequest.PING_FILE_PREFIX)) {
 				
 				// Dummy answer!
 				DataOutputStream out = null;
@@ -580,6 +580,10 @@ public class FileServer {
 		        	Communicator.safeClose(out);
 				}							
 			}
+			
+			// Purge the temporary file!
+			if (file != null && file.exists())
+				file.delete();
 			
         	Communicator.safeClose(in);
         	Communicator.safeClose(clientSocket);
