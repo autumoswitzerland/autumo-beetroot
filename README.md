@@ -226,7 +226,8 @@ git clone https://github.com/autumoswitzerland/autumo-beetroot.git
 1. **`autumo-beetRoot-x.y.z.zip`**: Stand-alone server version with all files for every distribution.
 2. **`autumo-beetRoot-web-x.y.z.zip`**: General web-app version.
 3. **`beetroot.war`**: Tomcat version.
-4. **`beetroot-jetty.war`**: Jetty version (for demo purposes only). 
+4. **`beetroot-weblogic.zip`**: Weblogic version (Stage deployment).
+5. **`beetroot-jetty.war`**: Jetty version (for demo purposes only).
 
 Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
