@@ -81,6 +81,10 @@ public abstract class AbstractMessage {
 		return object;
 	}
 	
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+	
 	public String getEntity() {
 		return entity;
 	}

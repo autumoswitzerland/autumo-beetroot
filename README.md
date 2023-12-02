@@ -53,31 +53,31 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#toc_0">What is beetRoot ?</a>
+      <a href="#what-is-beetroot">What is beetRoot ?</a>
       <ul>
-        <li><a href="#toc_1">Built With</a></li>
+        <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li><a href="#toc_2">Quickstart</a></li>
-    <li><a href="#toc_3">Distributions</a></li>
-    <li><a href="#toc_4">Running Modes</a></li>
-    <li><a href="#toc_5">Running</a></li>
-    <li><a href="#toc_6">Configuration and Passwords</a></li>
-    <li><a href="#toc_7">Default Database and Schema</a></li>
-    <li><a href="#toc_8">CRUD Generator PLANT</a></li>
-    <li><a href="#toc_9">Standard HTML Templates</a></li>
-    <li><a href="#toc_10">JSON REST API</a></li>
-    <li><a href="#toc_11">Routing</a></li>
-    <li><a href="#toc_12">Logging</a></li>
-    <li><a href="#toc_13">Mailing</a></li>
-    <li><a href="#toc_14">Mail Templates</a></li>
-    <li><a href="#toc_15">Java Translations</a></li>
-    <li><a href="#toc_16">Webapp Design and Javascript</a></li>
-    <li><a href="#toc_17">HTTPS</a></li>
-    <li><a href="#toc_18">Roadmap | Backlog</a></li>
-    <li><a href="#toc_19">License</a></li>
-    <li><a href="#toc_20">Contact</a></li>
-    <li><a href="#toc_21">Acknowledgments</a></li>
+    <li><a href="#quickstart">Quickstart</a></li>
+    <li><a href="#distributions">Distributions</a></li>
+    <li><a href="#running-modes">Running Modes</a></li>
+    <li><a href="#running-1">Running</a></li>
+    <li><a href="#configurations-and-passwords">Configuration and Passwords</a></li>
+    <li><a href="#default-database-and-schema">Default Database and Schema</a></li>
+    <li><a href="#crud-generator-plant">CRUD Generator PLANT</a></li>
+    <li><a href="#standard-html-templates">Standard HTML Templates</a></li>
+    <li><a href="#json-rest-api">JSON REST API</a></li>
+    <li><a href="#routing">Routing</a></li>
+    <li><a href="#logging">Logging</a></li>
+    <li><a href="#mailing">Mailing</a></li>
+    <li><a href="#mail-templates">Mail Templates</a></li>
+    <li><a href="#java-translations">Java Translations</a></li>
+    <li><a href="#webapp-design-and-javascript">Webapp Design and Javascript</a></li>
+    <li><a href="#https">HTTPS</a></li>
+    <li><a href="#roadmap--backlog">Roadmap | Backlog</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 <br>

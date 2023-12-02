@@ -214,7 +214,7 @@ public class ClientFileTransfer extends FileTransfer {
 			final FileInputStream fileInputStream = new FileInputStream(file);
 			
 	        // send file size
-			output.writeLong(file.length());  
+			output.writeLong(file.length());
 	        // break file into chunks
 	        final byte buffer[] = new byte[bufferLen];
 	        int bytes = 0;

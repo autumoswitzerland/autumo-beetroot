@@ -45,20 +45,23 @@ import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.server.action.Download;
 import ch.autumo.beetroot.server.action.Upload;
 import ch.autumo.beetroot.server.communication.ClientCommunicator;
+import ch.autumo.beetroot.server.communication.ClientFileTransfer;
 import ch.autumo.beetroot.server.communication.Communicator;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.HealthAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.server.message.StopAnswer;
+import ch.autumo.beetroot.server.message.file.PingRequest;
 import ch.autumo.beetroot.server.modules.Dispatcher;
 import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.transport.DefaultServerSocketFactory;
 import ch.autumo.beetroot.transport.SecureServerSocketFactory;
 import ch.autumo.beetroot.transport.ServerSocketFactory;
 import ch.autumo.beetroot.utils.Colors;
-import ch.autumo.beetroot.utils.OS;
 import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.OS;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.Web;
 import ch.autumo.beetroot.utils.security.SSLUtils;
 
 /**
@@ -402,7 +405,7 @@ public abstract class BaseServer {
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server starting...");
 
-		// Protocol if web serevr is used
+		// Protocol if web server is used
 		final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 		
 		// Start web server
@@ -796,7 +799,10 @@ public abstract class BaseServer {
 					if (command.getDomain() != null)
 						domain = command.getDomain();
 					
-					final Upload upload = new Upload(command.getId(), command.getEntity(), user, domain); 
+					final String fileNameCheckSum[] = command.getEntity().split(Upload.ENTITY_DIVIDER_FILENAME_CHECKSUM); 
+					final String fileName = fileNameCheckSum[0];
+					final String checkSum = fileNameCheckSum[1];
+					final Upload upload = new Upload(command.getId(), fileName, checkSum, user, domain); 
 					fileServer.addToUploadQueue(upload);
 					return new ClientAnswer(command.getEntity(), "FILE", command.getId());
 				}
@@ -875,25 +881,108 @@ public abstract class BaseServer {
 	/**
 	 * Prints out the health status of this server.
 	 * Overwrite if necessary.
+	 * 
+	 * @param hasNoIssues any pre-existing issues for the overall state; 
+	 * 			false if there are issues!
+	 * @return overall state, true if good
 	 */
-	protected void printHealthStatus() {
+	protected boolean printHealthStatus(boolean hasNoIssues) {
 		
-		LOG.info("Server is running and healthy!");
-		LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): Started");
-		if (startFileServer)
-			LOG.info("* File-Server (Port: " + fileServer.portFileServer + "): Started");
-		if (startWebServer)
-			LOG.info("* Web-Server (Port: " + this.portWebServer + "): Started");
-		
-		if (LOG.isErrorEnabled()) {
-			System.out.println("");
-			System.out.println("[" + this.name + "] Server is running and healthy!");
-			System.out.println("[" + this.name + "] * Admin-Interface (Port: " + this.portAdminServer + "): Started");
-			if (startFileServer)
-				System.out.println("[" + this.name + "] * File-Server (Port: " + fileServer.portFileServer + "): Started");
-			if (startWebServer)
-				System.out.println("[" + this.name + "] * Web-Server (Port: " + this.portWebServer + "): Started");
+		boolean isAdminPortListening = false;
+		boolean isFileServerPortListening = false;
+		boolean isWebServerPortListening = false;
+
+		PingRequest pingRequest = null;
+		try {
+			pingRequest = new PingRequest();
+		} catch (IOException e) {
+			// Well...
 		}
+		
+		ClientAnswer answer = null;
+		try {
+			answer = ClientCommunicator.sendServerCommand(pingRequest);
+			isAdminPortListening = answer != null;
+		} catch (Exception e) {
+			isAdminPortListening = false;
+		}
+		hasNoIssues = hasNoIssues && isAdminPortListening;
+
+		if (startFileServer) {
+			try {
+				answer = ClientFileTransfer.sendFile(pingRequest.getFile());			
+				isFileServerPortListening = answer != null;
+			} catch (Exception e) {
+				isFileServerPortListening = false;
+			}
+		} else {
+			isFileServerPortListening = true;
+		}
+		hasNoIssues = hasNoIssues && isFileServerPortListening;
+		
+		if (startWebServer) {
+			final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
+			final String url = ((https) ? "https" : "http") + "://localhost:" + this.portWebServer; 
+			isWebServerPortListening = Web.pingWebsite(url);
+		} else {
+			isWebServerPortListening = true;
+		}
+		hasNoIssues = hasNoIssues && isWebServerPortListening;
+		
+		
+		if (hasNoIssues)
+			LOG.info("Server is running and healthy.");
+		else
+			LOG.info("Server has issues, see below!");
+		
+		if (isAdminPortListening)
+			LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): Started");
+		else
+			LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): ERROR; Port not listening!");
+		
+		if (startFileServer) {
+			if (isFileServerPortListening)
+				LOG.info("* File-Server (Port: " + fileServer.portFileServer + "): Started");
+			else
+				LOG.info("* File-Server (Port: " + fileServer.portFileServer + "): ERROR; Port not listening!");
+		}
+		if (startWebServer) {
+			if (isWebServerPortListening)
+				LOG.info("* Web-Server (Port: " + this.portWebServer + "): Started");
+			else
+				LOG.info("* Web-Server (Port: " + this.portWebServer + "): ERROR; Port not listening!");
+		}
+		
+		
+		// No output coloring here, because we don't want to risk if unparsed ASCII coloring
+		// messes up the logging of a probe, e.g. Windows service manager logs.
+		if (LOG.isErrorEnabled()) {
+			
+			if (hasNoIssues)
+				System.out.println(ansiServerName + " " + Colors.green("Server is running and healthy!"));
+			else
+				System.out.println(ansiErrServerName + " " + Colors.orange("Server has issues, see below!"));
+			
+			if (isAdminPortListening)
+				System.out.println(ansiServerName + " * Admin-Interface (Port: " + this.portAdminServer + "): Started");
+			else
+				System.out.println(ansiErrServerName + " * Admin-Interface (Port: " + this.portAdminServer + "): "+Colors.red("ERROR")+"; Port not listening!");
+				
+			if (startFileServer) {
+				if (isFileServerPortListening)
+					System.out.println(ansiServerName + " * File-Server (Port: " + fileServer.portFileServer + "): Started");
+				else
+					System.out.println(ansiErrServerName + " * File-Server (Port: " + fileServer.portFileServer + "): "+Colors.red("ERROR")+"; Port not listening!");
+			}
+			if (startWebServer) {
+				if (isWebServerPortListening)
+					System.out.println(ansiServerName + " * Web-Server (Port: " + this.portWebServer + "): Started");
+				else
+					System.out.println(ansiErrServerName + " * Web-Server (Port: " + this.portWebServer + "): "+Colors.red("ERROR")+"; Port not listening!");
+			}
+		}
+		
+		return hasNoIssues;
 	}
 	
 	/**
@@ -1022,8 +1111,9 @@ public abstract class BaseServer {
 				return;
 	        }	
 	        catch (IOException e) {
-	        	
-				LOG.error("Admin server listener failed! We recommend to restart the server!", e);
+				LOG.error("Admin server listener failed! Possible invalid messages received.", e);
+				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket);
 				return;
 	        }	
 			
@@ -1032,7 +1122,7 @@ public abstract class BaseServer {
 			if (!serverName.equals(BaseServer.this.getServerName())) {
 				LOG.error("Server command: Wrong server name received, command is ignored!");
 				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket); //
+	        	Communicator.safeClose(clientSocket);
 				return;
 			}
 			
@@ -1044,7 +1134,7 @@ public abstract class BaseServer {
 				LOG.info("[HEALTH] signal received, printing server's health state to console.");
 
 				// print info
-				BaseServer.this.printHealthStatus();
+				BaseServer.this.printHealthStatus(true);
 				
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket); //

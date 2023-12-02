@@ -18,6 +18,8 @@
 package ch.autumo.beetroot.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -323,6 +325,27 @@ public class Web {
 		<input type="submit">
 		<input type="button">
 		 */
+	}
+
+	/**
+	 * Ping a web-site.
+	 * 
+	 * @param urlAddress URL address
+	 * @return true if ping was successful
+	 */
+	public static boolean pingWebsite(String urlAddress) {
+		HttpURLConnection connection = null;
+		try {
+			final URL url = new URL(urlAddress);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            final int responseCode = connection.getResponseCode();
+            return responseCode == 200;
+        } catch (Exception e) {
+            return false;
+        } finally {
+        	connection.disconnect();
+		}
 	}
 	
 }

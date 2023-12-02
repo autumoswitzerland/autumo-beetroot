@@ -23,8 +23,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -45,6 +50,7 @@ import ch.autumo.beetroot.server.communication.FileTransfer;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.server.message.file.FileAnswer;
+import ch.autumo.beetroot.server.message.file.PingRequest;
 import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.utils.UtilsException;
 
@@ -132,6 +138,12 @@ public class FileServer {
 	 */
 	public void stop() {
 		stopped = true;
+		new Thread(() -> {
+			Communicator.safeClose(fileServerSocket);
+		}).start();
+		new Thread(() -> {
+			Communicator.safeClose(fileReceiverSocket);
+		}).start();
 	}
 	
 	/**
@@ -161,7 +173,6 @@ public class FileServer {
 	 * @return download or null
 	 */
 	public Download processServerCommand(ServerCommand command) {
-		
 		// file request
 		if (command.getCommand().equals(FileTransfer.CMD_FILE_GET)) {
 			// all we need is the client to send back the unique file id
@@ -292,20 +303,21 @@ public class FileServer {
 				command = Communicator.readCommand(in);
 	        } 
 	        catch (UtilsException e) {
-	        	
 				LOG.error("File server couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode) or");
 				LOG.error("     different encrypt modes have been defined on boths side, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
+				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket);
 				return;
 	        }	
 	        catch (IOException e) {
-	        	
-				LOG.error("File server listener failed! We recommend to restart the server!", e);
+				LOG.error("File server listener failed! Possible invalid messages received.", e);
+				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket);
 				return;
 	        }	
-			
 			
 			// Security checks:
 			// 0. invalid server command?
@@ -323,7 +335,6 @@ public class FileServer {
 	        	Communicator.safeClose(clientSocket); //
 				return;
 			}
-			
 			
 			// execute command
 			final Download download = FileServer.this.processServerCommand(command);
@@ -458,38 +469,72 @@ public class FileServer {
 			
 			File file = null;
 			Upload upload = null;
+			boolean found = false;
 			try {
 			
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-
+				
 				// Only files!
 				final long size = in.readLong();
 				for (Iterator<Upload> iterator = uploadQueue.iterator(); iterator.hasNext();) {
+					
 					upload = iterator.next();
-					if (upload.getSize() == size) { //match
+					if (upload.getSize() == size) { // First check: file size
+						
 						file = FileTransfer.readFile(in, upload.getFileName(), size);
-						uploadQueue.remove(upload);
-						break;
+						final String absPath = file.getAbsolutePath();
+						final Path path = Paths.get(absPath);
+						
+					    byte data[];
+					    String checkSum = null;
+						try {
+							data = Files.readAllBytes(path);
+						    byte hash[] = MessageDigest.getInstance("MD5").digest(data);
+						    checkSum = new BigInteger(1, hash).toString(16);
+						} catch (Exception e) {
+							throw new IOException("Couldn't build checksum for file '" + absPath + "!", e);
+						}						
+						
+						if (upload.getCheckSum().equals(checkSum)) {
+							found = true;
+							uploadQueue.remove(upload);
+							break;
+						}
 					}
 				}
 	        } 
 	        catch (UtilsException e) {
-	        	
 				LOG.error("File receiver couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode) or");
 				LOG.error("     different encrypt modes have been defined on boths side, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
+				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket);
 				return;
 	        }	
 	        catch (IOException e) {
-	        	
-				LOG.error("File receiver listener failed! We recommend to restart the server!", e);
+				LOG.error("File receiver listener failed! Possible invalid messages received.", e);
+				Communicator.safeClose(in);
+	        	Communicator.safeClose(clientSocket);
 				return;
 	        }	
 			
-			// Store file!
-			if (file != null) {
+			if (upload.getFileName().startsWith(PingRequest.PING_FILE_PREFIX)) {
+				
+				// Dummy answer!
+				DataOutputStream out = null;
+				try {
+					out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
+					Communicator.writeAnswer(new FileAnswer(upload.getFileName(), "PING"), out);
+				} catch (IOException e) {
+					LOG.error("Ping receiver client response failed! We recommend to restart the server!", e);
+					System.err.println(BaseServer.ansiErrServerName + " Ping receiver client response failed! We recommend to restart the server!");
+		        } finally {
+		        	Communicator.safeClose(out);
+				}			
+				
+			} else if (file != null && found) {
 				
 				// store it !
 				String uniqueFileId = null;
@@ -522,6 +567,18 @@ public class FileServer {
 		        	Communicator.safeClose(out);
 				}			
 
+			} else { // no matching file found!
+				
+				DataOutputStream out = null;
+				try {
+					out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
+					Communicator.writeAnswer(new FileAnswer("No matching file upload request found in upload queue!", ClientAnswer.TYPE_FILE_NOK), out);
+				} catch (IOException e) {
+					LOG.error("File receiver client response failed! We recommend to restart the server!", e);
+					System.err.println(BaseServer.ansiErrServerName + " File receiver client response failed! We recommend to restart the server!");
+		        } finally {
+		        	Communicator.safeClose(out);
+				}							
 			}
 			
         	Communicator.safeClose(in);

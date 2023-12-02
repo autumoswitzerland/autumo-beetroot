@@ -17,6 +17,10 @@
  */
 package ch.autumo.beetroot.utils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.apache.commons.lang3.SystemUtils;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
@@ -87,6 +91,16 @@ public class OS {
 	 */
 	public static String getOS() {
 		return OS;	
+	}
+
+	/**
+	 * Get a temporary file.
+	 * 
+	 * @return filenamePrefix file name prefix
+	 * @throws IOException
+	 */
+	public static Path createTemporaryFile(String filenamePrefix) throws IOException {
+		return Files.createTempFile(filenamePrefix, ".tmp");
 	}
 	
 	/**

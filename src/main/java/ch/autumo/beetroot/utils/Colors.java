@@ -84,6 +84,16 @@ public final class Colors {
 	}
 	
 	/**
+	 * Orange colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String orange(String text) {
+		return foregroundColorize(text, Attribute.TEXT_COLOR(255, 128, 0));
+	}
+	
+	/**
 	 * Red colored string.
 	 * 
 	 * @param text text
