@@ -28,9 +28,13 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,7 +43,10 @@ import org.jsoup.parser.Tag;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.utils.security.SSLUtils;
 
 
 /**
@@ -47,6 +54,16 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
  */
 public class Web {
 
+	/**
+	 * Host-name verification when an SSL/HTTPS certificate is used?
+	 * Usually with self-signed certificates and on localhost this is
+	 * turned off, because the verification doesn't work.
+	 */
+	private static final boolean verifyHost;
+	static {
+		verifyHost = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_COM_HOSTNAME_VERIFY);
+	} 
+	
     /**
      * HTML escape value.
      * 
@@ -337,7 +354,18 @@ public class Web {
 		HttpURLConnection connection = null;
 		try {
 			final URL url = new URL(urlAddress);
-            connection = (HttpURLConnection) url.openConnection();
+            if (urlAddress.startsWith("https")) {
+            	final HttpsURLConnection sconnection = (HttpsURLConnection) url.openConnection();
+                if (verifyHost)
+                	sconnection.setHostnameVerifier(new DefaultHostnameVerifier());
+                else
+                	sconnection.setHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            	final SSLSocketFactory factory = SSLUtils.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw());
+            	sconnection.setSSLSocketFactory(factory);
+            	connection = sconnection;
+            } else {
+                connection = (HttpURLConnection) url.openConnection();
+            }
             connection.setRequestMethod("GET");
             final int responseCode = connection.getResponseCode();
             return responseCode == 200;

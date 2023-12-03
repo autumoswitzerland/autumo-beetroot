@@ -328,7 +328,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 		
 		
-		// JSON server command without login, but with API key - only outside servlet context!
+		// JSON server command without login, but with API key - only outside servlet context,
+		// we do not send server commands to web containers, the only serve pages or or less;
+		// commands are addressed to the beetRoot server always! 
 		if (!BeetRootConfigurationManager.getInstance().runsWithinServletContext()
 				&& this.isWebCmdMode
 				&& uriWithoutServlet.startsWith(Constants.URI_SRV_CMD)
@@ -365,9 +367,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				LOG.error("Server command: Wrong server name received, command is ignored!");
 				return serverCommandResponse(session, new ClientAnswer("Wrong server name received, command is ignored!", ClientAnswer.TYPE_ERROR));
 			}
+
+			// Internal server commands never arrive here, they are forced to be served over sockets!
+			// Here we only process dispatcher commands!
 			
 			// process command for module dispatchers
 			final ClientAnswer answer = baseServer.processServerCommand(command);
+			
 			// answer !
 			return serverCommandResponse(session, answer);
 		}

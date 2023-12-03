@@ -63,8 +63,9 @@ public class ServerCommand extends AbstractMessage {
 		
 		mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_MODE, "sockets");
 		host = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_HOST);
-		// this port might differ depending on the mode and if it's a client
-		// if 'web' mode is used, this port should be changed on client side to the beetRoot web-server port!
+		
+		// If 'web' mode is used, this port will be overwritten by the communicator, unless this is an
+		// internal server command, then it is always processed over sockets per admin-port! 
 		port = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_PORT);
 		
 		timeout = BeetRootConfigurationManager.getInstance().getInt("connection_timeout"); // seconds

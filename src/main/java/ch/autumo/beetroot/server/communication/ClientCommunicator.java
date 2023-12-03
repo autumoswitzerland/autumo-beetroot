@@ -135,7 +135,7 @@ public class ClientCommunicator extends Communicator {
 						  .setCookieSpec(CookieSpecs.STANDARD).build();
 				
 				if (https)
-					httpClient = SSLUtils.makeSSLHttpClient(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw(), config); // TODO doesn't work!
+					httpClient = SSLUtils.makeSSLHttpClient(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw(), config);
 				else
 					httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 				
@@ -154,11 +154,17 @@ public class ClientCommunicator extends Communicator {
 				// JSON transfer string from command
 				request.setEntity(new StringEntity(command.getJsonTransferString(), StandardCharsets.UTF_8.toString()));
 				
+				// In the 'web' mode, we have to send commands to the web port defined in the configuration,
+				// no matter in what context (client or server) the call is made. We simply don't know the context
+				// and internal server commands are sent per sockets port anyway, see case below (else).
+				// So we overwrite the port with the web server port, no matter what has been defined!
+				final int port = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WS_PORT);
+				
 				// HTTP or HTTPS
 				if (https)
-					response = httpClient.execute(new HttpHost(command.getHost(), command.getPort(), "https"), request);
+					response = httpClient.execute(new HttpHost(command.getHost(), port, "https"), request);
 				else
-					response = httpClient.execute(new HttpHost(command.getHost(), command.getPort(), "http"), request);
+					response = httpClient.execute(new HttpHost(command.getHost(), port, "http"), request);
 				
 				checkHttpResponse(response);
 				final HttpEntity responseBodyentity = response.getEntity();

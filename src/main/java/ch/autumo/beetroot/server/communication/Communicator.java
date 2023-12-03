@@ -165,7 +165,7 @@ public class Communicator {
 		
 		final byte[] messageByte = new byte[length];
 	    boolean end = false;
-	    final StringBuilder dataString = new StringBuilder(length); //TODO !
+	    final StringBuilder dataString = new StringBuilder(length);
 	    int totalBytesRead = 0;
 	    
 	    while (!end) {
