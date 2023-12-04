@@ -149,7 +149,6 @@ Enjoy!
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
 * [HikariCP](https://github.com/brettwooldridge/HikariCP)
-* [normalize.css](https://necolas.github.io/normalize.css)
 * ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -238,18 +237,22 @@ Distributions are available here: [Releases](https://github.com/autumoswitzerlan
 <!-- RUNNING MODES STARTED -->
 ## Running Modes
 
-This is an example of how you may give instructions on setting up your project locally. To get a local copy up and running follow these simple example steps.
+beetRoot can be run in two modes:
 
-beetRoot can be run within two modes:
+1. As a stand-alone server consists of:
 
-1. Stand-alone web-server, based on a partially patched version of NanoHTTP and [RouterNanoHTTPD](https://github.com/NanoHttpd/nanohttpd/tree/master/nanolets/src/main/java/org/nanohttpd/router); the specific versions are:
-     
-	- NanoHTTP a.b.c-SNAPHOT, which is distributed by autumo GmbH through the library
-       'nanohttpd-a.b.c-BEETROOT.jar'
-       
-	- RouterNanoHTTPD a.b.c-SNAPHOT, patched within `autumo-beetroot-x.y.z.jar`
+	- An administration interface for server commands and for executing distributed dispatcher modules.
+
+	- A web-server;
+	
+		- uses a [patched version](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java) 
+		of the [RouterNanoHTTPD](https://github.com/NanoHttpd/nanohttpd/blob/master/nanolets/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java) and
+		
+		- an [updated version of the NanoHttpd project](https://github.com/autumoswitzerland/nanohttpd) through the provided library `nanohttpd-a.b.c-BEETROOT.jar`.
+
+	- An optional file-server (storage / find & download).
       
-2. Within a servlet container such as tomcat or jetty.
+2. Within a servlet-container such as Tomcat, WebLogic or Jetty that can optionally interact with the stand-alone server; see above.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -322,7 +325,7 @@ Furthermore, the configuration offers wide possibilities of customization for yo
 
 Every beetRoot package (stand-alone & web-apps) come with a [H2 database](https://h2database.com) filled with sample data and the configuration points to this database. If you want to connect to your own database, simply change the connections parameters in the configuration.
 
-To setup a new database scheme use the SQL-Script `db/install_beetroot.sql` and customize it to your needs and database. 
+To setup a new database scheme use the SQL-Script `db/install_<database-type>.sql` and customize it to your needs (initial data). 
 
 A word when using MySQL: Due to the GPL license, we don't distribute or create a dependency to the MySQL Connector for Java. Visit Oracle MySQL website and download it yourself if you want to use this connector. Note that the MariaAB connector for Java works also for MySQL databases up to the version 5.5 of MySQL or even for higher versions! Also have a look here for further valuable information in this context: [MariaDB License FAQ](https://mariadb.com/kb/en/licensing-faq).
 
@@ -716,7 +719,6 @@ If you configure beetRoot to run with the HTTPS protocol (configuration paramete
 ## Roadmap | Backlog
 
 - Low Prio.: [Add SQLLite DB Connectivity](https://www.sqlite.org)
-- Low Prio.: [Update to normalize.css 8](https://necolas.github.io/normalize.css/)
 
 See also the [open issues](https://github.com/autumoswitzerland/autumo/issues) for a full list of proposed features (and known issues).
 
