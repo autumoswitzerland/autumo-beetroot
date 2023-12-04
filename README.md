@@ -93,7 +93,10 @@
 
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
 
-beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database model! The client-server framework supports encrypted communication (SSL) as well as HTTP/HTTPS-tunneling, provides a file download and upload interface and it can be extended with own (distributed) modules.
+beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. 
+It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database 
+model! The client-server framework supports encrypted communication (SSL) as well as HTTP/HTTPS-tunneling, provides a file download and upload interface and it can be extended with own (distributed) 
+modules.
 
 Note that the client-server framework is not documented in this document; it focuses only on the web development part.
 
@@ -239,7 +242,7 @@ Distributions are available here: [Releases](https://github.com/autumoswitzerlan
 
 beetRoot can be run in two modes:
 
-1. As a stand-alone server consists of:
+1. As a stand-alone server that consists of:
 
 	- An administration interface for server commands and for executing distributed dispatcher modules.
 
@@ -267,7 +270,8 @@ All batch files and shell scripts are located in the `bin` directory.
 
 	- `beetRoot.sh start` / `beetRoot.bat start` 
 
-		See shell-script if you need special modifications. The stand-alone beetRoot web-server reads the configuration `cfg/beetroot.cfg`. Most configuration parameters are used for servlet-container  operation too. All Configuration parameters are explained in the configuration file itself.
+		See shell-script if you need special modifications. The stand-alone beetRoot web-server reads the configuration `cfg/beetroot.cfg`. Most configuration parameters 
+		are used for servlet-container  operation too. All Configuration parameters are explained in the configuration file itself.
 
 	- Surf to http://localhost:8778 (8778 is the default port for the stand-alone server).
 
@@ -275,11 +279,16 @@ All batch files and shell scripts are located in the `bin` directory.
 
 	- Use `beetRoot.sh stop` / `beetRoot.bat stop` to properly stop the stand-alone server.
 	
-	- **NOTE**: We don't distribute the Java Servlet API. If you run beetRoot as a stand-alone server, you have to download this API yourself e.g. through maven-dependencies or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar. The same applies to jakarta's mail (jakarta.mail-x.y.z.jar) and activation (jakarta.activation-x.y.z.jar) implementation for the mailing component. If you want to uses Oracle's mail implementation (javax.mail-x.y.z.jar), you have to get that library by your own too. Always place additional libraries in the `lib/` folder.  
+	- **NOTE**: We don't distribute the Java Servlet API. If you run beetRoot as a stand-alone server, you have to download this API yourself e.g. through maven-dependencies 
+	or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar. The same applies to 
+	jakarta's mail (jakarta.mail-x.y.z.jar) and activation (jakarta.activation-x.y.z.jar) implementation for the mailing component. If you want to uses Oracle's mail implementation 
+	(javax.mail-x.y.z.jar), you have to get that library by your own too. Always place additional libraries in the `lib/` folder.  
 
 2. Servlet-container:
 
-	Throw `beetroot.war` into tomcat `webapps/` and throw `beetroot-jetty.war` into jetty's `webapps/` folder. Fire it up and surf to http://localhost:8080/beetroot. Configure your containers as you wish. We recommend running the beetroot webapp extracted, so any change on the HTML templates and the model configuration (`columns.cfg` for each entity) can be made on-the-fly.
+	Throw `beetroot.war` into tomcat `webapps/` and throw `beetroot-jetty.war` into jetty's `webapps/` folder. Fire it up and surf to http://localhost:8080/beetroot. Configure your 
+	containers as you wish. We recommend running the beetroot webapp extracted, so any change on the HTML templates and the model configuration (`columns.cfg` for each entity) 
+	can be made on-the-fly.
 
 If you want to keep everything under control use the archive `autumo-beetRoot-web-x.y.z.zip`.
 
@@ -290,11 +299,13 @@ If you want to keep everything under control use the archive `autumo-beetRoot-we
 <!-- CONFIGURATION AND PASSWORDS -->
 ## Configuration and Passwords
 
-Have a look at `cfg/beetroot.cfg`. Every configuration parameter is explained. You can run beetRoot with ALL passwords encoded if you wish. You can define, if passwords used in the configuration file should be encoded. The same for passwords stored in the beetRoot-database-table `users`.
+Have a look at `cfg/beetroot.cfg`. Every configuration parameter is explained. You can run beetRoot with ALL passwords encoded if you wish. You can define, if passwords used in the 
+configuration file should be encoded. The same for passwords stored in the beetRoot-database-table `users`.
 
 There are two configuration variables for this: `admin_pw_encoded` & `db_pw_encoded` (yes/no).
  
-For security reasons, you should change the secret key seed (`secret_key_seed`) in the beginning and then generate new passwords with the tool `pwencoder.sh/pwencoder.bat`. If you do, you have to change the initial encoded password for the beetRoot `admin` user in the database to gain access again!
+For security reasons, you should change the secret key seed (`secret_key_seed`) in the beginning and then generate new passwords with the tool `pwencoder.sh/pwencoder.bat`. If you 
+do, you have to change the initial encoded password for the beetRoot `admin` user in the database to gain access again!
 
 **NOTE**: All passwords are **`beetroot`** in the beginning!
 
@@ -323,11 +334,14 @@ Furthermore, the configuration offers wide possibilities of customization for yo
 <!-- DEFAULT DATABASE AND SCHEMA -->
 ## Default Database and Schema
 
-Every beetRoot package (stand-alone & web-apps) come with a [H2 database](https://h2database.com) filled with sample data and the configuration points to this database. If you want to connect to your own database, simply change the connections parameters in the configuration.
+Every beetRoot package (stand-alone & web-apps) come with a [H2 database](https://h2database.com) filled with sample data and the configuration points to this database. If you 
+want to connect to your own database, simply change the connections parameters in the configuration.
 
 To setup a new database scheme use the SQL-Script `db/install_<database-type>.sql` and customize it to your needs (initial data). 
 
-A word when using MySQL: Due to the GPL license, we don't distribute or create a dependency to the MySQL Connector for Java. Visit Oracle MySQL website and download it yourself if you want to use this connector. Note that the MariaAB connector for Java works also for MySQL databases up to the version 5.5 of MySQL or even for higher versions! Also have a look here for further valuable information in this context: [MariaDB License FAQ](https://mariadb.com/kb/en/licensing-faq).
+A word when using MySQL: Due to the GPL license, we don't distribute or create a dependency to the MySQL Connector for Java. Visit Oracle MySQL website and download it yourself 
+if you want to use this connector. Note that the MariaAB connector for Java works also for MySQL databases up to the version 5.5 of MySQL or even for higher versions! Also have 
+a look here for further valuable information in this context: [MariaDB License FAQ](https://mariadb.com/kb/en/licensing-faq).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -338,7 +352,9 @@ A word when using MySQL: Due to the GPL license, we don't distribute or create a
 
 Start the CRUD generator with the script `plant.sh` / `plant.bat` and follow the steps!
 
-The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with another database connection), you can specify that configuration file as an argument in the shell / batch scripts above. PLANT supports the MySQL, MariaDB, H2, Oracle and PostgreSQL databases.
+The generator reads the entities in the database that is configured in `cfg/beetroot.cfg`, from which you can choose one or all! If you need another configuration file (e.g. with 
+another database connection), you can specify that configuration file as an argument in the shell / batch scripts above. PLANT supports the MySQL, MariaDB, H2, Oracle and PostgreSQL 
+databases.
 
 **NOTE**: Entities for beetRoot MUST be named in plural form in the database, e.g.: tasks, users, cities, properties, cars, etc.
 
@@ -347,7 +363,8 @@ In the Generated HTMLs the following standard transformation takes place:
 - tasks -> task (singular)
 - properties -> property (singular)
 
-Hence, we suggest you use English names for your database entities, even you can adjust the named versions in the generated HTMLs of course and which is even necessary if you copy the templates for other languages.
+Hence, we suggest you use English names for your database entities, even you can adjust the named versions in the generated HTMLs of course and which is even necessary if you copy 
+the templates for other languages.
 
 
 It generates the following sources:
@@ -368,7 +385,8 @@ Java sources (handlers):
 - src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`IndexHandler.java
 - src/planted/beetroot/handler/`{entity-plural-name}`/`{Entity-plural-name}`DeleteHandler.java
 
-Adjust them to your needs (see existing handlers for examples) and more **IMPORTANT**: Move the Java sources to another package! All generated files are overwritten the next time if you re-generate sources for the same entity!
+Adjust them to your needs (see existing handlers for examples) and more **IMPORTANT**: Move the Java sources to another package! All generated files are overwritten the next time 
+if you re-generate sources for the same entity!
 
 The HTML templates & model configuration are usually moved/copied to a language sub-directory:
 
@@ -382,7 +400,8 @@ We suggest to backup your original generated HTML templates and model configurat
 
 The model configuration `columns.cfg` does the following for every entity:
 
-- It defines what columns you see for every view (add, edit, view/single-record, index/list) and defines a value for the field name. See existing files for sample entities `Task` and/or `User`. E.g.:
+- It defines what columns you see for every view (add, edit, view/single-record, index/list) and defines a value for the field name. See existing files for sample entities `Task` 
+and/or `User`. E.g.:
 
 	index.html: `list.aDbfield=GUI Name for that Field`
 	
@@ -396,7 +415,8 @@ The model configuration `columns.cfg` does the following for every entity:
 
 	`unique=name, path`
 	
-- If you want to load a value from a database field into the entity bean to use it in a handler, but you do not want it to be displayed in the GUI, define the constant 'NO_SHOW' as the GUI field name, for example:
+- If you want to load a value from a database field into the entity bean to use it in a handler, but you do not want it to be displayed in the GUI, define the constant 'NO_SHOW' 
+as the GUI field name, for example:
 
 	index.html: `list.secretDbField=NO_SHOW`
 	
@@ -406,7 +426,8 @@ The model configuration `columns.cfg` does the following for every entity:
 	
 	add.html: `add.secretDbField=NO_SHOW`
 
-- Furthermore, you can manually define transient values that are not read from or stored to database nor they are loaded within a bean, they are just delievered within the handler methods, so another value can be served for these transient columns/fields, e.g.:
+- Furthermore, you can manually define transient values that are not read from or stored to database nor they are loaded within a bean, they are just delievered within the handler 
+methods, so another value can be served for these transient columns/fields, e.g.:
 
 	`transient=status`
 
@@ -417,7 +438,8 @@ The model configuration `columns.cfg` does the following for every entity:
 
 Your TODO's are the following after generating:
 
-- Add mandatory (DB: not nullable) fields in the `add`-handler: only the mandatory fields need a default value in the add handler that are not present in the GUI! See all `Properties` handlers for more information.
+- Add mandatory (DB: not nullable) fields in the `add`-handler: only the mandatory fields need a default value in the add handler that are not present in the GUI! See all `Properties` 
+handlers for more information.
 
 - Remove unwanted GUI fields from `columns.cfg` for the views `view`, `add` and `edit`.
 		
@@ -426,7 +448,8 @@ Your TODO's are the following after generating:
 - Add entity to menu or admin menu and overwrite `hasAccess`-method for every handler if necessary.
 
 
-**NOTE**: PLANT uses its own templates stored within the `gen/`-directory. Of course, you can even adjust these templates next to the block-templates, so they have the structure you want to have for your own web-app.
+**NOTE**: PLANT uses its own templates stored within the `gen/`-directory. Of course, you can even adjust these templates next to the block-templates, so they have the structure you 
+want to have for your own web-app.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -441,14 +464,16 @@ The following standard HTML templates are present, which can be customized too o
  
 	- Defines the layout of the page with its general elements such as head, header, menu admin menu, language menu, message block and script section (javascript).
   
-	- They can be copied to other language directories too (e.g. `web/html/blocks/en/*.html`), if they need to be language specific, which in most cases, is not necessary. They also serve as fallback templates, if the user requested a language that isn't found respectively the web-app is not yet translated into that language.
+	- They can be copied to other language directories too (e.g. `web/html/blocks/en/*.html`), if they need to be language specific, which in most cases, is not necessary. They also 
+	serve as fallback templates, if the user requested a language that isn't found respectively the web-app is not yet translated into that language.
   
 	- **NOTE**: Here, as well as with the generated HTML templates, the lookup algorithm is:
 		a) First, lookup templates in requested language directory (2-letter ISO code)
 		b) If not found, try the default language; this is the one that is first defined in the configuration, see parameter `web_languages`.
 		c) If still not found, use the templates by omitting the language code, respectively the language directory in the `web/html`-directory structure.
 	 
-E.g.: the Englisch `index.html` for the entity `tasks` is here: `web/html/en/tasks/index.html`. If this resource is not available, then `web/html/tasks/index.html` is looked up. The same applies for `colums.cfg` resources.
+E.g.: the Englisch `index.html` for the entity `tasks` is here: `web/html/en/tasks/index.html`. If this resource is not available, then `web/html/tasks/index.html` is looked up. The 
+same applies for `colums.cfg` resources.
 	  
 **NOTE**: Valid for templates and any other HTMLs file that are added to the `web/html`-directory structure:
 
@@ -471,7 +496,8 @@ The following template variables are always parsed and you can use them as many 
 <!-- JSON REST API -->
 ## JSON REST API
 
-beetRoot comes with an "out-of-the-box" JSON REST API that serves any entity from the application. The API uses an API key that is defined within the "Settings" by the key `web.json.api.key`. The API key name itself can be changed in the beetRoot configuration `cfg/beetroot.cfg`.
+beetRoot comes with an "out-of-the-box" JSON REST API that serves any entity from the application. The API uses an API key that is defined within the "Settings" by the key 
+`web.json.api.key`. The API key name itself can be changed in the beetRoot configuration `cfg/beetroot.cfg`.
 
 A REST API call looks like this:
 
@@ -505,7 +531,8 @@ Example Answer:
 
 As you can see, you can iterate with the `paginator` object through pages with your REST calls - the same way as you would navigate within an HTML `index` page.
 
-JSON templates can be handled like HTML templates: Put them into the directory `web/html/..`. No user languages are used in any way by using this API. Therefore, you can dismiss the HTML template language directories and place the template, e.g. for entity `tasks`, directly here `web/html/tasks/index.json`; it looks like this:
+JSON templates can be handled like HTML templates: Put them into the directory `web/html/..`. No user languages are used in any way by using this API. Therefore, you can dismiss the 
+HTML template language directories and place the template, e.g. for entity `tasks`, directly here `web/html/tasks/index.json`; it looks like this:
 
 ```JSON
 	{
@@ -534,7 +561,8 @@ It never has been easier using a REST API!
 <!-- ROUTING -->
 ## Routing
 
-The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced for your own app: Define your router's java class in the `web_router` parameter. You simply have to implement the `Router` interface.
+The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced 
+for your own app: Define your router's java class in the `web_router` parameter. You simply have to implement the `Router` interface.
 
 Let's have a look at some routes:
 
@@ -575,10 +603,12 @@ For generated handlers (with the CRUD generator) this is usually not necessary, 
 
 If your handlers need customization, just overwrite this method. As you can see, here the translation of the requested URL takes place and points to the `web/html`-directory structure!
 
-The language is replaced by the requested language, and if not found the above algorithm is executed. The `entity` name is assigned through the construction of the handler (see route examples above). That's it, more or less! 
+The language is replaced by the requested language, and if not found the above algorithm is executed. The `entity` name is assigned through the construction of the handler (see route 
+examples above). That's it, more or less! 
 
 
-**NOTE**: You never have to reference the servlet-name within any request URL not in the router, not even in your HTML templates when running beetRoot in a servlet container. Just specify the configuration parameter `web_html_ref_pre_url_part`.
+**NOTE**: You never have to reference the servlet-name within any request URL not in the router, not even in your HTML templates when running beetRoot in a servlet container. Just specify 
+the configuration parameter `web_html_ref_pre_url_part`.
 
 For example ('beetroot' is the default servlet name/url):
 
@@ -587,7 +617,9 @@ For example ('beetroot' is the default servlet name/url):
 beetRoot handles every pre-url-path / servlet-name-path by its own, if configured correctly!
 
 
-**IMPORTANT**: If you run beetRoot as a stand-alone server or in a servlet container, where beetRoot is installed on the ROOT path, NEVER specify the parameter `web_html_ref_pre_url_part`! When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an image source or any other source (e.g. `<img src="/img/beetroot-100.png">`), you always point to the root-path "/". Tough, you have to include the language placeholder `:lang` for HTML templates always.
+**IMPORTANT**: If you run beetRoot as a stand-alone server or in a servlet container, where beetRoot is installed on the ROOT path, NEVER specify the parameter `web_html_ref_pre_url_part`! 
+When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an image source or any other source (e.g. `<img src="/img/beetroot-100.png">`), you always point to the root-path 
+"/". Tough, you have to include the language placeholder `:lang` for HTML templates always.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -596,7 +628,8 @@ beetRoot handles every pre-url-path / servlet-name-path by its own, if configure
 <!-- LOGGING -->
 ## Logging
 
-beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default configuration `cfg/logging.xml` (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
+beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default 
+configuration `cfg/logging.xml` (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
 
 - stand-alone: Define a runtime parameter in the shell/bash script when starting Java:
 
@@ -606,7 +639,8 @@ beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app
 
 	`beetRootLogConfig`
 
-As for jetty, they stand above all that "log-framework-soup" and they just simply use a SLF4j implementation that needs no further configuration. Hence, the library `slf4j.simple-x.y.z.jar` is packed into `beetroot-jetty.war`. The only concern is to add your package to the the jetty basic logging configuration in `{JETTY_BASE}/resources/jetty-logging.properties`:
+As for jetty, they stand above all that "log-framework-soup" and they just simply use a SLF4j implementation that needs no further configuration. Hence, the library `slf4j.simple-x.y.z.jar` 
+is packed into `beetroot-jetty.war`. The only concern is to add your package to the the jetty basic logging configuration in `{JETTY_BASE}/resources/jetty-logging.properties`:
 
 ```properties
 	## Configure a level for specific logger
@@ -623,7 +657,9 @@ As for jetty, they stand above all that "log-framework-soup" and they just simpl
 <!-- MAILING -->
 ## Mailing
 
-Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). By default, Jakarta is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration.
+Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). 
+By default, Jakarta is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's 
+implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration.
 
 Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwitten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
 
@@ -662,7 +698,8 @@ beetRoot can send both HTML and text emails. Formats are configured with the par
 <!-- JAVA TRANSLATIONS -->
 ## Java Translations
 
-If you need translations within the Java code, you simply add language java resource bundle keys within the `web/lang` directory to the specific language resource bundle, e.g. `lang_en.properties`. You can change beetRoot's standard messages too. For every new language added respectively requested by the web-app user, add the corresponding language java resource bundle within this directory.
+If you need translations within the Java code, you simply add language java resource bundle keys within the `web/lang` directory to the specific language resource bundle, e.g. `lang_en.properties`. 
+You can change beetRoot's standard messages too. For every new language added respectively requested by the web-app user, add the corresponding language java resource bundle within this directory.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -692,7 +729,8 @@ A few words about existing stylesheets:
 
   - `web/css/style.css`: Adjust your general web.app style here.
 
-  - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet context correctly.
+  - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet 
+  context correctly.
 
   - `web/css/jquery-ui.min.css`: Better tooltips.
 
@@ -709,7 +747,10 @@ A few words about existing stylesheets:
 
 If you run beetRoot as a stand-alone server and you want to run it with the HTTPS protocol, there's a prepared and self-signed keystore file: `ssl/beetroot.jks` that is valid forever.
 
-If you configure beetRoot to run with the HTTPS protocol (configuration parameter `ws_https`), you can use this keystore file and it is specified by default in the configuration (`keystore`). Your browser will still complain, because it is not issued by a valid Certificate Authority (CA), but you can force the browser to still load the web-app by adding this exception. If you run beetRoot in productive mode, you have to acquire a valid certificate and store it this keystore or in a an own; Java supports the PKCS\#12 format and Java keystore can be opened with tools such as this one: https://keystore-explorer.org. The password for `ssl/beetroot.jks` is **`beetroot`**.  
+If you configure beetRoot to run with the HTTPS protocol (configuration parameter `ws_https`), you can use this keystore file and it is specified by default in the configuration (`keystore`). 
+Your browser will still complain, because it is not issued by a valid Certificate Authority (CA), but you can force the browser to still load the web-app by adding this exception. If you run 
+beetRoot in productive mode, you have to acquire a valid certificate and store it this keystore or in a an own; Java supports the PKCS\#12 format and Java keystore can be opened with tools 
+such as this one: https://keystore-explorer.org. The password for `ssl/beetroot.jks` is **`beetroot`**.  
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
