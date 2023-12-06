@@ -200,6 +200,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail-api*.jar
+	# Servlet API not needed in web-containers!
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet-api*.jar
 	
 	
 	#echo "-> Signing libs..."

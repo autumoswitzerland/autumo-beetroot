@@ -306,16 +306,16 @@
 		</dependency>
 
 		<dependency>
-    		<groupId>javax.mail</groupId>
-    		<artifactId>javax.mail-api</artifactId>
-    		<version>1.6.2</version>
-		    <scope>compile</scope> <!-- IMPORTANT! -->
-		</dependency>
-		
-		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
 		    <version>4.0.1</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+    		<groupId>javax.mail</groupId>
+    		<artifactId>javax.mail-api</artifactId>
+    		<version>1.6.2</version>
 		    <scope>compile</scope> <!-- IMPORTANT! -->
 		</dependency>
 
