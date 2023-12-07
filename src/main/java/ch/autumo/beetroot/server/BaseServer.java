@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -103,6 +104,9 @@ public abstract class BaseServer {
 	
 	private int serverTimeout = -1;
 	
+	// start time
+	private long beetRootStart = 0;
+	
 	private boolean hookShutdown = false;
 	
 	// colored text strings
@@ -129,6 +133,10 @@ public abstract class BaseServer {
 	 * @param params start or stop
 	 */
 	public BaseServer(String params[]) {
+		
+		// start stop-watch
+		beetRootStart = System.currentTimeMillis();
+
 		
     	// If not already defined
 		if (System.getProperty("https.protocols") == null)
@@ -345,6 +353,8 @@ public abstract class BaseServer {
 				this.customOperation(operation, params);
 			}
 		}
+		
+		
 	}
 
 	/**
@@ -553,9 +563,14 @@ public abstract class BaseServer {
 
 		this.afterStart();
 		
-		LOG.info("Server started.");
+		// Processing time
+		final long beetRoot = System.currentTimeMillis();
+		final long duration = beetRoot - beetRootStart;
+		final String startup = OS.getReadableDuration(duration, TimeUnit.HOURS);
+		
+		LOG.info("Server started - startup time: " + startup + ".");
 		if (LOG.isErrorEnabled())
-			System.out.println(ansiServerName + " Server started.");
+			System.out.println(ansiServerName + " Server started - startup time: " + startup + ".");
 	}
 	
 	/**

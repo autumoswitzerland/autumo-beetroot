@@ -20,6 +20,7 @@ package ch.autumo.beetroot.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.SystemUtils;
 
@@ -122,6 +123,36 @@ public class OS {
 			dir += FILE_SEPARATOR;
 		
 		return dir;
+	}
+	
+	/**
+	 * Get readable duration.
+	 * 
+	 * @param durationInMilliseconds duration in ms
+	 * @param printUpTo The maximum timeunit that should be printed
+	 * @return readable duration
+	 */
+	public static String getReadableDuration(long durationInMilliseconds, TimeUnit printUpTo) {
+		
+		long dy = TimeUnit.MILLISECONDS.toDays(durationInMilliseconds);
+		long allHours = TimeUnit.MILLISECONDS.toHours(durationInMilliseconds);
+		long allMinutes = TimeUnit.MILLISECONDS.toMinutes(durationInMilliseconds);
+		long allSeconds = TimeUnit.MILLISECONDS.toSeconds(durationInMilliseconds);
+		long allMilliSeconds = TimeUnit.MILLISECONDS.toMillis(durationInMilliseconds);
+		
+		final long hr = allHours - TimeUnit.DAYS.toHours(dy);
+		final long min = allMinutes - TimeUnit.HOURS.toMinutes(allHours);
+		final long sec = allSeconds - TimeUnit.MINUTES.toSeconds(allMinutes);
+		final long ms = allMilliSeconds - TimeUnit.SECONDS.toMillis(allSeconds);
+		
+		switch (printUpTo) {
+			case DAYS: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
+			case HOURS: return String.format("%d Hours %d Minutes %d Seconds %d Milliseconds", hr, min, sec, ms);
+			case MINUTES: return String.format("%d Minutes %d Seconds %d Milliseconds", min, sec, ms);
+			case SECONDS: return String.format("%d Seconds %d Milliseconds", sec, ms);
+			case MILLISECONDS: return String.format("%d Milliseconds", ms);
+			default: return String.format("%d Days %d Hours %d Minutes %d Seconds %d Milliseconds", dy, hr, min, sec, ms);
+		}
 	}
 	
 }
