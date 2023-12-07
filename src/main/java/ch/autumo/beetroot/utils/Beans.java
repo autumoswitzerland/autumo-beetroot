@@ -171,13 +171,20 @@ public class Beans {
 		Map<String, Class<?>> map = null;
 		Method getFR = null;
 		Class<?> clz = emptyBean.getClass();
-		try {
-			getFR = clz.getDeclaredMethod("getForeignReferences");
-		} catch (Exception e) {
-			// No refs, that's fine!
-			return null;
+		while (clz != null) {
+			try {
+				getFR = clz.getDeclaredMethod("getForeignReferences");
+				clz = null;
+			} catch (Exception e) {
+				clz = clz.getSuperclass();
+			}
 		}
-		map = (Map<String, Class<?>>) getFR.invoke(emptyBean);
+		if (getFR != null) {
+			map = (Map<String, Class<?>>) getFR.invoke(emptyBean);
+		} else {
+			// No refs, that's fine!
+			map  = null;
+		}
 		return map;
 	}	
 	/**
@@ -191,13 +198,20 @@ public class Beans {
 		String displayField = null;
 		Method getDV = null;
 		Class<?> clz = emptyBean.getClass();
-		try {
-			getDV = clz.getDeclaredMethod("getDisplayField");
-		} catch (Exception e) {
-			LOG.info("No display field getter found in bean of type '"+clz.getName()+", but it might be used to be shown as a reference entity' -> using 'id'!");
-			return "id";
+		while (clz != null) {
+			try {
+				getDV = clz.getDeclaredMethod("getDisplayField");
+				clz = null;
+			} catch (Exception e) {
+				clz = clz.getSuperclass();
+			}
 		}
-		displayField = (String) getDV.invoke(emptyBean);
+		if (getDV != null) {
+			displayField = (String) getDV.invoke(emptyBean);
+		} else {
+			LOG.info("No display field getter found in bean of type '"+emptyBean.getClass().getName()+", but it might be used to be shown as a reference entity' -> using 'id'!");
+			displayField = "id";
+		}
 		return displayField;
 	}
 

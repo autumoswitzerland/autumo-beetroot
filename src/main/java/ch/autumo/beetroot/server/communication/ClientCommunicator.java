@@ -48,7 +48,7 @@ import ch.autumo.beetroot.server.message.StopAnswer;
 import ch.autumo.beetroot.transport.DefaultSocketFactory;
 import ch.autumo.beetroot.transport.SecureSocketFactory;
 import ch.autumo.beetroot.transport.SocketFactory;
-import ch.autumo.beetroot.utils.security.SSLUtils;
+import ch.autumo.beetroot.utils.SSL;
 
 
 /**
@@ -64,6 +64,8 @@ public class ClientCommunicator extends Communicator {
 	private static boolean sslSockets = false;
 
 	private static boolean https = false;
+	
+	private static boolean webOverride = false;
 	
 	static {
 		reInit();
@@ -82,7 +84,7 @@ public class ClientCommunicator extends Communicator {
 		
 		if (sslSockets) {
 			try {
-		        socketFactory = new SecureSocketFactory(SSLUtils.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
+		        socketFactory = new SecureSocketFactory(SSL.makeSSLSocketFactory(), null);
 			} catch (Exception e) {
 				LOG.error("Cannot make client calls secure (SSL)! ", e);
 				System.err.println("Cannot make client calls secure (SSL)! ");
@@ -94,6 +96,9 @@ public class ClientCommunicator extends Communicator {
 		// Usually this has no relevance client-side if beetRoot web is deployed within a web-container
 		// that defines the protocol, but is used if server commands should be send over https
 		https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
+		
+		// Undocumented feature; forces to route every server command through web tunnel if command are HTTP tunneled 
+		webOverride = BeetRootConfigurationManager.getInstance().getYesOrNoNoWarn("admin_com_web_override");
 	}
 	
 	
@@ -126,7 +131,7 @@ public class ClientCommunicator extends Communicator {
 			ClientAnswer answer = null;
 			
 			// A) HTTP / HTTPS tunneling - not for internal commands!
-			if (!isInternalCommand(command) && command.getMode().equalsIgnoreCase("web") && !command.isForceSockets()) {
+			if (webOverride || (!isInternalCommand(command) && command.getMode().equalsIgnoreCase("web") && !command.isForceSockets())) {
 				
 				final RequestConfig config = RequestConfig.custom()
 						  .setConnectTimeout(timeout)
@@ -135,7 +140,7 @@ public class ClientCommunicator extends Communicator {
 						  .setCookieSpec(CookieSpecs.STANDARD).build();
 				
 				if (https)
-					httpClient = SSLUtils.makeSSLHttpClient(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw(), config);
+					httpClient = SSL.makeSSLHttpClient(SSL.getKeystoreFile(), SSL.getKeystorePw(), config);
 				else
 					httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 				

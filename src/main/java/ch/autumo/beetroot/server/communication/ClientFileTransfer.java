@@ -37,7 +37,7 @@ import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.transport.DefaultSocketFactory;
 import ch.autumo.beetroot.transport.SecureSocketFactory;
 import ch.autumo.beetroot.transport.SocketFactory;
-import ch.autumo.beetroot.utils.security.SSLUtils;
+import ch.autumo.beetroot.utils.SSL;
 
 
 /**
@@ -98,7 +98,7 @@ public class ClientFileTransfer extends FileTransfer {
 		
 		if (sslSockets) {
 			try {
-		        socketFactory = new SecureSocketFactory(SSLUtils.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
+		        socketFactory = new SecureSocketFactory(SSL.makeSSLSocketFactory(), null);
 			} catch (Exception e) {
 				LOG.error("Cannot make client calls secure (SSL)! ", e);
 				System.err.println("Cannot make client calls secure (SSL)! ");

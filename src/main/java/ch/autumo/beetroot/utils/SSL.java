@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils.security;
+package ch.autumo.beetroot.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +49,7 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
 /**
  * SSL Utils.
  */
-public class SSLUtils {
+public class SSL {
 
 	/**
 	 * HTTP/HTTPS socket factory registry.
@@ -96,7 +96,7 @@ public class SSLUtils {
 	 * @throws Exception
 	 */
 	public static char[] getKeystorePw() throws Exception {
-		return SSLUtils.getKeystorePw(BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC));
+		return SSL.getKeystorePw(BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC));
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class SSLUtils {
     public static SSLContext makeSSLContext(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
             final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
+            InputStream keystoreStream = SSL.class.getResourceAsStream(keyAndTrustStore);
             
             if (keystoreStream == null) {
             	if (keyAndTrustStore != null) {
@@ -240,7 +240,7 @@ public class SSLUtils {
     	
 	    	try {
 	            final KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-	            InputStream keystoreStream = SSLUtils.class.getResourceAsStream(keyAndTrustStore);
+	            InputStream keystoreStream = SSL.class.getResourceAsStream(keyAndTrustStore);
 	            
 	            if (keystoreStream == null) {
 	            	if (keyAndTrustStore != null) {
@@ -266,7 +266,12 @@ public class SSLUtils {
 	        	final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 	            trustManagerFactory.init(keystore);
 	            
-	            final SSLContext ctx = SSLContext.getInstance("TLS"); 
+	            final String tlsProts = System.getProperty("https.protocols");
+	            SSLContext ctx = null;
+	            if (tlsProts.indexOf("TLSv1.3") > 0)
+	            	ctx = SSLContext.getInstance("TLSv1.3");
+	            else
+	            	ctx = SSLContext.getInstance("TLSv1.2");
 	            ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
 	            
 	            if (verifyHost)

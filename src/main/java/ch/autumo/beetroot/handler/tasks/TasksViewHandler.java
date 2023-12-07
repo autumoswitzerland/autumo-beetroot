@@ -30,8 +30,6 @@ import ch.autumo.beetroot.utils.Time;
  * Tasks view handler. 
  */
 public class TasksViewHandler extends DefaultViewHandler {
-
-	private String taskName = null;
 	
 	public TasksViewHandler(String entity) {
 		super(entity);
@@ -42,8 +40,7 @@ public class TasksViewHandler extends DefaultViewHandler {
 		
 		switch (columnName) {
 		
-			case "name"			: taskName = set.getString(columnName); 
-								  return "<td>"+taskName+"</td>";
+			case "name"			: return "<td>"+set.getString(columnName)+"</td>";
 								  
 			case "minute"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
 			case "hour"			: return "<td>" + DB.getValue(set, columnName) + "</td>";
@@ -62,11 +59,6 @@ public class TasksViewHandler extends DefaultViewHandler {
 			
 			default				: return "<td>"+set.getObject(columnName)+"</td>";
 		}
-	}
-
-	@Override
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
-		return text.replaceAll("\\{\\$taskName\\}", taskName);
 	}
 	
 	@Override

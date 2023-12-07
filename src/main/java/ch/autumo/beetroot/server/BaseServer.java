@@ -63,9 +63,9 @@ import ch.autumo.beetroot.transport.ServerSocketFactory;
 import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.OS;
+import ch.autumo.beetroot.utils.SSL;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.Web;
-import ch.autumo.beetroot.utils.security.SSLUtils;
 
 /**
  * Base server.
@@ -140,7 +140,7 @@ public abstract class BaseServer {
 		
     	// If not already defined
 		if (System.getProperty("https.protocols") == null)
-			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); // TLSv1.3 doesn't work yet with many interfaces out there...
+			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3");
 		
 		// Read general configuration
 		configMan = BeetRootConfigurationManager.getInstance();
@@ -450,7 +450,7 @@ public abstract class BaseServer {
 				webServer.setBaseServer(this);
 				
 				if (https) {
-					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
+					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(SSL.getKeystoreFile(), SSL.getKeystorePw()), null);
 					LOG.info("Web-Server communication is SSL (TLS) secured!");
 					if (LOG.isErrorEnabled())
 						System.out.println(ansiServerName + " Web-Server communication is SSL (TLS) secured!");
@@ -479,7 +479,7 @@ public abstract class BaseServer {
 
 		if (sslSockets) { // For C/S-communication
 			try {
-		        this.serverSocketFactory = new SecureServerSocketFactory(SSLUtils.makeSSLServerSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw()), null);
+		        this.serverSocketFactory = new SecureServerSocketFactory(SSL.makeSSLServerSocketFactory(), null);
 				LOG.info("Client-Server communication (with file transfers) is SSL secured!");
 				if (LOG.isErrorEnabled())
 					System.out.println(ansiServerName + " Client-Server communication (with file transfers) is SSL secured!");

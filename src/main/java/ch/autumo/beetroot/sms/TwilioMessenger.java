@@ -37,8 +37,8 @@ public class TwilioMessenger implements Messenger {
 	protected final static Logger LOG = LoggerFactory.getLogger(TwilioMessenger.class.getName());
 	
 	private String accountSid = null;
-	private String serviceSid = null;
 	private String authToken = null;
+	private String phoneNumber = null;
 	
 	@Override
 	public void init() throws Exception {
@@ -48,12 +48,14 @@ public class TwilioMessenger implements Messenger {
 		accountSid = (pwEncoded) ?
 				BeetRootConfigurationManager.getInstance().getDecodedString("sms_twilio_account_sid", SecureApplicationHolder.getInstance().getSecApp()) :
 				BeetRootConfigurationManager.getInstance().getString("sms_twilio_account_sid");
-		serviceSid = (pwEncoded) ?
-				BeetRootConfigurationManager.getInstance().getDecodedString("sms_twilio_service_sid", SecureApplicationHolder.getInstance().getSecApp()) :
-				BeetRootConfigurationManager.getInstance().getString("sms_twilio_service_sid");
+		
 		authToken = (pwEncoded) ?
 				BeetRootConfigurationManager.getInstance().getDecodedString("sms_twilio_auth_token", SecureApplicationHolder.getInstance().getSecApp()) :
 				BeetRootConfigurationManager.getInstance().getString("sms_twilio_auth_token");
+
+		phoneNumber = (pwEncoded) ?
+				BeetRootConfigurationManager.getInstance().getDecodedString("sms_twilio_phone_number", SecureApplicationHolder.getInstance().getSecApp()) :
+				BeetRootConfigurationManager.getInstance().getString("sms_twilio_phone_number");
 	}
 	
 	@Override
@@ -63,7 +65,7 @@ public class TwilioMessenger implements Messenger {
 
 	    final Message message = Message.creator(
 	    		new PhoneNumber(toNumber),
-	    		serviceSid, 
+	    		new PhoneNumber(phoneNumber), 
 	    		text).create();
 
 	    

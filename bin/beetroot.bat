@@ -25,6 +25,6 @@ set CLASSPATH=%ROOT%;%ROOT%/web;%ROOT%/lib/*
 REM 
 REM  Run : run.bat <ifx-base-path> <proc-mode>
 REM 
-java -DROOTPATH="%ROOT%" -Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2 -classpath "%CLASSPATH%" ch.autumo.beetroot.server.BeetRootServer %*
+java -DROOTPATH="%ROOT%" -Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2,TLSv1.3 -classpath "%CLASSPATH%" ch.autumo.beetroot.server.BeetRootServer %*
 
 popd

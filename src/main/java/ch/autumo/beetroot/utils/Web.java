@@ -46,23 +46,12 @@ import org.jsoup.select.Elements;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.utils.security.SSLUtils;
 
 
 /**
  * Web helper methods.
  */
 public class Web {
-
-	/**
-	 * Host-name verification when an SSL/HTTPS certificate is used?
-	 * Usually with self-signed certificates and on localhost this is
-	 * turned off, because the verification doesn't work.
-	 */
-	private static final boolean verifyHost;
-	static {
-		verifyHost = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_COM_HOSTNAME_VERIFY);
-	} 
 	
     /**
      * HTML escape value.
@@ -356,11 +345,16 @@ public class Web {
 			final URL url = new URL(urlAddress);
             if (urlAddress.startsWith("https")) {
             	final HttpsURLConnection sconnection = (HttpsURLConnection) url.openConnection();
-                if (verifyHost)
+            	/**
+            	 * Host-name verification when an SSL/HTTPS certificate is used?
+            	 * Usually with self-signed certificates and on localhost this is
+            	 * turned off, because the verification doesn't work.
+            	 */
+                if (BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_COM_HOSTNAME_VERIFY))
                 	sconnection.setHostnameVerifier(new DefaultHostnameVerifier());
                 else
                 	sconnection.setHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-            	final SSLSocketFactory factory = SSLUtils.makeSSLSocketFactory(SSLUtils.getKeystoreFile(), SSLUtils.getKeystorePw());
+            	final SSLSocketFactory factory = SSL.makeSSLSocketFactory();
             	sconnection.setSSLSocketFactory(factory);
             	connection = sconnection;
             } else {
