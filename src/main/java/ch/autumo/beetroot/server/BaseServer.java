@@ -566,7 +566,7 @@ public abstract class BaseServer {
 		// Processing time
 		final long beetRoot = System.currentTimeMillis();
 		final long duration = beetRoot - beetRootStart;
-		final String startup = OS.getReadableDuration(duration, TimeUnit.HOURS);
+		final String startup = OS.getReadableDuration(duration, TimeUnit.SECONDS);
 		
 		LOG.info("Server started - startup time: " + startup + ".");
 		if (LOG.isErrorEnabled())
