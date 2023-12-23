@@ -2,7 +2,7 @@
 
 <!-- 
   beetRoot logging configuration (log4j2 behind SLF4j)
-  Version: 2.0 - 2022 autumo GmbH
+  Version: 3.0 - 2023 autumo GmbH
  -->
 
 <Configuration status="error" name="BeetRootConfig">
@@ -14,14 +14,14 @@
 	<Appenders>
 	
 		<Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
+			<PatternLayout pattern="%highlight{%-5p} : %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{fg_#cccccc} | %style{%-26.26t}{magenta} | %style{%4L}{fg_#cccccc} : %style{%-30.30c{1.1.1.*}}{cyan} | %.-1000m%ex%n" />
         </Console>
         	
 		<RollingFile name="file"
 			fileName="${basePath}/beetroot.log"
 			filePattern="${basePath}/beetroot-%d{yyyyMMdd}.log">
 			
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%t] [%l] - %msg%n" />
+			<PatternLayout pattern="%-5p : %d{yyyyMMdd-HH:mm:ss.SSS} | %-26.26t | %4L : %-30.30c{1.1.1.*} | %.-1000m%ex%n"/>
 			
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true" />

@@ -227,6 +227,8 @@ public abstract class BaseServer {
 		ansiServerName = Colors.cyan("["+ name +"]");
 		ansiErrServerName = Colors.red("["+ name +"]");
 		
+		Thread.currentThread().setName(this.name + "-MainThread");
+		
 		
 		//------------------------------------------------------------------------------
 		
@@ -411,7 +413,6 @@ public abstract class BaseServer {
 		// start pre-condition ok? 
 		if (!start)
 			return;
-		
 		
 		LOG.info("Server starting...");
 		if (LOG.isErrorEnabled())
