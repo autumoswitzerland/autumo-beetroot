@@ -168,7 +168,7 @@ Enter the following statements into your terminal.
 **Linux, macOS**
 
 ```NuShell
-VERSION=2.2.0
+VERSION=2.2.1
 PACKAGE=autumo-beetRoot-$VERSION
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
@@ -186,7 +186,7 @@ $PACKAGE/bin/beetroot.sh start
 **Windows**
 
 ```Batchfile
-SET VERSION=2.2.0
+SET VERSION=2.2.1
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
