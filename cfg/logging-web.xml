@@ -14,14 +14,14 @@
 	<Appenders>
 	
 		<Console name="console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%highlight{%-5p} : %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{fg_#cccccc} | %style{%-26.26t}{magenta} | %style{%4L}{fg_#cccccc} : %style{%-30.30c{1.1.1.*}}{cyan} | %.-1000m%ex%n" disableAnsi="false" />
+			<PatternLayout pattern="%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-30.30c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000im%ex%n" disableAnsi="false" />
         </Console>
         	
 		<RollingFile name="file"
 			fileName="${basePath}/beetroot.log"
 			filePattern="${basePath}/beetroot-%d{yyyyMMdd}.log">
 			
-			<PatternLayout pattern="%-5p : %d{yyyyMMdd-HH:mm:ss.SSS} | %-26.26t | %4L : %-30.30c{1.1.1.*} | %.-1000m%ex%n"/>
+			<PatternLayout pattern="%-5p %d{yyyyMMdd-HH:mm:ss.SSS} [%-26.26t] %-30.30c{1.1.1.*} : %.-1000m%ex%n" />
 			
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true" />

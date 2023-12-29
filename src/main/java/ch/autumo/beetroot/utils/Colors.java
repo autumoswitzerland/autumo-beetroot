@@ -52,7 +52,68 @@ public final class Colors {
 			return Ansi.colorize(text, attribute);
 		else 
 			return text;
-	}	
+	}
+
+	/**
+	 * Black colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String black(String text) {
+		return foregroundColorize(text, Attribute.BRIGHT_BLACK_TEXT());
+	}
+	
+	/**
+	 * Dark-Black colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String darkBlack(String text) {
+		return foregroundColorize(text, Attribute.BLACK_TEXT());
+	}
+	
+	/**
+	 * White colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String white(String text) {
+		return foregroundColorize(text, Attribute.BRIGHT_WHITE_TEXT());
+	}
+	
+	/**
+	 * Dark-White colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String darkWhite(String text) {
+		return foregroundColorize(text, Attribute.WHITE_TEXT());
+	}
+	
+	/**
+	 * Mangenta colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String mangenta(String text) {
+		return foregroundColorize(text, Attribute.BRIGHT_MAGENTA_TEXT());
+	}
+	
+	/**
+	 * Dark-Mangenta colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String darkMangenta(String text) {
+		return foregroundColorize(text, Attribute.MAGENTA_TEXT());
+	}
+	
 	/**
 	 * Cyan colored string.
 	 * 
@@ -60,6 +121,16 @@ public final class Colors {
 	 * @return colored string
 	 */
 	public static String cyan(String text) {
+		return foregroundColorize(text, Attribute.BRIGHT_CYAN_TEXT());
+	}
+	
+	/**
+	 * Dark-Cyan colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String darkCyan(String text) {
 		return foregroundColorize(text, Attribute.CYAN_TEXT());
 	}
 
@@ -72,6 +143,16 @@ public final class Colors {
 	public static String green(String text) {
 		return foregroundColorize(text, Attribute.BRIGHT_GREEN_TEXT());
 	}
+	
+	/**
+	 * Dark-Green colored string.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String darkGreen(String text) {
+		return foregroundColorize(text, Attribute.GREEN_TEXT());
+	}
 
 	/**
 	 * Yellow colored string.
@@ -80,17 +161,17 @@ public final class Colors {
 	 * @return colored string
 	 */
 	public static String yellow(String text) {
-		return foregroundColorize(text, Attribute.YELLOW_TEXT());
+		return foregroundColorize(text, Attribute.BRIGHT_YELLOW_TEXT());
 	}
 	
 	/**
-	 * Orange colored string.
+	 * Dark-Yellow colored string.
 	 * 
 	 * @param text text
 	 * @return colored string
 	 */
-	public static String orange(String text) {
-		return foregroundColorize(text, Attribute.TEXT_COLOR(255, 128, 0));
+	public static String darkYellow(String text) {
+		return foregroundColorize(text, Attribute.YELLOW_TEXT());
 	}
 	
 	/**
@@ -111,6 +192,17 @@ public final class Colors {
 	 */
 	public static String darkRed(String text) {
 		return foregroundColorize(text, Attribute.RED_TEXT());
+	}
+	
+	/**
+	 * Orange colored string.
+	 * Unsupported by most terminals.
+	 * 
+	 * @param text text
+	 * @return colored string
+	 */
+	public static String orange(String text) {
+		return foregroundColorize(text, Attribute.TEXT_COLOR(255, 128, 0));
 	}
 	
 }

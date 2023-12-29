@@ -28,6 +28,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,9 +313,18 @@ public class BeetRootDatabaseManager {
 	}
 	
 	/**
-	 * Get an new DB connection
-	 * @return DB connection
+	 * Get the data source.
 	 * 
+	 * @return data source
+	 */
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+	
+	/**
+	 * Get an new DB connection.
+	 * 
+	 * @return DB connection
 	 * @throws SQLException
 	 */
 	public Connection getConnection() throws SQLException {
@@ -599,7 +610,7 @@ public class BeetRootDatabaseManager {
 		return dataSourceDriverClassName;
 	}
 
-	public String getDataSource() {
+	public String getDataSourceClassName() {
 		return dataSourceClassName;
 	}
 	

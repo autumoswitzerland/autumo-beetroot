@@ -224,7 +224,7 @@ public abstract class BaseServer {
 		//------------------------------------------------------------------------------
 
 		this.name = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_SERVER_NAME);
-		ansiServerName = Colors.cyan("["+ name +"]");
+		ansiServerName = Colors.darkCyan("["+ name +"]");
 		ansiErrServerName = Colors.red("["+ name +"]");
 		
 		Thread.currentThread().setName(this.name + "-MainThread");
@@ -681,7 +681,7 @@ public abstract class BaseServer {
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("");
-						System.out.println(BaseServer.ansiServerName + " " + Colors.yellow("[CTRL-C]") + " signal received! Shutting down...");
+						System.out.println(BaseServer.ansiServerName + " " + Colors.darkYellow("[CTRL-C]") + " signal received! Shutting down...");
 					}
 					
 					BaseServer.this.serverStop = true;
@@ -1019,7 +1019,7 @@ public abstract class BaseServer {
 			if (hasNoIssues)
 				System.out.println(ansiServerName + " " + Colors.green("Server is running and healthy!"));
 			else
-				System.out.println(ansiErrServerName + " " + Colors.orange("Server has issues, see below!"));
+				System.out.println(ansiErrServerName + " " + Colors.red("Server has issues, see below!"));
 			
 			if (isAdminPortListening)
 				System.out.println(ansiServerName + " * Admin-Interface (Port: " + this.portAdminServer + "): Started");
@@ -1247,11 +1247,11 @@ public abstract class BaseServer {
 	 */
 	protected static final class Help {
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
-		private static final String TITLE = Colors.cyan("beetRoot Server");
+		private static final String TITLE = Colors.darkCyan("beetRoot Server");
 		private static final String JAVA  = Colors.green("java");
-		private static final String USAGE = Colors.yellow("beetroot."+SHELL_EXT+" start|stop|health");
-		private static final String USAGE0 = Colors.yellow("beetroot."+SHELL_EXT+" -help");
-		private static final String USAGE1 = Colors.yellow("beetroot."+SHELL_EXT+" -h");
+		private static final String USAGE = Colors.darkYellow("beetroot."+SHELL_EXT+" start|stop|health");
+		private static final String USAGE0 = Colors.darkYellow("beetroot."+SHELL_EXT+" -help");
+		private static final String USAGE1 = Colors.darkYellow("beetroot."+SHELL_EXT+" -h");
 		public static final String TEXT =
 				"" 																						+ OS.LINE_SEPARATOR +
 				"" 																						+ OS.LINE_SEPARATOR +

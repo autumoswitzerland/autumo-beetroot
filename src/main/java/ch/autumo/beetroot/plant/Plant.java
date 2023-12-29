@@ -74,7 +74,7 @@ public class Plant {
 	
 	private String getDescription() {
 		final String all = 
-				Colors.cyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
+				Colors.darkCyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
 				+ " (c) 2023 autumo Ltd. Switzerland";
 		return all;
@@ -132,7 +132,7 @@ public class Plant {
 
 			do {
 				System.out.println("");
-				System.out.println(Colors.yellow("Process another entity? (enter=y)") + ": ");
+				System.out.println(Colors.darkYellow("Process another entity? (enter=y)") + ": ");
 				System.out.println("  [y] = Yes ");
 				System.out.println("  [n] = No ");
 				System.out.print(">");
@@ -196,7 +196,7 @@ public class Plant {
 			// Show entity names
 			do {
 				System.out.println("");
-				System.out.println(Colors.yellow("Input entity name") + ": ");
+				System.out.println(Colors.darkYellow("Input entity name") + ": ");
 				for (int j = 0; j < tableNames.length; j++) {
 					System.out.println("  ["+(j+1)+"] = "+tableNames[j]);
 				} 
@@ -238,7 +238,7 @@ public class Plant {
 				singleEntity = tableNames[d-1];
 				System.out.println("");
 				System.out.println("Generate CRUD templates and code for entity '" + singleEntity + "' (y/n, enter = y) ?): ");
-				System.out.println(Colors.yellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
+				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
 				System.out.print(">");
 	
 				String answer = br.readLine();
@@ -251,7 +251,7 @@ public class Plant {
 				
 				System.out.println("");
 				System.out.println("Generate CRUD templates and code for ALL (!) entities (y/n) ?): ");
-				System.out.println(Colors.yellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
+				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
 				System.out.print(">");
 				
 				String answer = br.readLine().trim();
@@ -301,7 +301,7 @@ public class Plant {
 		// ---- Router
     	
 		System.out.println("");
-		System.out.println(Colors.yellow("  Add the following lines to your beetRoot Router:\n"));
+		System.out.println(Colors.darkYellow("  Add the following lines to your beetRoot Router:\n"));
 		System.out.println(
 				  "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/index\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
@@ -382,12 +382,12 @@ public class Plant {
 		System.out.println("");
 		this.printLine();
 		System.out.println("");
-		System.out.println(Colors.yellow("NOTE")+":");
+		System.out.println(Colors.darkYellow("NOTE")+":");
 		System.out.println("- Move generated code to own packages and HTML to the desired (language)");
 		System.out.println("  directories.");
 		System.out.println("- New generation has overwriten possible previous generated sources!");
 		System.out.println("");
-		System.out.println(Colors.yellow("TODO's")+":");
+		System.out.println(Colors.darkYellow("TODO's")+":");
 		System.out.println("- Add the routes above to your router!");
 		System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
 		System.out.println("  default value in the add handler that are not present in the GUI!");
