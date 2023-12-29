@@ -15,7 +15,7 @@
 	
 		<Console name="console" target="SYSTEM_OUT">
   			<!-- See: https://logging.apache.org/log4j/2.x/manual/layouts.html  -->
-			<PatternLayout pattern="%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-30.30c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000im%ex%n" disableAnsi="false" />
+			<PatternLayout pattern="%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-30.30c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n" disableAnsi="false" />
         </Console>
         	
 		<RollingFile name="file"
