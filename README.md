@@ -274,11 +274,6 @@ All batch files and shell scripts are located in the `bin` directory.
 	- The stand-alone server with its resources is packed into `autumo-beetRoot-x.y.z.zip`.
 
 	- Use `beetRoot.sh stop` / `beetRoot.bat stop` to properly stop the stand-alone server.
-	
-	- **NOTE**: We don't distribute the Java Servlet API. If you run beetRoot as a stand-alone server, you have to download this API yourself e.g. through maven-dependencies 
-	or here: [Java Servlet Specification](https://javaee.github.io/servlet-spec). You basically need to add the library javax.servlet-api-x.y.z.jar. The same applies to 
-	jakarta's mail (jakarta.mail-x.y.z.jar) and activation (jakarta.activation-x.y.z.jar) implementation for the mailing component. If you want to uses Oracle's mail implementation 
-	(javax.mail-x.y.z.jar), you have to get that library by your own too. Always place additional libraries in the `lib/` folder.  
 
 2. Servlet-container:
 
