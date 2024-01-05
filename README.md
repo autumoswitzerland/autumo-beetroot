@@ -466,9 +466,9 @@ The following standard HTML templates are present, which can be customized too o
 E.g.: the Englisch `index.html` for the entity `tasks` is here: `web/html/en/tasks/index.html`. If this resource is not available, then `web/html/tasks/index.html` is looked up. The 
 same applies for `colums.cfg` resources.
 	  
-**NOTE**: Valid for templates and any other HTMLs file that are added to the `web/html`-directory structure:
+**NOTE**: Valid for templates and any other HTML files that are added to the `web/html`-directory structure:
 
-- The relative URL (without Host, Port and Servlet name) requested by the web-app user is translated not 1-to-1 by the directory structure, but through **Routing** chapter!
+- The relative URL (without Host, Port and Servlet name) requested by the web-app user is translated not 1-to-1 by the directory structure, but through **Routing**; see <a href="#routing">chapter</a>!
 
 The following template variables are always parsed and you can use them as many times as you want:
 
@@ -479,6 +479,9 @@ The following template variables are always parsed and you can use them as many 
 - `{$id}` : Obfuscated object id (within add, edit and view)
 - `{$dbid}` : Real database id (within add, edit and view)
 - `{$csrfToken}` : CSRF token
+- `{$theme}` : The currently default chosen style theme, e.g. `default`
+- `{$antitheme}` : The default style theme to which can be switched to, e.g. `dark` 
+- `{$displayName}` : Display name taken from the bean entity (not in `index.html`)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -576,6 +579,10 @@ Let's have a look at some routes:
 	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks")
 ```
 
+**And yes, the router configuration could be in a configuration file, this has not been done so far, because when creating CRUD entities with PLANT, 
+subsequent package renaming would also have to be applied to the configuration file (overhead and it can be forgotten), while IDEs in other classes 
+perform automatic package renaming. This could be simplified by using a `ServiceLoader` that loads all entity beans and maps them to configured 
+class names without package names in front.**
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
 
@@ -583,7 +590,7 @@ The requested URL's are translated to generated (or self-created) handlers which
 	public  String getResource();
 ```
 
-For generated handlers (with the CRUD generator) this is usually not necessary, because they have a standard implementation:
+For generated handlers (with the CRUD generator) this is usually not necessary, because they have a standard implementation (here for `index.html`):
 
 ```Java
 	@Override
@@ -594,7 +601,7 @@ For generated handlers (with the CRUD generator) this is usually not necessary, 
 
 If your handlers need customization, just overwrite this method. As you can see, here the translation of the requested URL takes place and points to the `web/html`-directory structure!
 
-The language is replaced by the requested language, and if not found the above algorithm is executed. The `entity` name is assigned through the construction of the handler (see route 
+The language is replaced by the requested language, and if not found the lookup algorithm as earlier explained is executed. The `entity` name is assigned through the construction of the handler (see route 
 examples above). That's it, more or less! 
 
 
@@ -620,13 +627,13 @@ When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an 
 ## Logging
 
 beetRoot uses [SLF4j](https://slf4j.org). For the stand-alone and tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default 
-configuration `cfg/logging.xml` (stand-alone) and `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
+configuration `cfg/logging.xml` (stand-alone) and/or `logging.xml` (in tomcat web-app servlet directory) is used. If you want to specify your own, adjust it this way:
 
 - stand-alone: Define a runtime parameter in the shell/bash script when starting Java:
 
 	`-Dlog4j2.configurationFile=file:<log-cfg-path>/myLogConfig.xml`
 
-- tomcat web-app: Define your log file in the 'WEB-INF/web.xml', within the parameter:
+- tomcat web-app: Define your log file in the 'WEB-INF/web.xml', parameter:
 
 	`beetRootLogConfig`
 
@@ -649,10 +656,10 @@ is packed into `beetroot-jetty.war`. The only concern is to add your package to 
 ## Mailing
 
 Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail). 
-By default, Jakarta is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well within certain environments. E.g., WebLogic works only with Oracle's 
-implementation. When using JavaMail, also a mail session name must be specified in the beetRoot configuration.
+By default, Jakarta is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well with Jakarta. E.g., WebLogic uses Oracle's 
+original implementation when using their mail-sessions as it should be done in that container. When using JavaMail, such a mail-session must be specified in the beetRoot configuration.
 
-Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwitten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
+Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwritten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -680,7 +687,7 @@ Text format:
 beetRoot can send both HTML and text emails. Formats are configured with the parameter `mail_formats`. 
 
 
-**NOTE**: Java mail doesn't allow sending HTML with a head nor body-tag, hence you only are able to define HTNML templates with tags that would be inside of a the body-tag. It is specification! 
+**NOTE**: Java mail doesn't allow sending HTML with a head nor body-tag, hence you only are able to define HTML templates with tags that would be inside of a the body-tag. It is specification! 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -712,20 +719,20 @@ These resources are straightly routed by the user's URL request, e.g.:
   - `http://localhost:8080/js/myScript.js` -> `web/js/myScript.js`
   - etc.
 
-Also, in this case, you never have to reference a servlet name in any HTML template, you always point to teh root-path "/", no matter what!
+Also, in this case, you never have to reference a servlet name in any HTML template, you always point to the root-path "/", no matter what!
 
 A few words about existing stylesheets:
 
   - `web/css/base.css`: Base styles, you don't want to change this in most cases.
 
-  - `web/css/style.css`: Adjust your general web.app style here.
+  - `web/css/style.css`: Adjust your general web-application style here.
 
   - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet 
   context correctly.
 
   - `web/css/jquery-ui.min.css`: Better tooltips.
 
-  - `web/css/default.css`: Your default web-app styles and designs.
+  - `web/css/default.css`: Your default web-application styles and designs.
 
   - `web/css/theme-dark.css`: The default dark theme; you can add your own themes by naming it `theme-yourname.css` and HTTP-request it through the users' settings handler.
 
