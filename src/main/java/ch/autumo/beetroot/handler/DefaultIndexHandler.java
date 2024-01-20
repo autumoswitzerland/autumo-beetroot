@@ -469,7 +469,7 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		if (transientFields.contains(columnName))
 			return "<td></td>"; // only a specific user implementation knows what to do with transient fields
-
+		
 		final Object o = set.getObject(idx);
 		String val = null;
 		
@@ -477,6 +477,11 @@ public class DefaultIndexHandler extends BaseHandler {
 			val = "";
 		else
 			val = o.toString();
+
+		// Special case Users
+		if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+			val = LanguageManager.getInstance().translateOrDefVal("role."+val, val, session.getUserSession());
+		}
 		
 		val = Web.escapeHtml(val);
 

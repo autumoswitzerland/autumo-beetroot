@@ -28,6 +28,7 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.utils.Beans;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Helper;
@@ -89,7 +90,7 @@ public class DefaultEditHandler extends BaseHandler {
 					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 						continue LOOP;
 					
-					htmlData += this.extractSingleInputDiv(session, params, set, col[0], guiColTitle, i);
+					htmlData += this.extractSingleInputDiv(session, params, set.getMetaData(), col[0], guiColTitle, i);
 				}
 				set.close();
 				stmt.close();
@@ -179,7 +180,7 @@ public class DefaultEditHandler extends BaseHandler {
 	 * NOTE: Never call "set.next()" !
 	 * 
 	 * @param session HTTP session
-	 * @param set result set
+	 * @param set result set holding one record
 	 * @param entity entity bean
 	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
 	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
@@ -187,16 +188,17 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */
-	private String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
-
+	protected String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
 		final String val = this.formatSingleValueForGUI(session, set.getObject(idx).toString().trim(), columnName, idx, entity);
-		return this.extractSingleInputDiv(session, val, set, columnName, guiColName, idx, false); // true); // ->no PW from DB anymore
+		return this.extractSingleInputDiv(session, val, set.getMetaData(), columnName, guiColName, idx, false); // true); // ->no PW from DB anymore
 	}
 	
 	/**
 	 * Extract one single input div with label and input tags from result set standing at current row.
 	 * NOTE: Never call "set.next()" !
 	 * 
+	 * Called in the retry case; 'data' contains cached data from previous user input.
+	 *  
 	 * @param session HTTP session
 	 * @param data repost data
 	 * @param set result set, even when empty, data is taken from the map (retry)
@@ -206,12 +208,11 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @return html data extract <div>...</div>
 	 * @throws Exception
 	 */	
-	private String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSet set, String columnName, String guiColName, int idx) throws Exception {
-		
-		return this.extractSingleInputDiv(session, data.get(columnName), set, columnName, guiColName, idx, false);
+	protected String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {
+		return this.extractSingleInputDiv(session, data.get(columnName), rsmd, columnName, guiColName, idx, false);
 	}
 	
-	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSet set, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
+	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
 
 		// No PWs anymore
 		if (columnName.toLowerCase().equals("password"))
@@ -219,7 +220,6 @@ public class DefaultEditHandler extends BaseHandler {
 		
 		String result = "";
 		boolean isCheck = false;
-		final ResultSetMetaData rsmd = set.getMetaData();
 		
 		String inputType = null;
 		String divType = null;
@@ -326,10 +326,11 @@ public class DefaultEditHandler extends BaseHandler {
 					final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
 					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 					for (int i = 0; i < roles.length; i++) {
+						final String trRole = LanguageManager.getInstance().translateOrDefVal("role."+roles[i], roles[i], session.getUserSession());
 						if (val.equals(roles[i]))
-							result += "    <option value=\""+roles[i]+"\" selected>"+roles[i]+"</option>\n";
+							result += "    <option value=\""+roles[i]+"\" selected>"+trRole+"</option>\n";
 						else
-							result += "    <option value=\""+roles[i]+"\">"+roles[i]+"</option>\n";
+							result += "    <option value=\""+roles[i]+"\">"+trRole+"</option>\n";
 					}
 					result += "</select>";
 					

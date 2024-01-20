@@ -166,6 +166,11 @@ public class DefaultViewHandler extends BaseHandler {
 		else
 			val = o.toString();
 		
+		// Special case Users
+		if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+			val = LanguageManager.getInstance().translateOrDefVal("role."+val, val, session.getUserSession());
+		}
+		
 		val = Web.escapeHtml(val);
 		
 		return "<td>" + val + "</td>";

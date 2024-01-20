@@ -119,7 +119,7 @@ public class LanguageManager {
 
 	private LanguageManager() {
 	}
-	
+
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework.
@@ -133,7 +133,6 @@ public class LanguageManager {
 	 * @return translated text
 	 */
 	public String translate(String key, Session userSession, Object... arguments) {
-		
 		final String lang = userSession.getUserLang();
 		return this.translate(key, lang, arguments);
 	}
@@ -168,11 +167,70 @@ public class LanguageManager {
 					text = defaultTrans.getString(key);
 				} catch (Exception e3) {
 			    	LOG.warn("No translation found at all for key '"+key+"'! *Sniff*");
-					return "[NO TRANSLATION FOUND]";
+					return null;
 				}
 			}
 		}
 		return MessageFormat.format(text, arguments);
+	}
+	
+	/**
+	 * Translate method for the template engine and for
+	 * users of this framework that returns the defaukt value
+	 * if no translation is found at all.
+	 * 
+	 * Should only be used for special cases.
+	 * 
+	 * General language files are place in the directory:
+	 * 'web/lang'
+	 *  
+	 * @param key key associated to text in 'trans_xx' resources to translate
+	 * @param defaultValue default value
+	 * @param userSession the user session
+	 * @param arguments the arguments to replace in the text with variables
+	 * @return translated text
+	 */
+	public String translateOrDefVal(String key, String defaultValue, Session userSession, Object... arguments) {
+		final String lang = userSession.getUserLang();
+		return this.translateOrDefVal(key, defaultValue, lang, arguments);
+	}
+	
+	/**
+	 * Translate method for the template engine and for
+	 * users of this framework that returns the defaukt value
+	 * if no translation is found at all.
+	 * 
+	 * Should onyly be used for special cases.
+	 * 
+	 * General language files are place in the directory:
+	 * 'web/lang'
+	 *  
+	 * @param key key associated to text in 'trans_xx' resources to translate
+	 * @param defaultValue default value
+	 * @param lang language code
+	 * @param arguments the arguments to replace in the text with variables
+	 * @return translated text
+	 */
+	public String translateOrDefVal(String key, String defaultValue, String lang, Object... arguments) {
+		
+		ResourceBundle bundle = bundles.get(lang);
+		String text = null;
+		
+		try {
+			text = bundle.getString(key);
+		} catch (Exception e) {
+	    	bundle = bundles.get(DEFAULT_LANG);
+	    	try {
+				text = bundle.getString(key);
+			} catch (Exception e2) {
+		    	try {
+					text = defaultTrans.getString(key);
+				} catch (Exception e3) {
+					text = defaultValue;
+				}
+			}
+		}
+		return MessageFormat.format(text, arguments);		
 	}
 	
 	/**
