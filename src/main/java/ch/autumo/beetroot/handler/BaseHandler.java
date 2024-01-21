@@ -1266,7 +1266,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 	/** 
 	 * Page title show left above the navigation area.
-	 * If not overwritten, the entities nahe is shown
+	 * If not overwritten, the entity name is shown
 	 * starting with an upper-case letter!
 	 * 
 	 * @param userSession user session

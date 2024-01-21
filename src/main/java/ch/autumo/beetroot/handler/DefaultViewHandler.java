@@ -87,8 +87,11 @@ public class DefaultViewHandler extends BaseHandler {
 				else
 					val = o.toString();
 				
-				if (this.displayField != null && col[0].equals(this.displayField)) {
-					super.registerDisplayField(val);
+				if (this.displayField != null && col[0].equalsIgnoreCase(this.displayField)) {
+					if (val == null || val.length() == 0)
+						super.registerDisplayField(""+id);
+					else
+						super.registerDisplayField(val);
 				}
 				
 				// If we have a reference table
