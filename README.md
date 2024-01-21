@@ -581,7 +581,7 @@ Let's have a look at some routes:
 
 **And yes, the router configuration could be in a configuration file, this has not been done so far, because when creating CRUD entities with PLANT, 
 subsequent package renaming would also have to be applied to the configuration file (overhead and it can be forgotten), while IDEs in other classes 
-perform automatic package renaming. This could be simplified by using a `ServiceLoader` that loads all entity beans and maps them to configured 
+perform automatic package renaming. This could be simplified by using a `ServiceLoader` that loads all handlers and maps them to configured 
 class names without package names in front.**
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
