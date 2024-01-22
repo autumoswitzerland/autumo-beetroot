@@ -68,7 +68,15 @@ public class Fertilizer {
 	
 	final List<String> importList = new ArrayList<String>();
 	
-	
+	/**
+	 * Fertilizer.
+	 * 
+	 * @param dbEntity sb entity plural name, e.g. 'properties'.
+	 * @param resource templateresource
+	 * @param outputBaseDir ouput directory
+	 * @param type file type (extension)
+	 * @throws FertilizerException
+	 */
 	public Fertilizer(String dbEntity, String resource, String outputBaseDir, String type) throws FertilizerException {
 		
 		this.dbEntity = dbEntity.toLowerCase().trim();

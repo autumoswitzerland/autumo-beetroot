@@ -29,6 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -1160,15 +1162,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		super.setNotFoundHandler(Error404Handler.class);
 		
 		/** Default Routes */
-		final Route defRoutes[] = router.getDefaultRoutes();
-		for (int i = 0; i < defRoutes.length; i++) {
-			addRoute(defRoutes[i].getRoute(), defRoutes[i].getPriority(), getDefaultHandlerClass(), getDefaultHandlerEntity());
+		final List<Route> defRoutes = router.getDefaultRoutes();
+		for (Iterator<Route> iterator = defRoutes.iterator(); iterator.hasNext();) {
+			final Route route = iterator.next();
+			addRoute(route.getRoute(), route.getPriority(), getDefaultHandlerClass(), getDefaultHandlerEntity());
 		}
 
 		/** Routes */
-		final Route routes[] = router.getRoutes();
-		for (int i = 0; i < routes.length; i++) {
-			addRoute(routes[i].getRoute(), routes[i].getPriority(), routes[i].getHandler(), routes[i].getInitParameter());
+		final List<Route> routes = router.getRoutes();
+		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
+			final Route route = iterator.next();
+			addRoute(route.getRoute(), route.getPriority(), route.getHandler(), route.getInitParameter());
 		}
 	}
 	

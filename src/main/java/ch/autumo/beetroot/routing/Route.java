@@ -49,6 +49,22 @@ public class Route {
 	 * 
 	 * @param route route, e.g. '/:lang/tasks/index'.
 	 * @param handler handler class
+	 * @param entityName entity name
+	 */
+	public Route(String route, Class<?> handler, String entityName) {
+		super();
+		this.route = route;
+		this.priority = PRIORITY;
+		this.handler = handler;
+		this.initParameter = new String[] {entityName};
+	}
+	
+	/**
+	 * Create route. Should be used for specific routes that 
+	 * address specific pages. 
+	 * 
+	 * @param route route, e.g. '/:lang/tasks/index'.
+	 * @param handler handler class
 	 * @param initParameter init parameter, first one must be entity name
 	 */
 	public Route(String route, Class<?> handler, Object... initParameter) {

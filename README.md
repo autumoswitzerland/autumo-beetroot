@@ -168,7 +168,7 @@ Enter the following statements into your terminal.
 **Linux, macOS**
 
 ```NuShell
-VERSION=2.2.1
+VERSION=2.3.0
 PACKAGE=autumo-beetRoot-$VERSION
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
@@ -186,7 +186,7 @@ $PACKAGE/bin/beetroot.sh start
 **Windows**
 
 ```Batchfile
-SET VERSION=2.2.1
+SET VERSION=2.3.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
@@ -555,34 +555,34 @@ It never has been easier using a REST API!
 <!-- ROUTING -->
 ## Routing
 
-The router defines which resources are served by the requested URL of a web-app user. The out-of-box router is the `BeetRootDefaultRouter.java`. In any case, it always should be replaced 
-for your own app: Define your router's java class in the `web_router` parameter. You simply have to implement the `Router` interface.
+The router defines which resources are served by the requested URL. The out-of-box router is the `BeetRootDefaultRouter` and it reads the configuration `routing.xml`;
+you simply add your own routes to this configuration. If you use the **PLANT** generator, it will output the necessary information to be used in the routing configuration. 
 
-Let's have a look at some routes:
+Let's have a look at some example routes in `routing.xml`:
 
-```Java
-	/** Home stuff */
-	new Route("/:lang/home", HomeHandler.class, "home"),
-	new Route("/:lang/home/index", HomeHandler.class, "home"),
-
-	/** Files */
-	new Route("/:lang/files/view", ExampleDownloadHandler.class, "files"),
-	new Route("/:lang/files/add", ExampleUploadHandler.class, "files"),
+```Xml
+	<Package name="ch.autumo.beetroot.handler">
+		<!-- Home  -->
+	    <Route path="/:lang/home" handler="HomeHandler" name="home" />
+	    <Route path="/:lang/home/index" handler="HomeHandler" name="home" />
+		<!-- Files  -->
+	    <Route path="/:lang/files/view" handler="ExampleDownloadHandler" name="files" />
+	    <Route path="/:lang/files/add" handler="ExampleUploadHandler" name="files" />
+	</Package>
 	
-	/** Tasks */
-	new Route("/:lang/tasks", TasksIndexHandler.class, "tasks"),
-	new Route("/:lang/tasks/index.json", TasksRESTIndexHandler.class, "tasks"),
-	new Route("/:lang/tasks/index", TasksIndexHandler.class, "tasks"),
-	new Route("/:lang/tasks/view", TasksViexwHandler.class, "tasks"),
-	new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
-	new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
-	new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks")
+	<Package name="ch.autumo.beetroot.handler.tasks">
+		<!-- Tasks  -->
+	    <Route path="/:lang/tasks" handler="TasksIndexHandler" name="tasks" />
+	    <Route path="/:lang/tasks/index" handler="TasksIndexHandler" name="tasks" />
+	    <Route path="/:lang/tasks/view" handler="TasksViewHandler" name="tasks" />
+	    <Route path="/:lang/tasks/edit" handler="TasksEditHandler" name="tasks" />
+	    <Route path="/:lang/tasks/add" handler="TasksAddHandler" name="tasks" />
+	    <Route path="/:lang/tasks/delete" handler="TasksDeleteHandler" name="tasks" />
+	    <Route path="/:lang/tasks/index.json" handler="TasksRESTIndexHandler" name="tasks" />
+	</Package>
 ```
 
-**And yes, the router configuration could be in a configuration file, this has not been done so far, because when creating CRUD entities with PLANT, 
-subsequent package renaming would also have to be applied to the configuration file (overhead and it can be forgotten), while IDEs in other classes 
-perform automatic package renaming. This could be simplified by using a `ServiceLoader` that loads all handlers and maps them to configured 
-class names without package names in front.**
+**Note**: Don't forget to change the package names in `routing.xml` if you rename them in your handler classes!
 
 The requested URL's are translated to generated (or self-created) handlers which always must implement the method:
 
@@ -803,6 +803,6 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 
 <br>
 <br>
-Copyright 2023, autumo Ltd., Switzerland
+Copyright 2024, autumo Ltd., Switzerland
 
 

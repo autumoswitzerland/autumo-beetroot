@@ -566,7 +566,7 @@ public class BeetRootDatabaseManager {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(statement);
 			while (rs.next()) {
-				final String name = rs.getString(1);
+				final String name = rs.getString(1).toLowerCase();
 				final String type = rs.getString(2);
 				final String nullable = rs.getString(3).toLowerCase();
 				final String unique = rs.getString(4); // Unique 'UNI', Primary (PRI) or NULL!

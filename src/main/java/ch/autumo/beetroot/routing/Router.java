@@ -17,6 +17,8 @@
  */
 package ch.autumo.beetroot.routing;
 
+import java.util.List;
+
 /**
  * Router interface.
  */
@@ -43,12 +45,12 @@ public interface Router {
 	 * 
 	 * @return default routes.
 	 */
-	Route[] getDefaultRoutes();
+	List<Route> getDefaultRoutes();
 
 	/**
 	 * Get web application routes.
 	 * @return routes
 	 */
-	Route[] getRoutes();
+	List<Route> getRoutes();
 
 }

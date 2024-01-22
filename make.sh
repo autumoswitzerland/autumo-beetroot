@@ -3,15 +3,15 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.4
+#  Version: 4.5
 #
 #  Notes:
 #   -
 #
 #------------------------------------------------------------------------------
 #
-#  Copyright 2023 autumo GmbH
-#  Date: 07.12.2023
+#  Copyright 2024 autumo GmbH
+#  Date: 24.01.2024
 #
 ###############################################################################
 
@@ -19,7 +19,7 @@
 
 
 # Vars
-VERSION=2.2.1
+VERSION=2.3.0
 
 
 
@@ -154,6 +154,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-$VERSION/cfg
 	
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
+	cp ../cfg/routing.xml autumo-beetRoot-$VERSION/cfg/routing.xml
 
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF
@@ -161,8 +162,9 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc/licenses
 
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-web-$VERSION/beetroot.cfg
-	cp ../cfg/web.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
+	cp ../cfg/routing.xml autumo-beetRoot-web-$VERSION/routing.xml
 	cp ../cfg/context.xml autumo-beetRoot-web-$VERSION/META-INF/context.xml
+	cp ../cfg/web.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 
 	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/META-INF/etc/
 	cp ../etc/licenses/*.* autumo-beetRoot-web-$VERSION/META-INF/etc/licenses/

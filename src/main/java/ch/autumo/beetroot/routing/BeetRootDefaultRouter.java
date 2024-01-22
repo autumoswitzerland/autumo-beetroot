@@ -17,41 +17,32 @@
  */
 package ch.autumo.beetroot.routing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.handler.Error404Handler;
-import ch.autumo.beetroot.handler.ExampleDownloadHandler;
-import ch.autumo.beetroot.handler.ExampleUploadHandler;
-import ch.autumo.beetroot.handler.HomeHandler;
+import ch.autumo.beetroot.handler.Handler;
 import ch.autumo.beetroot.handler.NotImplementedHandler;
-import ch.autumo.beetroot.handler.tasks.TasksAddHandler;
-import ch.autumo.beetroot.handler.tasks.TasksDeleteHandler;
-import ch.autumo.beetroot.handler.tasks.TasksEditHandler;
-import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
-import ch.autumo.beetroot.handler.tasks.TasksRESTIndexHandler;
-import ch.autumo.beetroot.handler.tasks.TasksViewHandler;
-import ch.autumo.beetroot.handler.users.ChangeHandler;
-import ch.autumo.beetroot.handler.users.LoginHandler;
-import ch.autumo.beetroot.handler.users.LogoutHandler;
-import ch.autumo.beetroot.handler.users.NewQRCodeHandler;
-import ch.autumo.beetroot.handler.users.ResetHandler;
-import ch.autumo.beetroot.handler.users.SettingsHandler;
-import ch.autumo.beetroot.handler.users.UsersAddHandler;
-import ch.autumo.beetroot.handler.users.UsersDeleteHandler;
-import ch.autumo.beetroot.handler.users.UsersEditHandler;
-import ch.autumo.beetroot.handler.users.UsersIndexHandler;
-import ch.autumo.beetroot.handler.users.UsersViewHandler;
-import planted.beetroot.handler.properties.PropertiesAddHandler;
-import planted.beetroot.handler.properties.PropertiesDeleteHandler;
-import planted.beetroot.handler.properties.PropertiesEditHandler;
-import planted.beetroot.handler.properties.PropertiesIndexHandler;
-import planted.beetroot.handler.properties.PropertiesViewHandler;
 
 /**
  * Default router.
  */
 public class BeetRootDefaultRouter implements Router {
 
+	/**
+	 * Log.
+	 */
+	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootDefaultRouter.class.getName());
+	
 	/**
 	 * Get not implemented handler class.
 	 * return not implemented handler class
@@ -78,63 +69,100 @@ public class BeetRootDefaultRouter implements Router {
 	 * @return default routes.
 	 */
 	@Override
-	public Route[] getDefaultRoutes() {
-		
-		return new Route[] {
-				new Route("/"),
-				new Route("/index.html"),
-				new Route("/:lang/"),
-				new Route("/:lang/index.html")
-			};
+	public List<Route> getDefaultRoutes() {
+		final List<Route> routes =  new ArrayList<Route>();
+		routes.add(new Route("/"));
+		routes.add(new Route("/index.html"));
+		routes.add(new Route("/:lang/"));
+		routes.add(new Route("/:lang/index.html"));
+		return routes;
 	}
-	
+
 	/**
 	 * Get web application routes.
 	 * @return routes
 	 */
 	@Override
-	public Route[] getRoutes() {
+	public List<Route> getRoutes() {
+
+		final List<Route> routes =  new ArrayList<Route>();
 		
-		return new Route[] {
+		Document xmlDoc = null;
+		
+		final String path = BeetRootConfigurationManager.getInstance().getFullConfigBasePath();
+		try {
+			xmlDoc = BeetRootConfigurationManager.getXMLModuleConfigWithFullPath(path + "routing.xml", "Router");
+		} catch (Exception e) {
+			throw new RuntimeException("Couldn' read routing configuration 'cfg/routing.xml'!", e);
+		}
+		
+		// Packages
+		NodeList packages = xmlDoc.getElementsByTagName("Package");
+		if (packages.getLength() < 1)
+			throw new RuntimeException("At least one package must be defined!");
+		
+		for (int i = 0; i < packages.getLength(); i++) {
+			
+			final Node p = packages.item(i);
+			final Element pe = (Element) p;
+			String packageName = pe.getAttribute("name");
+			if (packageName == null || packageName.length() == 0) {
+				LOG.error("Package name is missing for package at index '" + i + "'!");
+				throw new RuntimeException("package name is missing for package at index '" + i + "'!");
+			}
+			
+			// Routes
+			final NodeList rts = pe.getElementsByTagName("Route");
+			if (rts.getLength() < 1) {
+				LOG.error("At least one route of must be defined in package at index '" + i + "'!");
+				throw new RuntimeException("At least one route of must be defined in package at index '" + i + "'!");
+			}
+			
+			for (int j = 0; j < rts.getLength(); j++) {
 				
-			/** Home */
-			new Route("/:lang/home", HomeHandler.class, "home"),
-			new Route("/:lang/home/index", HomeHandler.class, "home"),
-			
-			/** Files */
-			new Route("/:lang/files/view", ExampleDownloadHandler.class, "files"),
-			new Route("/:lang/files/add", ExampleUploadHandler.class, "files"),
-			
-			/** Tasks */
-			new Route("/:lang/tasks", TasksIndexHandler.class, "tasks"),
-			new Route("/:lang/tasks/index", TasksIndexHandler.class, "tasks"),
-			new Route("/:lang/tasks/view", TasksViewHandler.class, "tasks"),
-			new Route("/:lang/tasks/edit", TasksEditHandler.class, "tasks"),
-			new Route("/:lang/tasks/add", TasksAddHandler.class, "tasks"),
-			new Route("/:lang/tasks/delete", TasksDeleteHandler.class, "tasks"),
-			new Route("/:lang/tasks/index.json", TasksRESTIndexHandler.class, "tasks"),
-			
-			/** Users */
-			new Route("/:lang/users", UsersIndexHandler.class, "users"),
-			new Route("/:lang/users/index", UsersIndexHandler.class, "users"),
-			new Route("/:lang/users/view", UsersViewHandler.class, "users"),
-			new Route("/:lang/users/edit", UsersEditHandler.class, "users"),
-			new Route("/:lang/users/add", UsersAddHandler.class, "users"),
-			new Route("/:lang/users/delete", UsersDeleteHandler.class, "users"),
-			new Route("/:lang/users/login", LoginHandler.class, "login"),
-			new Route("/:lang/users/logout", LogoutHandler.class, "login"),
-			new Route("/:lang/users/reset", ResetHandler.class, "reset"),
-			new Route("/:lang/users/change", ChangeHandler.class, "change"),	
-			new Route("/:lang/users/settings", SettingsHandler.class, "settings"),
-			new Route("/:lang/users/newqrcode", NewQRCodeHandler.class, "users"),
-			
-			new Route("/:lang/properties", PropertiesIndexHandler.class, "properties"),
-		    new Route("/:lang/properties/index", PropertiesIndexHandler.class, "properties"),
-		    new Route("/:lang/properties/view", PropertiesViewHandler.class, "properties"),
-		    new Route("/:lang/properties/edit", PropertiesEditHandler.class, "properties"),
-		    new Route("/:lang/properties/add", PropertiesAddHandler.class, "properties"),
-		    new Route("/:lang/properties/delete", PropertiesDeleteHandler.class, "properties")
-		};
+				final Node r = rts.item(j);
+				final Element re = (Element) r;
+				String currPath = re.getAttribute("path");
+				if (currPath == null || currPath.length() == 0) {
+					LOG.error("Package('"+i+"')-Router('"+j+"'): path is missing!");
+					throw new RuntimeException("Package('"+i+"')-Router('"+j+"'): path is missing!");
+				}
+				String currHandler = re.getAttribute("handler");
+				if (currHandler == null || currHandler.length() == 0) {
+					LOG.error("Package('"+i+"')-Router('"+j+"'): handler is missing!");
+					throw new RuntimeException("Package('"+i+"')-Router('"+j+"'): handler is missing!");
+				}
+				String currName = re.getAttribute("name");
+				if (currName == null || currName.length() == 0) {
+					LOG.error("Package('"+i+"')-Router('"+j+"'): name is missing!");
+					throw new RuntimeException("Package('"+i+"')-Router('"+j+"'): name is missing!");
+				}
+				
+				currPath = currPath.trim();
+				currHandler = currHandler.trim();
+				currName = currName.trim();
+				
+				if (packageName.endsWith("."))
+					packageName = packageName.substring(0, packageName.length()-1);
+				packageName = packageName.trim();
+					
+				final String className = packageName + "." + currHandler;
+				//Class<Handler> handlerClass = null;
+				Class<Handler> handlerClass = null;
+				try {
+					@SuppressWarnings("unchecked")
+					final Class<Handler> clz = (Class<Handler>) Class.forName(className);
+					handlerClass = clz;
+				} catch (ClassNotFoundException e) {
+					LOG.error("Class '"+className+"' not found or isn't a handler!", e);
+					throw new RuntimeException("Class '"+className+"' not found or isn't a handler!", e);
+				}
+
+				routes.add(new Route(currPath, handlerClass, currName));
+			}
+		}
+
+		return routes;
 	}
 	
 	/**
@@ -145,12 +173,27 @@ public class BeetRootDefaultRouter implements Router {
 	 * 
 	 * @param baseRoutes base routes
 	 * @param customRoutes custom routes
-	 * @return
+	 * @return merged routes
 	 */
 	protected static Route[] merge(Route baseRoutes[], Route customRoutes[]) {
 		Route result[] = Arrays.copyOf(baseRoutes, baseRoutes.length + customRoutes.length);
 	    System.arraycopy(customRoutes, 0, result, baseRoutes.length, customRoutes.length);
 	    return result;
+	}
+	
+	/**
+	 * Merge routes! Use this method within your custom router
+	 * and the overwritten {@link #getRoutes()} method to merge
+	 * the base routes in this class with your additional custom
+	 * routes, otherwise the base routes are not accessible!
+	 * 
+	 * @param baseRoutes base routes
+	 * @param customRoutes custom routes
+	 * @return merged routes
+	 */
+	protected static List<Route> merge(List<Route> baseRoutes, List<Route> customRoutes) {
+		baseRoutes.addAll(customRoutes);
+		return baseRoutes;
 	}
 	
 }

@@ -76,7 +76,7 @@ public class Plant {
 		final String all = 
 				Colors.darkCyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
-				+ " (c) 2023 autumo Ltd. Switzerland";
+				+ " (c) 2024 autumo Ltd. Switzerland";
 		return all;
 	}
 	
@@ -301,6 +301,20 @@ public class Plant {
 		// ---- Router
     	
 		System.out.println("");
+		System.out.println(Colors.darkYellow("  Add the following lines to your beetRoot routing configuration 'routing.xml'"));
+		System.out.println(Colors.darkYellow("  and into the right 'package'-section (change package name if necessary):\n"));
+
+		System.out.println("    <Package name=\"planted.beetroot.handler."+fertilizer.lowerEntityPlural+"\">");
+		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"\" handler=\""+fertilizer.upperEntityPlural+"IndexHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
+		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/index\" handler=\""+fertilizer.upperEntityPlural+"IndexHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
+		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/view\" handler=\""+fertilizer.upperEntityPlural+"ViewHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
+		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/edit\" handler=\""+fertilizer.upperEntityPlural+"EditHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
+		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/add\" handler=\""+fertilizer.upperEntityPlural+"AddHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
+		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/delete\" handler=\""+fertilizer.upperEntityPlural+"DeleteHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
+		System.out.println("    </Package>");
+		System.out.println("");
+		
+		/* Old:
 		System.out.println(Colors.darkYellow("  Add the following lines to your beetRoot Router:\n"));
 		System.out.println(
 				  "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"\", "+fertilizer.upperEntityPlural+"IndexHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
@@ -310,11 +324,10 @@ public class Plant {
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/add\", "+fertilizer.upperEntityPlural+"AddHandler.class, \""+fertilizer.lowerEntityPlural+"\"),\n"
 				+ "    new Route(\"/:lang/"+fertilizer.lowerEntityPlural+"/delete\", "+fertilizer.upperEntityPlural+"DeleteHandler.class, \""+fertilizer.lowerEntityPlural+"\")\n"
 				+ "");
-    	
+    	*/
     }
     
 	private void process(Fertilizer fertilizer) throws Exception {
-
 		fertilizer.write(fertilizer.parse());
 	}
 

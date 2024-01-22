@@ -29,14 +29,18 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.OS;
 import ch.autumo.beetroot.utils.Security;
-
 
 
 /**
@@ -207,9 +211,7 @@ public class BeetRootConfigurationManager {
 			}		
 		}
 		
-		// read general config
 		generalProps = new Properties();
-		// read general config
 		final String file = configFilePath;
 		
 		final File f = new File(file);
@@ -219,7 +221,11 @@ public class BeetRootConfigurationManager {
 			if (!fullConfigBasePath.endsWith(Helper.FILE_SEPARATOR))
 				fullConfigBasePath += Helper.FILE_SEPARATOR;
 		} else {
-			fullConfigBasePath = file; // resource: don't add any file separators! Could mix things up, e.g., "/\"
+			int i = file.lastIndexOf("/");
+			if (i != -1)
+				fullConfigBasePath = file.substring(0, i + 1);
+			else 
+				fullConfigBasePath = file;
 		}
 		
 		try {
@@ -574,6 +580,77 @@ public class BeetRootConfigurationManager {
 		if (servletName != null)
 			servletName = servletName.trim();
 		return servletName;
+	}
+
+	// Load XML module configuration
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Get XML module root configuration.
+	 * No resource paths!
+	 *  
+	 * @param xmlConfigFile only the file name, path is concluded by ROOTPATH and cfg-directory
+	 * @param moduleName module name
+	 * @return XML doc root
+	 * @throws Exception if module configuration cannot be loaded
+	 */
+	public static Document getXMLModuleConfig(String xmlConfigFile, String moduleName) throws Exception {
+		return getXMLModuleConfigWithFullPath(rootPath + Constants.CONFIG_PATH + xmlConfigFile, moduleName);
+	}
+	
+	/**
+	 * Get XML module root configuration.
+	 * No resource paths!
+	 *  
+	 * @param xmlRelativePath relative path that is concluded with ROOTPATH
+	 * @param moduleName module name
+	 * @return XML doc root
+	 * @throws Exception if module configuration cannot be loaded
+	 */
+	public static Document getXMLModuleConfigRelative(String xmlRelativePath, String moduleName) throws Exception {
+		// check root path
+    	if (!rootPath.endsWith(OS.FILE_SEPARATOR))
+    		rootPath += OS.FILE_SEPARATOR;
+    	return getXMLModuleConfigWithFullPath(rootPath + xmlRelativePath, moduleName);
+	}
+	
+	/**
+	 * Get XML module root configuration. The given path can be a resource too, but make sure
+	 * there are no mixed path separators, e.g. "/\"!
+	 *  
+	 * @param xmlConfigFilePath the full configuration file path
+	 * @param moduleName module name
+	 * @return XML doc root
+	 */
+	public static Document getXMLModuleConfigWithFullPath(String xmlConfigFilePath, String moduleName) {
+		
+		Document doc = null;
+		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		
+		try {
+			// optional, but recommended
+			// process XML securely, avoid attacks like XML External Entities (XXE)
+			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			// parse XML file
+			final DocumentBuilder db = dbf.newDocumentBuilder();
+			
+			final File cfg = new File(xmlConfigFilePath);
+			if (cfg.exists())
+				doc = db.parse(new File(xmlConfigFilePath));
+			else 
+				doc = db.parse(BeetRootConfigurationManager.class.getResourceAsStream(xmlConfigFilePath));
+			
+			doc.getDocumentElement().normalize();
+			
+			final String module = doc.getDocumentElement().getNodeName();
+			
+			if (!module.equalsIgnoreCase(moduleName))
+				throw new IllegalAccessException("Module '"+moduleName+"' is not a valid module name; here '"+module+"' would be right!");
+				
+		} catch (Exception e) {
+			LOG.error("Couldn't load module XML configuration from '"+xmlConfigFilePath+"'!", e);
+		}
+		return doc;
 	}
 	
 }
