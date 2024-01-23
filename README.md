@@ -91,6 +91,8 @@
 
 <p style="text-align: center;"><strong><a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.x - Quickstart Video</a></strong></p>
 
+**Note**: The video shows the old routing which has changed in the version 2.3.0; it is done now with a configuration file (routing.xml); see chapter <a href="#routing">Routing</a>.
+
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
 
 beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. 
