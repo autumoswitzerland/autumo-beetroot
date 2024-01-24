@@ -8,17 +8,16 @@
  -->
  <Router>
 
+	<!-- Base  -->
 	<Package name="ch.autumo.beetroot.handler">
-		<!-- Home  -->
 	    <Route path="/:lang/home" handler="HomeHandler" name="home" />
 	    <Route path="/:lang/home/index" handler="HomeHandler" name="home" />
-		<!-- Files  -->
 	    <Route path="/:lang/files/view" handler="ExampleDownloadHandler" name="files" />
 	    <Route path="/:lang/files/add" handler="ExampleUploadHandler" name="files" />
 	</Package>
 	
+   	<!-- Users  -->
 	<Package name="ch.autumo.beetroot.handler.users">
-   		<!-- Users  -->
 	    <Route path="/:lang/users" handler="UsersIndexHandler" name="users" />
 	    <Route path="/:lang/users/index" handler="UsersIndexHandler" name="users" />
 	    <Route path="/:lang/users/view" handler="UsersViewHandler" name="users" />
@@ -33,8 +32,8 @@
 	    <Route path="/:lang/users/newqrcode" handler="NewQRCodeHandler" name="users" />
 	</Package>
 		
+	<!-- Tasks  -->
 	<Package name="ch.autumo.beetroot.handler.tasks">
-		<!-- Tasks  -->
 	    <Route path="/:lang/tasks" handler="TasksIndexHandler" name="tasks" />
 	    <Route path="/:lang/tasks/index" handler="TasksIndexHandler" name="tasks" />
 	    <Route path="/:lang/tasks/view" handler="TasksViewHandler" name="tasks" />
@@ -44,8 +43,8 @@
 	    <Route path="/:lang/tasks/index.json" handler="TasksRESTIndexHandler" name="tasks" />
 	</Package>
 		
+	<!-- Properties/Settings  -->
 	<Package name="planted.beetroot.handler.properties">
-		<!-- Properties/Settings  -->
 	    <Route path="/:lang/properties" handler="PropertiesIndexHandler" name="properties" />
 	    <Route path="/:lang/properties/index" handler="PropertiesIndexHandler" name="properties" />
 	    <Route path="/:lang/properties/view" handler="PropertiesViewHandler" name="properties" />
