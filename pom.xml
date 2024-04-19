@@ -3,13 +3,6 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-
-	<parent>
-		<groupId>org.nanohttpd</groupId>
-		<artifactId>nanohttpd-project</artifactId>
-		<version>2.3.2-SNAPSHOT</version>
-	</parent>
-
 	
 	<name>autumo-beetroot</name>
 	<groupId>ch.autumo.beetroot</groupId>
@@ -43,10 +36,6 @@
 		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<modules>
-		<module>nanohttpd</module>
-	</modules
 		
 	<build>
 		<plugins>
