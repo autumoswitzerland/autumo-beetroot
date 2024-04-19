@@ -18,6 +18,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>nanohttpd</id>
+			<name>nanohttpd</name>
+			<url>https://github.com/autumoswitzerland/nanohttpd</url>
+		</repository>
+	</repositories>
+	
 	<build>
 		<plugins>
 			
@@ -386,14 +394,25 @@
 			<version>3.3.1</version>               
 		    <scope>provided</scope>
 		</dependency>
-		
+
+		<!--
 		<dependency>
+
+			nanohttpd
 		    <groupId>org.nanohttpd</groupId>
 		    <artifactId>nanohttpd</artifactId>
 		    <version>2.3.4-BEETROOT</version>
 		    <scope>system</scope>
 		    <systemPath>${nanohttpjar}</systemPath>
 		</dependency>
+		-->
+
+		<dependency>
+		    <groupId>org.nanohttpd</groupId>
+		    <artifactId>nanohttpd</artifactId>
+		    <version>2.3.4-BEETROOT</version>
+		    <scope>provided</scope>
+		</dependency>		
 				
   		<!-- Testing -->
         
