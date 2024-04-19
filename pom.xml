@@ -16,6 +16,14 @@
 		<url>https://github.com/autumoswitzerland/autumo-beetroot</url>
 		<tag>master</tag>
 	</scm>
+
+	<repositories>
+		<repository>
+			<id>org.nanohttpd</id>
+			<name>nanohttpd</name>
+			<url>https://github.com/autumoswitzerland/nanohttpd.git</url>
+		</repository>
+	</repositories>
 	
 	<properties>
 		<!-- Adjust to your structure -->
