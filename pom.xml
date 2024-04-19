@@ -43,7 +43,11 @@
 		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
+	<modules>
+		<module>nanohttpd</module>
+	</modules
+		
 	<build>
 		<plugins>
 			
