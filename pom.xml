@@ -10,11 +10,14 @@
 	<version>2.3.0</version>
 	<packaging>jar</packaging>
 
+	<scm>
+		<connection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</connection>
+		<developerConnection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</developerConnection>
+		<url>https://github.com/autumoswitzerland/autumo-beetroot</url>
+		<tag>master</tag>
+	</scm>
+	
 	<properties>
-		<!-- Adjust to your structure -->
-		<basePath>/Users/Mike/Development/git-ext</basePath>
-		<nanohttp>${basePath}/nanohttpd/core/target</nanohttp>
-		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
