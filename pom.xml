@@ -18,6 +18,12 @@
 	</scm>
 	
 	<properties>
+		<!-- Adjust to your structure -->
+		<!--
+		<basePath>/Users/Mike/Development/git-ext</basePath>
+		<nanohttp>${basePath}/nanohttpd/core/target</nanohttp>
+		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
+		-->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
