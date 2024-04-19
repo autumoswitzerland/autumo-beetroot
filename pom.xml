@@ -38,7 +38,7 @@
 	</properties>
 
 	<modules>
-		<module>nanohttpd</module>
+		<module>../../nanohttpd/nanohttpd</module>
 	</modules>
 	
 	<build>
