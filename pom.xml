@@ -20,7 +20,7 @@
 
 	<repositories>
 		<repository>
-			<id>nanohttpd</id>
+			<id>org.nanohttpd</id>
 			<name>nanohttpd</name>
 			<url>https://github.com/autumoswitzerland/nanohttpd</url>
 		</repository>
