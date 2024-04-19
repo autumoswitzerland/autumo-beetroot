@@ -39,7 +39,7 @@
 
 	<modules>
 		<module>nanohttpd</module>
-	<modules>
+	</modules>
 	
 	<build>
 		<plugins>
