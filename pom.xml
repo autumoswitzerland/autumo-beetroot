@@ -24,6 +24,8 @@
 		<nanohttp>${basePath}/nanohttpd/core/target</nanohttp>
 		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
 		-->
+		<nanohttp>/home/runner/work/nanohttpd/nanohttpd/core/target</nanohttp>
+		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -420,6 +422,7 @@
 		    <groupId>org.nanohttpd</groupId>
 		    <artifactId>nanohttpd</artifactId>
 		    <version>2.3.4-BEETROOT</version>
+		    <systemPath>${nanohttpjar}</systemPath>
 		</dependency>		
 				
   		<!-- Testing -->
