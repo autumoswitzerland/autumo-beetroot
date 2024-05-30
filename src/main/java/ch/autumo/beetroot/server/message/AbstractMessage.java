@@ -157,10 +157,14 @@ public abstract class AbstractMessage {
 
 		if (messageMap == null) {
 			messageMap = new HashMap<String, String>();
-			String pairs[] = message.replaceAll(" ", "").trim().split(",");
+			//String pairs[] = message.replaceAll(" ", "").trim().split(",");
+			String pairs[] = message.trim().split(",");
 			for (int i = 0; i < pairs.length; i++) {
 				final String pair[] = pairs[i].split("=");
-				messageMap.put(pair[0], pair[1]);
+				String val = "null";
+				if (pair.length == 2)
+					val = pair[1].trim();
+				messageMap.put(pair[0].trim(), val);
 			}
 		}
 		return messageMap.get(key);

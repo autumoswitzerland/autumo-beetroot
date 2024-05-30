@@ -1442,13 +1442,33 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					if (text.contains("{$lang_menu_entries}")) {
 						
+						// We determine the right route according to the web resource path -> generic!
+						String route = "home";
+						final String res = this.getResource();
+						
+						if (res == null) {
+							route = "home";
+						} else {
+							final int i = res.indexOf(":lang");
+							if (i == -1) {
+								route = "home";
+							} else {
+								route = res.substring(i + 6);
+								final int j = route.indexOf(".");
+								if (j != -1) {
+									route = route.substring(0, j);
+								}
+							}
+						}
+
 						String entries = "";
 						final String langs[] = LanguageManager.getInstance().getConfiguredLanguages();
+						
 						for (int i = 0; i < langs.length; i++) {
 							if (i+1 == langs.length) {
-								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
 							} else {
-								entries += "<a href=\"/"+langs[i]+"/"+getEntity()+"/index\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
 								entries += "<hr class=\"menusep\">\n";
 							}
 						}
@@ -1975,7 +1995,21 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// ======== E. Create final response ==========
 			
 			//if (measureDuration) this.processTime();
-	        return Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
+			
+			final Response theResponse = Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
+			
+			/**
+			// CORS, e.g. Tomcat CORS https://medium.com/@tarang.chikhalia/how-to-enable-cors-origin-in-apache-tomcat-e0042eae5017
+			if (session.getUri().endsWith(Constants.JSON_EXT)) {
+				theResponse.addHeader("Access-Control-Allow-Origin", "*");
+				theResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+				theResponse.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+				theResponse.addHeader("Access-Control-Allow-Credentials", "true");
+				theResponse.addHeader("Access-Control-Max-Age", "3600");				
+			}
+			*/
+			
+	        return theResponse;
         
 		} catch (Exception e) {
 		
