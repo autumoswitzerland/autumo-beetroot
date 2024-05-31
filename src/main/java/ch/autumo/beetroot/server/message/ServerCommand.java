@@ -36,6 +36,9 @@ public class ServerCommand extends AbstractMessage {
 	
 	private static String cfgServerName = null;
 
+	/**
+	 * 'sockets|web', web for tunneling!
+	 */
 	private static transient String mode = null;
 	
 	protected static String host = null;
@@ -50,6 +53,7 @@ public class ServerCommand extends AbstractMessage {
 	static {
 		reInit();
 	}
+	
 	
 	/**
 	 * Initialize configuration.
@@ -173,38 +177,76 @@ public class ServerCommand extends AbstractMessage {
 		return dispatcherId;
 	}
 	
+	/**
+	 * Timeout for sending a server command client-side.
+	 * 
+	 * @return timeout
+	 */
 	public int getTimeout() {
 		return timeout;
 	}
 
+	/**
+	 * 'sockets|web' - 'web' for tunneling, 'web' is 
+	 * not working for internal server commands.
+	 * 
+	 * @return mode
+	 */
 	public String getMode() {
 		return mode;
 	}
 	
+	/**
+	 * Server host; set by message itself.
+	 * 
+	 * @return server host
+	 */
 	public String getHost() {
 		return host;
 	}
 	
+	/**
+	 * Server port; set by message itself.
+	 * 
+	 * @return server port
+	 */
 	public int getPort() {
 		return port;
 	}
 	
+	/**
+	 * Server name; set by message itself.
+	 * 
+	 * @return server name
+	 */
 	public String getServerName() {
 		return serverName;
 	}
 	
+	/**
+	 * Get command.
+	 * 
+	 * @return command
+	 */
 	public String getCommand() {
 		return message;
 	}
 
-	
+	/**
+	 * Force message over sockets; so web tunneling will be ignore.
+	 */
 	public void forceSockets() {
 		this.forceSockets = true;
 	}
+	
+	/**
+	 * Is message forced over sockets?
+	 * 
+	 * @return true, if message is forced over sockets
+	 */
 	public boolean isForceSockets() {
 		return forceSockets;
 	}
-
 	
 	@Override
 	public String getTransferString() throws IOException {
@@ -233,7 +275,7 @@ public class ServerCommand extends AbstractMessage {
 		
 		final ServerCommand command = new ServerCommand();
 		
-		final String parts [] = transferString.split(MSG_PART_SEPARATOR, 8);
+		final String parts [] = transferString.split(MSG_PART_SEPARATOR_REGEXP, 8);
 		command.serverName = parts[0];
 		command.dispatcherId = parts[1];
 		command.message = parts[2];

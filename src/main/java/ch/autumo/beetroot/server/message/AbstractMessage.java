@@ -41,9 +41,17 @@ public abstract class AbstractMessage {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(AbstractMessage.class.getName());
 	
-	/** message part separator character */
-	public static final String MSG_PART_SEPARATOR = "#";
+	/** message part separator */
+	public static final String MSG_PART_SEPARATOR = "#|#";
+	/** message part separator regular expression */
+	public static final String MSG_PART_SEPARATOR_REGEXP = "#\\|#";
 
+	/** internal message part separator */
+	public static final String INTERNAL_MSG_PART_SEPARATOR = "|";
+	/** internal message part separator regular expression */
+	public static final String INTERNAL_MSG_PART_SEPARATOR_REGEXP = "\\|";
+
+	
 	/** server name */
 	public static String serverName;
 
@@ -54,6 +62,7 @@ public abstract class AbstractMessage {
 		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
 		ENCRYPT = (mode != null && mode.equalsIgnoreCase("sha3"));
 	}	
+
 	
 	private Map<String, String> messageMap = null;
 	
@@ -157,8 +166,7 @@ public abstract class AbstractMessage {
 
 		if (messageMap == null) {
 			messageMap = new HashMap<String, String>();
-			//String pairs[] = message.replaceAll(" ", "").trim().split(",");
-			String pairs[] = message.trim().split(",");
+			String pairs[] = message.trim().split(INTERNAL_MSG_PART_SEPARATOR_REGEXP);
 			for (int i = 0; i < pairs.length; i++) {
 				final String pair[] = pairs[i].split("=");
 				String val = "null";
