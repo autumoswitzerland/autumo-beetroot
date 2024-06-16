@@ -41,8 +41,8 @@ public class Communicator {
 
 	protected final static Logger LOG = LoggerFactory.getLogger(Communicator.class.getName());
 
-	/** Max. message size: 64 kBytes */
-	public final static int MAX_MSG_SIZE = 64 * 1024;
+	/** Max. message size: 512 kBytes */
+	public final static int MAX_MSG_SIZE = 512 * 1024;
 	
 	/** Connection timeout in seconds */
 	public final static int TIMEOUT = 5;
