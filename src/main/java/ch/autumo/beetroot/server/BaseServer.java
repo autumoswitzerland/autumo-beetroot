@@ -232,6 +232,26 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
+		// DB manager initialization if not yet done!
+		try {
+			
+			final BeetRootDatabaseManager dbMan = BeetRootDatabaseManager.getInstance();
+			if (!dbMan.isInitialized()) {
+				BeetRootDatabaseManager.getInstance().initialize();
+			}
+		} catch (UtilsException e) {
+			LOG.error("Couldn't decrypt DB password!", e);
+			System.err.println(ansiErrServerName + " Couldn't decrypt DB password!");
+			Helper.fatalExit();
+		} catch (Exception e) {
+			LOG.error("Couldn't create DB manager!", e);
+			System.err.println(ansiErrServerName + " Couldn't create DB manager!");
+			Helper.fatalExit();
+		}
+		
+		
+		//------------------------------------------------------------------------------
+		
 		// configure logging
 		String logCfgFile = System.getProperty("log4j2.configurationFile");
 		// check if it has been overwritten with the 'log4j.configuration' parameter
@@ -283,26 +303,6 @@ public abstract class BaseServer {
 		}
 		
 		startWebServer = configMan.getYesOrNo(Constants.KEY_WS_START);
-
-		
-		//------------------------------------------------------------------------------
-		
-		// DB manager initialization if not yet done!
-		try {
-			
-			final BeetRootDatabaseManager dbMan = BeetRootDatabaseManager.getInstance();
-			if (!dbMan.isInitialized()) {
-				BeetRootDatabaseManager.getInstance().initialize();
-			}
-		} catch (UtilsException e) {
-			LOG.error("Couldn't decrypt DB password!", e);
-			System.err.println(ansiErrServerName + " Couldn't decrypt DB password!");
-			Helper.fatalExit();
-		} catch (Exception e) {
-			LOG.error("Couldn't create DB manager!", e);
-			System.err.println(ansiErrServerName + " Couldn't create DB manager!");
-			Helper.fatalExit();
-		}
 
 		
 		//------------------------------------------------------------------------------
