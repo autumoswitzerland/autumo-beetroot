@@ -18,7 +18,9 @@
 package ch.autumo.beetroot.crud;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -37,9 +39,9 @@ public class EventHandler {
 	
 	private static EventHandler handler;
 	
-	private final Map<Class<?>, CreateListener> createListeners = new HashMap<Class<?>, CreateListener>();
-	private final Map<Class<?>, UpdateListener> updateListeners = new HashMap<Class<?>, UpdateListener>();
-	private final Map<Class<?>, DeleteListener> deleteListeners = new HashMap<Class<?>, DeleteListener>();
+	private final Map<Class<?>, List<CreateListener>> createListeners = new HashMap<Class<?>, List<CreateListener>>();
+	private final Map<Class<?>, List<UpdateListener>> updateListeners = new HashMap<Class<?>, List<UpdateListener>>();
+	private final Map<Class<?>, List<DeleteListener>> deleteListeners = new HashMap<Class<?>, List<DeleteListener>>();
 	
 
 	private EventHandler() {
@@ -59,119 +61,147 @@ public class EventHandler {
 
 	/**
 	 * Add a create listener for create notifications for a specific entity.
-	 * If a listener already exists for that entity, it is not added.
 	 * 
 	 * @param entityClass entity
 	 * @param listener create listener
 	 */
-	public void newCreateListener(Class<?> entityClass, CreateListener listener) {
-		if (!createListeners.containsKey(entityClass)) {
-			createListeners.put(entityClass, listener);
+	public void addCreateListener(Class<?> entityClass, CreateListener listener) {
+		List<CreateListener> l = createListeners.get(entityClass);
+		if (l != null) {
+			l.add(listener);
+		} else {
+			l = new ArrayList<CreateListener>();
+			l.add(listener);
+			createListeners.put(entityClass, l);
 		}
 	}
 	
 	/**
 	 * Add an update listener for update notifications for a specific entity.
-	 * If a listener already exists for that entity, it is not added.
 	 * 
 	 * @param entityClass entity
 	 * @param listener update listener
 	 */
 	public void addUpdateListener(Class<?> entityClass, UpdateListener listener) {
-		if (!updateListeners.containsKey(entityClass)) {
-			updateListeners.put(entityClass, listener);
+		List<UpdateListener> l = updateListeners.get(entityClass);
+		if (l != null) {
+			l.add(listener);
+		} else {
+			l = new ArrayList<UpdateListener>();
+			l.add(listener);
+			updateListeners.put(entityClass, l);
 		}
 	}
 
 	/**
 	 * Add a delete listener for delete notifications for a specific entity.
-	 * If a listener already exists for that entity, it is not added.
 	 * 
 	 * @param entityClass entity
 	 * @param listener delete listener
 	 */
 	public void addDeleteListener(Class<?> entityClass, DeleteListener listener) {
-		if (!deleteListeners.containsKey(entityClass)) {
-			deleteListeners.put(entityClass, listener);
+		List<DeleteListener> l = deleteListeners.get(entityClass);
+		if (l != null) {
+			l.add(listener);
+		} else {
+			l = new ArrayList<DeleteListener>();
+			l.add(listener);
+			deleteListeners.put(entityClass, l);
 		}
 	}
 
 	/**
-	 * Notify create listener for after-create and specific entity.
+	 * Notify create listeners for after-create and specific entity.
 	 * 
 	 * @param entityClass entity
 	 * @param id id
 	 */
 	public void notifyAfterCreate(Class<?> entityClass, int id) {
-		final CreateListener l = createListeners.get(entityClass);
+		final List<CreateListener> l = createListeners.get(entityClass);
 		if (l != null) {
 			Model model = null;
 			try {
 				model = DB.selectRecord(entityClass, id);
+				for (CreateListener createListener : l) {
+					createListener.afterCreate(model);
+				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't load bean from database for after-create notification!", e);
 			}
-			l.afterCreate(model);
 		}
 	}
 	
 	/**
-	 * Notify update listener for before-update and specific entity.
+	 * Notify update listeners for before-update and specific entity.
+	 * Every called listener can abort the update!
 	 * 
 	 * @param entityClass entity
 	 * @param id id
 	 * @return true, if update should be aborted, otherwise false
 	 */
 	public boolean notifyBeforeUpdate(Class<?> entityClass, int id) {
-		final UpdateListener l = updateListeners.get(entityClass);
+		final List<UpdateListener> l = updateListeners.get(entityClass);
 		if (l != null) {
+			boolean doNotUpdate = false;
 			Model model = null;
 			try {
 				model = DB.selectRecord(entityClass, id);
+				for (UpdateListener updateListener : l) {
+					if (updateListener.beforeUpdate(model))
+						doNotUpdate = true;
+				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't load bean from database for before-update notification!", e);
 			}
-			return l.beforeUpdate(model);
+			return doNotUpdate;
 		}
 		return false;
 	}
 
 	/**
-	 * Notify update listener for after-update and specific entity.
+	 * Notify update listeners for after-update and specific entity.
 	 * 
 	 * @param entityClass entity
 	 * @param id id
 	 */
 	public void notifyAfterUpdate(Class<?> entityClass, int id) {
-		final UpdateListener l = updateListeners.get(entityClass);
+		final List<UpdateListener> l = updateListeners.get(entityClass);
 		if (l != null) {
 			Model model = null;
 			try {
 				model = DB.selectRecord(entityClass, id);
+				for (UpdateListener updateListener : l) {
+					updateListener.afterUpdate(model);
+				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't load bean from database for after-update notification!", e);
 			}
-			l.afterUpdate(model);
 		}
 	}
 
 	/**
-	 * Notify delete listener for before-delete and specific entity.
+	 * Notify delete listeners for before-delete and specific entity.
+	 * Every called listener can abort the deletion!
 	 * 
 	 * @param entityClass entity
 	 * @param id id
 	 * @return true, if deletion should be aborted, otherwise false
 	 */
 	public boolean notifyBeforeDelete(Class<?> entityClass, int id) {
-		final DeleteListener l = deleteListeners.get(entityClass);
+		final List<DeleteListener> l = deleteListeners.get(entityClass);
 		if (l != null) {
+			boolean doNotUpdate = false;
 			Model model = null;
 			try {
 				model = DB.selectRecord(entityClass, id);
+				for (DeleteListener deleteListener : l) {
+					if (deleteListener.beforeDelete(model))
+						doNotUpdate = true;
+				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't load bean from database for before-delete notification!", e);
 			}
-			return l.beforeDelete(model);
+			return doNotUpdate;
 		}
 		return false;
 	}
