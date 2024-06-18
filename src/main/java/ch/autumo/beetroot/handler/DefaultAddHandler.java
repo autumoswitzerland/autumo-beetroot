@@ -35,6 +35,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
+import ch.autumo.beetroot.crud.EventHandler;
 import ch.autumo.beetroot.utils.Beans;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Helper;
@@ -196,7 +197,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			//NO SEMICOLON
 			stmt = conn.prepareStatement("INSERT INTO "+entity+" (" + columns + ") VALUES (" + values + ")", Statement.RETURN_GENERATED_KEYS);
 			stmt.executeUpdate();
-
+			
 			// Get generated key
 			if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 				
@@ -223,6 +224,9 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			}
 		
 			LOG.debug("Record '"+savedId+"' in '"+entity+"'.");
+			
+			// Notify listeners
+			EventHandler.getInstance().notifyAfterCreate(getBeanClass(), savedId);
 			
 		} finally {
 			if (keySet != null)

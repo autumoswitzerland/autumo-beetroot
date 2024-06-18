@@ -21,6 +21,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.crud.EventHandler;
 import ch.autumo.beetroot.utils.DB;
 
 /**
@@ -34,6 +35,13 @@ public class DefaultDeleteHandler extends BaseHandler {
 
 	@Override
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
+		
+		// Notify listeners
+		if (EventHandler.getInstance().notifyBeforeDelete(getBeanClass(), id)) {
+			// Abort?
+			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.delete.abort", session.getUserSession(), getEntity(), id));
+		}
+		
 		try {
 			DB.delete(getEntity(), id);
 		} catch (SQLIntegrityConstraintViolationException ex) {
@@ -48,4 +56,16 @@ public class DefaultDeleteHandler extends BaseHandler {
 		return null;
 	}
 
+	/**
+	 * Get bean entity class that has been generated trough PLANT, 
+	 * self-written or null (then null in extract calls too).
+	 * 
+	 * Should be overwritten if you use before-delete notification!
+	 * 
+	 * @return bean entity class
+	 */
+	public Class<?> getBeanClass() {
+		return null;
+	}
+	
 }

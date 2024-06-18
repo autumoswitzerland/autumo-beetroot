@@ -29,6 +29,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.crud.EventHandler;
 import ch.autumo.beetroot.utils.Beans;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Helper;
@@ -144,6 +145,12 @@ public class DefaultEditHandler extends BaseHandler {
 			return status;
 		}
 		
+		// Notify listeners
+		if (EventHandler.getInstance().notifyBeforeUpdate(getBeanClass(), id)) {
+			// Abort?
+			return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.update.abort", session.getUserSession(), getEntity(), id));
+		}
+		
 		Connection conn = null;
 		Statement stmt = null;
 		
@@ -156,6 +163,9 @@ public class DefaultEditHandler extends BaseHandler {
 			String stmtStr = "UPDATE "+getEntity()+" SET "+this.getUpdateSetClause(session, ON_OFF_MAP_NAME + "." + super.getEntity())+" WHERE id=" + id;
 			session.getUserSession().removeMap(ON_OFF_MAP_NAME + "." + super.getEntity()); // clear map here
 			stmt.executeUpdate(stmtStr);
+
+			// Notify listeners
+			EventHandler.getInstance().notifyAfterUpdate(getBeanClass(), id);
 			
 		} finally {
 			if (stmt != null)
