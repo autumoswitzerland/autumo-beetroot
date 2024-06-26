@@ -65,6 +65,7 @@
     <li><a href="#configuration-and-passwords">Configuration and Passwords</a></li>
     <li><a href="#default-database-and-schema">Default Database and Schema</a></li>
     <li><a href="#crud-generator-plant">CRUD Generator PLANT</a></li>
+    <li><a href="#crud-hooks">CRUD Hooks</a></li>
     <li><a href="#standard-html-templates">Standard HTML Templates</a></li>
     <li><a href="#json-rest-api">JSON REST API</a></li>
     <li><a href="#routing">Routing</a></li>
@@ -114,6 +115,7 @@ The Web framework is shipped with the following features ready to use:
 - Password reset mechanism
 - Extendable user settings
 - Dark theme and theme support
+- SMS and phone call interfaces
 - Interface for SMS notifications
 - Mailing inclusive mail templates
 - URL routing with language support
@@ -170,7 +172,7 @@ Enter the following statements into your terminal.
 **Linux, macOS**
 
 ```NuShell
-VERSION=2.3.0
+VERSION=2.3.1
 PACKAGE=autumo-beetRoot-$VERSION
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
@@ -188,7 +190,7 @@ $PACKAGE/bin/beetroot.sh start
 **Windows**
 
 ```Batchfile
-SET VERSION=2.3.0
+SET VERSION=2.3.1
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
@@ -445,6 +447,22 @@ handlers for more information.
 want to have for your own web-app.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- CRUD HOOKS -->
+## CRUD Hooks
+
+You can receive notifications using the [EventHanfler](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/crud/EventHandler.java) 
+by registering an entity and a listener that is called back. The following callback methods are available:
+
+- [CreateListener](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/crud/CreateListener.java)
+  - `afterCreate(Model bean)`
+- [UpdateListener](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/crud/UpdateListener.java)
+  - `beforeUpdate(Model bean)`
+  - `afterUpdate(Model bean)`
+- [DeleteListener](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/crud/DeleteListener.java)
+  - `beforeDelete(Model bean)`
 
 
 
