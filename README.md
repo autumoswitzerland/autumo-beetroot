@@ -256,7 +256,7 @@ beetRoot can be run in two modes:
 		- uses a [patched version](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java) 
 		of the [RouterNanoHTTPD](https://github.com/NanoHttpd/nanohttpd/blob/master/nanolets/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java) and
 		
-		- an [updated version of the NanoHttpd project](https://github.com/autumoswitzerland/nanohttpd) through the provided library `nanohttpd-a.b.c-BEETROOT.jar`.
+		- an [updated version of the NanoHttpd project](https://github.com/autumoswitzerland/nanohttpd) through the provided library `nanohttpd-BEETROOT-a.b.c.jar`.
 
 	- An optional file-server (storage / find & download).
       

@@ -20,12 +20,12 @@
 	<repositories>
 		<repository>
 			<id>local-repo</id>
-			<url>file://${project.basedir}/lib/ext</url>
+			<url>file://${project.basedir}/lib/repo</url>
 		</repository>
 	</repositories>
 	
 	<properties>
-		<localrepo>${project.basedir}/lib/ext</localrepo>
+		<localrepo>${project.basedir}/lib/repo</localrepo>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	
@@ -395,7 +395,7 @@
 		<dependency>
 		    <groupId>org.nanohttpd</groupId>
 		    <artifactId>nanohttpd</artifactId>
-		    <version>2.3.4-BEETROOT</version>
+		    <version>BEETROOT-2.3.4</version>
 		    <scope>provided</scope>
 		</dependency>		
 				
