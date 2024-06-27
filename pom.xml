@@ -17,15 +17,15 @@
 		<tag>master</tag>
 	</scm>
 	
+	<repositories>
+		<repository>
+			<id>local-repo</id>
+			<url>file://${project.basedir}/lib/ext</url>
+		</repository>
+	</repositories>
+	
 	<properties>
-		<!-- Adjust to your structure -->
-		<basePath>/Users/Mike/Development/git-ext</basePath>
-		<nanohttp>${basePath}/nanohttpd/core/target</nanohttp>
-		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
-		<!--
-		<nanohttp>/home/runner/work/nanohttpd/nanohttpd/core/target</nanohttp>
-		<nanohttpjar>${nanohttp}/nanohttpd-2.3.4-BEETROOT.jar</nanohttpjar>		
-		-->
+		<localrepo>${project.basedir}/lib/ext</localrepo>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	
@@ -138,16 +138,10 @@
 				                    <include>*.jar</include>
 				                    <directory>${basedir}/target</directory>
 								</resource>
-								<!--
 			                    <resource>
 				                    <include>*.jar</include>
-				                    <directory>${basedir}/lib/ext</directory>
+				                    <directory>${localrepo}</directory>
 								</resource>
-								-->			              
-			                    <resource>
-				                    <include>*.jar</include>
-				                    <directory>${nanohttp}</directory>
-								</resource>			              
 							</resources>
 			            </configuration>
 			        </execution>
@@ -398,26 +392,11 @@
 		    <scope>provided</scope>
 		</dependency>
 
-		<!--
-		<dependency>
-
-			nanohttpd
-		    <groupId>org.nanohttpd</groupId>
-		    <artifactId>nanohttpd</artifactId>
-		    <version>2.3.4-BEETROOT</version>
-		    <scope>system</scope>
-		    <systemPath>${nanohttpjar}</systemPath>
-		</dependency>
-		-->
-
 		<dependency>
 		    <groupId>org.nanohttpd</groupId>
 		    <artifactId>nanohttpd</artifactId>
 		    <version>2.3.4-BEETROOT</version>
-		    <scope>system</scope>
-		    <systemPath>${nanohttpjar}</systemPath>
-			<!--
-			-->
+		    <scope>provided</scope>
 		</dependency>		
 				
   		<!-- Testing -->

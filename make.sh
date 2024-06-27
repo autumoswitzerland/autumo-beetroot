@@ -3,7 +3,7 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.5
+#  Version: 4.6
 #
 #  Notes:
 #   -
@@ -11,7 +11,7 @@
 #------------------------------------------------------------------------------
 #
 #  Copyright 2024 autumo GmbH
-#  Date: 30.05.2024
+#  Date: 27.06.2024
 #
 ###############################################################################
 
@@ -358,7 +358,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml
-	cp ../lib/ext/slf4j-simple* autumo-beetRoot-web-$VERSION/WEB-INF/lib
+	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar)
 	rm -f autumo-beetRoot-web-$VERSION/logging.xml
 	rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
 	# no AUTO_SERVER=TRUE switch
@@ -390,6 +390,5 @@ else
 	echo "Nope! -> make create|clear "
 	echo " "
 fi
-
 
 

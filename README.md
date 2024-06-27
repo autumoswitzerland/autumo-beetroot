@@ -88,6 +88,11 @@
 <!-- WHAT IS BEETROOT -->
 ## What is beetRoot ?
 
+autumo beetRoot starts approx. 5 times faster than [SpringBoot](https://spring.io/guides/gs/spring-boot) and you get a set of working dependencies with the initial setup for the current release,
+a transparent and clear way to configure the framework and its components and the freedom to choose any web container or simply use the optimized embedded servlet container from the start.
+However, none of this prevents you from customizing the dependencies in the maven-`pom.xml` file itself. As much as we love [Gradle](https://gradle.org/), for this project we'll stick with 
+[Maven](https://maven.apache.org/) for now. The quick start setup is also effortless and very fast! 
+
 [![autumo beetRoot 2.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)](https://www.youtube.com/watch?v=ruZrP-7yCDY)
 
 <p style="text-align: center;"><strong><a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.x - Quickstart Video</a></strong></p>
@@ -127,7 +132,7 @@ The Web framework is shipped with the following features ready to use:
 - User session are stored when servers are stopped
 - Entities can be served through the JSON REST API
 - Logging implementations other than log4j2 supported
-- Servlet API 4.0 Java EE 8 (prepared for 5.0 Jakarta EE 8)
+- Optimized console logging with colored section (if required)
 - Full CRUD-Generator **PLANT** for views, models and handlers
 - One-to-many database relationships are fully applied in MVC layers 
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
@@ -167,7 +172,7 @@ Enjoy!
 
 ### Running
 
-Enter the following statements into your terminal.
+Enter the following statements into your terminal:
 
 **Linux, macOS**
 
