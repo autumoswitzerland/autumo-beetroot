@@ -90,7 +90,7 @@
 
 beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run, starts approx. 5 times faster than [SpringBoot](https://spring.io/guides/gs/spring-boot) 
 and you get a set of working dependencies with the initial setup for the current release, a transparent and clear way to configure the framework and its components and the freedom to choose any 
-web container or simply use the optimized embedded servlet container from the start. However, none of this prevents you from customizing the dependencies in the maven-`pom.xml` file itself. 
+web container or simply use the optimized and embedded web container from the start. However, none of this prevents you from customizing the dependencies in the maven-`pom.xml` file itself. 
 As much as we love [Gradle](https://gradle.org/), for this project we'll stick with [Maven](https://maven.apache.org/) for now. The quick start setup is also effortless and very fast! 
 
 If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification 
