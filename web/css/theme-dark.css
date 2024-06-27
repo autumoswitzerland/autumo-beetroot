@@ -103,9 +103,13 @@ ul.pagination li a {
 }
 .prev {
     border: 1px solid #aaaaaa;
+	border-radius: 8px;
+	background-color: #1D1D1D !important;
 }
 .next {
     border: 1px solid #aaaaaa;
+	border-radius: 8px;
+	background-color: #1D1D1D !important;
 }
 p {
     color: #0093E6 !important;
