@@ -1017,12 +1017,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (text.contains("{#head}")) {
 					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/head.html", userSession);
-					text = parseAndGetSubResource(text, currRessource, "{#head}", session);
+					text = parseAndGetSubResource(text, currRessource, "{#head}", session, origId);
 					
 				} else if (text.contains("{#header}")) {
 					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/header.html", userSession);
-					text = parseAndGetSubResource(text, currRessource, "{#header}", session);
+					text = parseAndGetSubResource(text, currRessource, "{#header}", session, origId);
 
 				} else if (text.contains("{#langmenu}")) {
 					
@@ -1031,7 +1031,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						if (LanguageManager.getInstance().getConfiguredLanguages().length > 1) {
 						
 							currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/lang_menu.html", userSession);
-							text = parseAndGetSubResource(text, currRessource, "{#langmenu}", session);
+							text = parseAndGetSubResource(text, currRessource, "{#langmenu}", session, origId);
 							
 						} else {
 							text = "";
@@ -1046,7 +1046,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (this.showMenu(userSession)) {
 						
 						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/menu.html", userSession);
-						text = parseAndGetSubResource(text, currRessource, "{#menu}", session);
+						text = parseAndGetSubResource(text, currRessource, "{#menu}", session, origId);
 						
 					} else {
 						text = "";
@@ -1056,7 +1056,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					if (this.hasAnyMessage()) {
 						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/message.html", userSession);
-						text = parseAndGetSubResource(text, currRessource, "{#message}", session);
+						text = parseAndGetSubResource(text, currRessource, "{#message}", session, origId);
 					} else {
 						text = "";
 					}
@@ -1141,12 +1141,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				} else if (text.contains("{#footer}")) {
 					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/footer.html", userSession);
-					text = parseAndGetSubResource(text, currRessource, "{#footer}", session);
+					text = parseAndGetSubResource(text, currRessource, "{#footer}", session, origId);
 					
 				} else if (text.contains("{#script}")) {
 					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/script.html", userSession);
-					text = parseAndGetSubResource(text, currRessource, "{#script}", session);
+					text = parseAndGetSubResource(text, currRessource, "{#script}", session, origId);
 					
 				}
 					
@@ -1311,7 +1311,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		template.replace(idx, idx + variable.length(), this.getPaginator(session));
 	}
 	
-	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session) throws FileNotFoundException {
+	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session, int origId) throws FileNotFoundException {
 		
 		final Session userSession = session.getUserSession();
 		final StringBuffer sb = new StringBuffer();
@@ -1461,6 +1461,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							}
 						}
 
+						if (origId > 0) {
+							final String modifyID = userSession.getModifyId(origId, getEntity());
+							route = route + "?id=" + modifyID;
+						}
+						
 						String entries = "";
 						final String langs[] = LanguageManager.getInstance().getConfiguredLanguages();
 						
@@ -1494,7 +1499,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (text.contains("{$adminmenu}")) {
 						
 						if (userrole != null && userrole.length() != 0 && userrole.equalsIgnoreCase("Administrator")) {
-							String adminMenu = parseAndGetSubResource(text, "web/html/:lang/blocks/adminmenu.html", "{$adminmenu}", session);
+							String adminMenu = parseAndGetSubResource(text, "web/html/:lang/blocks/adminmenu.html", "{$adminmenu}", session, origId);
 							text = text.replace("{$adminmenu}", adminMenu);
 							//text = PATTERN_ADMIN_MENU.matcher(text).replaceFirst(adminMenu);
 						}
