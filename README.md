@@ -88,25 +88,23 @@
 <!-- WHAT IS BEETROOT -->
 ## What is beetRoot ?
 
-autumo beetRoot starts approx. 5 times faster than [SpringBoot](https://spring.io/guides/gs/spring-boot) and you get a set of working dependencies with the initial setup for the current release,
-a transparent and clear way to configure the framework and its components and the freedom to choose any web container or simply use the optimized embedded servlet container from the start.
-However, none of this prevents you from customizing the dependencies in the maven-`pom.xml` file itself. As much as we love [Gradle](https://gradle.org/), for this project we'll stick with 
-[Maven](https://maven.apache.org/) for now. The quick start setup is also effortless and very fast! 
+beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run and starts approx. 5 times faster than [SpringBoot](https://spring.io/guides/gs/spring-boot) 
+and you get a set of working dependencies with the initial setup for the current release, a transparent and clear way to configure the framework and its components and the freedom to choose any 
+web container or simply use the optimized embedded servlet container from the start. However, none of this prevents you from customizing the dependencies in the maven-`pom.xml` file itself. 
+As much as we love [Gradle](https://gradle.org/), for this project we'll stick with [Maven](https://maven.apache.org/) for now. The quick start setup is also effortless and very fast! 
+
+If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. It is based on the same principles and comes with a full CRUD generator generating all views, the model specification 
+and controllers (handlers in beetRoot's terminology) based on the database model! The client-server framework supports encrypted communication (SSL) as well as HTTP/HTTPS-tunneling, provides a 
+file download and upload interface and it can be extended with own (distributed) modules.
 
 [![autumo beetRoot 2.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)](https://www.youtube.com/watch?v=ruZrP-7yCDY)
-
 <p style="text-align: center;"><strong><a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.x - Quickstart Video</a></strong></p>
 
 **Note**: The video shows the old routing which has changed in the version 2.3.0; it is done now with a configuration file (routing.xml); see chapter <a href="#routing">Routing</a>.
 
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
 
-beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run! If you know [CakePHP](https://cakePHP.org) for web development, you'll like beetRoot. 
-It is based on the same principles and comes with a full CRUD generator generating all views, the model specification and controllers (handlers in beetRoot's terminology) based on the database 
-model! The client-server framework supports encrypted communication (SSL) as well as HTTP/HTTPS-tunneling, provides a file download and upload interface and it can be extended with own (distributed) 
-modules.
-
-Note that the client-server framework is not documented in this document; it focuses only on the web development part.
+**Note**: The client-server framework is not documented in this document; it focuses only on the web development part.
 
 The Web framework is shipped with the following features ready to use:
 
