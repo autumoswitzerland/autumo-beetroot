@@ -266,7 +266,7 @@ public class ServerCommand extends AbstractMessage {
 	 * 
 	 * @param transferString transfer string
 	 * @return parsed server command
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ServerCommand parse(String transferString) throws IOException {
 	
@@ -321,9 +321,9 @@ public class ServerCommand extends AbstractMessage {
 	/**
 	 * Create a new server command out of JSON transfer string.
 	 * 
-	 * @param JSON transferString transfer string
+	 * @param transferString JSON transferString transfer string
 	 * @return parsed server command
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ServerCommand parseJson(String transferString) throws IOException {
 		

@@ -55,7 +55,7 @@ public class Security {
 	 * 
 	 * @param password password to hash
 	 * @return hashed password
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String hashPw(String password) throws UtilsException {
 		// initialize first?
@@ -75,7 +75,7 @@ public class Security {
 	 * @param password password to check
 	 * @param hashedPassword hashed password previously loaded
 	 * @return true if password match
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static boolean verifyPw(String password, String hashedPassword) throws UtilsException {
 		// initialize first?
@@ -94,7 +94,7 @@ public class Security {
 	 * 
 	 * @param secureApplication a secure app is needed!
 	 * @return The generated CSRF.
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String generateCSRFToken(SecureApplication secureApplication) throws UtilsException {
 		final String guid = GUIDGenerator.generate();
@@ -108,7 +108,7 @@ public class Security {
 	 * @param data data
 	 * @param secureApplication secure application
 	 * @return encoded PW
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String encode(String data, SecureApplication secureApplication) throws UtilsException {
 		return encodeBase64_SHA3_256_AES(data, secureApplication);
@@ -121,7 +121,7 @@ public class Security {
 	 * @param data data
 	 * @param secureApplication secure application
 	 * @return decoded PW
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String decode(String data, SecureApplication secureApplication) throws UtilsException {
 		return decodeBase64_SHA3_256_AES(data, secureApplication);
@@ -134,7 +134,7 @@ public class Security {
 	 * @param data data
 	 * @param secureApplication secure application
 	 * @return encoded data
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String encodeCom(String data, SecureApplication secureApplication) throws UtilsException {
 		return encodeBase64_SHA3_256_AES(data, secureApplication);
@@ -147,7 +147,7 @@ public class Security {
 	 * @param data data
 	 * @param secureApplication secure application
 	 * @return decoded data
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String decodeCom(String data, SecureApplication secureApplication) throws UtilsException {
 		return decodeBase64_SHA3_256_AES(data, secureApplication);

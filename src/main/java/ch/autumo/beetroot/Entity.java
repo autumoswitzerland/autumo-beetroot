@@ -32,7 +32,7 @@ public interface Entity extends Serializable {
 
     /**
      * Set id.
-     * @param id
+     * @param id id
      */
     public void setId(int id);	
 	

@@ -219,11 +219,11 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 	 * 
 	 * @param session HTTP session
 	 * @param set database result set pointing to current record
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param dbIdx SQL result set column index
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param idx SQL result set column index
 	 * @param entity whole entity bean
-	 * @return JSON data extract <td>...</td>
-	 * @throws Exception
+	 * @return JSON data extract &lt;td&gt;...&lt;/td&gt;
+	 * @throws Exception exception
 	 */
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		

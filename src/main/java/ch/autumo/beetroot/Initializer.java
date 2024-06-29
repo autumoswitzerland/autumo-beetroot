@@ -29,7 +29,7 @@ public interface Initializer {
 	 * 
 	 * @param isWithinServlet runs within servlet?
 	 * @param fullConfigBasePath full path to the location where the base config is.
-	 * @throws Exception
+	 * @throws Exception if anything goes wrong in your custom initialization
 	 */
 	public void initModules(boolean isWithinServlet, String fullConfigBasePath) throws Exception;
 

@@ -623,12 +623,12 @@ public abstract class BaseServer {
 
 	/**
 	 * Internal delete method if no file-storage has been configured.
-	 * -> Must be overwritten if this internal module is used.
+	 * -&gt; Must be overwritten if this internal module is used.
 	 * 
 	 * @param uniqueFileId unique file ID
 	 * @param domain domain or null
      * @return true if at least one (of all versions) has been found and deleted
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	protected boolean delete(String uniqueFileId, String domain) throws Exception {
 		throw new IllegalAccessError("Can't delete files, since no file-storage has been configured and neither an implementation (delete) has been provided!");
@@ -636,12 +636,12 @@ public abstract class BaseServer {
 	
 	/**
 	 * Internal find-file method if no file-storage has been configured.
-	 * -> Must be overwritten if this internal module is used.
+	 * -&gt; Must be overwritten if this internal module is used.
 	 * 
 	 * @param uniqueFileId unique file ID
 	 * @param domain domain or null
 	 * @return Download for the server to queue
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	protected Download findFile(String uniqueFileId, String domain) throws Exception {
 		throw new IllegalAccessError("Can't find files, since no file-storage has been configured and neither an implementation (findFile) has been provided!");
@@ -649,14 +649,14 @@ public abstract class BaseServer {
 
 	/**
 	 * Internal file-store method if no file-storage has been configured.
-	 * -> Must be overwritten if this internal module is used.
+	 * -&gt; Must be overwritten if this internal module is used.
 	 * 
 	 * @param file file
 	 * @param name file name
 	 * @param user user or null
 	 * @param domain domain or  null (default)
 	 * @return unique file ID
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	protected String store(File file, String name, String user, String domain) throws Exception {
 		throw new IllegalAccessError("Can't store files, since no file-storage has been configured and neither an implementation (store) has been provided!");

@@ -110,7 +110,7 @@ public class ClientCommunicator extends Communicator {
 	 * 
 	 * @param command server command
 	 * @return client answer
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static ClientAnswer sendServerCommand(ServerCommand command) throws Exception {
 		
@@ -234,7 +234,7 @@ public class ClientCommunicator extends Communicator {
 	 * 
 	 * @param in input stream
 	 * @return client answer or null, if answer received was invalid
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ClientAnswer readAnswer(DataInputStream in) throws IOException {
 	    return ClientAnswer.parse(read(in));

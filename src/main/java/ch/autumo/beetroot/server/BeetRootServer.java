@@ -81,7 +81,7 @@ public class BeetRootServer extends BaseServer {
 	 * Create server and start it.
 	 * 
 	 * @param args only one: stop or start
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static void main(String args[]) throws Exception {
 		

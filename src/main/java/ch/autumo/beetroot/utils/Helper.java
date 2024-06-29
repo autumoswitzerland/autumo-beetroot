@@ -100,6 +100,7 @@ public class Helper {
 	 * Create banner; colorized or not.
 	 *  
 	 * @param banner banner text
+	 * @param colorAttribute color attribute
 	 * @return adjusted banner text
 	 */
 	public static String createBanner(String banner, Attribute colorAttribute) {
@@ -150,6 +151,8 @@ public class Helper {
 	}
     /**
      * Exit console program.
+     * 
+     * @param code exit code
      */
 	public static void exit(int code) {
 		System.exit(code);

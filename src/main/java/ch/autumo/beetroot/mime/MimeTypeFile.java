@@ -41,7 +41,7 @@ public class MimeTypeFile implements MimeTypeRegistry {
 	 * Construct with mime types file ("mime.types" usually).
 	 *
 	 * @param mimeTypesfile The file name of the mime types file.
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public MimeTypeFile(String mimeTypesfile) throws IOException {
 		
@@ -54,7 +54,7 @@ public class MimeTypeFile implements MimeTypeRegistry {
 	 * Construct with mime types input stream ( from"mime.types" usually).
 	 * 
 	 * @param is input stream
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public MimeTypeFile(InputStream is) throws IOException {
 		parse(new BufferedReader(new InputStreamReader(is, "iso-8859-1")));

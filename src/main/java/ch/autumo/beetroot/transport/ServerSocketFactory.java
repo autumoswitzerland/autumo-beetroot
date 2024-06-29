@@ -30,7 +30,7 @@ public interface ServerSocketFactory {
 	 * 
 	 * @param port port
 	 * @return server socket
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public ServerSocket create(int port) throws IOException;
 	

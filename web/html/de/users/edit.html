@@ -28,6 +28,15 @@
 			<fieldset>
 				<legend>Benutzer editieren</legend>
 				{$data}
+				<!--
+					Wenn Sie Ihre eigenen Rollenzuweisungen mit Datenbankrollen oder einer ACL 
+					verwenden wollen, z.B. mit mehreren Rollen, überschreiben Sie die Methode 
+					'extractCustomSingleInputDiv()' ihres User Edit-Handlers oder fügen Sie Ihre 
+					neue Rollenverwaltung hier hinzu! 
+					Vergessen Sie nicht, die Standard-Rollenverwaltung des User Edit-Handlers 
+					zu deaktivieren, bevor Sie Ihre eigene Rollenlogik hinzufügen
+					(überschreibe useExternalRoles()=true).
+				 -->
 			</fieldset>
 			
 			<a href="/{$lang}/users/index" class="button right">Abbrechen</a>

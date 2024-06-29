@@ -134,7 +134,7 @@ public abstract class Model implements Entity {
     /**
      * Get a value from this entity except the id.
      * 
-     * @param property bean property name
+     * @param beanPropertyName bean property name
      * @return bean value
      */
 	public String get(String beanPropertyName) {
@@ -192,7 +192,7 @@ public abstract class Model implements Entity {
 	/**
 	 * Delete this entity bean!
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void delete() throws Exception{
 		DB.delete(this);
@@ -220,7 +220,7 @@ public abstract class Model implements Entity {
 	/**
 	 * Get associated (parent) entity.
 	 * 
-	 * @param referenceEntity referenced entity class
+	 * @param referenceClass referenced entity class
 	 * @return referenced entity if any or null
 	 */
 	public Model getAssociatedReference(Class<?> referenceClass) {
@@ -230,7 +230,7 @@ public abstract class Model implements Entity {
 	/**
 	 * Get associated (parent) entity.
 	 * 
-	 * @param referenceEntity referenced entity bean property name
+	 * @param referenceBeanPropertyName referenced entity bean property name
 	 * @return referenced entity if any or null
 	 */
 	public Model getAssociatedReference(String referenceBeanPropertyName) {
@@ -285,7 +285,7 @@ public abstract class Model implements Entity {
 	 * 
 	 * @param entity entity
 	 * @return JSON string
-	 * @throws JsonProcessingException
+	 * @throws JsonProcessingException JSON processing exception
 	 */
 	public String serialize(Model entity) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();
@@ -297,7 +297,7 @@ public abstract class Model implements Entity {
 	 * 
 	 * @param json JSON string
 	 * @return entity
-	 * @throws JsonProcessingException
+	 * @throws JsonProcessingException JSON processing exception
 	 */
 	public Model deserialize(String json) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();
@@ -405,7 +405,7 @@ public abstract class Model implements Entity {
     }
 
     /**
-     * Read an entity wioth given ID.
+     * Read an entity with given ID.
      * 
      * @param entity entity bean class
      * @param id ID
@@ -439,7 +439,7 @@ public abstract class Model implements Entity {
 
 	/**
 	 * List all entities of the given entity bean with specific condition,
-	 * e.g. 'age => ?'.
+	 * e.g. 'age &gt;= ?'.
 	 * 
 	 * @param entity entity bean class
 	 * @param condition SQL condition
@@ -452,7 +452,7 @@ public abstract class Model implements Entity {
 	
 	/**
 	 * List all entities of the given entity bean with specific condition,
-	 * e.g. 'age => ?'.
+	 * e.g. 'age &gt;= ?'.
 	 * 
 	 * @param entity entity bean class
 	 * @param condition SQL condition
@@ -470,7 +470,7 @@ public abstract class Model implements Entity {
 
 	/**
 	 * Get first entity of the given entity bean with specific condition,
-	 * e.g. 'age => ?'.
+	 * e.g. 'age &gt;= ?'.
 	 * 
 	 * @param entity entity bean class
 	 * @param condition SQL condition
@@ -483,7 +483,7 @@ public abstract class Model implements Entity {
 	
 	/**
 	 * Get first entity of the given entity bean with specific condition,
-	 * e.g. 'age => ?'.
+	 * e.g. 'age &gt;= ?'.
 	 * 
 	 * @param entity entity bean class
 	 * @param condition SQL condition

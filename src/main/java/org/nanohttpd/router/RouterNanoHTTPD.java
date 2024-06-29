@@ -506,7 +506,9 @@ public class RouterNanoHTTPD extends NanoHTTPD {
          * Has this URI an language in it or not?
          * Unused atm.
          * 
-         * Note: autumo, MG: patched for beetroot.
+         * Note: autumo, MG: patched for beetRoot.
+         * 
+         * @return true if this URI has a language route, otherwise false
          */
 		public boolean hasLanguage() {
 			return hasLang;
@@ -617,11 +619,11 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         private IRoutePrioritizer routePrioritizer;
 
         /** patched: autumo-beetroot */
-        // We need a flag for pre-urls - Note: autumo, MG: patched for beetroot.
+        // We need a flag for pre-urls - Note: autumo, MG: patched for beetRoot.
         private boolean insertServletNameInTemplateRefs = false;
         
         /** patched: autumo-beetroot */
-        // We need a holder for pre-urls/servlet names - Note: autumo, MG: patched for beetroot.
+        // We need a holder for pre-urls/servlet names - Note: autumo, MG: patched for beetRoot.
         private String servletName = null;
         
         
@@ -641,8 +643,8 @@ public class RouterNanoHTTPD extends NanoHTTPD {
          * is www.example.com/user/help - mapping 2 is returned if the incoming
          * uri is www.example.com/user/3232 - mapping 1 is returned
          * 
-         * @param url
-         * @return
+         * @param session HTTP session
+         * @return response
          */
         public Response process(IHTTPSession session) {
         	
@@ -672,7 +674,16 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             return uriResource.process(params, session);
         }
         
-        /** patched: autumo-beetroot */
+        /**
+         * Add route.
+         * 
+         * patched: autumo-beetroot
+         * 
+         * @param url URL
+         * @param priority priority
+         * @param handler handler
+         * @param initParameter initial parameters
+         */
         public void addRoute(String url, int priority, Class<?> handler, Object... initParameter) {
             routePrioritizer.addRoute(url, priority, handler, initParameter);
         }

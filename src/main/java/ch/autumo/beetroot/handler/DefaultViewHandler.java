@@ -34,7 +34,7 @@ import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.Web;
 
 /**
- * Default handler for 'web/html/<entity>/view.html' templates.
+ * Default handler for 'web/html/&lt;entity&gt;/view.html' templates.
  */
 public class DefaultViewHandler extends BaseHandler {
 	
@@ -150,19 +150,25 @@ public class DefaultViewHandler extends BaseHandler {
 	 * 
 	 * @param session HTTP session
 	 * @param set database result set pointing to current record
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param dbIdx SQL result set column index
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param idx SQL result set column index
 	 * @param entity whole entity bean
-	 * @return html data extract <td>...</td>
-	 * @throws Exception
+	 * @return html data extract &lt;td&gt;...&lt;/td&gt;
+	 * @throws Exception exception
 	 */
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		if (transientFields.contains(columnName))
 			return "<td></td>"; // only a specific user implementation knows what to do with transient fields
 
-		final Object o = set.getObject(idx);
 		String val = null;
+		
+		// Custom field data, e.g. for custom user roles
+		val = this.extractCustomSingleTableData(session, set, columnName, idx, entity);
+		if (val != null)
+			return "<td>" + val + "</td>";
+		
+		final Object o = set.getObject(idx);
 		
 		if (o == null || o.toString().equals("null"))
 			val = "";
@@ -170,13 +176,42 @@ public class DefaultViewHandler extends BaseHandler {
 			val = o.toString();
 		
 		// Special case Users
-		if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+		if (!this.useExternalRoles() && getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 			val = LanguageManager.getInstance().translateOrDefVal("role."+val, val, session.getUserSession());
 		}
 		
 		val = Web.escapeHtml(val);
 		
 		return "<td>" + val + "</td>";
+	}
+	
+	/**
+	 * Overwrite this method, if you need to add a custom data; e.g. when multiple user roles are used;
+	 * in this case it is more likely that you combine more values that just one field value or use it 
+	 * for any custom value. The value is guaranteed to be inserted in the column-order as defined in the
+	 * 'columns.cfg'.
+	 *   
+	 * @param session HTTP session
+	 * @param rsmd result set meta data
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param idx SQL result set column index
+	 * @param entity whole entity bean
+	 * @return html data extract &lt;td&gt;...&lt;/td&gt;
+	 * @throws Exception exception
+	 */
+	public String extractCustomSingleTableData(BeetRootHTTPSession session, ResultSet rsmd,
+			String columnName, int idx, Entity entity) throws Exception {
+		return null;
+	}
+	
+	/**
+	 * Overwrite and return true, if you want to use your own role assignments 
+	 * with database roles or an ACL, e.g. with multiple roles.
+	 * 
+	 * @return false to use internal role management, otherwise true
+	 */
+	public boolean useExternalRoles() {
+		return false;
 	}
 	
 	@Override

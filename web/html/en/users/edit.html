@@ -28,6 +28,13 @@
 			<fieldset>
 				<legend>Edit User</legend>
 				{$data}
+				<!-- 
+					If you want to use your own role assignments with database roles or an ACL, 
+					e.g. with multiple roles, overwrite the method 'extractCustomSingleInputDiv()' 
+					in your user edit-handler or add your new role management here!
+					Do not forget to deactivate the default role management of the user edit-handler
+					before you add your own handler role logic (overwrite useExternalRoles()=true).
+				 -->
 			</fieldset>
 			
 			<a href="/{$lang}/users/index" class="button right">Cancel</a>

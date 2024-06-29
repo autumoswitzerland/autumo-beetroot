@@ -33,7 +33,7 @@ public class CallerFactory {
 	 * Get configured caller implementation.
 	 * 
 	 * @return caller
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Caller getInstance() throws Exception {
 		

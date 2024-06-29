@@ -33,7 +33,7 @@ public interface Messenger {
 	/**
 	 * Initialize.
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void init() throws Exception;
 	
@@ -42,7 +42,7 @@ public interface Messenger {
 	 * 
 	 * @param toNumber to phone number
 	 * @param text text
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void sms(String toNumber, String text) throws Exception;
 	

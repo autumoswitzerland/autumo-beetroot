@@ -107,7 +107,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     /**
      * Server.
      * 
-     * @throws Exception
+     * @throws Exception exception
      */
 	public BeetRootWebServer() throws Exception {
 		this(-1);
@@ -116,8 +116,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	/**
 	 * Server.
 	 * 
-	 * @param port
-	 * @throws Exception
+	 * @param port port
+	 * @throws Exception exception
 	 */
 	public BeetRootWebServer(int port) throws Exception {
 
@@ -167,7 +167,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * 
 	 * @param isWithinServlet is within servlet?
 	 * @param fullConfigBasePath full path where configuration files are located
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	private void initModules(boolean isWithinServlet, String fullConfigBasePath) throws Exception {
 		
@@ -223,7 +223,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     /**
      * Start the server.
      * 
-     * @param daemon
+     * @param daemon start the web server as a daemon thread?
+     * @throws IOException IO exception
      */
 	public void start(boolean daemon) throws IOException {
 		
@@ -252,12 +253,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     /**
      * Start the server.
      * 
-     * @param timeout
-     *            timeout to use for socket connections.
-     * @param daemon
-     *            start the thread daemon or not.
-     * @throws IOException
-     *             if the socket is in use.
+     * @param timeout timeout to use for socket connections.
+     * @param daemon start the thread daemon or not.
+     * @throws IOException if the socket is in use.
      */
 	@Override
     public void start(final int timeout, boolean daemon) throws IOException {
@@ -1141,9 +1139,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	
 	/**
 	 * Add mappings respectively set web routes. 
-	 * 
-	 * @return default handler class
-	 * @throws ClassNotFoundException 
 	 */
 	public void addMappings() {
 		

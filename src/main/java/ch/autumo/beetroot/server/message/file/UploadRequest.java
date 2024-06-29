@@ -47,7 +47,7 @@ public class UploadRequest extends ServerCommand {
 	 * @param file file
 	 * @param user user or null
 	 * @param domain domain or null (default)
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public UploadRequest(File file, String user, String domain) throws IOException {
 		
@@ -64,7 +64,7 @@ public class UploadRequest extends ServerCommand {
 	 * Set file.
 	 * 
 	 * @param file file
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public void setFile(File file) throws IOException {
 		

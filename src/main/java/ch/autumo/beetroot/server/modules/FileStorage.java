@@ -34,7 +34,7 @@ public interface FileStorage {
 	 * @param user user or null
 	 * @param domain domain or null (default)
 	 * @return unique file ID
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public String store(File file, String name, String user, String domain) throws Exception;
 
@@ -46,7 +46,7 @@ public interface FileStorage {
 	 * @param uniqueFileId unique file id
 	 * @param domain domain or null (default)
 	 * @return download or null if file is not available
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public Download findFile(String uniqueFileId, String domain) throws Exception;
 	
@@ -56,7 +56,7 @@ public interface FileStorage {
 	 * @param uniqueFileId unique file id
 	 * @param domain domain or null (default)
      * @return true if at least one (of all versions) has been found and deleted
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public boolean delete(String uniqueFileId, String domain) throws Exception;
 	

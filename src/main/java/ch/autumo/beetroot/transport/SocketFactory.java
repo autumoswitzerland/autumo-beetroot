@@ -31,7 +31,7 @@ public interface SocketFactory {
 	 * @param host host
 	 * @param port port
 	 * @return client socket
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public Socket create(String host, int port) throws IOException;
 	

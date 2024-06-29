@@ -117,7 +117,10 @@ public class BeetRootHTTPSession extends HTTPSession {
      * Provide a method for executing the request and response for the HTTP body only
      * from the servlet context in this nano/beetRoot session.
      * 
-     * @throws IOException
+     * @param beetRootService beetRoot service, in this case the beetRoor server when running in a web container!
+     * @param request HTTP request
+     * @param response HTTP response
+     * @throws IOException IO exception
      */
     public void executeForServlet(BeetRootService beetRootService, HttpServletRequest request, HttpServletResponse response) throws IOException {
     	
@@ -214,7 +217,7 @@ public class BeetRootHTTPSession extends HTTPSession {
      * @param pre map to fill
      * @param parmsURI  parameters to fill
      * @param headers headers to fill
-     * @throws ResponseException
+     * @throws ResponseException response exception
      */
     private void decodeHeaderForServlet(HttpServletRequest request, Map<String, String> pre, Map<String, List<String>> parms, Map<String, String> headers) throws ResponseException {
 
@@ -247,8 +250,8 @@ public class BeetRootHTTPSession extends HTTPSession {
      * 
      * @param files the map for the files
      * @param request HttpServletRequest 
-     * @throws IOException
-     * @throws ResponseException
+     * @throws IOException IO exception
+     * @throws ResponseException response exception
      */
     public void parseBodyForServlet(Map<String, String> files, HttpServletRequest request) throws IOException, ResponseException {
     	

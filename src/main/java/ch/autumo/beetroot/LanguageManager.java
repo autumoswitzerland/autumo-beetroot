@@ -388,7 +388,7 @@ public class LanguageManager {
 	 * Blocks are the different basic sections of the HTML page.
 	 * Return block template based on language, and if not existing
 	 * try to get a general block from the 'web/html/blocks' directory
-	 * instead 'web/html/<lang>/blocks'
+	 * instead 'web/html/&lt;lang&gt;/blocks'
 	 * 
 	 * Used when user is logged in.
 	 * 
@@ -475,7 +475,7 @@ public class LanguageManager {
 	/**
 	 * Update user language.
 	 * @param newLanguage new language code
-	 * @param userSession
+	 * @param userSession user session
 	 */
 	public void updateLanguage(String newLanguage, Session userSession) {
 		

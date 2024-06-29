@@ -119,7 +119,7 @@ public class Beans {
 	 * 
 	 * @param beanClass bean class, must be of type  {@link Entity}.
 	 * @return entity bean or null
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static Model createBean(Class<?> beanClass) throws Exception {
 		final Constructor<?> constructor = beanClass.getDeclaredConstructor();
@@ -134,7 +134,7 @@ public class Beans {
 	 * @param beanClass bean class, must be of type  {@link Entity}.
 	 * @param set result set at current position the data is taken from
 	 * @return entity bean or null
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static Model createBean(Class<?> beanClass, ResultSet set) throws SQLException {
 		return createBean(beanClass, set, new BeanProcessor());
@@ -147,7 +147,7 @@ public class Beans {
 	 * @param set result set at current position the data is taken from
 	 * @param processor bean processor
 	 * @return entity bean or null
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static Model createBean(Class<?> beanClass, ResultSet set, BeanProcessor processor) throws SQLException {
 		Model entity = null;
@@ -164,7 +164,7 @@ public class Beans {
 	 * 
 	 * @param emptyBean an empty bean to access static references if any
 	 * @return foreign references map
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, Class<?>> getForeignReferences(Entity emptyBean) throws Exception {
@@ -192,7 +192,7 @@ public class Beans {
 	 * 
 	 * @param emptyBean an empty bean to access static references if any
 	 * @return display field name
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static String getDisplayField(Entity emptyBean) throws Exception {
 		String displayField = null;

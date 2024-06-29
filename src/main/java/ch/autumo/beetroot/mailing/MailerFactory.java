@@ -27,9 +27,10 @@ public class MailerFactory {
 	private static Mailer mailer;
 	
 	/**
-	 * Get mailer (jakarta ir javax).
+	 * Get mailer (jakarta or javax).
+	 * 
 	 * @return mailer
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Mailer getInstance() throws Exception {
 		

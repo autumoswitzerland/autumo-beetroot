@@ -131,10 +131,11 @@ public abstract class AbstractMessage {
 	
 	/**
 	 * Get transfer data.
+	 * 
 	 * @return transfer data
-	 * @throws IOExcpetion
+	 * @throws IOException IO exception
 	 */
-	public byte[] getData()  throws IOException {
+	public byte[] getData() throws IOException {
 		return getTransferString().getBytes(StandardCharsets.UTF_8);
 	}
 	
@@ -142,7 +143,7 @@ public abstract class AbstractMessage {
 	 * Get transfer data length.
 	 * 
 	 * @return transfer data length
-	 * @throws IOExcpetion
+	 * @throws IOException IO exception
 	 */
 	public int getDataLength() throws IOException {
 		return getData().length;
@@ -150,6 +151,7 @@ public abstract class AbstractMessage {
 
 	/**
 	 * Helper method for paired message.
+	 * 
 	 * @param key key
 	 * @return value
 	 */
@@ -159,6 +161,7 @@ public abstract class AbstractMessage {
 	
 	/**
 	 * Helper method for paired message.
+	 * 
 	 * @param key key
 	 * @return value
 	 */
@@ -180,6 +183,7 @@ public abstract class AbstractMessage {
 	
 	/**
 	 * Checks if this key is contained.
+	 * 
 	 * @param key key
 	 * @return true if so, otherwise false
 	 */
@@ -189,15 +193,17 @@ public abstract class AbstractMessage {
 	
 	/**
 	 * Get transfer string for transferring.
+	 * 
 	 * @return transfer string
-	 * @throws IOExcpetion
+	 * @throws IOException IO exception
 	 */
 	public abstract String getTransferString() throws IOException;
 
 	/**
 	 * Get JSON transfer string for transferring.
+	 * 
 	 * @return transfer string
-	 * @throws IOExcpetion
+	 * @throws IOException IO exception
 	 */
 	public abstract String getJsonTransferString() throws IOException;
 	

@@ -32,7 +32,7 @@ public class LoggingFactory {
 	 * Get logging implementation class.
 	 * 
 	 * @return logging implementation
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Logging getInstance() throws Exception {
 		

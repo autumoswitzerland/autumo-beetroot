@@ -27,12 +27,16 @@ public interface Router {
 	/**
 	 * Get not implemented handler class.
 	 * return not implemented handler class
+	 * 
+	 * @return 'not-implemented' handler class
 	 */
 	Class<?> getNotImplementedHandler();
 
 	/**
 	 * Get not found handler class.
 	 * return not found handler class
+	 * 
+	 * @return 'not-found' handler class
 	 */
 	Class<?> getNotFoundHandler();
 
@@ -49,6 +53,7 @@ public interface Router {
 
 	/**
 	 * Get web application routes.
+	 * 
 	 * @return routes
 	 */
 	List<Route> getRoutes();

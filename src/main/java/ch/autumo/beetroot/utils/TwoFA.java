@@ -86,7 +86,7 @@ public class TwoFA {
 	 * @param secretUserKey secret user key
 	 * @param email email of user
 	 * @return bar code
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String getGoogleAuthenticatorBarCode(String secretUserKey, String email) throws UtilsException  {
 	    try {
@@ -107,7 +107,7 @@ public class TwoFA {
 	 * @param height height of QR code image
 	 * @param width width of QR code image
 	 * @return path to QR code image file
-	 * @throws UtilsException
+	 * @throws UtilsException utilities exception
 	 */
 	public static String createQRCode(String barCodeData, int height, int width) throws UtilsException {
 		

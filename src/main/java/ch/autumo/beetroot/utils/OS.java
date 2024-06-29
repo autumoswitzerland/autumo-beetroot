@@ -97,8 +97,9 @@ public class OS {
 	/**
 	 * Get a temporary file.
 	 * 
-	 * @return filenamePrefix file name prefix
-	 * @throws IOException
+	 * @param filenamePrefix file name prefix
+	 * @return return absolute path to temporary file
+	 * @throws IOException Io exception
 	 */
 	public static Path createTemporaryFile(String filenamePrefix) throws IOException {
 		return Files.createTempFile(filenamePrefix, ".tmp");

@@ -27,7 +27,7 @@ public interface PasswordHashProvider {
 	 * 
 	 * @param password password
 	 * @return hashed password
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public String hash(String password) throws Exception;
 	
@@ -38,7 +38,7 @@ public interface PasswordHashProvider {
 	 * @param password password
 	 * @param hashedPassword hashed password
 	 * @return true, if password matches hashed password
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public boolean verify(String password, String hashedPassword) throws Exception;
 	

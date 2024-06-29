@@ -154,9 +154,9 @@ public class AbstractBeetRootServlet extends HttpServlet {
 	/**
 	 * Lookup an existing or a new session for the request given.
 	 * 
-	 * @param request
+	 * @param request servlet request
 	 * @return beetRoot session
-	 * @throws IOException
+	 * @throws IOException IO Exception
 	 */
 	protected BeetRootHTTPSession findOrCreateHttpSession(HttpServletRequest request) throws IOException {
 

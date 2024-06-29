@@ -71,11 +71,11 @@ public class Fertilizer {
 	/**
 	 * Fertilizer.
 	 * 
-	 * @param dbEntity sb entity plural name, e.g. 'properties'.
-	 * @param resource templateresource
-	 * @param outputBaseDir ouput directory
+	 * @param dbEntity DB entity plural name, e.g. 'properties'.
+	 * @param resource template resource
+	 * @param outputBaseDir output directory
 	 * @param type file type (extension)
-	 * @throws FertilizerException
+	 * @throws FertilizerException fertilizer exception
 	 */
 	public Fertilizer(String dbEntity, String resource, String outputBaseDir, String type) throws FertilizerException {
 		

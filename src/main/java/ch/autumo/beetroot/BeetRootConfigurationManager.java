@@ -144,11 +144,11 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
-	 * Initialize with path 'ROOTPATH/<given-path-and-file>'.
+	 * Initialize with path 'ROOTPATH/&lt;given-path-and-file&gt;'.
 	 * No resource paths!
 	 * 
 	 * @param relativePath relative path
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void initialize(String relativePath) throws Exception {
 		this.initializeWithFullPath(rootPath + relativePath);
@@ -158,7 +158,7 @@ public class BeetRootConfigurationManager {
 	 * Initialize with standard configuration path 'ROOTPATH/cfg/beetroot.cfg'.
 	 * No resource paths!
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void initialize() throws Exception {
 		this.initializeWithFullPath(rootPath + Constants.CONFIG_PATH + Constants.GENERAL_SRV_CFG_FILE);
@@ -170,7 +170,7 @@ public class BeetRootConfigurationManager {
 	 * 
 	 * @param absolutePath absolute path
 	 * @param servletContext true, if it runs in a servlet context
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void initializeWithFullPath(String absolutePath, ServletContext servletContext) throws Exception {
 		this.initializeWithFullPath(absolutePath);
@@ -182,7 +182,7 @@ public class BeetRootConfigurationManager {
 	 * Resource path works too!
 	 * 
 	 * @param configFilePath full path to specific full configuration file path
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public synchronized void initializeWithFullPath(String configFilePath) throws Exception {
 		
@@ -250,7 +250,7 @@ public class BeetRootConfigurationManager {
 	 *  
 	 * @param desktopCfgFile only the file name without path, e.g. 'myapp.cfg'
 	 * @param appName application name
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public synchronized void initializeDesktop(String desktopCfgFile, String appName) throws Exception {
 		
@@ -328,8 +328,7 @@ public class BeetRootConfigurationManager {
 	 * Get a string value.
 	 * 
 	 * @param key key
-	 * @return value
-	 * @throws Exception
+	 * @return string value
 	 */
 	public String getString(String key) {
 		
@@ -348,8 +347,7 @@ public class BeetRootConfigurationManager {
 	 * 
 	 * @param key key
 	 * @param defaultVal default value
-	 * @return value
-	 * @throws Exception
+	 * @return string value
 	 */
 	public String getString(String key, String defaultVal) {
 		
@@ -365,8 +363,7 @@ public class BeetRootConfigurationManager {
 	 * Get a string value; no warning if value is not available.
 	 * 
 	 * @param key key
-	 * @return value
-	 * @throws Exception
+	 * @return string value
 	 */
 	public String getStringNoWarn(String key) {
 		String v = generalProps.getProperty(key);
@@ -415,8 +412,7 @@ public class BeetRootConfigurationManager {
 	 * Get integer value.
 	 * 
 	 * @param key key
-	 * @return value
-	 * @throws Exception
+	 * @return integer value
 	 */
 	public int getInt(String key) {
 		
@@ -435,8 +431,7 @@ public class BeetRootConfigurationManager {
 	 * 
 	 * @param key key
 	 * @param defaultVal default value or default value if non-existent.
-	 * @return value
-	 * @throws Exception
+	 * @return integer value
 	 */
 	public int getInt(String key, int defaultVal) {
 		String v = generalProps.getProperty(key);
@@ -449,8 +444,7 @@ public class BeetRootConfigurationManager {
 	 * Get integer value; no warning if value is not available.
 	 * 
 	 * @param key key
-	 * @return value
-	 * @throws Exception
+	 * @return integer value
 	 */
 	public int getIntNoWarn(String key) {
 		String v = generalProps.getProperty(key);
@@ -499,7 +493,7 @@ public class BeetRootConfigurationManager {
 	 * @param key key
 	 * @param app ifacex secure application
 	 * @return encrypted value
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public String getDecodedString(String key, SecureApplication app) throws Exception {
 		

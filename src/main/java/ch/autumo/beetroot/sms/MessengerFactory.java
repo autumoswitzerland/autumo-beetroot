@@ -29,10 +29,10 @@ public class MessengerFactory {
 	private static Messenger messenger;
 	
 	/**
-	 * Get configured SMS messenger implementation
+	 * Get configured SMS messenger implementation.
 	 * 
 	 * @return SMS messenger
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Messenger getInstance() throws Exception {
 		

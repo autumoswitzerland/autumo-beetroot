@@ -547,10 +547,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Access column values. '[1] [colName=GUI Col Name 1]'
-	 * Idx starts with 1!
+	 * Access column values. '[1] [colName=GUI Col Name 1]',
+	 * index starts with 1 in 'columns.cfg'!
 	 * 
-	 * @return colum values
+	 * @param idx columns index from 'columns.cfg'
+	 * @return column values
 	 */
 	public String[] getColumn(int idx) {
 		
@@ -610,6 +611,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @param session HTTP session
 	 * @return SQL insert values
+	 * @throws Exception exception
 	 */
 	public String getInsertValues(BeetRootHTTPSession session) throws Exception {
 		
@@ -674,6 +676,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @param session HTTP session
 	 * @return SQL update clause
+	 * @throws Exception exception
 	 */
 	public String getUpdateSetClause(BeetRootHTTPSession session) throws Exception {
 		return this.getUpdateSetClause(session, null);
@@ -685,6 +688,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session HTTP session
 	 * @param onOffMapName name of on/off value map if any, otherwise null.
 	 * @return SQL update clause
+	 * @throws Exception exception
 	 */
 	public String getUpdateSetClause(BeetRootHTTPSession session, String onOffMapName) throws Exception {
 
@@ -800,7 +804,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param preSql pre-parsed SQL without unique fields
 	 * @param operation saved or updated
 	 * @return response or null, null means success, response's status must be checked!
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public HandlerResponse uniqueTest(BeetRootHTTPSession session, String preSql, String operation) throws Exception {
 		
@@ -939,6 +943,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session beetroot session
 	 * @param origId original DB id
 	 * @return whole parsed HTML page
+	 * @throws Exception exception
 	 */
 	public String getText(BeetRootHTTPSession session, int origId) throws Exception {
 
@@ -1256,6 +1261,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * Overwrite if you want to have a special layout 
 	 * for this handler.
 	 * 
+	 * @param userSession user session
 	 * @return layout file path; example:
 	 * 			'web/html/:lang/blocks/mylayout.html'
 	 */
@@ -1619,9 +1625,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Getting a new scanner for web a resource (HTML template) to parse.
 	 * 
-	 * @param resource resource string, e.g. 'web/html/:lang/<entity>/index.html'.
+	 * @param resource resource string, e.g. 'web/html/:lang/&lt;entity&gt;/index.html'.
 	 * @return file scanner for reading lines
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException if file is not found
 	 */
 	protected Scanner getNewScanner(String resource) throws FileNotFoundException {
 		
@@ -2524,7 +2530,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session HTTP session
 	 * @param id db record id &gt; 0 if a single record should be read otherwise &lt; 0;
 	 * @return response or null, null means success, response's status must be checked!
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		return null;
@@ -2538,7 +2544,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session HTTP session
 	 * @return response or null, null means success, response's status 
 	 * 			must be checked and must hold the id of the saved record!
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public HandlerResponse saveData(BeetRootHTTPSession session) throws Exception {
 		return null;
@@ -2553,7 +2559,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session HTTP session
 	 * @return response or null, null means success, response's status 
 	 * 			must be checked!
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 		return null;
@@ -2567,7 +2573,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param id db record id
 	 * @param session HTTP session
 	 * @return response or null, null means success, response's status must be checked!
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
 		return null;
@@ -2578,7 +2584,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * after modifying data. It must be of the same entity as the 
 	 * last executing handler!
 	 * 
-	 * @pram msg message
 	 * @return redirect index handler
 	 */
 	public Class<?> getRedirectHandler() {
@@ -2624,7 +2629,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Get HTML head if there's any.
 	 * 
-	 * @return HTML head
+	 * @param line HTML line
 	 */
 	public void addHtmlHeadLine(String line) {
 		this.htmlHead += line + "\n";
@@ -2633,7 +2638,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Get HTML data.
 	 * 
-	 * @return HTML data
+	 * @param line HTML line
 	 */
 	public void addHtmlDataLine(String line) {
 		this.htmlData += line + "\n";
@@ -2641,12 +2646,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	/**
 	 * Replace some more variables in template.
-	 * Returning <code>null<code> is valid, then 
-	 * nothing is replaced.
+	 * If returning null, then nothing is replaced.
 	 * 
 	 * @param text text to parse and return
 	 * @param session HTTP session
-	 * @return parsed text or <code>null<code>
+	 * @return parsed text or null
 	 */
 	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
 		return text;
@@ -2654,12 +2658,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	/**
 	 * Replace some more variables within the whole page.
-	 * Returning <code>null<code> is valid, then 
-	 * nothing is replaced.
+	 * If returning null, then nothing is replaced.
 	 * 
 	 * @param text text to parse and return
 	 * @param session HTTP session
-	 * @return parsed text or <code>null<code>
+	 * @return parsed text or null
 	 */
 	public String replaceVariables(String text, BeetRootHTTPSession session) {
 		return text;
@@ -2690,7 +2693,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Add a success message to show.
 	 * 
-	 * @param message
+	 * @param message message
 	 */
 	public void addSuccessMessage(String message) {
 		
@@ -2703,7 +2706,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Add a warning message to show.
 	 * 
-	 * @param message
+	 * @param message message
 	 */
 	public void addWarningMessage(String message) {
 		
@@ -2716,7 +2719,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Add an error message to show.
 	 * 
-	 * @param message
+	 * @param message message
 	 */
 	public void addErrorMessage(String message) {
 		
@@ -2775,9 +2778,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		throw new IllegalAccessError("This method should never be called in this context!");
 	}
 
-	
-	
-	@SuppressWarnings("unused")
 	protected void loginMarker(boolean redirectLogin) {
 		//this.loginMarker = redirectLogin;
 	}

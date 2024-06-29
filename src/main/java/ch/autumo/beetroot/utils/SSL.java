@@ -47,7 +47,7 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
 
 
 /**
- * SSL Utils.
+ * SSL utilities.
  */
 public class SSL {
 
@@ -93,7 +93,7 @@ public class SSL {
 	 * Get key-store password.
 	 * 
 	 * @return key-store password
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static char[] getKeystorePw() throws Exception {
 		return SSL.getKeystorePw(BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC));
@@ -104,7 +104,7 @@ public class SSL {
 	 * 
 	 * @param encodedPassword is the password encoded in configuration?
 	 * @return key-store password
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static char[] getKeystorePw(boolean encodedPassword) throws Exception {
 		final String keystorepw = encodedPassword ? 
@@ -118,7 +118,7 @@ public class SSL {
      * certificate and pass-phrase. Parameters read from configuration. 
 	 * 
 	 * @return SSL context
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
     public static SSLContext makeSSLContext() throws Exception {
     	return makeSSLContext(getKeystoreFile(), getKeystorePw());
@@ -131,7 +131,7 @@ public class SSL {
 	 * @param keyAndTrustStore key-store file class-path reference or full path
 	 * @param passphrase pass phrase
 	 * @return SSL context
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public static SSLContext makeSSLContext(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
@@ -173,7 +173,7 @@ public class SSL {
      * certificate and pass-phrase. Parameters read from configuration. 
 	 * 
 	 * @return SSL socket factory
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public static SSLSocketFactory makeSSLSocketFactory() throws Exception {
     	return makeSSLSocketFactory(getKeystoreFile(), getKeystorePw());
@@ -186,7 +186,7 @@ public class SSL {
 	 * @param keyAndTrustStore key-store file class-path reference or full path
 	 * @param passphrase pass phrase
 	 * @return SSL socket factory
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public static SSLSocketFactory makeSSLSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
@@ -201,7 +201,7 @@ public class SSL {
      * certificate and pass-phrase. Parameters read from configuration.
 	 * 
 	 * @return SSL server socket factory
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public static SSLServerSocketFactory makeSSLServerSocketFactory() throws Exception {
     	return makeSSLServerSocketFactory(getKeystoreFile(), getKeystorePw());
@@ -214,7 +214,7 @@ public class SSL {
 	 * @param keyAndTrustStore key-store file class-path reference or full path
 	 * @param passphrase pass phrase
 	 * @return SSL server socket factory
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public static SSLServerSocketFactory makeSSLServerSocketFactory(String keyAndTrustStore, char passphrase[]) throws IOException {
         try {
@@ -232,7 +232,7 @@ public class SSL {
 	 * @param passphrase pass phrase
 	 * @param config request configuration phrase
 	 * @return SSL HTTP Client
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public static CloseableHttpClient makeSSLHttpClient(String keyAndTrustStore, char passphrase[], RequestConfig config) throws IOException {
     

@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 
+/**
+ * Time utilities.
+ */
 public class Time {
 
 	/**
@@ -62,7 +65,7 @@ public class Time {
 	/**
 	 * Get a timestamp representation that can be shown in GUI
 	 * 
-	 * @param tmestamp from DB
+	 * @param tsFromDb from DB
 	 * @return timestamp representable date
 	 */
 	public static String getGUIDate(Timestamp tsFromDb) {

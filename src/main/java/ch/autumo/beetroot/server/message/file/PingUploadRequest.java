@@ -33,7 +33,7 @@ public class PingUploadRequest extends UploadRequest {
 	
 	/**
 	 * Ping request.
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public PingUploadRequest() throws IOException {
 		super(OS.createTemporaryFile(PING_FILE_PREFIX).toFile(), null, null);

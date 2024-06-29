@@ -44,9 +44,9 @@ public class SecureApplicationHolder {
 	}
 
 	/**
-	 * Get sec app holder.
+	 * Get Secure Application holder.
 	 * 
-	 * @return sec app holder
+	 * @return secure application holder
 	 */
 	public static SecureApplicationHolder getInstance() {
 		
@@ -57,14 +57,16 @@ public class SecureApplicationHolder {
 	}
 
 	/**
-	 * Get Sec App.
+	 * Get Secure Application.
+	 * 
+	 * @return secure application
 	 */
 	public SecureApplication getSecApp() {
 		return SEC_APP;
 	}
 
 	/**
-	 * Sec App.
+	 * Secure Application.
 	 */
 	private static final class SecApp implements SecureApplication {
 		@Override

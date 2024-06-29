@@ -69,9 +69,9 @@ public class FileTransfer {
 	/**
 	 * Write/send file from server to client.
 	 * 
-	 * @param Downlaod download file
-	 * @param out output stream
-	 * @throws Excpetion
+	 * @param download download file
+	 * @param output output stream
+	 * @throws IOException IO exception
 	 */
 	public static void writeFile(Download download, DataOutputStream output) throws IOException {
 		
@@ -106,7 +106,7 @@ public class FileTransfer {
 	 * @param fileName file name
 	 * @param size file size previously read!
 	 * @return server temporary file or null, if file received was invalid
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static File readFile(DataInputStream in, String fileName, long size) throws IOException {
 

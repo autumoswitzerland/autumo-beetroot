@@ -55,20 +55,20 @@ public class DB {
 	/**
 	 * Sorting of foreign entities by ID.
 	 */
-	public static int SORT_BY_ID = 0;
+	public static final int SORT_BY_ID = 0;
 	
 	/**
 	 * Sorting of foreign entities by display value.
 	 */
-	public static int SORT_BY_VALUE = 1;
+	public static final int SORT_BY_VALUE = 1;
 	
 	/**
-	 * Get display values: <ID:displayValue>.
+	 * Get display values: &lt;ID:displayValue&gt;.
 	 * Max. 200 records to be returned.
 	 * 
 	 * @param entityClass class
 	 * @return entries
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Map<Integer, String> getDisplayValues(Class<?> entityClass) throws Exception {
 		maxRefRecords = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_REF_REC, 200);
@@ -76,27 +76,27 @@ public class DB {
 	}
 
 	/**
-	 * Get display values: <ID:displayValue>.
+	 * Get display values: &lt;ID:displayValue&gt;.
 	 * Max. 200 records to be returned.
 	 * 
 	 * @param entityClass class
 	 * @param amount max. amount of records to be loaded
 	 * @return entries
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static Map<Integer, String> getDisplayValues(Class<?> entityClass, int amount) throws Exception {
 		return getDisplayValues(entityClass, amount, SORT_BY_VALUE);
 	}
 	
 	/**
-	 * Get display values: <ID:displayValue>.
+	 * Get display values: &lt;ID:displayValue&gt;.
 	 * 
 	 * @param entityClass class
 	 * @param amount max. amount of records to be loaded
 	 * @param sortType sort entries by ID or by values, 
 	 * 			see {@value #SORT_BY_ID} and {@value #SORT_BY_VALUE}
 	 * @return entries
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Map<Integer, String> getDisplayValues(Class<?> entityClass, int amount, int sortType) throws Exception {
 		Connection conn = null;
@@ -131,12 +131,12 @@ public class DB {
 	}
 	
 	/**
-	 * Get display value: <ID:displayValue>.
+	 * Get display value: &lt;ID:displayValue&gt;.
 	 * 
 	 * @param entityClass class
 	 * @param id id
 	 * @return entry
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static Map.Entry<Integer, String> getDisplayValue(Class<?> entityClass, int id) throws Exception {
 		Connection conn = null;
@@ -194,7 +194,7 @@ public class DB {
 	 * 
 	 * @param userId DB user id
 	 * @param newSecretUserKey new secret user key
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static void updateSecretUserKey(int userId, String newSecretUserKey) throws SQLException {
 		Connection conn = null;
@@ -217,7 +217,7 @@ public class DB {
 	 *  
 	 * @param userSession user session
 	 * @return user settings map
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static Map<String, String> loadUserSettings(Session userSession) throws SQLException {
 		Map<String, String> map = userSession.getUserSettings();
@@ -264,7 +264,7 @@ public class DB {
 	 * Store user setting from user session settings.
 	 * 
 	 * @param userSession user session
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static void storeUserSettings(Session userSession) throws SQLException {
 		final Map<String, String> map = userSession.getUserSettings();
@@ -302,7 +302,7 @@ public class DB {
 	 * Count rows of type clz (entity class).
 	 * @param clz entity class
 	 * @return amount of rows or -1 if something bad happens
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static int countRows(Class<?> clz) throws SQLException {
 		final String table = Beans.classToTable(clz);
@@ -313,7 +313,7 @@ public class DB {
 	 * Count rows of table.
 	 * @param table table DB name
 	 * @return amount of rows or -1 if something bad happens
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static int countRows(String table) throws SQLException {
 		Connection conn = null;
@@ -348,7 +348,7 @@ public class DB {
 	 * @param entityClass entity class
 	 * @param id DB record id
 	 * @return entity bean
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static Model selectRecord(Class<?> entityClass, int id) throws SQLException {
 		final String table = Beans.classToTable(entityClass);
@@ -381,7 +381,7 @@ public class DB {
 	 * 
 	 * @param entityClass class
 	 * @return entity beans
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static List<Model> selectRecords(Class<?> entityClass) throws Exception {
 		maxRefRecords = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_REF_REC, 200);
@@ -395,7 +395,7 @@ public class DB {
 	 * @param entityClass class
 	 * @param amount max. amount of records to be loaded
 	 * @return entity beans
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static List<Model> selectRecords(Class<?> entityClass, int amount) throws Exception {
 		return selectRecords(entityClass, amount, SORT_BY_VALUE);
@@ -409,7 +409,7 @@ public class DB {
 	 * @param sortType sort entries by ID or by values, 
 	 * 			see {@value #SORT_BY_ID} and {@value #SORT_BY_VALUE}
 	 * @return entity beans
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static List<Model> selectRecords(Class<?> entityClass, int amount, int sortType) throws Exception {
 		final String displayColumn = Beans.getDisplayField(Beans.createBean(entityClass));
@@ -448,10 +448,10 @@ public class DB {
 	 * Select a records of type entityClass (entity class).
 	 * 
 	 * @param entityClass class
-	 * @param condition condition for where clause, e.g. 'age >= ?'
+	 * @param condition condition for where clause, e.g. 'age &gt;= ?'
 	 * @param values values for the condition
 	 * @return entity beans
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static List<Model> selectRecords(Class<?> entityClass, String condition, Object values[]) throws Exception {
 		return selectRecords(entityClass, condition, values, -1);
@@ -461,11 +461,11 @@ public class DB {
 	 * Select a records of type entityClass (entity class).
 	 * 
 	 * @param entityClass class
-	 * @param condition condition for where clause, e.g. 'age >= ?'
+	 * @param condition condition for where clause, e.g. 'age &gt;= ?'
 	 * @param values values for the condition
 	 * @param amount max. amount of records to be loaded
 	 * @return entity beans
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static List<Model> selectRecords(Class<?> entityClass, String condition, Object values[], int amount) throws Exception {
 		return selectRecords(entityClass, condition, values, amount, SORT_BY_VALUE);
@@ -475,13 +475,13 @@ public class DB {
 	 * Select a records of type entityClass (entity class).
 	 * 
 	 * @param entityClass entity class
-	 * @param condition condition for where clause, e.g. 'age >= ?'
+	 * @param condition condition for where clause, e.g. 'age &gt;= ?'
 	 * @param values values for the condition
 	 * @param amount max. amount of records to be loaded
 	 * @param sortType sort entries by ID or by values, 
 	 * 			see {@value #SORT_BY_ID} and {@value #SORT_BY_VALUE}
 	 * @return entity beans
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static List<Model> selectRecords(Class<?> entityClass, String condition, Object values[], int amount, int sortType) throws Exception {
 		final String displayColumn = Beans.getDisplayField(Beans.createBean(entityClass));
@@ -530,8 +530,7 @@ public class DB {
 	 * Delete a record.
 	 * 
 	 * @param entity entity
-	 * @param id if
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static void delete(Entity entity) throws Exception {
 		DB.delete(Beans.classToTable(entity.getClass()), entity.getId());
@@ -542,7 +541,7 @@ public class DB {
 	 * 
 	 * @param entityClass entity class
 	 * @param id if
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static void delete(Class<?> entityClass, int id) throws Exception {
 		DB.delete(Beans.classToTable(entityClass), id);
@@ -553,7 +552,7 @@ public class DB {
 	 * 
 	 * @param entity entity table name
 	 * @param id if
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static void delete(String entity, int id) throws Exception {
 		Connection conn = null;
@@ -577,7 +576,7 @@ public class DB {
 	 * 
 	 * @param entity entity
 	 * @param columns columns; "a,b,c".
-	 * @param columns values; "'1','2','3'".
+	 * @param values values; "'1','2','3'".
 	 */
 	public static void update(Entity entity, String columns, String values) {
 		Connection conn = null;
@@ -620,7 +619,7 @@ public class DB {
 	 * 
 	 * @param entity entity
 	 * @param columns columns; "a,b,c".
-	 * @param columns values; "'1','2','3'".
+	 * @param values values; "'1','2','3'".
 	 * @return generated id
 	 */
 	public static Integer insert(Entity entity, String columns, String values) {
@@ -674,7 +673,7 @@ public class DB {
 	 * @param set result set
 	 * @param dbColumnName db column name
 	 * @return escaped db value
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static String getValue(ResultSet set, String dbColumnName) throws SQLException {
 		String v = set.getString(dbColumnName);

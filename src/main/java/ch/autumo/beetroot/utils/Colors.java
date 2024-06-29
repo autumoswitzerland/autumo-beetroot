@@ -45,7 +45,7 @@ public final class Colors {
 	 * 
 	 * @param text text to colorize
 	 * @param attribute color attribute
-	 * @return
+	 * @return colorized or uncolorized string
 	 */
 	public static String foregroundColorize(String text, Attribute attribute) {
 		if (showAnsiColors)

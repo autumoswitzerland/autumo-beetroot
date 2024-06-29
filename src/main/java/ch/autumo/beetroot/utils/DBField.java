@@ -88,7 +88,7 @@ public class DBField {
 	 * 
 	 * @param field field
 	 * @return JSON string
-	 * @throws JsonProcessingException
+	 * @throws JsonProcessingException JSON processing exception
 	 */
 	public String serialize(DBField field) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();

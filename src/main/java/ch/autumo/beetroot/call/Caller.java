@@ -33,7 +33,7 @@ public interface Caller {
 	/**
 	 * Initialize.
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void init() throws Exception;
 	
@@ -42,7 +42,7 @@ public interface Caller {
 	 * 
 	 * @param toNumber to phone number
 	 * @param text text
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void call(String toNumber, String text) throws Exception;
 	

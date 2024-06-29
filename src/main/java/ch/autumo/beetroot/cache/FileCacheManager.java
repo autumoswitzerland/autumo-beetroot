@@ -135,9 +135,10 @@ public class FileCacheManager {
 
 	/**
 	 * Find or create file cache.
+	 * 
 	 * @param url URL file path
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreate(URL url) throws IOException {
 		
@@ -153,9 +154,10 @@ public class FileCacheManager {
 	
 	/**
 	 * Find or create file cache.
+	 * 
 	 * @param uri URI file path
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreate(URI uri) throws IOException {
 		
@@ -165,9 +167,10 @@ public class FileCacheManager {
 	
 	/**
 	 * Find or create file cache.
+	 * 
 	 * @param path file path
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreate(String path) throws IOException {
 		
@@ -177,10 +180,11 @@ public class FileCacheManager {
 
 	/**
 	 * Find or create file cache.
+	 * 
 	 * @param path file path
-	 * @param forcedCaching caching is forced when true if max. cache size isn't reached.
+	 * @param forceCaching caching is forced when true if max. cache size isn't reached
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreate(String path, boolean forceCaching) throws IOException {
 		
@@ -190,10 +194,10 @@ public class FileCacheManager {
 	
 	/**
 	 * Find or create file cache.
+	 * 
 	 * @param path file path
-	 * @param forcedCaching caching is forced when true if max. cache size isn't reached.
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreate(Path path) throws IOException {
 		
@@ -213,10 +217,11 @@ public class FileCacheManager {
 
 	/**
 	 * Find or create file cache.
-	 * @param resourcePath resource path
+	 * 
+	 * @param path resource path
 	 * @param forcedCaching caching is forced when true if max. cache size isn't reached.
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreate(Path path, boolean forcedCaching) throws IOException {
 		
@@ -236,9 +241,10 @@ public class FileCacheManager {
 	
 	/**
 	 * Find or create file cache.
+	 * 
 	 * @param resourcePath resource path
 	 * @return file cache
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache findOrCreateByResource(String resourcePath) throws IOException {
 		
@@ -258,6 +264,7 @@ public class FileCacheManager {
 
 	/**
 	 * Is the file already in cache?
+	 * 
 	 * @param path file path
 	 * @return true if so
 	 */
@@ -269,7 +276,7 @@ public class FileCacheManager {
 
 	/**
 	 * Is the resource (e.g. JAR resource) already in cache?
-	 * @param resourcePath resouce path
+	 * @param resourcePath resource path
 	 * @return true if so
 	 */
 	public boolean containsResource(String resourcePath) {

@@ -109,8 +109,11 @@ Now go to http://localhost:8778 and log in:
 - **Default user**: admin
 - **Default password**: beetroot
 <br />
+<br />
 
-**Note**: The client-server framework is not documented in this document; it focuses only on the web development part.
+**The client-server framework is not documented in this document; it focuses only on the web development part. Furthermore, take a look at the [Javadoc API](doc/apidocs/index.html).**
+<br />
+<br />
 
 The Web framework is shipped with the following features ready to use:
 

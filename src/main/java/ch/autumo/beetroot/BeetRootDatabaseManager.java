@@ -105,7 +105,7 @@ public class BeetRootDatabaseManager {
 	 * Initialize DB manager.
 	 * 
 	 * @param webAppRootPath Web app root path
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void initialize(String webAppRootPath) throws Exception {
 		
@@ -130,7 +130,7 @@ public class BeetRootDatabaseManager {
 	/**
 	 * Initialize DB manager.
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void initialize() throws Exception {
 		
@@ -325,7 +325,7 @@ public class BeetRootDatabaseManager {
 	 * Get an new DB connection.
 	 * 
 	 * @return DB connection
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public Connection getConnection() throws SQLException {
 		return dataSource.getConnection();
@@ -363,7 +363,7 @@ public class BeetRootDatabaseManager {
 	 * Reset users token.
 	 * 
 	 * @param dbId user id
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void resetToken(int dbId) throws Exception {
 		Connection conn = null;
@@ -387,7 +387,7 @@ public class BeetRootDatabaseManager {
 	 * 
 	 * @param entity entity
 	 * @return amount of records
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public int countRecords(String entity) throws SQLException {
 		Connection conn = null;
@@ -422,7 +422,7 @@ public class BeetRootDatabaseManager {
 	 * 
 	 * @param name name/key
 	 * @return value for name/key
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public String getProperty(String name) throws SQLException {
 		Connection conn = null;
@@ -452,7 +452,7 @@ public class BeetRootDatabaseManager {
 	 * Get language for user.
 	 * @param dbId user id
 	 * @return language
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public String getLanguage(int dbId) throws Exception {
 		String lang = null;
@@ -482,7 +482,7 @@ public class BeetRootDatabaseManager {
 	 * Update language.
 	 * @param lang language code
 	 * @param dbId user id
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void updateLanguage(String lang, int dbId) throws Exception {
 		Connection conn = null;
@@ -505,7 +505,7 @@ public class BeetRootDatabaseManager {
 	 * 
 	 * @param table database table
 	 * @return list of DB fields with table column descriptions
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public List<DBField> describeTable(String table) throws SQLException {
 		String statement = null;

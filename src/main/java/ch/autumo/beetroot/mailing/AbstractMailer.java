@@ -261,7 +261,7 @@ public abstract class AbstractMailer implements Mailer {
 	}
 	
 	/**
-	 * @see {@link Mailer#mail(String[], String, Map, String, BeetRootHTTPSession)}
+	 * See {@link Mailer#mail(String[], String, Map, String, BeetRootHTTPSession)}.
 	 */
 	public abstract void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception;
 

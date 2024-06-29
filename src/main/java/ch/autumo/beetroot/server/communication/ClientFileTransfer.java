@@ -131,7 +131,7 @@ public class ClientFileTransfer extends FileTransfer {
 	 * @param filename file name
 	 * @param timeout socket timeout
 	 * @return file
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static File getFile(String fileId, String filename, int timeout) throws Exception {
 		
@@ -182,7 +182,7 @@ public class ClientFileTransfer extends FileTransfer {
 	 * 
 	 * @param file file
 	 * @return client answer
-	 * @throws Excpetion
+	 * @throws Exception exception
 	 */
 	public static ClientAnswer sendFile(File file) throws Exception {
 		return sendFile(file, Communicator.TIMEOUT * 1000);
@@ -192,9 +192,9 @@ public class ClientFileTransfer extends FileTransfer {
 	 * Send a file client side - a file store must be available server side.
 	 * 
 	 * @param file server file
-	 * @param command timeout socket timeout in milliseconds
+	 * @param timeout timeout socket timeout in milliseconds
 	 * @return file answer
-	 * @throws Excpetion
+	 * @throws Exception exception
 	 */
 	public static ClientAnswer sendFile(File file, int timeout) throws Exception {
 		
@@ -254,7 +254,7 @@ public class ClientFileTransfer extends FileTransfer {
 	 * 
 	 * @param in input stream
 	 * @return file answer or null, if answer received was invalid
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ClientAnswer readAnswer(DataInputStream in) throws IOException {
 	    return ClientAnswer.parse(Communicator.read(in));

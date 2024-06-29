@@ -44,7 +44,7 @@ public class BeanField {
 	 * Constructor.
 	 * 
 	 * @param dbName column name
-	 * @param name attribute name
+	 * @param beanName attribute name
 	 * @param type Java type
 	 * @param isNullable is nullable? 
 	 * @param unique is unique?
@@ -98,7 +98,7 @@ public class BeanField {
 	 * 
 	 * @param field field
 	 * @return JSON string
-	 * @throws JsonProcessingException
+	 * @throws JsonProcessingException JSON processing exception
 	 */
 	public String serialize(BeanField field) throws JsonProcessingException {
 		final ObjectMapper mapper = new ObjectMapper();

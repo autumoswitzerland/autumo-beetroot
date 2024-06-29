@@ -43,7 +43,7 @@ import ch.autumo.beetroot.utils.Time;
 import ch.autumo.beetroot.utils.Web;
 
 /**
- * Default handler for 'web/html/<entity>/add.html' templates.
+ * Default handler for 'web/html/&lt;entity&gt;/add.html' templates.
  * 
  * This one must be overwritten, because of mandatory db fields
  * that might not be show on the GUI. The values to insert into
@@ -249,11 +249,11 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * 
 	 * @param session HTTP session
 	 * @param rsmd result set meta data
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param idx SQL result set column index
-	 * @return html data extract <div>...</div>
-	 * @throws Exception
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @throws Exception exception
 	 */
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {
 		return this.extractSingleInputDiv(session, "", rsmd, columnName, guiColName, idx);
@@ -268,11 +268,11 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * @param session HTTP session
 	 * @param data repost data (retry data)
 	 * @param rsmd result set meta data
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param idx SQL result set column index
-	 * @return html data extract <div>...</div>
-	 * @throws Exception
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @throws Exception exception
 	 */
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {
 		return this.extractSingleInputDiv(session, data.get(columnName), rsmd, columnName, guiColName, idx);
@@ -353,6 +353,9 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 			// All other
 			
+			// Custom fields/divs, e.g. for custom user roles
+			result += this.extractCustomSingleInputDiv(session, val, rsmd, columnName, guiColName, idx);
+			
 			// x. Special case password
 			final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 			if (jsPwValidator && columnName.equals("password")) {
@@ -360,9 +363,10 @@ public abstract class DefaultAddHandler extends BaseHandler {
 				result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\"></div>";
 				
 			// a. Special case Users
-			} else if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+			} else if (!this.useExternalRoles() && getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 				
-				final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
+				final String roles[] = this.getUserRoles();
+				
 				result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 				for (int i = 0; i < roles.length; i++) {
 					final String trRole = LanguageManager.getInstance().translateOrDefVal("role."+roles[i], roles[i], session.getUserSession());
@@ -431,10 +435,57 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	}
 	
 	/**
+	 * Overwrite this method, if you need to add a custom field (HTML 'div'); e.g. when multiple user roles are used;
+	 * in this case the 'div' is more likely consisting of 2 role assignment boxes instead of a simple input-'div'
+	 * or use it for any custom 'div'. The 'div' is guaranteed to be inserted in the column-order as defined in the
+	 * 'columns.cfg'.
+	 *   
+	 * @param session HTTP session
+	 * @param val repost data (only available in retry case)
+	 * @param rsmd result set meta data
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param idx SQL result set column index
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @throws Exception exception
+	 */
+	public String extractCustomSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd,
+			String columnName, String guiColName, int idx) throws Exception {
+		return "";
+	}
+
+	/**
+	 * Overwrite and return true, if you want to use your own role assignments 
+	 * with database roles or an ACL, e.g. with multiple roles.
+	 * 
+	 * @return false to use internal role management, otherwise true
+	 */
+	public boolean useExternalRoles() {
+		return false;
+	}
+
+	/**
+	 * Retrieve user roles. By default, these roles are read from the application 
+	 * configuration (beetroog.cfg -&gt; web_roles) and translated in the web masks 
+	 * if a translation is available.
+	 * 
+	 * If you want to use your own user/role or ACL setup; e.g. reading roles from 
+	 * your own database table, you be better off overwriting
+	 * {@link #extractCustomSingleInputDiv(BeetRootHTTPSession, String, ResultSetMetaData, String, String, int)}
+	 * and {@link #useExternalRoles()} = true; in this case this method isn't 
+	 * called at all!
+	 * 
+	 * @return user roles
+	 */
+	public String[] getUserRoles() {
+		return BeetRootConfigurationManager.getInstance().getAppRoles();
+	}
+	
+	/**
 	 * Is this column a HTML select field?
 	 * 
 	 * @param columnName column name
-	 * @returntruew if so
+	 * @return true if so
 	 */
 	protected boolean isSelect(String columnName) {
 		return false;
@@ -443,7 +494,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	/**
 	 * Get values for column name
 	 * @param columnName column name
-	 * @return select vaues
+	 * @return select values
 	 */
 	protected String[] getSelectValues(String columnName) {
 		return null;

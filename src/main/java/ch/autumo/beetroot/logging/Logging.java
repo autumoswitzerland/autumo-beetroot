@@ -29,7 +29,7 @@ public interface Logging {
 	 * - Configuration name used: 'BeetRootConfig'
 	 * 
 	 * @param path a path to the configuration
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public void initialize(String path) throws IOException;
 
@@ -38,7 +38,7 @@ public interface Logging {
 	 * 
 	 * @param path a path to the configuration
 	 * @param name configuration name
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public void initialize(String path, String name) throws IOException;
 	

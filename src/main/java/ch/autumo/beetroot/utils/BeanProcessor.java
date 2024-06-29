@@ -125,8 +125,7 @@ public class BeanProcessor {
 	 * when SQL NULL is returned. This is the same behavior as the {@code ResultSet}
 	 * get* methods. &lt;/p&gt;
 	 * 
-	 * @param <T>  The type of bean to create
-	 * @param rs   ResultSet that supplies the bean data
+	 * @param rs ResultSet that supplies the bean data
 	 * @param type Class from which to create the bean instance
 	 * @throws SQLException if a database access error occurs
 	 * @return the newly created bean

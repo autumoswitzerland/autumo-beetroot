@@ -80,9 +80,9 @@ public class Communicator {
 	/**
 	 * Write/send client answer from server to client.
 	 * 
-	 * @param client answer
+	 * @param answer client answer
 	 * @param out output stream
-	 * @throws Excpetion
+	 * @throws IOException IO exception
 	 */
 	public static void writeAnswer(ClientAnswer answer, DataOutputStream out) throws IOException {
 		
@@ -99,7 +99,7 @@ public class Communicator {
 	 * 
 	 * @param in input stream
 	 * @return server command or null, if command received was invalid
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ServerCommand readCommand(DataInputStream in) throws IOException {
 	    return ServerCommand.parse(read(in));
@@ -111,7 +111,7 @@ public class Communicator {
 	 * @param in (body) input stream from HTTP/HTTPS request
 	 * @param length length of content
 	 * @return server command or null, if command received was invalid
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ServerCommand readJsonCommand(InputStream in, int length) throws IOException {
 		
@@ -147,7 +147,7 @@ public class Communicator {
 	 * 
 	 * @param in input stream
 	 * @return unparsed data
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	protected static String read(DataInputStream in) throws IOException {
 		
@@ -213,7 +213,7 @@ public class Communicator {
 	 * Check closeable HTTP response with HttpResponse.
 	 * 
 	 * @param resp HTTP response
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public static void checkHttpResponse(CloseableHttpResponse resp) throws Exception {
 		

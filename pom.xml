@@ -166,6 +166,18 @@
 				</executions>
 			</plugin>
 			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.3</version>
+				<configuration>
+					<sourcepath>src/main/java</sourcepath>
+					<doclint>all,-missing</doclint>
+					<reportOutputDirectory>${basedir}/doc</reportOutputDirectory>
+					<stylesheetfile>${basedir}/doc/autumo.css</stylesheetfile>
+				</configuration>
+			</plugin>
+						
 		</plugins>
 	</build>
 

@@ -41,7 +41,7 @@ import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.Web;
 
 /**
- * Default handler for 'web/html/<entity>/index.html' templates.
+ * Default handler for 'web/html/&lt;entity&gt;/index.html' templates.
  */
 public class DefaultIndexHandler extends BaseHandler {
 
@@ -351,7 +351,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * This method is internally called by the {@link #readData(BeetRootHTTPSession, int)}
 	 * method. 
 	 * 
-	 * @param session user session
+	 * @param userSession user session
 	 * @param entity entity string
 	 * @param entityObj entity object
 	 * @param modifyID obfuscated modify id used action links
@@ -401,6 +401,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * Get the name/id that should be shown in
 	 * the delete confirmation dialog.
 	 * 
+	 * @param entityObj entity
 	 * @return id/name of delete object
 	 */
 	public String getDeleteName(Entity entityObj) {
@@ -410,7 +411,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	/**
 	 * Add additional actions.
 	 *
-	 * @param session user session
+	 * @param userSession user session
 	 * @param entity entity string
 	 * @param modifyID obfuscated modify id used action links
 	 * @param dbId internal DB id, don't write it out!
@@ -424,7 +425,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	/**
 	 * Determine if change actions are shown on index page.
 	 * 
-	 * @param session user session
+	 * @param userSession user session
 	 * @return true or false
 	 */
 	public boolean changeAllowed(Session userSession) {
@@ -434,7 +435,7 @@ public class DefaultIndexHandler extends BaseHandler {
 	/**
 	 * Determine if delete actions are shown on index page.
 	 * 
-	 * @param session user session
+	 * @param userSession user session
 	 * @return true or false
 	 */
 	public boolean deleteAllowed(Session userSession) {
@@ -459,11 +460,11 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * 
 	 * @param session HTTP session
 	 * @param set database result set pointing to current record
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param dbIdx SQL result set column index
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param idx SQL result set column index
 	 * @param entity whole entity bean
-	 * @return html data extract <td>...</td>
-	 * @throws Exception
+	 * @return html data extract &lt;td&gt;...&lt;/td&gt;
+	 * @throws Exception exception
 	 */
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
@@ -490,6 +491,8 @@ public class DefaultIndexHandler extends BaseHandler {
 	
 	/**
 	 * Get whole index paginator.
+	 * 
+	 * @param session HTTP session
 	 */
 	@Override
 	public String getPaginator(BeetRootHTTPSession session) {

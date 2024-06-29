@@ -36,7 +36,7 @@ import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.Web;
 
 /**
- * Default handler for 'web/html/<entity>/edit.html' templates.
+ * Default handler for 'web/html/&lt;entity&gt;/edit.html' templates.
  */
 public class DefaultEditHandler extends BaseHandler {
 
@@ -180,6 +180,7 @@ public class DefaultEditHandler extends BaseHandler {
 	/**
 	 * Prepare call to to something with the entity bean if necessary.
 	 * 
+	 * @param session HTTP session
 	 * @param entity entity bean
 	 */
 	public void prepare(BeetRootHTTPSession session, Entity entity) {
@@ -192,11 +193,11 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @param session HTTP session
 	 * @param set result set holding one record
 	 * @param entity entity bean
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param idx SQL result set column index
-	 * @return html data extract <div>...</div>
-	 * @throws Exception
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @throws Exception exception
 	 */
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
 		final String val = this.formatSingleValueForGUI(session, set.getObject(idx).toString().trim(), columnName, idx, entity);
@@ -211,12 +212,12 @@ public class DefaultEditHandler extends BaseHandler {
 	 *  
 	 * @param session HTTP session
 	 * @param data repost data
-	 * @param set result set, even when empty, data is taken from the map (retry)
-	 * @param columnName column name as configured in 'web/<entity>/columns.cfg'
-	 * @param guiColName GUI column name as configured in 'web/<entity>/columns.cfg'
+	 * @param rsmd result set meta data
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param idx SQL result set column index
-	 * @return html data extract <div>...</div>
-	 * @throws Exception
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @throws Exception exception
 	 */	
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {
 		return this.extractSingleInputDiv(session, data.get(columnName), rsmd, columnName, guiColName, idx, false);
@@ -322,18 +323,20 @@ public class DefaultEditHandler extends BaseHandler {
 			
 				// All other
 				
+				// Custom fields/divs, e.g. for custom user roles
+				result += this.extractCustomSingleInputDiv(session, val, rsmd, columnName, guiColName, idx);
+				
 				//final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 				/*
 				if (jsPwValidator && columnName.equals("password")) {
-					
 					result += "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\" data-val=\""+val+"\"></div>";
-					
 				} else */
 
 				// a. Special case Users
-				if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+				if (!this.useExternalRoles() && getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 					
-					final String roles[] = BeetRootConfigurationManager.getInstance().getAppRoles();
+					final String roles[] = this.getUserRoles();
+					
 					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 					for (int i = 0; i < roles.length; i++) {
 						final String trRole = LanguageManager.getInstance().translateOrDefVal("role."+roles[i], roles[i], session.getUserSession());
@@ -402,10 +405,57 @@ public class DefaultEditHandler extends BaseHandler {
 	}
 
 	/**
+	 * Overwrite this method, if you need to add a custom field (HTML 'div'); e.g. when multiple user roles are used;
+	 * in this case the 'div' is more likely consisting of 2 role assignment boxes instead of a simple input-'div'
+	 * or use it for any custom 'div'. The 'div' is guaranteed to be inserted in the column-order as defined in the
+	 * 'columns.cfg'.
+	 *   
+	 * @param session HTTP session
+	 * @param val repost data (only available in retry case)
+	 * @param rsmd result set meta data
+	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param idx SQL result set column index
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @throws Exception exception
+	 */
+	public String extractCustomSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd,
+			String columnName, String guiColName, int idx) throws Exception {
+		return "";
+	}
+	
+	/**
+	 * Overwrite and return true, if you want to use your own role assignments 
+	 * with database roles or an ACL, e.g. with multiple roles.
+	 * 
+	 * @return false to use internal role management, otherwise true
+	 */
+	public boolean useExternalRoles() {
+		return false;
+	}
+
+	/**
+	 * Retrieve user roles. By default, these roles are read from the application 
+	 * configuration (beetroog.cfg -&gt; web_roles) and translated in the web masks 
+	 * if a translation is available.
+	 * 
+	 * If you want to use your own user/role or ACL setup; e.g. reading roles from 
+	 * your own database table, you be better off overwriting
+	 * {@link #extractCustomSingleInputDiv(BeetRootHTTPSession, String, ResultSetMetaData, String, String, int)}
+	 * and {@link #useExternalRoles()} = true; in this case this method isn't 
+	 * called at all!
+	 * 
+	 * @return user roles
+	 */
+	public String[] getUserRoles() {
+		return BeetRootConfigurationManager.getInstance().getAppRoles();
+	}
+	
+	/**
 	 * Is this column a HTML select field?
 	 * 
 	 * @param columnName column name
-	 * @returntruew if so
+	 * @return true if so
 	 */
 	protected boolean isSelect(String columnName) {
 		return false;

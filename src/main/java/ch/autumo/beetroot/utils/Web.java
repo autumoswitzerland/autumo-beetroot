@@ -148,7 +148,7 @@ public class Web {
 	 * 
 	 * @param html the input HTML
 	 * @param prettyPrint use pretty-print?
-	 * @param replaceTags tags to replace if any
+	 * @param replacements tags to replace if any
 	 * @return prepared HTML
 	 */
 	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint, List<SimpleEntry<String, String>> replacements) {
@@ -161,7 +161,7 @@ public class Web {
 	 * @param html the input HTML
 	 * @param prettyPrint use pretty-print?
 	 * @param addTags additional tags that should be kept if any
-	 * @param replaceTags tags to replace if any
+	 * @param replacements tags to replace if any
 	 * @return prepared HTML
 	 */
 	public static String prepareHtmlWithLineBreaks(String html, boolean prettyPrint, List<SimpleEntry<String, String>> replacements, String... addTags) {
@@ -207,7 +207,7 @@ public class Web {
 	 * @param idx db column index
 	 * @param columnName db column name
 	 * @return type
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static String getHtmlDivType(ResultSetMetaData rsmd, int idx, String columnName) throws SQLException {
 
@@ -261,7 +261,7 @@ public class Web {
 	 * @param idx db column index
 	 * @param columnName db column name
 	 * @return type
-	 * @throws SQLException
+	 * @throws SQLException SQL exception
 	 */
 	public static String getHtmlInputType(ResultSetMetaData rsmd, int idx, String columnName) throws SQLException {
 		

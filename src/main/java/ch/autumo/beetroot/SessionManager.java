@@ -131,8 +131,8 @@ public class SessionManager {
 	 * Get an existing user session or create a new one if it 
 	 * doesn't exist for the nano cookie.
 	 * 
-	 * @param HTTP session
-	 * @return user session
+	 * @param session HTTP session
+	 * @return session user session
 	 */
 	public synchronized Session findOrCreate(BeetRootHTTPSession session) {
 		
@@ -191,29 +191,26 @@ public class SessionManager {
 	/**
 	 * Load user sessions from file storage.
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	@SuppressWarnings("unchecked")
 	public void load() throws Exception {
-		
 		if (!SESSION_DATA.exists())
 			return;
-		
-		final FileInputStream input = new FileInputStream(SESSION_DATA);
-		sessions = (Map<String, Session>) new ObjectInputStream(input).readObject();
-		input.close();
+		final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SESSION_DATA));
+		sessions = (Map<String, Session>) ois.readObject();
+		ois.close();
 	}
 	
 	/**
 	 * Save user sessions to file storage.
 	 * 
-	 * @throws Exception
+	 * @throws Exception exception
 	 */
 	public void save() throws Exception {
-		
-		final FileOutputStream output = new FileOutputStream(SESSION_DATA);
-		new ObjectOutputStream(output).writeObject(sessions);
-		output.close();
+		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SESSION_DATA));
+		oos.writeObject(sessions);
+		oos.close();
 	}
 	
 	/**

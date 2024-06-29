@@ -172,7 +172,7 @@ public class ClientAnswer extends AbstractMessage {
 	 * 
 	 * @param transferString transfer string
 	 * @return parsed client answer command
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ClientAnswer parse(String transferString) throws IOException {
 	
@@ -226,7 +226,7 @@ public class ClientAnswer extends AbstractMessage {
 	 * 
 	 * @param transferString JSON transfer string
 	 * @return parsed client answer
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public static ClientAnswer parseJson(String transferString) throws IOException {
 

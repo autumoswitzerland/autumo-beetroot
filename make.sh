@@ -156,6 +156,9 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
 	cp ../cfg/routing.xml autumo-beetRoot-$VERSION/cfg/routing.xml
 
+	mkdir autumo-beetRoot-$VERSION/doc
+	cp ../doc autumo-beetRoot-$VERSION/doc
+
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc
@@ -168,7 +171,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/META-INF/etc/
 	cp ../etc/licenses/*.* autumo-beetRoot-web-$VERSION/META-INF/etc/licenses/
-	
+
 	
 # -----------------------------
 # ---- Copying logging config

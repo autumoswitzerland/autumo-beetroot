@@ -228,6 +228,8 @@ public class Session implements Serializable {
 
 	/**
 	 * Get one user setting.
+	 * 
+	 * @param key key
 	 * @return user setting
 	 */
 	public String getUserSetting(String key) {
@@ -314,7 +316,8 @@ public class Session implements Serializable {
 
 	/**
 	 * Set user language
-	 * @param user language (ISO code 2 length)
+	 * 
+	 * @param lang user language (ISO code 2 length)
 	 */
 	public void setUserLang(String lang) {
 		this.set("userlang", lang);
@@ -412,7 +415,8 @@ public class Session implements Serializable {
 
 	/**
 	 * Set CSRF token.
-	 * @param CSRF token
+	 * 
+	 * @param token CSRF token
 	 */
 	public void setFormCsrfToken(String token){
 		

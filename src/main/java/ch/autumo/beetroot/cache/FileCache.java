@@ -82,7 +82,7 @@ public class FileCache  {
 	 * 
 	 * @param filePath file path
 	 * @param mimeType mime type, e.g. "text/html"
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, String mimeType) throws IOException {
 		
@@ -96,7 +96,7 @@ public class FileCache  {
 	 * @param filePath file path
 	 * @param contentType content header type, e.g. 
 	 * 			"text/html; charset=UTF-8"
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, ContentType contentType) throws IOException {
 		
@@ -140,7 +140,7 @@ public class FileCache  {
 	 * @param filePath file path
 	 * @param mimeType mime type, e.g. "text/html"
 	 * @param forcedCaching force caching?
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, String mimeType, boolean forcedCaching) throws IOException {
 		
@@ -155,7 +155,7 @@ public class FileCache  {
 	 * @param contentType content header type, e.g. 
 	 * 			"text/html; charset=UTF-8"
 	 * @param forcedCaching force caching?
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, ContentType contentType, boolean forcedCaching) throws IOException {
 		
@@ -198,7 +198,7 @@ public class FileCache  {
 	 * File cache constructor.
 	 * 
 	 * @param resourcePath resource path
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(String resourcePath) throws IOException {
 		
@@ -210,7 +210,7 @@ public class FileCache  {
 	 * 
 	 * @param resourcePath resource path
 	 * @param mimeType mime type, e.g. "text/html"
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(String resourcePath, String mimeType) throws IOException {
 		
@@ -223,7 +223,7 @@ public class FileCache  {
 	 * @param resourcePath resource path
 	 * @param contentType content header type, e.g. 
 	 * 			"text/html; charset=UTF-8"
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
 	public FileCache(String resourcePath, ContentType contentType) throws IOException {
 		this.resourceInitialization(resourcePath, contentType);
@@ -271,7 +271,7 @@ public class FileCache  {
 	 * Get data as stream from file or cache, depending of the buffer size.
 	 * 
 	 * @return data stream
-	 * @throws IOException
+	 * @throws IOException IO exception
 	 */
     public InputStream getData() throws IOException {
     	
@@ -310,7 +310,7 @@ public class FileCache  {
      * Get text data.
      * 
      * @return cached data as text or null
-	 * @throws IOException
+	 * @throws IOException IO exception
      */
     public String getTextData()  throws IOException{
     	
@@ -350,9 +350,10 @@ public class FileCache  {
     
     /**
      * Create response out of cached data.
-     * @param mimeType mime type
      * 
+     * @param mimeType mime type
      * @return response
+	 * @throws IOException IO exception
      */
     public Response createResponse(String mimeType) throws IOException {
 
@@ -377,6 +378,7 @@ public class FileCache  {
      * Create response out of cached data.
      * 
      * @return response
+	 * @throws IOException IO exception
      */
     public Response createResponse() throws IOException {
     	
@@ -385,6 +387,7 @@ public class FileCache  {
     
     /**
      * Return mime type if any
+     * 
      * @return mime type
      */
     public String getMimeType() {
