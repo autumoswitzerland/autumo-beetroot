@@ -400,9 +400,9 @@ The HTML templates & model configuration are usually moved/copied to a language 
 We suggest to backup your original generated HTML templates and model configuration, they serve as a fallback scenario when the user request a language that is not present!
 
 
-The model configuration `columns.cfg` does the following for every entity:
+The model configuration `columns.cfg` lists the columns/fields and does the following for every entity:
 
-- It defines what columns you see for every view (add, edit, view/single-record, index/list) and defines a value for the field name. See existing files for sample entities `Task`
+- It determines which columns you see in which order in each view (add, edit, view/single-record, index/list) and defines a value for the field name. See existing files for sample entities `Task`
 and/or `User`. E.g.:
 
 	index.html: `list.aDbfield=GUI Name for that Field`
