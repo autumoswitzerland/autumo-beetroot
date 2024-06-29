@@ -67,6 +67,7 @@
     <li><a href="#crud-generator-plant">CRUD Generator PLANT</a></li>
     <li><a href="#crud-hooks">CRUD Hooks</a></li>
     <li><a href="#standard-html-templates">Standard HTML Templates</a></li>
+    <li><a href="#User--Roles">User & Roles</a></li>
     <li><a href="#json-rest-api">JSON REST API</a></li>
     <li><a href="#routing">Routing</a></li>
     <li><a href="#logging">Logging</a></li>
@@ -514,6 +515,22 @@ The following template variables are always parsed and you can use them as many 
 
 
 
+<!-- USER & ROLES -->
+## User & Roles
+
+In the shipped setup, you have a user database table that can take one role as a field value that is mapped to the roles defined in the property `web_roles` in the application `beetroot.cfg`.
+These roles are translated on the web masks if a language translation exists for these roles. The translations key for a role in your translation files `web/lang/lang_*.properties` must start 
+with `role.*`, e.g. `role.Administrator`.
+
+If you want to use your own role assignments with database roles or an ACL, e.g. with multiple roles, overwrite the method `extractCustomSingleInputDiv()` in your user edit- and add-handler
+or add your new role management by adjusting your `edit.html` and `add.html` template for the user (see templates for further information). Do not forget to deactivate the default role 
+management of the user edit-handler and add-handler before you add your own handler role logic (overwrite `useExternalRoles()` = true).
+
+- If you want to see, how role authorization is done in handlers, see `hasAccess`-method, e.g., in the `ch.autumo.beetroot.handler.tasks.TasksAddHandler` class.
+- If you want to see, how role authorization is done in the web templates, see, e.g., `web/html/en/home.html` template.
+
+
+
 <!-- JSON REST API -->
 ## JSON REST API
 
@@ -795,7 +812,7 @@ See also the [open issues](https://github.com/autumoswitzerland/autumo/issues) f
 <!-- LICENSE -->
 ## License
 
-Distributed under the Apache License 2.0. See `LICENSE.md` for more information.
+Distributed under the Apache License 2.0. See [LICENSE.md](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/LICENSE.md) for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
