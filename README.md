@@ -100,7 +100,7 @@ file download and upload interface and it can be extended with own (distributed)
 [![autumo beetRoot 2.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)](https://www.youtube.com/watch?v=ruZrP-7yCDY)
 <p style="text-align: center;"><strong><a href="https://www.youtube.com/watch?v=ruZrP-7yCDY">autumo beetRoot 2.x - Quickstart Video</a></strong></p>
 
-**Note**: The video shows the old routing which has changed in the version 2.3.0; it is done now with a configuration file (routing.xml); see chapter <a href="#routing">Routing</a>.
+**Note**: The video shows the old routing which has changed in the version 2.3.0; it is done now with a configuration file (routing.xml); see chapter <a href="#routing">Routing</a>. Furthermore, the servlet API library no longer needs to be downloaded separately.
 
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
 
