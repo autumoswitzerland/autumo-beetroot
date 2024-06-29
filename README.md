@@ -129,8 +129,8 @@ The Web framework is shipped with the following features ready to use:
 - Entities can be served through the JSON REST API
 - Logging implementations other than log4j2 supported
 - Add, edit, view, list and delete functionality for entities
-- Optimized console logging with colored section (if required)
 - Full CRUD-Generator **PLANT** for views, models and handlers
+- Optimized console logging with colored sections (if required)
 - One-to-many database relationships are fully applied in MVC layers
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
