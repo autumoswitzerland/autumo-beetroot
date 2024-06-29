@@ -104,6 +104,11 @@ file download and upload interface and it can be extended with own (distributed)
 
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
 
+Now go to http://localhost:8778 and log in:
+- **Default user**: admin
+- **Default password**: beetroot
+<br />
+
 **Note**: The client-server framework is not documented in this document; it focuses only on the web development part.
 
 The Web framework is shipped with the following features ready to use:
