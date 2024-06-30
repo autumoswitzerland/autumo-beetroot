@@ -533,6 +533,8 @@ management of the user edit-handler and add-handler before you add your own hand
 - If you want to see, how role authorization is done in handlers, see `hasAccess`-method, e.g., in the `ch.autumo.beetroot.handler.tasks.TasksAddHandler` class.
 - If you want to see, how role authorization is done in the web templates, see, e.g., `web/html/en/home.html` template.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 
 
 <!-- JSON REST API -->
