@@ -758,6 +758,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (col[0].equals("username")) {
 					userSession.set("username", val);
 				}
+				if (col[0].equals("roles")) {
+					userSession.set("userroles", val.replaceAll("\\s", ""));
+				}
 				if (col[0].equals("role")) {
 					userSession.set("userrole", val);
 				}

@@ -234,6 +234,11 @@ public class Constants {
 	 * HTTPS for web server?
 	 */
 	public static final String KEY_WS_HTTPS = "ws_https";
+
+	/**
+	 * Use extended roles?
+	 */
+	public static final String KEY_WS_USE_EXT_ROLES = "ws_use_ext_roles";
 	
 	/**
 	 * Use CSRF tokens?

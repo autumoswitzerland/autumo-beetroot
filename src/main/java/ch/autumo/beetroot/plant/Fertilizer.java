@@ -180,25 +180,29 @@ public class Fertilizer {
 		
 		// ---- Checks
 		
-		final String entity = dbEntity.toLowerCase().trim();
-		if (!entity.endsWith("s")) {
-			throw new FertilizerException("Entity '"+entity+"' doesn't end with a 's' letter!\n"
+		final String dbEntityLow = dbEntity.toLowerCase().trim();
+		if (!dbEntityLow.endsWith("s")) {
+			throw new FertilizerException("Entity '"+dbEntityLow+"' doesn't end with a 's' letter!\n"
 					+ "database entities should be named for example:\n"
 					+ "users, tasks, properties, rooms, candies, etc.");
 		}
 
 		// ---- Create entity name versions
 		
-		lowerEntityPlural = entity;
-		upperEntityPlural = entity.substring(0, 1).toUpperCase() + entity.substring(1, entity.length());
-		lowerEntity = null;
-		if (entity.endsWith("ies")) {
-			lowerEntity = lowerEntityPlural.substring(0, lowerEntityPlural.length() - 3) + "y";
+		final String clsName = Beans.tableToClassName(dbEntityLow);
+		lowerEntity = clsName.toLowerCase();
+		upperEntity = clsName;
+		if (dbEntityLow.indexOf("_") != -1) {
+			final String p[] = dbEntityLow.split("_");
+			lowerEntityPlural = p[0].toLowerCase() + p[1];
+			final String first = p[0].substring(0, 1).toUpperCase() + p[0].substring(1, p[0].length());
+			final String second = p[1].substring(0, 1).toUpperCase() + p[1].substring(1, p[1].length());
+			upperEntityPlural = first + second;
 		} else {
-			lowerEntity = lowerEntityPlural.substring(0, lowerEntityPlural.length() - 1);
+			lowerEntityPlural = Beans.makePlural(lowerEntity);
+			upperEntityPlural = lowerEntityPlural.substring(0, 1).toUpperCase() + lowerEntityPlural.substring(1, lowerEntityPlural.length());
 		}
-		upperEntity = lowerEntity.substring(0, 1).toUpperCase() + lowerEntity.substring(1, lowerEntity.length());
-
+		
 		// ---- columns.cfg
 		
 		if (type.equals("cfg")) {// nothing to parse, all info from DB
@@ -434,6 +438,7 @@ public class Fertilizer {
 					fkMap +=  "                java.util.Map.entry(\"" + fkName + "\", " + this.foreignKeyMap.get(fkName) + "),\n";
 				else
 					fkMap +=  "                java.util.Map.entry(\"" + fkName + "\", " + this.foreignKeyMap.get(fkName) + ")\n";
+				i++;
 			}
 			fkMap +=  "            );\n";
 			contents.append("\n");

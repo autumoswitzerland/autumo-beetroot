@@ -88,6 +88,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	private String cmdMode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_MODE, "sockets");
 	
 	private boolean csrf = true;
+	private boolean extendedRoles = true;
+	
 	private boolean isWebCmdMode = false;
 	
     private boolean insertServletNameInTemplateRefs = false;
@@ -135,11 +137,16 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 		
 		try {
-			
+
 			csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS);
 			if (csrf)
 		    	LOG.info("CSRF activated!");
 			BeetRootConfigurationManager.getInstance().setCsrf(csrf);
+
+			extendedRoles = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES);
+			if (extendedRoles)
+		    	LOG.info("Using extended user-role management.");
+			BeetRootConfigurationManager.getInstance().setExtendedRoles(extendedRoles);
 			
 			servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 			if (servletName != null && servletName.length() != 0)
@@ -803,7 +810,16 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					// 1. GO !
             		if (loginSuccess) { 
             			
-            			userSession.setUserData(dbId, postParamUsername, dbRole, dbFirstName, dbLastName, dbEmail, dbSecKey, dbTwoFa);
+            			/* TODO Extended Roles
+						final String urs = "...";
+						if (urs != null && urs.length() != 0) {
+							final String s = urs.replaceAll("\\s", "");
+							final String parts[] = s.toString().split(",");
+							List<String> roleList = Arrays.asList(parts);
+						}
+            			*/
+            			
+            			userSession.setUserData(dbId, postParamUsername, dbRole, null, dbFirstName, dbLastName, dbEmail, dbSecKey, dbTwoFa);
             			userSession.createIdPair(dbId, "users");
 
 					    try {

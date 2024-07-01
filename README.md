@@ -522,13 +522,16 @@ The following template variables are always parsed and you can use them as many 
 <!-- USER & ROLES -->
 ## User & Roles
 
-In the shipped setup, you have a user database table that can take one role as a field value that is mapped to the roles defined in the property `web_roles` in the application `beetroot.cfg`.
-These roles are translated on the web masks if a language translation exists for these roles. The translations key for a role in your translation files `web/lang/lang_*.properties` must start 
+In the shipped setup (since release 2.4.0), the extended roles (with own role and role-assignment database table) is activated (switch `web_use_ext_roles=yes` in `beetroot.cfg`). 
+If you want to use the simple role management, whereas the role is an attribute of a user, deactivate the switch. In this case, the role field value of the user that is mapped 
+to the roles defined in the property `web_roles` in the application `beetroot.cfg`.
+
+Roles are translated on the web masks if a language translation exists for these roles. Translations for roles in your translation files `web/lang/lang_*.properties` must start
 with `role.*`, e.g. `role.Administrator`.
 
-If you want to use your own role assignments with database roles or an ACL, e.g. with multiple roles, overwrite the method `extractCustomSingleInputDiv()` in your user edit- and add-handler
-or add your new role management by adjusting your `edit.html` and `add.html` template for the user (see templates for further information). Do not forget to deactivate the default role 
-management of the user edit-handler and add-handler before you add your own handler role logic (overwrite `useExternalRoles()` = true).
+If you want to use your own role assignments with database roles or an ACL, e.g. with multiple roles and groups, overwrite the method `extractCustomSingleInputDiv()` in your user 
+edit- and add-handler or add your new role management by adjusting your `edit.html` and `add.html` template for the user (see templates for further information). Do not forget to 
+deactivate the default role management of the user edit-handler and add-handler before you add your own handler role logic (overwrite `useExternalRoles()` = true).
 
 - If you want to see, how role authorization is done in handlers, see `hasAccess`-method, e.g., in the `ch.autumo.beetroot.handler.tasks.TasksAddHandler` class.
 - If you want to see, how role authorization is done in the web templates, see, e.g., `web/html/en/home.html` template.

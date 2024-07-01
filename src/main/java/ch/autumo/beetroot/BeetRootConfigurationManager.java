@@ -61,6 +61,7 @@ public class BeetRootConfigurationManager {
 	private String fullConfigBasePath = null;
 	
 	private Properties generalProps = null;
+	private boolean extendedRoles = true;
 	private boolean csrf = true;
 	
 	static {
@@ -296,6 +297,23 @@ public class BeetRootConfigurationManager {
 	public String getFullConfigBasePath() {
 		return fullConfigBasePath;
 	}
+
+	/**
+	 * Set if extended roles should be used.
+	 * 
+	 * @param extendedRoles true if extended roles should be used
+	 */
+	public void setExtendedRoles(boolean extendedRoles) {
+		this.extendedRoles = extendedRoles;
+	}
+	
+	/**
+	 * Use extended roles?
+	 * @return true if extended roles should be used
+	 */
+	public boolean useExtendedRoles() {
+		return this.extendedRoles;
+	}
 	
 	/**
 	 * Set if CSRF should be used.
@@ -308,7 +326,7 @@ public class BeetRootConfigurationManager {
 	
 	/**
 	 * Use CSRF?
-	 * @return true true if CSRF should be used
+	 * @return true if CSRF should be used
 	 */
 	public boolean useCsrf() {
 		return this.csrf;

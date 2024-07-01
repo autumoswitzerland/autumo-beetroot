@@ -1,0 +1,29 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+	<ul class="side-nav">
+		<li class="heading">Actions</li>
+		<li><a href="/{$lang}/roles/edit?id={$id}" class="side-nav-item">Edit
+				Role</a></li>
+		<li>
+			<form name="post_roles_delete_{$id}" style="display: none;"
+				method="post" action="/{$lang}/roles/delete?id={$id}">
+				<input type="hidden" name="_method" value="POST">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
+			</form> <a href="/{$lang}/roles/delete?id={$id}" class="side-nav-item"
+			data-confirm-message="Are you sure you want to delete # {$dbid}?"
+			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_roles_delete_{$id}.submit(); } event.preventDefault();">Delete
+				Role</a>
+		</li>
+		<li><a href="/{$lang}/roles" class="side-nav-item">List Roles</a>
+		</li>
+		<li><a href="/{$lang}/roles/add" class="side-nav-item">New
+				Role</a></li>
+	</ul>
+</nav>
+
+<div class="roles view large-10 medium-8 columns content">
+	<h3>Role &#171;{$displayName}&#187;</h3>
+	<div class="table-responsive">
+		<table>{$data}
+		</table>
+	</div>
+</div>

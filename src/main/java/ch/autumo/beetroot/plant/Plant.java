@@ -18,6 +18,7 @@
 package ch.autumo.beetroot.plant;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -283,18 +284,24 @@ public class Plant {
     	
 		// ---- Java
     	
+    	String src = "src/";
+    	String srcMainJava = "src/main/java/";
+    	final File srcMainJavaDir = new File(srcMainJava);
+    	if (srcMainJavaDir.exists() && srcMainJavaDir.isDirectory())
+    		src = srcMainJava;
+    	
     	Fertilizer fertilizer = null;
-    	fertilizer = new Fertilizer(singleEntity, "gen/java/IndexHandler.java", "src/", "java");
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/IndexHandler.java", src, "java");
     	this.process(fertilizer);
-    	fertilizer = new Fertilizer(singleEntity, "gen/java/ViewHandler.java", "src/", "java");
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/ViewHandler.java", src, "java");
     	this.process(fertilizer);
-    	fertilizer = new Fertilizer(singleEntity, "gen/java/EditHandler.java", "src/", "java");
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/EditHandler.java", src, "java");
     	this.process(fertilizer);
-    	fertilizer = new Fertilizer(singleEntity, "gen/java/AddHandler.java", "src/", "java");
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/AddHandler.java", src, "java");
     	this.process(fertilizer);
-    	fertilizer = new Fertilizer(singleEntity, "gen/java/DeleteHandler.java", "src/", "java");
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/DeleteHandler.java", src, "java");
     	this.process(fertilizer);
-    	fertilizer = new Fertilizer(singleEntity, "gen/java/Entity.java", "src/", "java");
+    	fertilizer = new Fertilizer(singleEntity, "gen/java/Entity.java", src, "java");
     	this.process(fertilizer);
     	
     	
@@ -304,6 +311,7 @@ public class Plant {
 		System.out.println(Colors.darkYellow("  Add the following lines to your beetRoot routing configuration 'routing.xml'"));
 		System.out.println(Colors.darkYellow("  and into the right 'package'-section (change package name if necessary):\n"));
 
+		System.out.println("    <!-- "+fertilizer.upperEntityPlural+" -->");
 		System.out.println("    <Package name=\"planted.beetroot.handler."+fertilizer.lowerEntityPlural+"\">");
 		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"\" handler=\""+fertilizer.upperEntityPlural+"IndexHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
 		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/index\" handler=\""+fertilizer.upperEntityPlural+"IndexHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");

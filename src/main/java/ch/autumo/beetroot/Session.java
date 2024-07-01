@@ -19,6 +19,7 @@ package ch.autumo.beetroot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -160,21 +161,26 @@ public class Session implements Serializable {
 
 	/**
 	 * Set user data.
+	 * Use user or or user roles depending if you use the simple role 
+	 * management or the full User-Role ACL. 
 	 * 
 	 * @param id user DB id
 	 * @param name user name
 	 * @param role user role
+	 * @param roles user roles
 	 * @param firstname first name
 	 * @param lastname last name
 	 * @param email email
 	 * @param secretKey secret key
 	 * @param twoFa 2FA?
 	 */
-	public void setUserData(int id, String name, String role, String firstname, String lastname, String email, String secretKey, boolean twoFa) {
+	public void setUserData(int id, String name, String role, List<String> roles, String firstname, String lastname, String email, String secretKey, boolean twoFa) {
 		
 		this.set("userid", Integer.valueOf(id));
 		this.set("username", name);
 		this.set("userrole", role);
+		if (roles != null && !roles.isEmpty())
+			this.set("userroles", String.join(",", roles));
 
 		if (firstname != null && firstname.length() != 0)
 			this.set("firstname", firstname);
@@ -193,6 +199,7 @@ public class Session implements Serializable {
 		this.remove("userid");
 		this.remove("username");
 		this.remove("userrole");
+		this.remove("userroles");
 		this.remove("firstname");
 		this.remove("lastname");
 		this.remove("email");
@@ -267,11 +274,26 @@ public class Session implements Serializable {
 	}
 	
 	/**
+	 * TODO: handle ACL
+	 * 
 	 * Get user role.
 	 * @return user role
 	 */
 	public String getUserRole() {
 		return (String) this.get("userrole");
+	}
+	
+	/**
+	 * Get user roles.
+	 * @return user roles
+	 */
+	public List<String> getUserRoles() {
+		final String urs = (String) this.get("userroles");
+		if (urs != null && urs.length() != 0) {
+			final String parts[] = urs.toString().split(",");
+			return Arrays.asList(parts);
+		}
+		return null;
 	}
 	
 	/**
@@ -541,5 +563,16 @@ public class Session implements Serializable {
 	public void clearInternalTOTPCode() {
 		data.remove("_2facode");
 	}
+
 	
+	public static void main(String[] args) {
+		String s = "aa, ddd ,   ,sdd, dd    , s   ".replaceAll("\\s", "");
+		String r[] = s.toString().split(",\\s*");
+				
+				
+		for (int i = 0; i < r.length; i++) {
+			System.out.println("'"+r[i]+"'");
+		}
+		
+	}
 }

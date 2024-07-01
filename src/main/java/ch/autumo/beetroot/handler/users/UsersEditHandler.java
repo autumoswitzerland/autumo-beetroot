@@ -40,9 +40,8 @@ public class UsersEditHandler extends DefaultEditHandler {
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 		
 		/** Password updates not allowed
-		final String pass = session.getParms().get("password");
-		
-		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+		final String pass = session.getParms().get("password");< o d		
+<		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 		if (jsPwValidator) {
 			final RuleResult rr = PasswordHelper.isValid(pass);
 			if (!rr.isValid())

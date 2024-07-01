@@ -32,6 +32,16 @@
 	    <Route path="/:lang/users/newqrcode" handler="NewQRCodeHandler" name="users" />
 	</Package>
 		
+   	<!-- Roles  -->
+    <Package name="ch.autumo.beetroot.handler.roles">
+        <Route path="/:lang/roles" handler="RolesIndexHandler" name="roles" />
+        <Route path="/:lang/roles/index" handler="RolesIndexHandler" name="roles" />
+        <Route path="/:lang/roles/view" handler="RolesViewHandler" name="roles" />
+        <Route path="/:lang/roles/edit" handler="RolesEditHandler" name="roles" />
+        <Route path="/:lang/roles/add" handler="RolesAddHandler" name="roles" />
+        <Route path="/:lang/roles/delete" handler="RolesDeleteHandler" name="roles" />
+    </Package>
+    		
 	<!-- Tasks  -->
 	<Package name="ch.autumo.beetroot.handler.tasks">
 	    <Route path="/:lang/tasks" handler="TasksIndexHandler" name="tasks" />

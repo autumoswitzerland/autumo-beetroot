@@ -89,14 +89,57 @@ public class Beans {
 	 * @return name of table in DB
 	 */
 	public static String classToTable(Class<?> clz) {
+		final String c = clz.getName();
+		return classNameToTable(c);
+	}
+
+	/**
+	 * Class name to DB table.
+	 * @param clz class name
+	 * @return name of table in DB
+	 */
+	public static String classNameToTable(String clz) {
 		
-		final String c = clz.getName().toLowerCase();
-		String table = c.substring(c.lastIndexOf(".") + 1, c.length());
-		if (table.endsWith("y"))
-			table = (table.substring(0, table.length() - 1)) + "ies";
+		String table = clz;
+		if (table.lastIndexOf(".") != -1)
+			table = clz.substring(clz.lastIndexOf(".") + 1, clz.length());
+
+		int countUpperCase = 0;
+        int secondUpperCaseIndex = -1;
+        for (int i = 0; i < table.length(); i++) {
+            char ch = table.charAt(i);
+            if (Character.isUpperCase(ch)) {
+                countUpperCase++;
+                if (countUpperCase == 2) {
+                    secondUpperCaseIndex = i;
+                    break;
+                }
+            }
+        }
+		if (secondUpperCaseIndex != -1) {
+			String t0 = table.substring(0, secondUpperCaseIndex);
+			String t1 = table.substring(secondUpperCaseIndex, table.length());
+			t0 = makePlural(t0);
+			t1 = makePlural(t1);
+			table = t0 + "_" + t1;
+		} else {
+			table = makePlural(table);
+		}
+		return table.toLowerCase();
+	}
+	
+	/**
+	 * Make plural name.
+	 * 
+	 * @param name singular name
+	 * @return plural name
+	 */
+	public static String makePlural(String name) {
+		if (name.endsWith("y"))
+			name = (name.substring(0, name.length() - 1)) + "ies";
 		else
-			table += "s";
-		return table;
+			name += "s";		
+		return name;
 	}
 	
 	/**
@@ -106,14 +149,36 @@ public class Beans {
 	 * @return class name
 	 */
 	public static String tableToClassName(String tableName) {
-		String cName = tableName.substring(0, 1).toUpperCase() + tableName.substring(1, tableName.length()).toLowerCase();
-		if (cName.endsWith("ies"))
-			cName = cName.substring(0, cName.length() - 3) + "y";
-		else
-			cName = cName.substring(0, cName.length() - 1);
+		
+		String cName = null;
+		if (tableName.indexOf("_") != -1) {
+			final String p[] = tableName.split("_");
+			String t0 = p[0].substring(0, 1).toUpperCase() + p[0].substring(1, p[0].length()).toLowerCase();
+			String t1 = p[1].substring(0, 1).toUpperCase() + p[1].substring(1, p[1].length()).toLowerCase();
+			t0 = makeSingular(t0);
+			t1 = makeSingular(t1);
+			cName = t0 + t1;
+		} else {
+			cName = tableName.substring(0, 1).toUpperCase() + tableName.substring(1, tableName.length()).toLowerCase();
+			cName = makeSingular(cName);
+		}
 		return cName;
 	}
 
+	/**
+	 * Make singular name.
+	 * 
+	 * @param name plural name
+	 * @return singular name
+	 */
+	public static String makeSingular(String name) {
+		if (name.endsWith("ies"))
+			name = name.substring(0, name.length() - 3) + "y";
+		else
+			name = name.substring(0, name.length() - 1);
+		return name;
+	}
+	
 	/**
 	 * Create empty bean.
 	 * 
