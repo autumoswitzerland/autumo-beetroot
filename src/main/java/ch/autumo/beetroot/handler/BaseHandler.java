@@ -1433,7 +1433,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String txt = "";
 		for (Iterator<Model> iterator = list.iterator(); iterator.hasNext();) {
 			final Model model = iterator.next();
-			txt += "<li class=\"list-group-item\" data-id=\""+model.getId()+"\">"+model.getDisplayValue()+"</li>\n";
+			txt += "<li class=\"list-group-item\" draggable=\"true\" ondragstart=\"drag(event)\" data-id=\""+model.getId()+"\">"+model.getDisplayValue()+"</li>\n";
 		}
 		snippet.replace(idx, idx + tag.length(), txt);
 	}

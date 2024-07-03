@@ -17,57 +17,57 @@
  */
 
 
-document.addEventListener('DOMContentLoaded', (event) => {
-	
-    const assigned = document.getElementById('assigned');
-    const available = document.getElementById('available');
-    const assignButton = document.getElementById('assignButton');
-    const removeButton = document.getElementById('removeButton');
-    const assignedIds = document.getElementById('assignedIds');
+function allowDrop(event) {
+    event.preventDefault();
+}
 
-    let selectedAvailable = null;
-    let selectedAssigned = null;
+function drag(event) {
+    event.dataTransfer.setData("text", event.target.getAttribute('data-id'));
+}
 
-    available.addEventListener('click', (event) => {
-        if (selectedAvailable) {
-            selectedAvailable.classList.remove('active');
-        }
-        selectedAvailable = event.target;
-        selectedAvailable.classList.add('active');
-    });
+function drop(event) {
+    event.preventDefault();
+    const data = event.dataTransfer.getData("text");
+    const draggedElement = document.querySelector(`[data-id='${data}']`);
+    const targetList = event.target.closest('.list-group');
 
-    assigned.addEventListener('click', (event) => {
-        if (selectedAssigned) {
-            selectedAssigned.classList.remove('active');
-        }
-        selectedAssigned = event.target;
-        selectedAssigned.classList.add('active');
-    });
-
-    assignButton.addEventListener('click', () => {
-        if (selectedAvailable) {
-            assigned.appendChild(selectedAvailable);
-            selectedAvailable.classList.remove('active');
-            selectedAvailable = null;
-            updateAssignedIds();
-        }
-    });
-
-    removeButton.addEventListener('click', () => {
-        if (selectedAssigned) {
-            available.appendChild(selectedAssigned);
-            selectedAssigned.classList.remove('active');
-            selectedAssigned = null;
-            updateAssignedIds();
-        }
-    });
-
-    function updateAssignedIds() {
-        const ids = [];
-        assigned.querySelectorAll('.list-group-item').forEach(item => {
-            ids.push(item.getAttribute('data-id'));
-        });
-        assignedIds.value = ids.join(','); // 1,3
+    if (targetList && !targetList.contains(draggedElement)) {
+        targetList.appendChild(draggedElement);
+        updateAssignedIds();
     }
-	
+}
+
+function assignSelected() {
+    const selected = document.querySelector('#available .list-group-item.active');
+    if (selected) {
+        document.getElementById('assigned').appendChild(selected);
+        selected.classList.remove('active');
+        updateAssignedIds();
+    }
+}
+
+function removeSelected() {
+    const selected = document.querySelector('#assigned .list-group-item.active');
+    if (selected) {
+        document.getElementById('available').appendChild(selected);
+        selected.classList.remove('active');
+        updateAssignedIds();
+    }
+}
+
+function updateAssignedIds() {
+    const ids = [];
+    document.getElementById('assigned').querySelectorAll('.list-group-item').forEach(item => {
+        ids.push(item.getAttribute('data-id'));
+    });
+    document.getElementById('assignedIds').value = ids.join(',');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.list-group-item').forEach(item => {
+        item.addEventListener('click', (event) => {
+            document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
 });

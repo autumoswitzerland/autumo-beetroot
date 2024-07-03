@@ -114,6 +114,7 @@ ul.pagination li {
 .list-group-item {
 	background-color: #cccccc;
 	border: 1px solid #888888;
+	cursor: pointer;
 }
 .btn-arrow {
     display: flex;
