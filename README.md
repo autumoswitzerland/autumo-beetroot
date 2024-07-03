@@ -36,7 +36,7 @@
 <h1 align="center">autumo beetRoot</h1>
 
   <p align="center">
-    A Slim & Rapid Java Web Framework
+    A slim & rapid Java web-dev framework
     <br>
     <a href="https://github.com/autumoswitzerland/autumo/issues">Report Bug</a>
     ·
@@ -66,14 +66,14 @@
     <li><a href="#default-database-and-schema">Default Database and Schema</a></li>
     <li><a href="#crud-generator-plant">CRUD Generator PLANT</a></li>
     <li><a href="#crud-hooks">CRUD Hooks</a></li>
-    <li><a href="#language-management">Language Management</a></li>
     <li><a href="#standard-html-templates">Standard HTML Templates</a></li>
-    <li><a href="#User--Roles--Authorization">User, Roles & Authorization</a></li>
+    <li><a href="#User--Roles">User & Roles</a></li>
     <li><a href="#json-rest-api">JSON REST API</a></li>
     <li><a href="#routing">Routing</a></li>
     <li><a href="#logging">Logging</a></li>
     <li><a href="#mailing">Mailing</a></li>
     <li><a href="#mail-templates">Mail Templates</a></li>
+    <li><a href="#java-translations">Java Translations</a></li>
     <li><a href="#webapp-design-and-javascript">Webapp Design and Javascript</a></li>
     <li><a href="#https">HTTPS</a></li>
     <li><a href="#roadmap--backlog">Roadmap | Backlog</a></li>
@@ -89,7 +89,7 @@
 <!-- WHAT IS BEETROOT -->
 ## What is beetRoot ?
 
-beetRoot is a rapid Java web development as well as a full & secure client-server framework ready to run, starts approx. 5 times faster than [SpringBoot](https://spring.io/guides/gs/spring-boot)
+beetRoot is a rapid Java web-development as well as a full & secure client-server framework ready to run, starts approx. 5 times faster than [SpringBoot](https://spring.io/guides/gs/spring-boot)
 and you get a set of working dependencies with the initial setup for the current release, a transparent and clear way to configure the framework and its components and the freedom to choose any
 web container or simply use the optimized and embedded web container from the start. However, none of this prevents you from customizing the dependencies in the maven-`pom.xml` file itself.
 As much as we love [Gradle](https://gradle.org/), for this project we'll stick with [Maven](https://maven.apache.org/) for now. The quick start setup is also effortless and very fast!
@@ -134,7 +134,8 @@ The Web framework is shipped with the following features ready to use:
 - Easy to understand HTML template engine
 - HTTPS protocol and TLS for mail if configured
 - Bean support with transient and unique fields
-- User sessions are stored when servers are stopped
+- User roles & access control on controller level
+- User session are stored when servers are stopped
 - Entities can be served through the JSON REST API
 - Logging implementations other than log4j2 supported
 - Add, edit, view, list and delete functionality for entities
@@ -142,7 +143,6 @@ The Web framework is shipped with the following features ready to use:
 - Optimized console logging with colored sections (if required)
 - One-to-many database relationships are fully applied in MVC layers
 - Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
-- User roles & access control on controller level and within template
 - Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
 - Database connection pooling (HikariCP, with internal and external JNDI data sources)
 - Runs stand-alone as well as in common servlet containers such as Apache Tomcat and Jetty on URL root path as well behind a servlet-path without modifications of HTML templates, etc.
@@ -168,7 +168,6 @@ Enjoy!
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
 * [HikariCP](https://github.com/brettwooldridge/HikariCP)
-* [Bootstrap](https://getbootstrap.com/)
 * ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -185,7 +184,7 @@ Enter the following statements into your terminal:
 **Linux, macOS**
 
 ```NuShell
-VERSION=3.0.0
+VERSION=2.3.1
 PACKAGE=autumo-beetRoot-$VERSION
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
@@ -203,7 +202,7 @@ $PACKAGE/bin/beetroot.sh start
 **Windows**
 
 ```Batchfile
-SET VERSION=3.0.0
+SET VERSION=2.3.1
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
@@ -479,22 +478,6 @@ by registering an entity and a listener that is called back. The following callb
 
 
 
-<!-- LANGUAGE MANAGEMENT -->
-## Language Management
-
-### Base translations (Java code)
-
-If you need translations within the Java code, you simply add language java resource bundle keys within the `web/lang` directory to the specific language resource bundle, e.g. `lang_en.properties`.
-You can change beetRoot's standard messages too. For every new language added respectively requested by the web-app user, add the corresponding language java resource bundle within this directory.
-
-### Web template translations
-
-#TODO
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
 <!-- STANDARD HTML TEMPLATES -->
 ## Standard HTML Templates
 
@@ -536,36 +519,22 @@ The following template variables are always parsed and you can use them as many 
 
 
 
-<!-- USER, ROLES & AUTHORIZATION -->
-## User, Roles & Authorization
+<!-- USER & ROLES -->
+## User & Roles
 
-In the shipped setup (since release 3.0.0), the extended roles (with own role and role-assignment database table) is activated (switch `web_use_ext_roles=yes` in `beetroot.cfg`). 
-
+In the shipped setup (since release 2.4.0), the extended roles (with own role and role-assignment database table) is activated (switch `web_use_ext_roles=yes` in `beetroot.cfg`). 
 If you want to use the simple role management, whereas the role is an attribute of a user, deactivate the switch. In this case, the role field value of the user that is mapped 
-to the roles defined in the property `web_roles` in the application `beetroot.cfg`; we do not suggest this, it is legacy functionality only.
+to the roles defined in the property `web_roles` in the application `beetroot.cfg`.
 
 Roles are translated on the web masks if a language translation exists for these roles. Translations for roles in your translation files `web/lang/lang_*.properties` must start
 with `role.*`, e.g. `role.Administrator`.
 
 If you want to use your own role assignments with database roles or an ACL, e.g. with multiple roles and groups, overwrite the method `extractCustomSingleInputDiv()` in your user 
-edit- and add-handler or add your new role management by adjusting your `edit.html` and `add.html` template for the user (see templates for further information).
+edit- and add-handler or add your new role management by adjusting your `edit.html` and `add.html` template for the user (see templates for further information). Do not forget to 
+deactivate the default role management of the user edit-handler and add-handler before you add your own handler role logic (overwrite `useExternalRoles()` = true).
 
-- If you to see how such an extended implementation with many-to-many-assignments is made, see `ExtUsers*Handler`-implementations and their resource template files.
 - If you want to see, how role authorization is done in handlers, see `hasAccess`-method, e.g., in the `ch.autumo.beetroot.handler.tasks.TasksAddHandler` class.
-- If you want to see, how role authorization is done in the web templates, see, e.g., `web/html/en/home.html` and `web/html/blocks/head.html` template.
-
-Example with an entity (<code>Users</code>) and actions (<code>add</code>, <code>edit</code>): 
-
-```Html
-{$if-entity=Users:}
-{$if-action=add,edit:}
-<!-- E.g., limit the use of BootStrap here --> 
-<link rel="stylesheet" href="/css/bootstrap.min.css">
-{$endif-action;}
-{$endif-entity;}
-```
-
-**Note**: You can cascade web template authorizations in the order `roles` &#x2192; `entity` (only one allowed) &#x2192; `actions` only.
+- If you want to see, how role authorization is done in the web templates, see, e.g., `web/html/en/home.html` template.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -772,6 +741,16 @@ beetRoot can send both HTML and text emails. Formats are configured with the par
 
 
 **NOTE**: Java mail doesn't allow sending HTML with a head nor body-tag, hence you only are able to define HTML templates with tags that would be inside of a the body-tag. It is specification!
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+<!-- JAVA TRANSLATIONS -->
+## Java Translations
+
+If you need translations within the Java code, you simply add language java resource bundle keys within the `web/lang` directory to the specific language resource bundle, e.g. `lang_en.properties`.
+You can change beetRoot's standard messages too. For every new language added respectively requested by the web-app user, add the corresponding language java resource bundle within this directory.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
