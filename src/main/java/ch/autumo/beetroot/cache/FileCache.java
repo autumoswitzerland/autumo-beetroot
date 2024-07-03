@@ -381,7 +381,6 @@ public class FileCache  {
 	 * @throws IOException IO exception
      */
     public Response createResponse() throws IOException {
-    	
     	return this.createResponse(this.contentType.getContentType());
     }
     
@@ -415,7 +414,6 @@ public class FileCache  {
      * @return file path
      */
     public String getFullPath() {
-    	
     	return this.filePath.toAbsolutePath().toString();
     }
     

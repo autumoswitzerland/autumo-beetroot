@@ -108,12 +108,12 @@ ul.pagination li {
 .list-group {
     min-height: 200px;
 	background-color: #eeeeee;
-    border: 1px solid #aaaaaa;
+    border: 1px solid #cccccc;
     padding: 10px;
 }
 .list-group-item {
 	background-color: #cccccc;
-	border: 1px solid #888888;
+	border: 1px solid #bbbbbb;
 	cursor: pointer;
 }
 .btn-arrow {
@@ -357,7 +357,6 @@ h5 {
 		padding: 0;
 	}
 }
-
 .title-area {
 	height: 60px !important;
 }
@@ -391,7 +390,7 @@ div.message {
 	text-align: left;
 	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
-	font-weight: 600 !important;
+	font-weight: 400 !important;
 	line-height: 1.8em;
 	padding-left: 14px;
 	margin-left: 0px;
@@ -411,7 +410,7 @@ div.message.hidden {
 div.message::before {
 	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
-	font-weight: 600 !important;
+	font-weight: 400 !important;
 	margin-left: 18px;
 	margin-right: 10px;
 	padding-top: 0px;
@@ -432,7 +431,7 @@ div.message.success {
 div.success::before {
 	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
-	font-weight: 600 !important;
+	font-weight: 400 !important;
 	margin-left: 18px;
 	margin-right: 10px;
 	padding-top: 0px;
@@ -453,7 +452,7 @@ div.message.error {
 div.message.error:before {
 	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.0rem !important;
-	font-weight: 600 !important;
+	font-weight: 400 !important;
 	margin-left: 18px;
 	margin-right: 10px;
 	padding-top: 1px;
@@ -474,7 +473,7 @@ div.message.warning {
 div.message.warning:before {
 	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
-	font-weight: 600 !important;
+	font-weight: 400 !important;
 	margin-left: 18px;
 	margin-right: 10px;
 	padding-top: 0px;
@@ -714,7 +713,7 @@ ul.pagination .disabled:hover a {
 }
 
 .required>label {
-	font-weight: bold;
+	font-weight: normal;
 }
 .required>label:after {
 	content: ' *';
@@ -869,7 +868,7 @@ pre {
 .side-nav li.heading {
 	color: #146fa6;
 	font-size: 0.875rem;
-	font-weight: bold;
+	font-weight: normal;
 	text-transform: uppercase;
 	padding: 0.4375rem 0.875rem;
 }
@@ -885,7 +884,7 @@ pre {
 	table-layout: fixed;
 }
 table {
-	background: #fff;
+	background: #f8f8f8; /** light-theme background */
 	margin-bottom: 1.25rem;
 	border: none;
 	table-layout: fixed;
@@ -894,6 +893,9 @@ table {
 table thead {
 	background: none;
 }
+table thead tr th {
+	font-weight: normal;
+}
 table tr {
 	border-bottom: 1px solid #ebebec;
 }
@@ -901,6 +903,7 @@ table thead tr {
 	border-bottom: 1px solid #146fa6;
 }
 table tr th {
+	font-weight: normal;
 	padding: 0.5625rem 0.625rem;
 	font-size: 0.875rem;
 	color: #146fa6 !important;
@@ -940,6 +943,7 @@ fieldset {
 	margin: 1.125rem 0;
 }
 fieldset legend {
+    background: #f8f8f8; /** light-theme background */
 	border-bottom: 2px solid #146fa6;
 	width: 100%;
 	line-height: 2.5rem;
@@ -971,7 +975,7 @@ button {
 
 .content {
 	padding: 2rem;
-	background-color: #ffffff;
+	background-color: #f8f8f8; /** light-theme background */
 }
 .content h3 {
 	color: #0e4e74;
@@ -1002,7 +1006,7 @@ button {
 	margin-bottom: -99999px;
 	padding-bottom: 99999px;
 }
-@media ( max-width : 640px) {
+@media (max-width:640px) {
 	#actions-sidebar {
 		padding-bottom: 2rem;
 		margin-bottom: 0;

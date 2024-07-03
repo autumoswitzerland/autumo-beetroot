@@ -18,13 +18,10 @@
 
 
 
-
 /**
- * Customized design, 
- * language additions,
+ * Customized design, language additions,
  * Overrides.
  */
-
 
 
 /**
@@ -45,8 +42,6 @@ nav {
 footer {
 	margin-top: 14px;
 }
-
-
 
 /**
  * Further customization & overrides.
@@ -70,8 +65,9 @@ footer {
 	position: absolute;
 	right: 0px;
 	font-family: 'Gill Sans', sans-serif !important;
-	font-size: 1.6rem !important;
+	font-weight: lighter;
 	font-style: italic;
+	font-size: 1.6rem !important;
 	line-height: 1.6 !important;
 	color: #2dc7ff;
 	margin-top: 40px;

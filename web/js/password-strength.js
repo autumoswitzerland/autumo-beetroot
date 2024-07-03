@@ -1,6 +1,9 @@
 /* 
- * This plugin use jQuery Widget Factory because such approach allows to build complex, stateful plugins based on object-oriented principles.
- * If you prefer a lightweight implementation which not use Widget Factory and not depend from jQuery UI you can use password_strength_lightweight.js
+ * This plugin use jQuery Widget Factory because such approach allows to build complex,
+ * stateful plugins based on object-oriented principles.
+ * If you prefer a lightweight implementation which not use Widget Factory and not 
+ * depend from jQuery UI you can use password_strength_lightweight.js.
+ * 
  * Dependencies: 
  * 1. jQuery
  * 2. jQuery UI 
@@ -19,19 +22,12 @@
             inputClass: 'strength_input',
             strengthMeterClass: 'strength_meter',
             toggleButtonClass: 'button_strength',
-            showPasswordText: 'Show Password',
-            hidePasswordText: 'Hide Password'
+            showPasswordText: '{$pw.show}',
+            hidePasswordText: '{$pw.hide}'
         },
 
         _create: function () {
             var options = this.options;
-
-            var lng = document.getElementById("password").getAttribute("data-lang");
-			if (lng == 'de') {
-				options.showPasswordText = 'Passwort einblenden';
-				options.hidePasswordText = 'Passwort ausblenden';
-			}
-
             var val = document.getElementById("password").getAttribute("data-val");
             if (val == null || val == 'null')
             	val = '';
@@ -45,13 +41,13 @@
             this.element.append('<div class="' + options.strengthMeterClass + '"><div><p></p></div></div>');
             this.element.append(
                '<div class="pswd_info" style="display: none;"> \
-                <h3>Password must include:</h3> \
+                <h3 class="pw_info">{$pw.info}</h3> \
                 <ul> \
-                  <li data-criterion="length" class="valid">8-24 <strong>Characters</strong></li> \
-                  <li data-criterion="capital" class="valid">At least <strong>one capital letter</strong></li> \
-                  <li data-criterion="number" class="valid">At least <strong>one number</strong></li> \
-                  <li data-criterion="special" class="valid">At least <strong>one special character</strong></li> \
-                  <li data-criterion="letter" class="valid">No spaces</li> \
+                  <li data-criterion="length" class="valid">8-24 {$pw.chars}</li> \
+                  <li data-criterion="capital" class="valid">{$pw.capital}</li> \
+                  <li data-criterion="number" class="valid">{$pw.number}</li> \
+                  <li data-criterion="special" class="valid">{$pw.special}</li> \
+                  <li data-criterion="letter" class="valid">{$pw.letter}</li> \
                 </ul> \
                 </div>');
 
@@ -178,4 +174,3 @@
     });
 
 })( jQuery, window, document );
-

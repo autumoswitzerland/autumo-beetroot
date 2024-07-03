@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -597,6 +598,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						}
 							
 						return Response.newFixedLengthResponse(Status.OK, "text/css", css);
+					}
+
+					// Parse password strength javas-cript file for translations
+					if (requestedFile.equals("password-strength.js")) {
+						final String js = PwsParser.parseAll(fc.getTextData(), userSession);
+						return Response.newFixedLengthResponse(Status.OK, "application/javascript", js);
 					}
 					
 					// Everything else: Text data !
@@ -1228,6 +1235,40 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
 			final Route route = iterator.next();
 			addRoute(route.getRoute(), route.getPriority(), route.getHandler(), route.getInitParameter());
+		}
+	}
+
+	/**
+	 * Parser for 'password-strength.js'.
+	 */
+	private static class PwsParser {
+
+		public static Pattern PATTERN_INFO = Pattern.compile("\\{\\$pw.info\\}");
+		public static Pattern PATTERN_HIDE = Pattern.compile("\\{\\$pw.hide\\}");
+		public static Pattern PATTERN_SHOW = Pattern.compile("\\{\\$pw.show\\}");
+		public static Pattern PATTERN_CHARS = Pattern.compile("\\{\\$pw.chars\\}");
+		public static Pattern PATTERN_CAPITAL = Pattern.compile("\\{\\$pw.capital\\}");
+		public static Pattern PATTERN_NUMBER = Pattern.compile("\\{\\$pw.number\\}");
+		public static Pattern PATTERN_SPECIAL = Pattern.compile("\\{\\$pw.special\\}");
+		public static Pattern PATTERN_LETTER = Pattern.compile("\\{\\$pw.letter\\}");
+		
+		/**
+		 * Replace all variables.
+		 * 
+		 * @param script java-script file contents
+		 * @param userSession user session
+		 * @return replaced java-script contents
+		 */
+		public static String parseAll(String script, Session userSession) {
+			script = PATTERN_INFO.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.info", userSession));
+			script = PATTERN_HIDE.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.hide", userSession));
+			script = PATTERN_SHOW.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.show", userSession));
+			script = PATTERN_CHARS.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.chars", userSession));
+			script = PATTERN_CAPITAL.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.capital", userSession));
+			script = PATTERN_NUMBER.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.number", userSession));
+			script = PATTERN_SPECIAL.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.special", userSession));
+			script = PATTERN_LETTER.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.letter", userSession));
+			return script;
 		}
 	}
 	

@@ -1045,7 +1045,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	/**
 	 * Process handlers to get the whole HTML page.
 	 * 
-	 * @param session beetroot session
+	 * @param session beetRoot session
 	 * @param origId original DB id
 	 * @return whole parsed HTML page
 	 * @throws Exception exception
@@ -1411,9 +1411,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @param snippet buffered code snippet
 	 * @param list the list with the associated entities
+	 * @param session beetRoot session
 	 */
-	protected void parseAssociatedEntities(StringBuffer snippet, List<Model> list) {
-		this.parseAssociations("{$assignedRoles}", snippet, list);
+	protected void parseAssociatedEntities(StringBuffer snippet, List<Model> list, BeetRootHTTPSession session) {
+		this.parseAssociations("{$assignedRoles}", snippet, list, session);
 	}
 	
 	/**
@@ -1421,19 +1422,23 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @param snippet buffered code snippet
 	 * @param list the list with the un-associated entities
+	 * @param session beetRoot session
 	 */
-	protected void parseUnassociatedEntities(StringBuffer snippet, List<Model> list) {
-		this.parseAssociations("{$unassignedRoles}", snippet, list);
+	protected void parseUnassociatedEntities(StringBuffer snippet, List<Model> list, BeetRootHTTPSession session) {
+		this.parseAssociations("{$unassignedRoles}", snippet, list, session);
 	}
 	
-	private void parseAssociations(String tag, StringBuffer snippet, List<Model> list) {
+	private void parseAssociations(String tag, StringBuffer snippet, List<Model> list, BeetRootHTTPSession session) {
 		final int idx = snippet.indexOf(tag);
 		if (idx == -1)
 			return;
 		String txt = "";
 		for (Iterator<Model> iterator = list.iterator(); iterator.hasNext();) {
 			final Model model = iterator.next();
-			txt += "<li class=\"list-group-item\" draggable=\"true\" ondragstart=\"drag(event)\" data-id=\""+model.getId()+"\">"+model.getDisplayValue()+"</li>\n";
+			String roleVal = model.getDisplayValue();
+			if (model.modelClass().equals(Role.class))
+				roleVal = LanguageManager.getInstance().translateOrDefVal("role."+roleVal, roleVal, session.getUserSession());
+			txt += "<li class=\"list-group-item\" draggable=\"true\" ondragstart=\"drag(event)\" data-id=\""+model.getId()+"\">"+roleVal+"</li>\n";
 		}
 		snippet.replace(idx, idx + tag.length(), txt);
 	}

@@ -134,7 +134,7 @@ The Web framework is shipped with the following features ready to use:
 - Easy to understand HTML template engine
 - HTTPS protocol and TLS for mail if configured
 - Bean support with transient and unique fields
-- User session are stored when servers are stopped
+- User sessions are stored when servers are stopped
 - Entities can be served through the JSON REST API
 - Logging implementations other than log4j2 supported
 - Add, edit, view, list and delete functionality for entities
@@ -553,6 +553,19 @@ edit- and add-handler or add your new role management by adjusting your `edit.ht
 - If you to see how such an extended implementation with many-to-many-assignments is made, see `ExtUsers*Handler`-implementations and their resource template files.
 - If you want to see, how role authorization is done in handlers, see `hasAccess`-method, e.g., in the `ch.autumo.beetroot.handler.tasks.TasksAddHandler` class.
 - If you want to see, how role authorization is done in the web templates, see, e.g., `web/html/en/home.html` and `web/html/blocks/head.html` template.
+
+Example with an entity (<code>Users</code>) and actions (<code>add</code>, <code>edit</code>): 
+
+```Html
+{$if-entity=Users:}
+{$if-action=add,edit:}
+<!-- E.g., limit the use of BootStrap here --> 
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+{$endif-action;}
+{$endif-entity;}
+```
+
+**Note**: You can cascade web template authorizations in the order `roles` &#x2192; `entity` (only one allowed) &#x2192; `actions` only.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

@@ -87,8 +87,8 @@ public class ExtUsersAddHandler extends UsersAddHandler {
 			
 			final StringBuffer snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
 			
-			super.parseAssociatedEntities(snippet, associatedRoles);
-			super.parseUnassociatedEntities(snippet, unassociatedRoles);
+			super.parseAssociatedEntities(snippet, associatedRoles, session);
+			super.parseUnassociatedEntities(snippet, unassociatedRoles,session);
 			
 			return snippet.toString();
 		}

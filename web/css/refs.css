@@ -21,8 +21,17 @@
 /**
  * References - CSS style-sheets with URLs in it. 
  * Always use single quotes ' for urls!
+ * 
+ * This file is translated by beetRoot depending
+ * on the execution environment; server or servlet.
  */
 
+
+body {
+	background: url('/img/tiles-back.png');
+	background-repeat: repeat;
+	background-color: #666666;
+}
  
 /**
  * Images for language selection entries.
@@ -36,12 +45,6 @@
 	background-image: url('/img/lang/en.gif');
 	background-repeat: no-repeat;
 	background-position: top;
-}
-
-body {
-	background: url('/img/tiles-back.png');
-	background-repeat: repeat;
-	background-color: #666666;
 }
 
 /**

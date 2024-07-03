@@ -52,7 +52,9 @@ public class ExtUsersIndexHandler extends UsersIndexHandler {
 			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
 				final UserRole userRole = (UserRole) iterator.next();
 				final Role role = (Role) userRole.getAssociatedReference(Role.class);
-				strRoles += role.getName() + ", ";
+				String name = role.getName();
+				name = LanguageManager.getInstance().translateOrDefVal("role."+name, name, session.getUserSession());
+				strRoles += name + ", ";
 			}
 			if (usersRoles.size() > 0)
 				strRoles = strRoles.substring(0, strRoles.length() - 2);
