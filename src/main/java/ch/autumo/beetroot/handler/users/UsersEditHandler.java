@@ -24,7 +24,7 @@ import ch.autumo.beetroot.handler.DefaultEditHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
 
 /**
- * Tasks edit handler. 
+ * Users edit handler. 
  */
 public class UsersEditHandler extends DefaultEditHandler {
 	
@@ -41,7 +41,7 @@ public class UsersEditHandler extends DefaultEditHandler {
 		
 		/** Password updates not allowed
 		final String pass = session.getParms().get("password");< o d		
-<		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
+		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 		if (jsPwValidator) {
 			final RuleResult rr = PasswordHelper.isValid(pass);
 			if (!rr.isValid())

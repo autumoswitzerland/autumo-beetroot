@@ -251,7 +251,8 @@ public class Beans {
 			map  = null;
 		}
 		return map;
-	}	
+	}
+	
 	/**
 	 * Get display field name of bean.
 	 * 

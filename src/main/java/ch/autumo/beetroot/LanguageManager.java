@@ -47,8 +47,10 @@ public class LanguageManager {
 	private static LanguageManager instance = null;	
 	
     private static Map<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
+    private static Map<String, ResourceBundle> template_bundles = new ConcurrentHashMap<String, ResourceBundle>();
 	
     private static ResourceBundle defaultTrans = null;
+    private static ResourceBundle defaultTransTmpl = null;
     
 	private static String defaultLang = DEFAULT_LANG;
 	private static String langs[] = null;
@@ -69,24 +71,31 @@ public class LanguageManager {
         	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
         	if (context != null) {
         		
-    			final String cp = Web.getRealPath(context) + "web/lang/";
-        		
-        		File file = new File(cp);
-        		URI uri = file.toURI();
+    			File file = new File(Web.getRealPath(context) + "web/lang/");
+    			URI uri = file.toURI();
         		URL urls[] = null;
         		try {
         			urls = new URL[]{ uri.toURL()};
         		} catch (MalformedURLException e) {
         			throw new RuntimeException("Cannot get resource bundles within servlet context extra loader!", e);
 				}
+        		
         		loader = new URLClassLoader(urls);
             	defaultTrans = ResourceBundle.getBundle("lang", new Locale("default"), loader);
-            	
         		if (defaultTrans == null)
                 	defaultTrans = ResourceBundle.getBundle("/web/lang/lang", new Locale("default"), Thread.currentThread().getContextClassLoader());
+
+            	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+	        		loader = new URLClassLoader(urls);
+	            	defaultTransTmpl = ResourceBundle.getBundle("tmpl_lang", new Locale("default"), loader);
+	        		if (defaultTransTmpl == null)
+	        			defaultTransTmpl = ResourceBundle.getBundle("/web/lang/tmpl_lang", new Locale("default"), Thread.currentThread().getContextClassLoader());
+            	}
         		
         	} else {
             	defaultTrans = ResourceBundle.getBundle("web/lang/lang", new Locale("default"));
+            	if (BeetRootConfigurationManager.getInstance().translateTemplates())
+            		defaultTransTmpl = ResourceBundle.getBundle("web/lang/tmpl_lang", new Locale("default"));
         	}
         	
         	// langs
@@ -98,20 +107,37 @@ public class LanguageManager {
         		defaultLang = "en";
         	
         	ResourceBundle bundle = null;
+        	ResourceBundle bundleTmpl = null;
 
         	for (int i = 0; i < langs.length; i++) {
 				
         		// NOTICE: not yet country specific supported.
         		final Locale locale = new Locale(langs[i]);
         		
-        		if (context == null)
+        		if (context == null) {
+        			
         			bundle = ResourceBundle.getBundle("web/lang/lang", locale);
+        			
+                	if (BeetRootConfigurationManager.getInstance().translateTemplates())
+                		bundleTmpl = ResourceBundle.getBundle("web/lang/tmpl_lang", locale);
+        		}
         		else {
+        			
                 	bundle = ResourceBundle.getBundle("lang", locale, loader);
                 	if (bundle == null)
             			bundle = ResourceBundle.getBundle("/web/lang/lang", locale, Thread.currentThread().getContextClassLoader());
+                	
+                	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+	                	bundleTmpl = ResourceBundle.getBundle("tmpl_lang", locale, loader);
+	                	if (bundleTmpl == null)
+	                		bundleTmpl = ResourceBundle.getBundle("/web/lang/tmpl_lang", locale, Thread.currentThread().getContextClassLoader());
+                	}
         		}
+        		
             	bundles.put(langs[i], bundle);
+            	
+            	if (BeetRootConfigurationManager.getInstance().translateTemplates())
+            		template_bundles.put(langs[i], bundleTmpl);
 			}
         }
         return instance;
@@ -124,10 +150,48 @@ public class LanguageManager {
 	 * Translate method for the template engine and for
 	 * users of this framework.
 	 * 
-	 * General language files are place in the directory:
-	 * 'web/lang'
+	 * It is internally used only.
+	 * 
+	 * Template language files are place in the directory:
+	 * 'web/lang'; e.g. 'tmpl_lang_en.properties'.
 	 *  
-	 * @param key key associated to text in 'trans_xx' resources to translate
+	 * @param key key associated to text in translation resources
+	 * @param userSession the user session
+	 * @return translated text
+	 */
+	public String translateTemplate(String key, Session userSession) {
+		final String lang = userSession.getUserLang();
+		ResourceBundle bundle = template_bundles.get(lang);
+		String text = null;
+		
+		try {
+			text = bundle.getString(key);
+		} catch (Exception e) {
+	    	LOG.info("No template translation for key '"+key+"' found! trying default language '"+DEFAULT_LANG+"'.");
+	    	bundle = bundles.get(DEFAULT_LANG);
+	    	try {
+				text = bundle.getString(key);
+			} catch (Exception e2) {
+		    	LOG.info("No template translation for key '"+key+"' for default language found! trying default translations 'lang_default.properties'.");
+		    	try {
+					text = defaultTrans.getString(key);
+				} catch (Exception e3) {
+			    	LOG.warn("No template translation found at all for key '"+key+"'! *Sniff*");
+					return null;
+				}
+			}
+		}
+		return text;		
+	}
+
+	/**
+	 * Translate method for the template engine and for
+	 * users of this framework.
+	 * 
+	 * General language files are place in the directory:
+	 * 'web/lang'; e.g. 'lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
 	 * @param userSession the user session
 	 * @param arguments the arguments to replace in the text with variables
 	 * @return translated text
@@ -142,15 +206,15 @@ public class LanguageManager {
 	 * users of this framework.
 	 * 
 	 * General language files are place in the directory:
-	 * 'web/lang'
+	 * 'web/lang'; e.g. 'lang_en.properties'.
 	 *  
-	 * @param key key associated to text in 'trans_xx' resources to translate
+	 * @param key key associated to text in translation resources
 	 * @param lang language code
 	 * @param arguments the arguments to replace in the text with variables
 	 * @return translated text
 	 */
-	public String translate(String key, String lang, Object... arguments) {
 		
+	public String translate(String key, String lang, Object... arguments) {
 		ResourceBundle bundle = bundles.get(lang);
 		String text = null;
 		
@@ -182,9 +246,9 @@ public class LanguageManager {
 	 * Should only be used for special cases.
 	 * 
 	 * General language files are place in the directory:
-	 * 'web/lang'
+	 * 'web/lang'; e.g. 'lang_en.properties'.
 	 *  
-	 * @param key key associated to text in 'trans_xx' resources to translate
+	 * @param key key associated to text in translation resources
 	 * @param defaultValue default value
 	 * @param userSession the user session
 	 * @param arguments the arguments to replace in the text with variables
@@ -200,12 +264,12 @@ public class LanguageManager {
 	 * users of this framework that returns the defaukt value
 	 * if no translation is found at all.
 	 * 
-	 * Should onyly be used for special cases.
+	 * Should only be used for special cases.
 	 * 
 	 * General language files are place in the directory:
-	 * 'web/lang'
+	 * 'web/lang'; e.g. 'lang_en.properties'.
 	 *  
-	 * @param key key associated to text in 'trans_xx' resources to translate
+	 * @param key key associated to text in translation resources
 	 * @param defaultValue default value
 	 * @param lang language code
 	 * @param arguments the arguments to replace in the text with variables
@@ -490,5 +554,5 @@ public class LanguageManager {
 			}
 		}
 	}
-	
+
 }

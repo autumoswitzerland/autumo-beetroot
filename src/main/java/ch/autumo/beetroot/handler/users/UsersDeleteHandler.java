@@ -21,7 +21,8 @@ import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 
 /**
- * Properties add handler. 
+ * Users delete handler.
+ * Cascade deletes associated UserRole.
  */
 public class UsersDeleteHandler extends DefaultDeleteHandler {
 	
@@ -36,7 +37,7 @@ public class UsersDeleteHandler extends DefaultDeleteHandler {
 
 	@Override
 	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+		return userSession.getUserRoles().contains("Administrator");
 	}
 	
 }

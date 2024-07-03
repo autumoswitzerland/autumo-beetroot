@@ -1,0 +1,33 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+	<ul class="side-nav">
+		<li class="heading">Actions</li>
+		<li><a href="/{$lang}/roles/add">New Role</a></li>
+	</ul>
+</nav>
+
+<div class="tasks index large-10 medium-8 columns content">
+
+	<h3>Roles</h3>
+	<div class="table-responsive">
+		<table>
+			<colgroup>
+				<!--  NOTE: Define widths per column with 'style="width: xx%;" ' -->
+				<col span="1" style="width: 20%;">
+				<col span="1" style="width: 34%;">
+				<col span="1" style="width: 35%;">
+				<col span="1" style="width: 15%;">
+			</colgroup>
+			<thead>
+				<tr>
+					{$head}
+					<th class="actions">Actions</th>
+				</tr>
+			</thead>
+			<tbody>{$data}
+			</tbody>
+		</table>
+	</div>
+
+	{$paginator}
+
+</div>

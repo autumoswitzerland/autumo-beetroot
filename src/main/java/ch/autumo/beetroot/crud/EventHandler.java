@@ -32,6 +32,8 @@ import ch.autumo.beetroot.utils.DB;
 
 /**
  * CRUD event handler.
+ * 
+ * Dont't add CRUD handlers as listeners; this wouldn't be a good idea!
  */
 public class EventHandler {
 
@@ -142,18 +144,17 @@ public class EventHandler {
 	public boolean notifyBeforeUpdate(Class<?> entityClass, int id) {
 		final List<UpdateListener> l = updateListeners.get(entityClass);
 		if (l != null) {
-			boolean doNotUpdate = false;
 			Model model = null;
 			try {
 				model = DB.selectRecord(entityClass, id);
 				for (UpdateListener updateListener : l) {
 					if (updateListener.beforeUpdate(model))
-						doNotUpdate = true;
+						return true; // one is enough, abort!
 				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't load bean from database for before-update notification!", e);
 			}
-			return doNotUpdate;
+			return false;
 		}
 		return false;
 	}
@@ -190,18 +191,17 @@ public class EventHandler {
 	public boolean notifyBeforeDelete(Class<?> entityClass, int id) {
 		final List<DeleteListener> l = deleteListeners.get(entityClass);
 		if (l != null) {
-			boolean doNotUpdate = false;
 			Model model = null;
 			try {
 				model = DB.selectRecord(entityClass, id);
 				for (DeleteListener deleteListener : l) {
 					if (deleteListener.beforeDelete(model))
-						doNotUpdate = true;
+						return true; // one is enough, abort!
 				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't load bean from database for before-delete notification!", e);
 			}
-			return doNotUpdate;
+			return false;
 		}
 		return false;
 	}

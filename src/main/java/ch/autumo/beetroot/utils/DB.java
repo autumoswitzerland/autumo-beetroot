@@ -494,16 +494,22 @@ public class DB {
 		try {
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			String stmtStr = null;
+			
+			String order = "";
+			// Only use order clause if it is not a many-to-many-relation table!
+			if (!table.contains("_"))
+				order =" ORDER BY " + orderFiled;
+			
 			if (amount > 0) {
 				if (BeetRootDatabaseManager.getInstance().isOracleDb())
-					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + " ORDER BY " + orderFiled + " OFFSET 0 ROWS FETCH NEXT " + amount + " ROWS ONLY";
+					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + order + " OFFSET 0 ROWS FETCH NEXT " + amount + " ROWS ONLY";
 				else
-					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + " ORDER BY " + orderFiled + " LIMIT " + amount;
+					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + order + " LIMIT " + amount;
 			} else {
 				if (BeetRootDatabaseManager.getInstance().isOracleDb())
-					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + " ORDER BY " + orderFiled;
+					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + order;
 				else
-					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + " ORDER BY " + orderFiled;
+					stmtStr = "SELECT * FROM " + table + " WHERE " + condition + order;
 			}
 			stmt = conn.prepareStatement(stmtStr);
 			for (int i = 0; i < values.length; i++) {
@@ -526,6 +532,49 @@ public class DB {
 		return entities;
 	}
 
+	/**
+	 * Delete a many-to-many-relation record.
+	 * 
+	 * @param model model
+	 * @param foreignDbKeys DB foreign keys as given by the keys within
+	 * 			the return value of the model method {@link Model#getForeignReferences()}
+	 * @throws Exception
+	 */
+	public static void delete(Model model, Set<String> foreignDbKeys) throws Exception {
+		String clause = "";
+		for (Iterator<String> iterator = foreignDbKeys.iterator(); iterator.hasNext();) {
+			final String fk = iterator.next();
+			String v = model.get(fk);
+			clause += (fk + " = '" + v + "' AND ");
+		}
+		clause = clause.substring(0, clause.length() - 5);
+		final String entity = Beans.classToTable(model.modelClass());
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			// Delete data !
+			stmt = conn.createStatement();
+			String stmtStr = "DELETE FROM "+entity+" WHERE " + clause;
+			stmt.executeUpdate(stmtStr);
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		}		
+	}	
+
+	/**
+	 * Delete a record.
+	 * 
+	 * @param entity entity
+	 * @throws Exception exception
+	 */
+	public static void delete(Model model) throws Exception {
+		DB.delete(Beans.classToTable(model.modelClass()), model.getId());
+	}
+	
 	/**
 	 * Delete a record.
 	 * 
@@ -626,8 +675,9 @@ public class DB {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		PreparedStatement stmt2 = null;
+		PreparedStatement stmt3 = null;
 		ResultSet keySet = null;
-		int savedId = -1;
+		int savedId = Model.ID_UNASSIGNED;
 		final String tabelName = Beans.classToTable(entity.getClass());
 		try {
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
@@ -635,19 +685,27 @@ public class DB {
 			stmt = conn.prepareStatement("INSERT INTO "+tabelName+" (" + columns + ") VALUES (" + values + ")", Statement.RETURN_GENERATED_KEYS);
 			stmt.executeUpdate();
 			// Get generated key
+			boolean found = false;
 			if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
 				stmt2 = conn.prepareStatement("select "+tabelName+"_seq.currval from dual");
 				keySet = stmt2.executeQuery();
-				boolean found = keySet.next();
+				found = keySet.next();
 				if (found)
 					savedId = (int) keySet.getLong(1);
 			} else {
 				keySet = stmt.getGeneratedKeys();
-				boolean found = keySet.next();
+				found = keySet.next();
 				if (found)
 					savedId = keySet.getInt(1);
-				
 			}
+			
+			// For many-to-many-relation tables, there's maybe no id, so
+			// we return the pseudo id for these tables: -2;
+			if (!found && tabelName.contains("_")) {
+				found = true;
+				savedId = -2;
+			}
+			
 		} catch (SQLException e) {
 			LOG.error("Couldn't save entity!", e);
 			return Integer.valueOf(-1);
@@ -659,6 +717,8 @@ public class DB {
 					stmt.close();
 				if (stmt2 != null)
 					stmt2.close();
+				if (stmt3 != null)
+					stmt3.close();
 				if (conn != null)
 					conn.close();
 			} catch (SQLException e2) {

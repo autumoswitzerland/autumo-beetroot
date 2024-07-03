@@ -3,6 +3,7 @@
  */
 package ch.autumo.beetroot.handler.roles;
 
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultEditHandler;
 
 /**
@@ -23,6 +24,11 @@ public class RolesEditHandler extends DefaultEditHandler {
 		return RolesIndexHandler.class;
 	}
 
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRoles().contains("Administrator");
+	}
+	
 	@Override
 	public Class<?> getBeanClass() {
 		return Role.class;

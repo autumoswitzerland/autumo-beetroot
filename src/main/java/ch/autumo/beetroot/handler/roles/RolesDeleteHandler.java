@@ -3,14 +3,12 @@
  */
 package ch.autumo.beetroot.handler.roles;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
-import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.DB;
-
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultDeleteHandler;
 
 /**
- * Roles add handler. 
+ * Roles delete handler. 
+ * Cascade deletes associated UserRole.
  */
 public class RolesDeleteHandler extends DefaultDeleteHandler {
 	
@@ -24,12 +22,12 @@ public class RolesDeleteHandler extends DefaultDeleteHandler {
 	}
 
 	@Override
-	public HandlerResponse deleteData(BeetRootHTTPSession session, int id) throws Exception {
-
-		// if you need the bean before deleting the database object
-		Role role = (Role) DB.selectRecord(Role.class, id);
-
-		return super.deleteData(session, id); // delete it in the database
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRoles().contains("Administrator");
 	}
 	
+	@Override
+	public Class<?> getBeanClass() {
+		return Role.class;
+	}	
 }

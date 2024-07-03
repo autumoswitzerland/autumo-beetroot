@@ -140,7 +140,7 @@ public class BeetRootDefaultRouter implements Router {
 				
 				currPath = currPath.trim();
 				currHandler = currHandler.trim();
-				currName = currName.trim();
+				currName = currName.trim().toLowerCase();
 				
 				if (packageName.endsWith("."))
 					packageName = packageName.substring(0, packageName.length()-1);

@@ -31,7 +31,7 @@ public class PropertiesEditHandler extends DefaultEditHandler {
 
 	@Override
 	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+		return userSession.getUserRoles().contains("Administrator");
 	}
 	
 	@Override

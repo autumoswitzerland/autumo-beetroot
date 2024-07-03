@@ -3,7 +3,7 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.6
+#  Version: 4.7
 #
 #  Notes:
 #   -
@@ -11,7 +11,7 @@
 #------------------------------------------------------------------------------
 #
 #  Copyright 2024 autumo GmbH
-#  Date: 27.06.2024
+#  Date: 02.07.2024
 #
 ###############################################################################
 
@@ -19,7 +19,7 @@
 
 
 # Vars
-VERSION=2.3.1
+VERSION=3.0.0
 
 
 
@@ -287,6 +287,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../README.md autumo-beetRoot-$VERSION/
 	cp ../LICENSE.md autumo-beetRoot-$VERSION/
 	cp ../THIRDPARTYLICENSES.html autumo-beetRoot-$VERSION/
+	cp ../pom.xml autumo-beetRoot-$VERSION/
 
 	cp ../README.md autumo-beetRoot-web-$VERSION/
 	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/

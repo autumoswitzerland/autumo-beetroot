@@ -1,7 +1,7 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
 		<li class="heading">Actions</li>
-		{$ifrole=Administrator:}
+		{$if-role=Administrator:}
 		<li>
 			<form name="post_users_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/users/delete?id={$id}">
@@ -12,7 +12,7 @@
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.preventDefault();">Delete
 				User</a>
 		</li>
-		{$endifrole;}
+		{$endif-role;}
 		<li><a href="/{$lang}/users" class="side-nav-item">List Users</a></li>
 	</ul>
 </nav>
@@ -32,19 +32,17 @@
 					If you want to use your own role assignments with database roles or an ACL, 
 					e.g. with multiple roles/groups, overwrite the method 'extractCustomSingleInputDiv()' 
 					in your user edit-handler or add your new role management here!
-					Do not forget to deactivate the default role management of the user edit-handler
-					before you add your own handler role logic (overwrite useExternalRoles()=true).
 				 -->
 			</fieldset>
 			
 			<a href="/{$lang}/users/index" class="button right">Cancel</a>
 			<button type="submit">Save</button>
-			{$ifrole=Administrator:}
+			{$if-role=Administrator:}
 			<a  href="#"
 				onclick="if (confirm('Are you sure you want create a new QR code ?')) { window.location='/{$lang}/users/newqrcode?id={$id}'; } event.preventDefault();" 
 				title="Generate a new QR code; you have to re-scan the new code with the Google Authenticator"
 				class="button right twofabtn">New 2FA QR code</a>
-			{$endifrole;}
+			{$endif-role;}
 			<br><br><br>
 		</form>
 	</div>

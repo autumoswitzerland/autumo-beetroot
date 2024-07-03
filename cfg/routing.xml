@@ -18,12 +18,18 @@
 	
    	<!-- Users  -->
 	<Package name="ch.autumo.beetroot.handler.users">
-	    <Route path="/:lang/users" handler="UsersIndexHandler" name="users" />
-	    <Route path="/:lang/users/index" handler="UsersIndexHandler" name="users" />
-	    <Route path="/:lang/users/view" handler="UsersViewHandler" name="users" />
-	    <Route path="/:lang/users/edit" handler="UsersEditHandler" name="users" />
-	    <Route path="/:lang/users/add" handler="UsersAddHandler" name="users" />
-	    <Route path="/:lang/users/delete" handler="UsersDeleteHandler" name="users" />
+	    <Route path="/:lang/users" handler="ExtUsersIndexHandler" name="users" />
+	    <Route path="/:lang/users/index" handler="ExtUsersIndexHandler" name="users" />
+	    <Route path="/:lang/users/view" handler="ExtUsersViewHandler" name="users" />
+	    <Route path="/:lang/users/edit" handler="ExtUsersEditHandler" name="users" />
+	    <Route path="/:lang/users/add" handler="ExtUsersAddHandler" name="users" />
+	    <Route path="/:lang/users/delete" handler="ExtUsersDeleteHandler" name="users" />
+	    <!-- Route path="/:lang/users" handler="UsersIndexHandler" name="users" / -->
+	    <!-- Route path="/:lang/users/index" handler="UsersIndexHandler" name="users" / -->
+	    <!-- Route path="/:lang/users/view" handler="UsersViewHandler" name="users" / -->
+	    <!-- Route path="/:lang/users/edit" handler="UsersEditHandler" name="users" / -->
+	    <!-- Route path="/:lang/users/add" handler="UsersAddHandler" name="users" / -->
+	    <!-- >Route path="/:lang/users/delete" handler="UsersDeleteHandler" name="users" /  -->
 	    <Route path="/:lang/users/login" handler="LoginHandler" name="login" />
 	    <Route path="/:lang/users/logout" handler="LogoutHandler" name="logout" />
 	    <Route path="/:lang/users/reset" handler="ResetHandler" name="reset" />

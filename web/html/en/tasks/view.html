@@ -1,7 +1,7 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
 		<li class="heading">Actions</li>
-		{$ifrole=Administrator,Operator:}
+		{$if-role=Administrator,Operator:}
 		<li><a href="/{$lang}/tasks/edit?id={$id}" class="side-nav-item">Edit
 				Task</a></li>
 		<li>
@@ -14,13 +14,13 @@
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.preventDefault();">Delete
 				Task</a>
 		</li>
-		{$endifrole;}
+		{$endif-role;}
 		<li><a href="/{$lang}/tasks" class="side-nav-item">List Tasks</a>
 		</li>
-		{$ifrole=Administrator,Operator:}
+		{$if-role=Administrator,Operator:}
 		<li><a href="/{$lang}/tasks/add" class="side-nav-item">New
 				Task</a></li>
-		{$endifrole;}
+		{$endif-role;}
 	</ul>
 </nav>
 

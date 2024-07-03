@@ -83,7 +83,7 @@ public class UsersAddHandler extends DefaultAddHandler {
 
 	@Override
 	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+		return userSession.getUserRoles().contains("Administrator");
 	}
 	
 	@Override

@@ -52,7 +52,7 @@ public class Error404Handler extends BaseHandler {
 
 	@Override
 	public boolean showMenu(Session userSession) {
-		return userSession.getUserRole() != null;
+		return userSession.getUserRoles().size() > 0;
 	}
 	
 }

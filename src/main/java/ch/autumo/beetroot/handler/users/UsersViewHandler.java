@@ -30,9 +30,9 @@ import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.Time;
 import ch.autumo.beetroot.utils.TwoFA;
-import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
 
 /**
@@ -42,7 +42,7 @@ public class UsersViewHandler extends DefaultViewHandler {
 
 	private final static Logger LOG = LoggerFactory.getLogger(UsersViewHandler.class.getName());
 	
-	private String userName = null;
+	protected String userName = null;
 	
 	public UsersViewHandler(String entity) {
 		super(entity);
@@ -86,7 +86,7 @@ public class UsersViewHandler extends DefaultViewHandler {
 		return User.class;
 	}
 	
-	private String get2FAQRImage(BeetRootHTTPSession session, User user) {
+	protected String get2FAQRImage(BeetRootHTTPSession session, User user) {
 		
 		// QR code for Google Authenticator 2FA
 		String absPath = null;

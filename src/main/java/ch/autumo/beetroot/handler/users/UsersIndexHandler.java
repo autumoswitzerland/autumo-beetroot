@@ -66,7 +66,7 @@ public class UsersIndexHandler extends DefaultIndexHandler {
 
 	@Override
 	public boolean deleteAllowed(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+		return userSession.getUserRoles().contains("Administrator");
 	}
 	
 	@Override

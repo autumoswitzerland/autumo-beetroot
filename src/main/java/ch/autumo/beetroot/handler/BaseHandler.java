@@ -30,6 +30,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,17 +62,21 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
+import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
+import ch.autumo.beetroot.handler.usersroles.UserRole;
 import ch.autumo.beetroot.utils.Beans;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Security;
 import ch.autumo.beetroot.utils.Time;
 import ch.autumo.beetroot.utils.Web;
 import jakarta.activation.MimeType;
+
 
 /**
  * Base handler - The "Heart" of beetRoot.
@@ -80,7 +85,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
-	// Precisiosn HTML input types
+	// Precision HTML input types
 	protected static List<String> PRECISION_INPUT_TYPES = Arrays.asList(new String[] {"email", "password", "search", "tel", "text", "url"});
 	
 	// link reference patterns 
@@ -139,7 +144,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private String displayNameValue = null;
 	
+	private int currentEntityDbId = -1;
+	
 	protected String entity = null;
+	protected String action = null;
 	protected String htmlHead = "";
 	protected String htmlData = "";
 	
@@ -155,10 +163,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private BeetRootHTTPSession currentSession = null;
 	
 	private StringBuffer checkBoxLogic = new StringBuffer();
-	
-	private boolean ifroleactive = false;
-	private boolean ifroleactive_sub = false;
-	private boolean ifroleactive_templ = false;
+
+	private IfSectionHandler ish = null;
 	
 	private boolean redirectedMarker = false;
 	//private boolean loginMarker = false;
@@ -170,12 +176,21 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private boolean measureDuration = false;
 	
 	
+	/**
+	 * Base Handler.
+	 */
 	public BaseHandler() {
 	}
 
+	/**
+	 * Base Handler.
+	 * 
+	 * @param entity entity, plural & lower-case; e.g. 'roles, users or properties'
+	 */
 	public BaseHandler(String entity) {
 		this.entity = entity;
 	}
+	
 	
 	/**
 	 * Every handler MUST be initialized!
@@ -185,6 +200,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public void initialize(BeetRootHTTPSession session) {
 		
 		// if (measureDuration) baseHandlerStart  = System.currentTimeMillis();
+		
+		// IF section handler
+		ish = new IfSectionHandler(this);
 		
 		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 		
@@ -295,6 +313,35 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}			
 			}
 		}
+
+		
+		// Get template resource
+		final String templateResource = getResource();
+		
+		// Define action
+		if (templateResource != null && templateResource.length() != 0) {
+    		final String htmlAction = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
+    		switch (htmlAction) {
+				case "index.html":
+					action = "index";
+					break;
+				case "view.html":
+					action = "view";
+					break;
+				case "add.html":
+					action = "add";
+					break;
+				case "edit.html":
+					action = "edit";
+					break;
+				default:
+					action = "null";
+					break;
+			}
+		} else {
+			action = "null";
+		}
+    		
 		
 		BufferedReader br = null;
 		try {
@@ -344,12 +391,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		// If no config prefix is defined, all config lines are taken!
 		    		// This makes sense if one doesn't need to distinguish between
 		    		// list and single records data field names aka GUI column names.
-		    		String templateResource = getResource();
 		    		if (templateResource != null && templateResource.length() != 0) {
 		    			
-			    		templateResource = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
-			    		
-			    		switch (templateResource) {
+			    		final String htmlAction = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
+			    		switch (htmlAction) {
 
 			    			case "index.json":
 			    				
@@ -407,13 +452,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				    			break;
 				    			
 			    			default:
-			    		    	columns.put(Integer.valueOf(++l), cfgLine);
+			    		    	columns.put(Integer.valueOf(++l), cfgLine.trim());
 			    		    	added = true;
 			    		    	break;
 			    		}
 			    		
 			    		if (!added)
-			    			fallBackList.add(cfgLine);
+			    			fallBackList.add(cfgLine.trim());
 		    		}
 		    		
 		    	}
@@ -567,11 +612,21 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Get SQL fields, e.g. 'col1, col2, col3'.
+	 * Get SQL fields, e.g. 'col1, col2, col3' for queries (seleczs).
 	 * 
 	 * @return SQL query fields
 	 */
 	public String getColumnsForSql() {
+		return this.getColumnsForSql(false);
+	}
+	
+	/**
+	 * Get SQL fields, e.g. 'col1, col2, col3'.
+	 * 
+	 * @param forModification true for updates/inserts
+	 * @return SQL query fields
+	 */
+	public String getColumnsForSql(boolean forModification) {
 
 		String queryfields = "";
 		
@@ -582,10 +637,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			final String colName = params[0].trim();
 			
 			if (transientFields.contains(colName)) {
-				if (columns.size() == i)
-					queryfields += "'TRANSIENT'";
-				else
-					queryfields += "'TRANSIENT', ";
+				if (!forModification) {
+					if (columns.size() == i)
+						queryfields += "'TRANSIENT'";
+					else
+						queryfields += "'TRANSIENT', ";
+				}
 				continue LOOP;
 			}
 			
@@ -595,8 +652,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				queryfields += colName + ", ";
 		}
 		
+		// Can happen if we have a transient field at the end!
+		if (queryfields.endsWith(", "))
+			queryfields = queryfields.substring(0, queryfields.length() - 2);
+		
 		return queryfields;
-	}
+	}	
 	
 	/**
 	 * Get transient fields
@@ -667,6 +728,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			else
 				clause += "'"+val+"', ";
 		}
+		
+		// Can happen if we have a transient field at the end!
+		if (clause.endsWith(", "))
+			clause = clause.substring(0, clause.length() - 2);
 
 		return clause;
 	}
@@ -695,19 +760,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		//final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 		final boolean dbAutoMod = BeetRootConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
 		
-		final Session userSession = session.getUserSession();
-		
 		String clause = "";
 		
-		int uid = userSession.getUserId();
-		int origId = -1; 
-		boolean currentUser = false;
-		if (entity.equals("users")) { // we have a user entity in process
-			final String obfSessId = session.getParms().get("id");
-			origId = userSession.getOrigId(obfSessId, getEntity());
-			if (origId == uid)
-				currentUser = true;
-		}
+		final Session userSession = session.getUserSession();
+		final boolean currentUser = this.isCurrentUserUpdate(session);
 		
 		LOOP: for (int i = 1; i <= columns.size(); i++) {
 
@@ -758,9 +814,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (col[0].equals("username")) {
 					userSession.set("username", val);
 				}
-				if (col[0].equals("roles")) {
-					userSession.set("userroles", val.replaceAll("\\s", ""));
-				}
 				if (col[0].equals("role")) {
 					userSession.set("userrole", val);
 				}
@@ -784,9 +837,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				clause += col[0] + "='"+val+"'";
 			else
 				clause += col[0] + "='"+val+"', ";
-			
 		}
 
+		// Can happen if we have a transient field at the end!
+		if (clause.endsWith(", "))
+			clause = clause.substring(0, clause.length() - 2);
+		
 		// Doesn't matter, if 'modified' is configured in 'colums.cfg' or not
 		// And we assume the column exists as specified by design!
 		// But we don't update it, if the user chooses to modify it by himself (GUI).
@@ -800,6 +856,52 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return clause;
 	}
 
+	/**
+	 * Is the current user being updated?
+	 * 
+	 * @param session HTTP session
+	 * @return true is so
+	 */
+	protected boolean isCurrentUserUpdate(BeetRootHTTPSession session) {
+		Session userSession = session.getUserSession();
+		int uid = userSession.getUserId();
+		int origId = -1; 
+		if (entity.equals("users")) { // we have a user entity in process
+			final String obfSessId = session.getParms().get("id");
+			origId = userSession.getOrigId(obfSessId, getEntity());
+			if (origId == uid)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Refresh user roles for and permissions current user.
+	 * 
+	 * @param currentUserId current user id of the currently logged-in user
+	 * @param session HTTP session
+	 */
+	protected final void refreshUserRoles(int currentUserId, BeetRootHTTPSession session) {
+		String roles = "";
+		String permissions = "";
+		
+		final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(currentUserId));
+		for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
+			final UserRole userRole = (UserRole) iterator.next();
+			final Role role = (Role) Role.read(Role.class, userRole.getRoleId());
+			roles += role.getName()+",";
+			permissions += role.getPermissions()+",";
+		}
+		if (usersRoles.size() > 0) {
+			roles = roles.substring(0, roles.length() - 1);
+			if (permissions.endsWith(","))
+				permissions = permissions.substring(0, permissions.length() - 1);
+		}
+		
+		session.getUserSession().set("userroles", roles.replaceAll("\\s", "").toLowerCase());
+		session.getUserSession().set("userpermissions", permissions.replaceAll("\\s", "").toLowerCase());		
+	}
+	
 	/**
 	 * Check if unique fields are unique.
 	 * 
@@ -1001,25 +1103,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			LOOP: while (sc.hasNextLine()) {
 				
 				String text = sc.nextLine();
-
 				
-				// deal with role-specific sections
-				
-				if (text.contains("$endifrole")) {
-					ifroleactive = false;
+				// Remove lines?
+				if(ish.continueRemoval(text, userSession, "overall"))
 					continue LOOP;
-				}
-				if (ifroleactive)
-					continue LOOP;
-				
-				if (text.contains("$ifrole")) {
-					final List<String> roles = this.getRolesFromTemplate(text);
-					if (!roles.contains(userSession.getUserRole()))
-						ifroleactive = true;
-					
-					continue LOOP;
-				}
-
 				
 				// layout templates and main template
 				if (text.contains("{#head}")) {
@@ -1204,7 +1291,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				
 				// replace further overall variables!
-				text = this.replaceVariables(text, session);
+				String resRepl = this.replaceVariables(text, session);
+				if (resRepl != null && resRepl.length() > 0)
+					text = resRepl;
+
+				// replace template language translations if any
+				text = this.replaceLanguageVariables(text, session);
 				
 				
 				// Add servlet URL part.
@@ -1295,9 +1387,58 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return false;
 	}
 	
+	/**
+	 * Retrieve user roles for simple user role management. These roles are read from the application 
+	 * configuration (beetroog.cfg -&gt; 'web_roles') and translated in the web masks if a translation 
+	 * is available.
+	 * 
+	 * If you want to use your own user/role or ACL setup; e.g. reading roles from 
+	 * your own database table, you be better off overwriting
+	 * {@link #extractCustomSingleInputDiv(BeetRootHTTPSession, String, ResultSetMetaData, String, String, int)}
+	 * and {@link #useExternalRoles()} = true; in this case this method isn't 
+	 * called at all!
+	 * 
+	 * Note: The extended user roles management is activated by default, so these roles aren't used!
+	 * 
+	 * @return user roles
+	 */
+	public String[] getSimpleManagementUserRoles() {
+		return BeetRootConfigurationManager.getInstance().getAppRoles();
+	}
+	
+	/**
+	 * Parse associated list.
+	 * 
+	 * @param snippet buffered code snippet
+	 * @param list the list with the associated entities
+	 */
+	protected void parseAssociatedEntities(StringBuffer snippet, List<Model> list) {
+		this.parseAssociations("{$assignedRoles}", snippet, list);
+	}
+	
+	/**
+	 * Parse un-associated list.
+	 * 
+	 * @param snippet buffered code snippet
+	 * @param list the list with the un-associated entities
+	 */
+	protected void parseUnassociatedEntities(StringBuffer snippet, List<Model> list) {
+		this.parseAssociations("{$unassignedRoles}", snippet, list);
+	}
+	
+	private void parseAssociations(String tag, StringBuffer snippet, List<Model> list) {
+		final int idx = snippet.indexOf(tag);
+		if (idx == -1)
+			return;
+		String txt = "";
+		for (Iterator<Model> iterator = list.iterator(); iterator.hasNext();) {
+			final Model model = iterator.next();
+			txt += "<li class=\"list-group-item\" data-id=\""+model.getId()+"\">"+model.getDisplayValue()+"</li>\n";
+		}
+		snippet.replace(idx, idx + tag.length(), txt);
+	}
 	
 	private void parseTemplateHead(StringBuffer template, String variable) {
-		
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
@@ -1305,7 +1446,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	private void parseTemplateData(StringBuffer template, String variable) {
-		
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
@@ -1313,7 +1453,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 	private void parsePaginator(StringBuffer template, String variable, BeetRootHTTPSession session) {
-		
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
@@ -1333,26 +1472,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		LOOP: while (sc.hasNextLine()) {
 			
 			String text = sc.nextLine();
-
 			//text = this.preParse(text, session);
 			
-			// deal with role-specific sections
-			if (text.contains("$endifrole")) {
-				ifroleactive_sub = false;
+			// Remove lines?
+			if(ish.continueRemoval(text, userSession, "subresource"))
 				continue LOOP;
-			}
-			if (ifroleactive_sub)
-				continue LOOP;
-			
-			if (text.contains("$ifrole")) {
-				final List<String> roles = this.getRolesFromTemplate(text);
-				if (!roles.contains(userSession.getUserRole()))
-					ifroleactive_sub = true;
-				
-				continue LOOP;
-			}
 
-			
 			switch (type) {
 			
 				case "{#head}":
@@ -1495,7 +1620,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 				case "{#menu}":
 					
-					final String userrole = userSession.getUserRole();
+					final List<String> userroles = userSession.getUserRoles();
 
 					/**
 					// This is only a cosmetic precaution, menus shouldn't
@@ -1507,7 +1632,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					if (text.contains("{$adminmenu}")) {
 						
-						if (userrole != null && userrole.length() != 0 && userrole.equalsIgnoreCase("Administrator")) {
+						if (userroles.contains("Administrator")) {
 							String adminMenu = parseAndGetSubResource(text, "web/html/:lang/blocks/adminmenu.html", "{$adminmenu}", session, origId);
 							text = text.replace("{$adminmenu}", adminMenu);
 							//text = PATTERN_ADMIN_MENU.matcher(text).replaceFirst(adminMenu);
@@ -1519,7 +1644,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					// Show login or logout?
 					if (text.contains("{$loginorlogout}")) {
-						if (userrole != null)
+						if (userroles.size() > 0)
 							text = text.replace("{$loginorlogout}", "<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
 							//text = PATTERN_LOGIN_OR_LOGOUT.matcher(text).replaceFirst("<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
 						else
@@ -1549,49 +1674,27 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 	private void addLine(String line) {
-		
 		buffer.append(line + "\n");
 	}
 
 	private void createTemplateContent(Session userSession, BeetRootHTTPSession session) {
-
 		Scanner sc = null;
 		try {
-			
 			sc = getNewScanner(userSession);
-			
 		} catch (FileNotFoundException e) {
-			
 			final String err = "Web resource '" + getResource() + "' not found!";
 			LOG.error(err, e);
 			addLine("<h1>"+err+"</h1>");
 		}
 
 		LOOP: while (sc.hasNextLine()) {
-			
 			String text = sc.nextLine();
-			
-			// deal with role-specific sections
-			
-			if (text.contains("$endifrole")) {
-				ifroleactive_templ = false;
+			// Remove lines?
+			if(ish.continueRemoval(text, userSession, "template"))
 				continue LOOP;
-			}
-			if (ifroleactive_templ)
-				continue LOOP;
-			
-			if (text.contains("$ifrole")) {
-				final List<String> roles = this.getRolesFromTemplate(text);
-				if (!roles.contains(userSession.getUserRole()))
-					ifroleactive_templ = true;
-				
-				continue LOOP;
-			}
-			
 			//addLine(this.preParse(text, session));
 			addLine(text);
 		}
-		
 		sc.close();
 	}	
 	
@@ -1612,11 +1715,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	private String getUpperCaseEntity() {
-		
 		final String e = getEntity();
 		if (e == null || e.length() == 0)
 			return "";
-		
 		final String s1 = (e.charAt(0) + "").toUpperCase();
 		return s1 + e.substring(1);
 	}
@@ -1706,6 +1807,24 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
+	 * Read snippet resource; e.g., 'web/html/:lang/users/snippets/roles.html'.
+	 * 
+	 * @param resource resource file
+	 * @param userSession user session
+	 * @return buffer with resource
+	 * @throws FileNotFoundException if file is not found
+	 */
+	protected StringBuffer readSnippetResource(String resource, Session userSession) throws FileNotFoundException {
+		final StringBuffer sb = new StringBuffer();
+		final String res = LanguageManager.getInstance().getResource(resource, userSession);
+		final Scanner sc = this.getNewScanner(res);
+		while (sc.hasNextLine()) {
+			sb.append(sc.nextLine() + "\n");
+		}
+		return sb;
+	}
+	
+	/**
 	 * Return size of initial value list for add template.
 	 * 
 	 * @return initial values size
@@ -1752,6 +1871,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return null;
 	}
 	
+	/**
+	 * MAIN method for base handler.
+	 */
 	@Override
     public final Response get(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session) {
 		
@@ -1795,6 +1917,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					return refresh((BeetRootHTTPSession)session, LanguageManager.getInstance().translate("base.info.session.inv", userSession));
 				}
 			}
+			
+			
+			// Set current DB id of entity, it is -1 for index.html pages or if it is a new entity!
+			this.setCurrentEntityDbId(origId);
 		
 			
 			// ======== A. HTTP Posts ========
@@ -2064,6 +2190,26 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
     }
 	
 	/**
+	 * Set current DB id of entity processed, for 'index.html' pages
+	 * or other pages not showing an existing entity it is '-1'.
+	 * 
+	 * @param origId original DB id of entity
+	 */
+	public final void setCurrentEntityDbId(int origId) {
+		this.currentEntityDbId = origId;
+	}
+
+	/**
+	 * Get current DB id of entity processed, for 'index.html' pages
+	 * or other pages not showing an existing entity it is '-1'.
+	 * 
+	 * @return original DB id of entity
+	 */
+	public final int getCurrentEntityDbId() {
+		return this.currentEntityDbId;
+	}
+	
+	/**
 	 * Overwrite this method, if you want to have a customized 
 	 * handler exception title and message.
 	 * 
@@ -2132,26 +2278,23 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	protected String getTemplateEngineErrorMessage(Session userSession, String resource) {
 		return LanguageManager.getInstance().translate("base.err.template.msg", userSession);
 	}
-
+	
 	/**
-	 * Get roles from template.
+	 * Get roles, entities or actions from template behind an "if"-tag.
 	 * 
-	 * @param roleLine text line within template with roles
-	 * @return all roles
+	 * @param line text line within template with roles, entities or actions
+	 * @return all values
 	 */
-	private List<String> getRolesFromTemplate(String roleLine) {
-		
-		String strs[] = roleLine.split("=", 2);
+	private List<String> getIfValuesFromTemplate(String line) {
+		String strs[] = line.split("=", 2);
 		if (strs.length != 2)
 			return Arrays.asList(new String[] {});
-		
 		strs[1] = PATTERN_SEMICOLON.matcher(strs[1]).replaceAll("");
 		strs[1] = PATTERN_COLON.matcher(strs[1]).replaceAll("");
 		strs[1] = PATTERN_RIGHT_CURLY_BRACKET.matcher(strs[1]).replaceAll("");
 		strs[1] = PATTERN_SPACE.matcher(strs[1]).replaceAll("");
-		strs[1] = strs[1].trim();
-		
-		final String roles[] = strs[1].split(","); 		
+		strs[1] = strs[1].trim().toLowerCase();
+		final String roles[] = strs[1].split(",");
 		return Arrays.asList(roles);
 	}
 	
@@ -2470,7 +2613,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @return response
 	 */
 	private Response refresh(BeetRootHTTPSession session, String msg) {
-		
 		return this.refreshRoute(session, getDefaultHandlerEntity() + "/index", msg);
 	}
 	
@@ -2478,7 +2620,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * Get default handler entity from configuration.
 	 */
 	private String getDefaultHandlerEntity() {
-		
 		String entity;
 		try {
 			entity = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_ENTITY);
@@ -2493,7 +2634,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * Get default handler class from configuration.
 	 */
 	private Class<?> getDefaultHandlerClass() {
-		
 		String clz;
 		try {
 			clz = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_HANDLER);
@@ -2672,6 +2812,30 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
+	 * Replace language variables within the whole page if any.
+	 * 
+	 * @param text text to parse and return
+	 * @param session HTTP session
+	 * @return parsed text or null
+	 */
+	private String replaceLanguageVariables(String text, BeetRootHTTPSession session) {
+		// Only when switched on!
+		if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+			int idx = -1;
+			while ((idx = text.indexOf("{$lang.")) != -1) {
+				final int pos1 = idx + 7;
+				final int pos2 = text.indexOf("}");
+				String totrans = text.substring(pos1, pos2);
+				String trans = "";
+				if (totrans.length() > 0)
+					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession());
+				text = text.substring(0, idx) + trans + text.substring(pos2 + 1);
+			}
+		}
+		return text;
+	}
+	
+	/**
 	 * Get paginator html code. Must only be implemented by index handlers
 	 * and is only called if there's a {$paginator} tag in a template.
 	 * @param session HTTP session  
@@ -2699,7 +2863,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param message message
 	 */
 	public void addSuccessMessage(String message) {
-		
 		if (message != null)
 			this.successMessage = message.replace("$", "\\$");
 		else
@@ -2712,7 +2875,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param message message
 	 */
 	public void addWarningMessage(String message) {
-		
 		if (message != null)
 			this.warningMessage = message.replace("$", "\\$");
 		else
@@ -2725,7 +2887,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param message message
 	 */
 	public void addErrorMessage(String message) {
-		
 		if (message != null)
 			this.errorMessage = message.replace("$", "\\$");
 		else
@@ -2747,7 +2908,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param columnName column / input name
 	 */
 	protected void addCheckBox(BeetRootHTTPSession session, String columnName) {
-		
 		checkBoxLogic.append(""
 				+ "$('#cb_"+columnName+"').change(function() {\n"
 				+ "	if ($(this).is(':checked')) {\n"
@@ -2792,6 +2952,106 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final long duration = ifaceXEnd - baseHandlerStart;
 		final String durStr = "BEETROOT handler process time: " + Time.getReadableDuration(duration, TimeUnit.HOURS);
 		LOG.info(durStr);
+	}
+
+	/**
+	 * State handler for role, entity and action "IFs" for
+	 * the overall, the template and the template sub-resource layer.
+	 * 
+	 * Note: Authorization cascades in the HTML views only works in the order:
+	 * role -> entity -> action.
+	 *  
+	 * Nasty stuff.
+	 */
+	protected final class IfSectionHandler {
+
+		private Map<String, Map<String, Boolean>> ifTagStates = new HashMap<String, Map<String, Boolean>>();
+		private BaseHandler handler = null;
+		
+		/**
+		 * Create an "if"-section handler.
+		 * 
+		 * @param handler base handler
+		 */
+		protected IfSectionHandler(BaseHandler handler) {
+			this.handler= handler;
+		}
+		
+		/**
+		 * Continue removal of lines?
+		 * 
+		 * @param text current line
+		 * @param userSession user session
+		 * @param layer 'overall', 'template' or 'subresource'
+		 * @return true if removal should continue, otherwise false
+		 */
+		protected boolean continueRemoval(String text, Session userSession, String layer) {
+			
+			boolean continueRemoval = false;
+
+			// Get states
+			Map<String, Boolean> currStates = ifTagStates.get(layer);
+			
+			// TODO we have to check all roles
+			
+			// Add initial states if not present for layer
+			if (currStates == null) {
+				currStates = new HashMap<String, Boolean>();
+				currStates.put("role", Boolean.FALSE);
+				currStates.put("entity", Boolean.FALSE);
+				currStates.put("action", Boolean.FALSE);
+				ifTagStates.put(layer, currStates);
+			}
+			
+			// deal with role-specific sections
+			if (text.contains("$endif-role")) {
+				currStates.put("role", Boolean.FALSE);
+				continueRemoval = true;
+			}
+			if (currStates.get("role").booleanValue())
+				continueRemoval = true;
+			if (text.contains("$if-role")) {
+				final List<String> roles = userSession.getUserRoles();
+				final List<String> tempRoles = handler.getIfValuesFromTemplate(text);
+				boolean roleAvailable = false;
+				final Iterator<String> iterator = tempRoles.iterator();
+				while (!roleAvailable && iterator.hasNext()) {
+					final String tempRole = iterator.next();
+					roleAvailable = roles.contains(tempRole);
+				}
+				if (!roleAvailable)
+					currStates.put("role", Boolean.TRUE); // start removal
+				continueRemoval = true;
+			}
+			// deal with entity-specific sections
+			if (text.contains("$endif-entity")) {
+				currStates.put("entity", Boolean.FALSE);
+				continueRemoval = true;
+			}
+			if (currStates.get("entity").booleanValue())
+				continueRemoval = true;
+			if (text.contains("$if-entity")) {
+				final List<String> entities = handler.getIfValuesFromTemplate(text);
+				if (!entities.contains(entity))
+					currStates.put("entity", Boolean.TRUE); // start removal
+				continueRemoval = true;
+			}
+			// deal with action-specific sections
+			if (text.contains("$endif-action")) {
+				currStates.put("action", Boolean.FALSE);
+				continueRemoval = true;
+			}
+			if (currStates.get("action").booleanValue())
+				continueRemoval = true;
+			if (text.contains("$if-action")) {
+				final List<String> actions = handler.getIfValuesFromTemplate(text);
+				if (!actions.contains(action))
+					currStates.put("action", Boolean.TRUE); // start removal
+				continueRemoval = true;
+			}
+				
+			return continueRemoval;
+		}		
 	}
 	
 }

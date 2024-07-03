@@ -176,7 +176,7 @@ public class DefaultViewHandler extends BaseHandler {
 			val = o.toString();
 		
 		// Special case Users
-		if (!this.useExternalRoles() && getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+		if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 			val = LanguageManager.getInstance().translateOrDefVal("role."+val, val, session.getUserSession());
 		}
 		
@@ -202,16 +202,6 @@ public class DefaultViewHandler extends BaseHandler {
 	public String extractCustomSingleTableData(BeetRootHTTPSession session, ResultSet rsmd,
 			String columnName, int idx, Entity entity) throws Exception {
 		return null;
-	}
-	
-	/**
-	 * Overwrite and return true, if you want to use your own role assignments 
-	 * with database roles or an ACL, e.g. with multiple roles.
-	 * 
-	 * @return false to use internal role management, otherwise true
-	 */
-	public boolean useExternalRoles() {
-		return false;
 	}
 	
 	@Override

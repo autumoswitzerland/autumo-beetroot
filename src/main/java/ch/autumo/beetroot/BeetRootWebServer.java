@@ -50,13 +50,17 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
+import ch.autumo.beetroot.crud.DeleteListener;
+import ch.autumo.beetroot.crud.EventHandler;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.ErrorHandler;
+import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.users.OtpHandler;
+import ch.autumo.beetroot.handler.usersroles.UserRole;
 import ch.autumo.beetroot.mailing.MailerFactory;
 import ch.autumo.beetroot.routing.Route;
 import ch.autumo.beetroot.routing.Router;
@@ -89,6 +93,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	
 	private boolean csrf = true;
 	private boolean extendedRoles = true;
+	private boolean translateTemplates = false;
 	
 	private boolean isWebCmdMode = false;
 	
@@ -138,15 +143,28 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 		try {
 
-			csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS);
+			csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
 			if (csrf)
 		    	LOG.info("CSRF activated!");
 			BeetRootConfigurationManager.getInstance().setCsrf(csrf);
 
-			extendedRoles = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES);
-			if (extendedRoles)
-		    	LOG.info("Using extended user-role management.");
+			extendedRoles = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
 			BeetRootConfigurationManager.getInstance().setExtendedRoles(extendedRoles);
+
+			translateTemplates = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
+			if (translateTemplates)
+		    	LOG.info("Web templates are translated.");
+			BeetRootConfigurationManager.getInstance().setTranslateTemplates(translateTemplates);
+			
+			// Aren't we allowed to delete admin-role? If so, install listener for prevention
+			if (!BeetRootConfigurationManager.getInstance().getYesOrNo("web_admin_role_delete", Constants.NO)) {
+				EventHandler.getInstance().addDeleteListener(Role.class, new DeleteListener() {
+					@Override
+					public boolean beforeDelete(Model bean) {
+						return ((Role) bean).getName().equalsIgnoreCase("Administrator");
+					}
+				});
+			}
 			
 			servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 			if (servletName != null && servletName.length() != 0)
@@ -734,6 +752,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
                 int dbId = -1;
                 String dbPass = null;
                 String dbRole = null;
+        		String dbRoles = "";
+        		String dbPermissions = "";
                 String dbFirstName = null;
                 String dbLastName = null;
                 String dbEmail = null;
@@ -746,6 +766,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             		Statement stmt = null;
             		ResultSet rs = null;
 					try {
+						
 						conn = BeetRootDatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
 						//NO SEMICOLON
@@ -761,6 +782,26 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            			dbSecKey = rs.getString("secretkey");
 	            			dbTwoFa = rs.getBoolean("two_fa");
 	            		}
+
+	            		// Roles
+	        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(dbId));
+	        			if (usersRoles == null)
+	        				throw new SQLException("no roles data!");
+	        			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
+	        				final UserRole userRole = (UserRole) iterator.next();
+	        				final Role role = (Role) userRole.getAssociatedReference(Role.class);
+	        				dbRoles += role.getName() + ",";
+	        				dbPermissions += role.getPermissions()+",";
+	        				
+	        			}
+	        			if (usersRoles.size() > 0) {
+	        				dbRoles = dbRoles.substring(0, dbRoles.length() - 1);
+	        				if (dbPermissions.endsWith(","))
+	        					dbPermissions = dbPermissions.substring(0, dbPermissions.length() - 1);
+	        			}
+	        			dbRoles = dbRoles.toLowerCase();
+	        			dbPermissions = dbPermissions.toLowerCase();
+	            		
 					} catch (SQLException e) {
 						
 						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
@@ -785,7 +826,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						}
 					}
 
-					
+
 					// 0. LOGIN
 					boolean loginSuccess = false;
 					if (dbPwEnc) {
@@ -810,16 +851,19 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					// 1. GO !
             		if (loginSuccess) { 
             			
-            			/* TODO Extended Roles
-						final String urs = "...";
-						if (urs != null && urs.length() != 0) {
-							final String s = urs.replaceAll("\\s", "");
-							final String parts[] = s.toString().split(",");
-							List<String> roleList = Arrays.asList(parts);
-						}
-            			*/
+            			// Store user data to session
+            			userSession.setUserData(
+            					dbId, 
+            					postParamUsername, 
+            					dbRole, 
+            					dbRoles, 
+            					dbPermissions, 
+            					dbFirstName, 
+            					dbLastName, 
+            					dbEmail, 
+            					dbSecKey, 
+            					dbTwoFa);
             			
-            			userSession.setUserData(dbId, postParamUsername, dbRole, null, dbFirstName, dbLastName, dbEmail, dbSecKey, dbTwoFa);
             			userSession.createIdPair(dbId, "users");
 
 					    try {

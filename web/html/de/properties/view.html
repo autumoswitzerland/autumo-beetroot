@@ -1,7 +1,7 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
 		<li class="heading">Aktionen</li>
-		{$ifrole=Administrator:}
+		{$if-role=Administrator:}
 		<li><a href="/{$lang}/properties/edit?id={$id}" class="side-nav-item">
 				Setting editieren</a></li>
 		<li>
@@ -14,13 +14,13 @@
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_properties_delete_{$id}.submit(); } event.preventDefault();">
 				Setting löschen</a>
 		</li>
-		{$endifrole;}
+		{$endif-role;}
 		<li><a href="/{$lang}/properties" class="side-nav-item">Settings auflisten</a>
 		</li>
-		{$ifrole=Administrator:}
+		{$if-role=Administrator:}
 		<li><a href="/{$lang}/properties/add" class="side-nav-item">Neues
 				Setting</a></li>
-		{$endifrole;}
+		{$end-ifrole;}
 	</ul>
 </nav>
 

@@ -55,10 +55,29 @@ import ch.autumo.beetroot.utils.UtilsException;
  * case sensitive!
  */
 public abstract class Model implements Entity {
-	
+
     private static final long serialVersionUID = 1L;
-    
+
 	protected final static Logger LOG = LoggerFactory.getLogger(Model.class.getName());
+    
+	/**
+	 * Unassigned id; a model has been created
+	 * but or loaded from database that has no id.
+	 */
+	public static final int ID_UNASSIGNED = 0;
+	
+	/**
+	 * Invalid ID; used when an object cannot be
+	 * read or stored.
+	 */
+	public static final int ID_INVALID = -1;
+	
+	/**
+	 * Pseudo ID of an a stored model that is
+	 * a many-to-many-relation-model- 
+	 */
+	public static final int ID_M2M_PSEUDO = -2;
+    
     
 	/** Encode password properties when storing in DB? */
 	private static boolean dbPwEnc = false;
@@ -133,23 +152,42 @@ public abstract class Model implements Entity {
     
     /**
      * Get a value from this entity except the id.
+     * You even can use DB field name such as 'user_id'
+     * or 'max_asset_value'.
      * 
-     * @param beanPropertyName bean property name
+     * @param fieldName field name
      * @return bean value
      */
-	public String get(String beanPropertyName) {
+	public String get(String fieldName) {
 		Method method;
 		String mName = null;
 		String val = null;
+		
+		if (fieldName.contains("_")) {
+			String newName = "";
+			boolean nextIsUpper = false;
+			for (char c : fieldName.toCharArray()) {
+				if (nextIsUpper) {
+					c = Character.toUpperCase(c);
+					nextIsUpper = false;
+				}
+			    if (c != '_')
+			    	newName += c;
+			    else
+			    	nextIsUpper = true;
+			}
+			fieldName = newName;
+		}
+		
 		try {
-			mName = "get" + beanPropertyName.substring(0, 1).toUpperCase() + beanPropertyName.substring(1, beanPropertyName.length());
+			mName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1, fieldName.length());
 			method = modelClass().getDeclaredMethod(mName);
 			if (method != null) { // good!
 				final Object oVal = method.invoke(this);
 				val = oVal.toString();
 			}
 		} catch (Exception e) {
-			LOG.error("Couldn't get property '"+beanPropertyName+"' from bean class '"+modelClass().getName()+"'!", e);
+			LOG.error("Couldn't get property '"+fieldName+"' from bean class '"+modelClass().getName()+"'!", e);
 			// no value
 		}
 		return val;
@@ -158,17 +196,25 @@ public abstract class Model implements Entity {
 	/**
 	 * Save this entity bean to database.
 	 * 
-	 * @return generated ID
+	 * @return generated id or -1 if entity couldn't be saved or 
+	 * 			the pseudo id -2 for many-to-many relation tables 
+	 * 			that have no id
 	 */
 	public Integer save() {
+		
 		String stmtParts[] = null;
+		
 		try {
 			stmtParts = this.getStatementParts(true);
 		} catch (Exception e) {
 			LOG.error("Entity not saved!", e);
-			Integer.valueOf(-1);
+			return Integer.valueOf(ID_INVALID);
 		}
+		
 		final Integer saveId = DB.insert(this, stmtParts[0], stmtParts[1]);
+		if (saveId == ID_INVALID)
+			return saveId;
+		
 		this.setId(saveId.intValue());
 		this.isStored = true;
 		return saveId;
@@ -194,8 +240,14 @@ public abstract class Model implements Entity {
 	 * 
 	 * @throws Exception exception
 	 */
-	public void delete() throws Exception{
-		DB.delete(this);
+	public void delete() throws Exception {
+		if ((id == ID_UNASSIGNED || id == ID_M2M_PSEUDO) && this.getForeignReferences().size() > 1) {
+			// we can assume it is a many-to-many bean! It's wild...
+			final Set<String> foreignDbKeys = this.getForeignReferences().keySet();
+			DB.delete(this, foreignDbKeys);
+		} else {
+			DB.delete(this);
+		}
 		isStored = false;
 	}
 
@@ -278,6 +330,13 @@ public abstract class Model implements Entity {
 			LOG.error("Couldn't serialize (JSON) bean!", e);
 			return super.toString();
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		final Model other = (Model) obj;
+		return this.modelClass().equals(other.modelClass())
+				&& this.getId() == other.id;  
 	}
 
 	/**
@@ -512,8 +571,20 @@ public abstract class Model implements Entity {
     	return "id";
     }
 
+	/**
+	 * Get display value of bean.
+	 * 
+	 * @return display value
+	 */
+	public String getDisplayValue() {
+		return this.get(getDisplayField());
+	}
+    
     /**
      * Get reference entity map (all referenced entities).
+     * 
+     * The (PLANT-generated) mapping is:<br>
+     * &lt;databaseFieldName&gt; -&gt; &lt;Class&gt;
      * 
      * @return reference entity map
      */
@@ -528,5 +599,5 @@ public abstract class Model implements Entity {
 	 * @return model base class
 	 */
 	public abstract Class<?> modelClass();
-	
+
 }

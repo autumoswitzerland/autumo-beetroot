@@ -23,7 +23,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Map;
 
-import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
@@ -141,6 +140,7 @@ public class DefaultEditHandler extends BaseHandler {
 		// Unique fields test!
 		final HandlerResponse status = super.uniqueTest(session, "SELECT id FROM "+getEntity()+" WHERE id!="+id+" AND ", "updating");
 		if (status != null) {
+			// it's a bad status
 			status.setId(id);
 			return status;
 		}
@@ -225,6 +225,10 @@ public class DefaultEditHandler extends BaseHandler {
 	
 	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {
 
+		// No show!
+		if (guiColName.equals(Constants.GUI_COL_NO_SHOW))
+			return "";
+		
 		// No PWs anymore
 		if (columnName.toLowerCase().equals("password"))
 			return "";
@@ -324,7 +328,12 @@ public class DefaultEditHandler extends BaseHandler {
 				// All other
 				
 				// Custom fields/divs, e.g. for custom user roles
-				result += this.extractCustomSingleInputDiv(session, val, rsmd, columnName, guiColName, idx);
+				final String extra = this.extractCustomSingleInputDiv(session, val, rsmd, columnName, guiColName, idx);
+				if (extra != null && extra.length() != 0) {
+					result += extra; 
+					result += "</div>\n";
+					return result;
+				}
 				
 				//final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 				/*
@@ -333,9 +342,9 @@ public class DefaultEditHandler extends BaseHandler {
 				} else */
 
 				// a. Special case Users
-				if (!this.useExternalRoles() && getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+				if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 					
-					final String roles[] = this.getUserRoles();
+					final String roles[] = this.getSimpleManagementUserRoles();
 					
 					result += "<select name=\""+columnName+"\" id=\""+columnName+"\">\n";
 					for (int i = 0; i < roles.length; i++) {
@@ -422,33 +431,6 @@ public class DefaultEditHandler extends BaseHandler {
 	public String extractCustomSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd,
 			String columnName, String guiColName, int idx) throws Exception {
 		return "";
-	}
-	
-	/**
-	 * Overwrite and return true, if you want to use your own role assignments 
-	 * with database roles or an ACL, e.g. with multiple roles.
-	 * 
-	 * @return false to use internal role management, otherwise true
-	 */
-	public boolean useExternalRoles() {
-		return false;
-	}
-
-	/**
-	 * Retrieve user roles. By default, these roles are read from the application 
-	 * configuration (beetroog.cfg -&gt; web_roles) and translated in the web masks 
-	 * if a translation is available.
-	 * 
-	 * If you want to use your own user/role or ACL setup; e.g. reading roles from 
-	 * your own database table, you be better off overwriting
-	 * {@link #extractCustomSingleInputDiv(BeetRootHTTPSession, String, ResultSetMetaData, String, String, int)}
-	 * and {@link #useExternalRoles()} = true; in this case this method isn't 
-	 * called at all!
-	 * 
-	 * @return user roles
-	 */
-	public String[] getUserRoles() {
-		return BeetRootConfigurationManager.getInstance().getAppRoles();
 	}
 	
 	/**

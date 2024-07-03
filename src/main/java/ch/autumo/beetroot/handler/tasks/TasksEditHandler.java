@@ -45,8 +45,8 @@ public class TasksEditHandler extends DefaultEditHandler {
 	
 	@Override
 	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
-				userSession.getUserRole().equalsIgnoreCase("Operator");
+		return userSession.getUserRoles().contains("Administrator") ||
+				userSession.getUserRoles().contains("Operator");
 	}
 	
 }

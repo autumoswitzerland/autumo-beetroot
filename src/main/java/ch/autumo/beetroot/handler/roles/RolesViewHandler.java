@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 import ch.autumo.beetroot.utils.DB;
 
@@ -23,7 +24,7 @@ public class RolesViewHandler extends DefaultViewHandler {
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		// in case you want to use a bean
-		final Role role = (Role) entity;
+		//final Role role = (Role) entity;
 
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
@@ -39,6 +40,12 @@ public class RolesViewHandler extends DefaultViewHandler {
 		}
 	}
 
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.getUserRoles().contains("Administrator") ||
+				userSession.getUserRoles().contains("Operator");
+	}
+	
 	@Override
 	public Class<?> getBeanClass() {
 		return Role.class;

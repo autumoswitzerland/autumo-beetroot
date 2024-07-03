@@ -3,7 +3,7 @@
 		<li class="heading">Actions</li>
 		<li><a href="/{$lang}/users/edit?id={$id}" class="side-nav-item">Edit
 				User</a></li>
-		{$ifrole=Administrator:}
+		{$if-role=Administrator:}
 		<li>
 			<form name="post_users_delete_{$id}" style="display: none;"
 				method="post" action="/{$lang}/users/delete?id={$id}">
@@ -14,13 +14,13 @@
 			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.preventDefault();">Delete
 				User</a>
 		</li>
-		{$endifrole;}
+		{$endif-role;}
 		<li><a href="/{$lang}/users" class="side-nav-item">List Users</a>
 		</li>
-		{$ifrole=Administrator:}
+		{$if-role=Administrator:}
 		<li><a href="/{$lang}/users/add" class="side-nav-item">New
 				User</a></li>
-		{$endifrole;}
+		{$endif-role;}
 	</ul>
 </nav>
 

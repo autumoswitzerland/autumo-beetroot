@@ -120,11 +120,11 @@ INSERT INTO users (id, username, password, email, lasttoken, settings, role, lan
 
 -- ROLES
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
-(1, 'Administrator', 'All privileges.', '-', NOW(), NOW());
+(1, 'Administrator', 'All privileges', '-', NOW(), NOW());
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
-(2, 'Operator', 'Task surveillance and management.', '-', NOW(), NOW());
+(2, 'Operator', 'Task surveillance and management', '-', NOW(), NOW());
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
-(3, 'Controller', 'Task surveillance.', '-', NOW(), NOW());
+(3, 'Controller', 'Task surveillance', '-', NOW(), NOW());
 
 -- USERS_ROLES
 INSERT INTO users_roles (user_id, role_id, created) VALUES

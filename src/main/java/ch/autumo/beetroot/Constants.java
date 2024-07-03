@@ -29,7 +29,7 @@ public class Constants {
 	/**
 	 * App version.
 	 */
-	public static final String APP_VERSION = "2.3.1";
+	public static final String APP_VERSION = "3.0.0";
 	
 	/**
 	 * Initialize mime types registry.
@@ -273,6 +273,11 @@ public class Constants {
 	 * Use password validator?
 	 */
 	public static final String KEY_WEB_PASSWORD_VALIDATOR = "web_pw_validator";
+
+	/**
+	 * Translate templates?
+	 */
+	public static final String KEY_WEB_TRANSLATIONS = "web_translations";
 	
 	/**
 	 * Amount of referenced records to be loaded.

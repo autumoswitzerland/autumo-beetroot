@@ -98,6 +98,17 @@ ul.pagination li  {
 ul.pagination li a {
     color: #aaaaaa;
 }
+.list-group {
+    min-height: 200px;
+	background-color: #444444;
+    border: 1px solid #333333;
+    padding: 10px;
+}
+.list-group-item {
+	background-color: #666666;
+	border: 1px solid #444444;
+	color: #cccccc;
+}
 .container {
     border-bottom: 1px solid #000000 !important;
 }
@@ -122,6 +133,7 @@ p {
 }
 a {
     color: #0093E6;
+    text-decoration: none;
 }
 a:hover {
     color: #2DC7FE !important;
@@ -135,6 +147,9 @@ h1 {
 
 h3 {
     color: #2DC7FE !important;
+}
+h5 {
+	color: #A2EEFF !important;
 }
 .content h4.errMsg {
     color: #0093E6 !important;

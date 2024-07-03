@@ -172,8 +172,8 @@ public class DefaultIndexHandler extends BaseHandler {
 			// take care of user data !
 			if (userSession != null && getEntity().equals("users")) {
 				final String username = userSession.getUserName();
-				final String userrole = userSession.getUserRole();
-				if (username != null && username.length() != 0 && (userrole == null || !userrole.equalsIgnoreCase("Administrator")))
+				final List<String> userroles = userSession.getUserRoles();
+				if (!userroles.contains("Administrator"))
 					stmtStr += " WHERE username='"+username+"'";	
 			}
 			
@@ -486,23 +486,13 @@ public class DefaultIndexHandler extends BaseHandler {
 			val = o.toString();
 
 		// Special case Users
-		if (!this.useExternalRoles() && getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
+		if (getEntity().equals("users") && columnName.toLowerCase().equals("role")) {
 			val = LanguageManager.getInstance().translateOrDefVal("role."+val, val, session.getUserSession());
 		}
 		
 		val = Web.escapeHtml(val);
 
 		return "<td>" + val + "</td>";
-	}
-	
-	/**
-	 * Overwrite and return true, if you want to use your own role assignments 
-	 * with database roles or an ACL, e.g. with multiple roles.
-	 * 
-	 * @return false to use internal role management, otherwise true
-	 */
-	public boolean useExternalRoles() {
-		return false;
 	}
 	
 	/**

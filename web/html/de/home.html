@@ -12,27 +12,41 @@
 			<div class="row tile-menu-row">
 
 				<div class="menuEntry">
-					{$ifrole=Administrator:}
+					{$if-role=Administrator:}
 					<a class="portfolio-box" href="/{$lang}/users">
-					{$endifrole;}
-					{$ifrole=Operator,Controller:}
+					{$endif-role;}
+					{$if-role=Operator,Controller:}
 					<a class="portfolio-box" href="{$userlink}">
-					{$endifrole;}
+					{$endif-role;}
 					<img class="img-fluid" src="/img/icons/menu-user-128.png" alt="">
 						<div class="portfolio-box-caption">
 							<div class="portfolio-box-caption-content">
 								<div class="project-name">&nbsp;</div>
-								{$ifrole=Administrator:}
+								{$if-role=Administrator:}
 								<div class="project-category text-faded">Benutzer verwalten</div>
-								{$endifrole;}
-								{$ifrole=Operator,Controller:}
+								{$endif-role;}
+								{$if-role=Operator,Controller:}
 								<div class="project-category text-faded">User-Profil</div>
-								{$endifrole;}
+								{$endif-role;}
 							</div>
 						</div>
 					</a>
 				</div>
 
+				{$if-role=Administrator:}
+				<div class="menuEntry">
+					<a class="portfolio-box" href="/{$lang}/roles"> <img
+						class="img-fluid" src="/img/icons/menu-roles-128.png" alt="">
+						<div class="portfolio-box-caption">
+							<div class="portfolio-box-caption-content">
+								<div class="project-name">&nbsp;</div>
+								<div class="project-category text-faded">Rollen verwalten</div>
+							</div>
+						</div>
+					</a>
+				</div>
+				{$endif-role;}
+				
 				<div class="menuEntry">
 					<a class="portfolio-box" href="/{$lang}/tasks/index?page=1"> <img
 						class="img-fluid" src="/img/icons/menu-task-128.png" alt="">
@@ -45,7 +59,7 @@
 					</a>
 				</div>
 
-				{$ifrole=Administrator:}
+				{$if-role=Administrator:}
 				<div class="menuEntry">
 					<a class="portfolio-box" href="/{$lang}/properties"> <img
 						class="img-fluid" src="/img/icons/menu-props-128.png" alt="">
@@ -57,7 +71,7 @@
 						</div>
 					</a>
 				</div>
-				{$endifrole;}
+				{$endif-role;}
 
 			</div>
 

@@ -7,7 +7,7 @@
 	<name>autumo-beetroot</name>
 	<groupId>ch.autumo.beetroot</groupId>
 	<artifactId>autumo-beetroot</artifactId>
-	<version>2.3.1</version>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
 
 	<scm>

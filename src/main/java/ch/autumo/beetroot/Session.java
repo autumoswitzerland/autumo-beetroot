@@ -19,7 +19,6 @@ package ch.autumo.beetroot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nanohttpd.protocols.http.content.CookieHandler;
 
 import ch.autumo.beetroot.utils.GUIDGenerator;
+import ch.autumo.beetroot.utils.LowerCaseList;
 
 /**
  * User session.
@@ -167,21 +167,32 @@ public class Session implements Serializable {
 	 * @param id user DB id
 	 * @param name user name
 	 * @param role user role
-	 * @param roles user roles
+	 * @param roles user roles (comma-separated roles)
+	 * @param permissions user permissions (comma-separated permissions)
 	 * @param firstname first name
 	 * @param lastname last name
 	 * @param email email
 	 * @param secretKey secret key
 	 * @param twoFa 2FA?
 	 */
-	public void setUserData(int id, String name, String role, List<String> roles, String firstname, String lastname, String email, String secretKey, boolean twoFa) {
+	public void setUserData(
+			int id, 
+			String name, 
+			String role, 
+			String roles, 
+			String permissions, 
+			String firstname, 
+			String lastname, 
+			String email, 
+			String secretKey, 
+			boolean twoFa) {
 		
 		this.set("userid", Integer.valueOf(id));
 		this.set("username", name);
 		this.set("userrole", role);
-		if (roles != null && !roles.isEmpty())
-			this.set("userroles", String.join(",", roles));
-
+		this.set("userroles", roles);
+		this.set("userpermissions", permissions);
+		
 		if (firstname != null && firstname.length() != 0)
 			this.set("firstname", firstname);
 		if (lastname != null && lastname.length() != 0)
@@ -200,6 +211,7 @@ public class Session implements Serializable {
 		this.remove("username");
 		this.remove("userrole");
 		this.remove("userroles");
+		this.remove("userpermissions");
 		this.remove("firstname");
 		this.remove("lastname");
 		this.remove("email");
@@ -274,26 +286,55 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * TODO: handle ACL
-	 * 
-	 * Get user role.
-	 * @return user role
-	 */
-	public String getUserRole() {
-		return (String) this.get("userrole");
-	}
-	
-	/**
-	 * Get user roles.
+	 * Get user roles (DB role table).
 	 * @return user roles
 	 */
 	public List<String> getUserRoles() {
-		final String urs = (String) this.get("userroles");
-		if (urs != null && urs.length() != 0) {
-			final String parts[] = urs.toString().split(",");
-			return Arrays.asList(parts);
+		if (BeetRootConfigurationManager.getInstance().useExtendedRoles()) {
+			final String urs = (String) this.get("userroles");
+			if (urs != null && urs.length() != 0) {
+				final String parts[] = urs.toString().split(",");
+				return LowerCaseList.asList(parts);
+			} else {
+				return LowerCaseList.asList(new String[] {});
+			}
+		} else {
+			return LowerCaseList.asList(new String[] {(String) this.get("userrole")});
 		}
-		return null;
+	}
+	
+	/**
+	 * Check if user has a role (DB role table).
+	 * @paran role user role
+	 * @return true, if so
+	 */
+	public boolean hasUserRole(String role) {
+		if (BeetRootConfigurationManager.getInstance().useExtendedRoles())
+			return this.getUserRoles().contains(role.toLowerCase());
+		else
+			return ((String)this.get("userrole")).equals(role.toLowerCase());
+	}
+		
+	/**
+	 * Get user permissions.
+	 * @return user permissions
+	 */
+	public List<String> getUserPermissions() {
+		final String up = (String) this.get("userpermissions");
+		if (up != null && up.length() != 0) {
+			final String parts[] = up.toString().split(",");
+			return LowerCaseList.asList(parts);
+		}
+		return LowerCaseList.asList(new String[] {});
+	}
+
+	/**
+	 * Check if user has a permission (DB role table).
+	 * @paran perm user permission
+	 * @return true, if so
+	 */
+	public boolean hasUserPermission(String perm) {
+		return this.getUserPermissions().contains(perm.toLowerCase());
 	}
 	
 	/**
@@ -563,16 +604,5 @@ public class Session implements Serializable {
 	public void clearInternalTOTPCode() {
 		data.remove("_2facode");
 	}
-
 	
-	public static void main(String[] args) {
-		String s = "aa, ddd ,   ,sdd, dd    , s   ".replaceAll("\\s", "");
-		String r[] = s.toString().split(",\\s*");
-				
-				
-		for (int i = 0; i < r.length; i++) {
-			System.out.println("'"+r[i]+"'");
-		}
-		
-	}
 }

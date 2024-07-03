@@ -3,9 +3,9 @@
  */
 package ch.autumo.beetroot.handler.roles;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 
 /**
@@ -28,19 +28,15 @@ public class RolesAddHandler extends DefaultAddHandler {
 
 	@Override
 	public Map<String, Object> getAddMandatoryFields() {
-		
-		final Map<String, Object> fields = new HashMap<String, Object>();
-		
-		// NOTE: Provide default values for fields that are NOT
-		// nullable and that aren't present in the add GUI!
-		// If these fields are present in the GUI, you can remove
-		// them or simply return null here!
-		// fields.put("name", "<DEFAULT-VALUE>");
-		// fields.put("id", "<DEFAULT-VALUE>");
-
-		return fields;
+		//We have no mandatory fields that aren't shown on the UI
+		return null;
 	}
 
+	@Override
+	public boolean hasAccess(Session userSession) {
+		return userSession.hasUserRole("Administrator");
+	}
+	
 	@Override
 	public Class<?> getBeanClass() {
 		return Role.class;

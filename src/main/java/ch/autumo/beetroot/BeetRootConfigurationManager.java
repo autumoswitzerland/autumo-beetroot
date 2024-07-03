@@ -61,6 +61,7 @@ public class BeetRootConfigurationManager {
 	private String fullConfigBasePath = null;
 	
 	private Properties generalProps = null;
+	private boolean translateTemplates = false;
 	private boolean extendedRoles = true;
 	private boolean csrf = true;
 	
@@ -299,6 +300,23 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
+	 * Set if templates should be translated.
+	 * 
+	 * @param translateTemplates true if templates should be translated
+	 */
+	public void setTranslateTemplates(boolean translateTemplates) {
+		this.translateTemplates = translateTemplates;
+	}
+	
+	/**
+	 * Translated templates?
+	 * @return true if templates should be translated
+	 */
+	public boolean translateTemplates() {
+		return this.translateTemplates;
+	}
+	
+	/**
 	 * Set if extended roles should be used.
 	 * 
 	 * @param extendedRoles true if extended roles should be used
@@ -471,6 +489,23 @@ public class BeetRootConfigurationManager {
 		}
 		return Integer.valueOf(v);
 	}
+
+	/**
+	 * Get yes (true) or no (false), or the default value if the 
+	 * configuration is missing.
+	 * 
+	 * @param key key
+	 * @param defaultVal default value
+	 * @return true or false
+	 */
+	public boolean getYesOrNo(String key, String defaultVal) {
+		String val = generalProps.getProperty(key);
+		if (val == null || val.length() == 0) {
+			return defaultVal.toLowerCase().equals(Constants.YES);
+		}
+		val = val.trim();
+		return val.toLowerCase().equals(Constants.YES);
+	}
 	
 	/**
 	 * Get yes (true) or no (false), if the configuration is messed up false
@@ -523,11 +558,13 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
+	 * App-roles for the simple role-management
+	 * (1 role per user, stored in user table).
+	 * 
 	 * Get web app roles.
 	 * @return web app roles
 	 */
 	public String[] getAppRoles() {
-
 		return getSepValues("web_roles");
 	}
 

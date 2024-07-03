@@ -33,7 +33,7 @@ public class PropertiesIndexHandler extends DefaultIndexHandler {
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		
 		// in case you want to use a bean
-		final Property property = (Property) entity;
+		//final Property property = (Property) entity;
 		
 		switch (columnName) {
 			// Note: Return a UI presentable value for each field.
@@ -55,7 +55,7 @@ public class PropertiesIndexHandler extends DefaultIndexHandler {
 
 	@Override
 	public boolean hasAccess(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator");
+		return userSession.getUserRoles().contains("Administrator");
 	}
 	
 	@Override

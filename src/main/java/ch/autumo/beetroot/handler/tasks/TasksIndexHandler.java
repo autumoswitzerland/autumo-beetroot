@@ -70,14 +70,14 @@ public class TasksIndexHandler extends DefaultIndexHandler {
 
 	@Override
 	public boolean deleteAllowed(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
-			userSession.getUserRole().equalsIgnoreCase("Operator");
+		return userSession.getUserRoles().contains("Administrator") ||
+				userSession.getUserRoles().contains("Operator");
 	}
 
 	@Override
 	public boolean changeAllowed(Session userSession) {
-		return userSession.getUserRole().equalsIgnoreCase("Administrator") ||
-			userSession.getUserRole().equalsIgnoreCase("Operator");
+		return userSession.getUserRoles().contains("Administrator") ||
+				userSession.getUserRoles().contains("Operator");
 	}
 	
 	@Override
