@@ -114,7 +114,7 @@ ul.pagination li {
 .list-group-item {
 	background-color: #cccccc;
 	border: 1px solid #bbbbbb;
-	cursor: pointer;
+	cursor: pointer !important;
 }
 .btn-arrow {
     display: flex;
@@ -489,7 +489,25 @@ div.message.warning:before {
 }
 
 /**
- * Dropdown menu
+ * Refresh elements.
+ */
+.refresh_section {
+	width: 200px;
+	float: left;
+	height: 40px;
+	margin-top: 8px;
+	margin-left: 20px;
+}
+.refresh_section_label {
+	font-family: 'Aileron-light', sans-serif !important;
+	margin-bottom: -1px !important;
+	margin-left: -4px !important;
+	background-color: #07b !important;
+	color: white;
+}
+
+/**
+ * Dropdown menu.
  */
 .dropdown_main {
 	width: 100px;
@@ -972,7 +990,158 @@ button {
 .right {
     margin-right:20px;
 }
+.flash-button-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+#flashMessage {
+    background-color: #198754;
+    color: white;
+    padding: 14px 32px 15px;
+    border-radius: 8px;
+    top: 26px;
+    float: right;
+    white-space: nowrap;
+    z-index: 1000;
+}
+.hidden {
+    display: none;
+}
 
+/**
+ * Terminal styles.
+ */
+.loginfo  { color: green; }
+.logwarn  { color: orange; }
+.logerror { color: red; }
+.logdebug { color: blue; }
+#termbar {
+	height: 32px;
+    background-color: #333333;
+    -moz-border-radius: 0px;
+	-webkit-border-radius: 8px 8px 0px 0px;
+	border-radius: 8px 8px 0px 0px; 
+}
+#termdot {
+    background-color: #07b;
+    border-radius: 100%;
+    width: 16px;
+    height: 16px;
+    margin-top: 8px;
+    margin-left: 8px;
+    float: left;
+}
+.termdot {
+	float: left;
+    width: 32px;
+	-webkit-animation: 2s blink ease infinite;
+	-moz-animation: 2s blink ease infinite;
+	-ms-animation: 2s blink ease infinite;
+	-o-animation: 2s blink ease infinite;
+	animation: 2s blink ease infinite;
+}
+#termsource {
+    color: #eeeeee;
+    height: 16px;
+    font-size: 14px;
+    font-family: monospace !important;
+    margin-top: 6px;
+    margin-left: 0px;
+    float: left;
+}
+#terminal {
+	clear: top;
+    background-color: #111111;
+    -moz-border-radius: 0px;
+	-webkit-border-radius: 0px 0px 8px 8px;
+	border-radius: 0px 0px 8px 8px; 
+    white-space: pre-wrap; word-wrap: break-word;
+    padding: 8px 8px 4px 8px;
+}
+.termfont {
+    color: #eeee !important;
+    font-family: monospace !important;
+    font-size: 15px !important;
+    text-align: left;
+    position: static;
+}
+
+/**
+ * Bottop/top page navigation.
+ */
+.arrcont {
+	clear: both;
+	position: relative;	
+    display: inline-flex;
+    float: left;
+	margin-left: -88px;	
+	margin-top: 44px;	
+}
+#return-to-bottom i, return-to-top i {
+    color: #fff;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+#return-to-bottom, #return-to-top {
+	position: absolute;
+	bottom: -4px;
+    background: #664d03;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    text-decoration: none;
+    border-radius: 16px;
+    -webkit-border-radius: 16px;
+    -moz-border-radius: 16px;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+#return-to-bottom {
+}
+#return-to-top {
+	margin-bottom: 7px;
+}
+#return-to-bottom:hover, #return-to-top:hover {
+    filter: brightness(1.8);
+}
+.arrow {
+	border: solid gray;
+	border-width: 0 5px 5px 0;
+	display: inline-flex;
+	width: 16px;
+	height: 16px;
+}
+.down {
+	margin-top: 5px;
+	margin-left: 8px;
+	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+}
+.up {
+	margin-top: 10px;
+	margin-left: 8px;
+	transform: rotate(-135deg);
+	-webkit-transform: rotate(-135deg);
+}
+#dottedLine {
+    width: 2px;
+    float: left;
+    left: 0%;
+	margin-top: -38px;	
+	margin-left: -73px;	
+    border-left: 2px dashed #333333;
+}
+
+/**
+ * Content.
+ */
 .content {
 	padding: 2rem;
 	background-color: #f8f8f8; /** light-theme background */
@@ -1011,4 +1180,50 @@ button {
 		padding-bottom: 2rem;
 		margin-bottom: 0;
 	}
+}
+
+/**
+ * Animations.
+ */
+
+/* Animation for blinking terminal dot */
+@keyframes "blink" {
+  from, to {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@-moz-keyframes blink {
+  from, to {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes "blink" {
+  from, to {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@-ms-keyframes "blink" {
+  from, to {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@-o-keyframes "blink" {
+  from, to {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
 }

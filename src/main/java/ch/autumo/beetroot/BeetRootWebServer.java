@@ -1271,5 +1271,20 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			return script;
 		}
 	}
-	
+
+//	private static void nonsenseThread() {
+//		final Thread thread = new Thread(() -> {
+//			try {
+//	            while (true) {
+//	            	LOG.info("Log some nonsense!");
+//	                Thread.sleep(1000);
+//	            }
+//	        } catch (InterruptedException e) {
+//	            System.err.println("Nonsense thread was interrupted!");
+//	        }				
+//	    });
+//		thread.setDaemon(true);
+//	    thread.start();
+//	}
+
 }

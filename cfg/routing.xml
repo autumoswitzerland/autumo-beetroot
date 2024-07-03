@@ -2,9 +2,9 @@
 
 <!--   
   beetRoot Routing configuration
-  Version: 1.0 - 2024 autumo GmbH
+  Version: 2.0 - 2024 autumo GmbH
   2024 autumo GmbH
-  Date: 20.01.2024
+  Date: 03.07.2024
  -->
  <Router>
 
@@ -24,12 +24,6 @@
 	    <Route path="/:lang/users/edit" handler="ExtUsersEditHandler" name="users" />
 	    <Route path="/:lang/users/add" handler="ExtUsersAddHandler" name="users" />
 	    <Route path="/:lang/users/delete" handler="ExtUsersDeleteHandler" name="users" />
-	    <!-- Route path="/:lang/users" handler="UsersIndexHandler" name="users" / -->
-	    <!-- Route path="/:lang/users/index" handler="UsersIndexHandler" name="users" / -->
-	    <!-- Route path="/:lang/users/view" handler="UsersViewHandler" name="users" / -->
-	    <!-- Route path="/:lang/users/edit" handler="UsersEditHandler" name="users" / -->
-	    <!-- Route path="/:lang/users/add" handler="UsersAddHandler" name="users" / -->
-	    <!-- >Route path="/:lang/users/delete" handler="UsersDeleteHandler" name="users" /  -->
 	    <Route path="/:lang/users/login" handler="LoginHandler" name="login" />
 	    <Route path="/:lang/users/logout" handler="LogoutHandler" name="logout" />
 	    <Route path="/:lang/users/reset" handler="ResetHandler" name="reset" />
@@ -60,7 +54,7 @@
 	</Package>
 		
 	<!-- Properties/Settings  -->
-	<Package name="planted.beetroot.handler.properties">
+	<Package name="ch.autumo.beetroot.handler.properties">
 	    <Route path="/:lang/properties" handler="PropertiesIndexHandler" name="properties" />
 	    <Route path="/:lang/properties/index" handler="PropertiesIndexHandler" name="properties" />
 	    <Route path="/:lang/properties/view" handler="PropertiesViewHandler" name="properties" />
@@ -69,4 +63,9 @@
 	    <Route path="/:lang/properties/delete" handler="PropertiesDeleteHandler" name="properties" />
 	</Package>
         
+	<!-- System  -->
+	<Package name="ch.autumo.beetroot.handler.system">
+	    <Route path="/:lang/system/log" handler="LogHandler" name="log" />
+	</Package>
+	        
 </Router>

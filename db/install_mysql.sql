@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------
--- (c) 2022 by autumo GmbH
+-- (c) 2024 by autumo GmbH
 -----------------------------------------------------------------------------
 -- PROJECT:     autumo-beetroot
 -- FILE:        db/install_mysql.sql
 -----------------------------------------------------------------------------
 -- WHEN         WHO                             DESCRIPTION
--- 12-Sep-2023  Michael Gasche                  -
+-- 03-Jul-2024  Michael Gasche                  -
 -----------------------------------------------------------------------------
 
 
@@ -20,15 +20,14 @@
 -- USE beetroot;
 
 
-
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS users_roles;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS properties;
 
-DROP INDEX idx_user_id ON users_roles;
 DROP INDEX idx_role_id ON users_roles;
+DROP INDEX idx_user_id ON users_roles;
 
 
 CREATE TABLE users (
@@ -108,7 +107,8 @@ CREATE TABLE properties (
 -- USERS
 -- NOTE: Passwords can be encrypted in database; see 'beetroot.cfg'
 -- initial password is 'beetroot' for admin
--- If the extended roles are used (own role table), the role attribute in the user is obsolete
+-- By default, the extended roles are used (own role table), the role
+-- attribute in the user is obsolete!
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
 (1, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', '', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', NOW(), NOW());
 -- initial password is 'beetroot' for operator
@@ -120,11 +120,11 @@ INSERT INTO users (id, username, password, email, lasttoken, settings, role, lan
 
 -- ROLES
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
-(1, 'Administrator', 'All privileges', '-', NOW(), NOW());
+(1, 'Administrator', 'All privileges', '', NOW(), NOW());
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
-(2, 'Operator', 'Task surveillance and management', '-', NOW(), NOW());
+(2, 'Operator', 'Task surveillance and management', '', NOW(), NOW());
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
-(3, 'Controller', 'Task surveillance', '-', NOW(), NOW());
+(3, 'Controller', 'Task surveillance', '', NOW(), NOW());
 
 -- USERS_ROLES
 INSERT INTO users_roles (user_id, role_id, created) VALUES
@@ -152,13 +152,17 @@ INSERT INTO properties (id, name, value) values
 (1,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
 INSERT INTO properties (id, name, value) values
 (2,'security.2fa.code.email', 'No');
+INSERT INTO properties (id, name, value) values
+(3,'log.size', '100');
+INSERT INTO properties (id, name, value) values
+(4,'log.refresh.time', '60');
 -- NOTE: some mail settings in the 'beetroot.cfg' can be overwritten here:
 -- INSERT INTO properties (id, name, value) values 
--- (2,'mail.host', 'localhost');
+-- (5,'mail.host', 'localhost');
 -- INSERT INTO properties (id, name, value) values
--- (3,'mail.port', '2500');
+-- (6,'mail.port', '2500');
 -- INSERT INTO properties (id, name, value) values
--- (4,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
+-- (7,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
 
 
 

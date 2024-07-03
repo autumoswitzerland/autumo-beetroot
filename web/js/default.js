@@ -287,3 +287,41 @@ window.onclick = function(event) {
 		}
 	}
 }
+
+/**
+ * Copy terminal to cliboard.
+ */
+function copyTerm() {
+    var term = document.getElementById("terminal");
+    navigator.clipboard.writeText(term.textContent);
+	
+	var flashMessage = document.getElementById('flashMessage');
+	flashMessage.classList.remove('hidden');
+	setTimeout(function() {
+	    flashMessage.classList.add('hidden');
+	}, 1000);
+}
+
+/**
+ * Repaing the line between the bottom and top navigation
+ * buttons.
+ */
+function adjustDistanceLine() {
+    var div1 = document.getElementById('return-to-bottom');
+    var div2 = document.getElementById('return-to-top');
+    var dottedLine = document.getElementById('dottedLine');
+
+    var div1Rect = div1.getBoundingClientRect();
+    var div2Rect = div2.getBoundingClientRect();
+
+    var div1Bottom = div1Rect.bottom + window.scrollY;
+    var div2Top = div2Rect.top + window.scrollY;
+
+    var distance = div2Top - div1Bottom - 12;
+
+    dottedLine.style.top = div1Bottom + 'px';
+    dottedLine.style.height = distance + 'px';
+}
+window.addEventListener('load', adjustDistanceLine);
+window.addEventListener('resize', adjustDistanceLine);
+window.addEventListener('scroll', adjustDistanceLine);

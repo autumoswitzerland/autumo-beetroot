@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+{#head}
+
+</head>
+
+<body onload="startup();">
+
+{#header}
+
+    <nav class="top-bar expanded hideprint" data-topbar ondblclick="showHeader();">
+    
+        <ul class="title-area large-2 medium-4 columns">
+            <li class="name">
+                <h1><a href="">{$title}</a></h1>
+            </li>
+        </ul>
+    
+{#langmenu}
+
+{#menu}
+
+        <div class="top-bar-section dropdown_theme">
+		    <a href="/{$lang}/users/settings?theme={$antitheme}" title="Theme: {$antitheme}"><img src="/img/theme-{$antitheme}.png" alt="{$antitheme}"></a>
+		</div>
+
+        <div class="top-bar-section refresh_section">
+            <input type="checkbox" name="cb_log_refresh" id="cb_log_refresh" onchange="refresh();">
+            <!-- 1 tag per line in this custom case-->
+            <label class="refresh_section_label" for="cb_log_refresh">{$refresh}
+            <span id="timer"> ({$logRefreshTime}s)</span></label>
+		</div>
+		
+    </nav>
+    
+{#message}
+    
+	<div class="container clearfix">
+
+{#template}
+
+    </div>
+
+{#footer}    
+
+	<!--  Customized timer -->
+	<script>
+	
+		function startup() {
+			
+			prepareYear();
+			
+			var refresh = localStorage.getItem("log.refresh");
+			if (refresh != null) {
+				if (refresh == "true") {
+					$("#cb_log_refresh").prop("checked", true);
+					timer.start();
+				} else {
+					$("#cb_log_refresh").prop("checked", false);					
+					timer.stop();
+				}
+			}
+			var headerShow = localStorage.getItem("header.visibility");
+			if (headerShow != null) {
+				if (headerShow == "false") {
+					document.getElementById('header').style.display = "none";
+				}
+			}
+			return true;
+		}
+		
+		var timer = {
+		    interval: null,
+		    seconds: {$logRefreshTime},
+		    
+		    start: function () {
+		        var self = this;
+		        var span = document.getElementById('timer');
+		        span.textContent = ' (' + this.seconds + 's)';
+		        this.interval = setInterval(function () {
+		            self.seconds--;
+		            if (self.seconds == 0) {
+		                location.reload();
+		                // scroll down
+		                $('body,html').animate({ scrollTop: $(document).height() }, 500);
+		            }
+		            span.textContent = ' (' + self.seconds + 's)';
+		        }, 1000);
+		    },
+
+		    stop: function () {
+		        window.clearInterval(this.interval)
+		    }
+		}		
+		
+		function refresh() {
+			if ($('#cb_log_refresh').is(':checked')) {
+				localStorage.setItem("log.refresh", "true");				
+				timer.start();
+			} else {
+				localStorage.setItem("log.refresh", "false");				
+				timer.stop();
+			}
+		}
+		
+		function hideHeader() {
+			$('header').fadeOut(300, function(){ document.getElementById('header').style.display = "none";});
+			localStorage.setItem("header.visibility", "false");
+		}
+		function showHeader() {
+			document.getElementById('header').style.display = "flex";
+			localStorage.setItem("header.visibility", "true");
+		}
+		
+		$(function() {
+		    $(document).tooltip();
+		});		
+		
+	</script>   
+	
+</body>
+
+</html>

@@ -81,6 +81,20 @@
 
 			<div class="row tile-menu-row">
 
+				{$if-role=Administrator:}
+				<div class="menuEntry">
+					<a class="portfolio-box" href="/{$lang}/system/log"> <img
+						class="img-fluid" src="/img/icons/menu-log-128.png" alt="">
+						<div class="portfolio-box-caption">
+							<div class="portfolio-box-caption-content">
+								<div class="project-name">&nbsp;</div>
+								<div class="project-category text-faded">Server Log</div>
+							</div>
+						</div>
+					</a>
+				</div>				
+				{$endif-role;}
+				
 				<div class="menuEntry">
 					<a class="portfolio-box" href="/{$lang}/files/view"> <img
 						class="img-fluid" src="/img/icons/menu-download-128.png" alt="">

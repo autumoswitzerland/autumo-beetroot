@@ -1,11 +1,11 @@
 -----------------------------------------------------------------------------
--- (c) 2022 by autumo GmbH
+-- (c) 2024 by autumo GmbH
 -----------------------------------------------------------------------------
 -- PROJECT:     autumo-beetroot
 -- FILE:        db/install_h2.sql
 -----------------------------------------------------------------------------
 -- WHEN         WHO                             DESCRIPTION
--- 12-Sep-2023  Michael Gasche                  -
+-- 03-Jul-2024  Michael Gasche                  -
 -----------------------------------------------------------------------------
 
 
@@ -28,6 +28,27 @@ CREATE TABLE users (
     unique(username),
     unique(email)
 );
+
+CREATE TABLE roles (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) not NULL,
+    description VARCHAR(1024) default '',
+    permissions VARCHAR(1024) default '',
+    created DATETIME DEFAULT NOW(),
+    modified DATETIME DEFAULT NOW(),
+    unique(name)
+);
+
+CREATE TABLE users_roles (
+    user_id INT UNSIGNED NOT NULL,
+    role_id INT UNSIGNED NOT NULL,
+    created DATETIME DEFAULT NOW(),
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+CREATE INDEX idx_user_id ON users_roles(user_id);
+CREATE INDEX idx_role_id ON users_roles(role_id);
 
 CREATE TABLE tasks (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -57,20 +78,43 @@ CREATE TABLE properties (
 );
 
 
--- init data
 
+--
+-- Initial data
+--
+
+
+-- USERS
 -- NOTE: Passwords can be encrypted in database; see 'beetroot.cfg'
 -- initial password is 'beetroot' for admin
+-- By default, the extended roles are used (own role table), the role
+-- attribute in the user is obsolete!
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(1, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', 'Administrator', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', NOW(), NOW());
+(1, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', '', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', NOW(), NOW());
 -- initial password is 'beetroot' for operator
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(2, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', 'Operator', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', NOW(), NOW());
+(2, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', '', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', NOW(), NOW());
 -- initial password is 'beetroot' for controller
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(3, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', 'NONE', 'theme=default', 'Controller', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', NOW(), NOW());
+(3, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', 'NONE', 'theme=default', '', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', NOW(), NOW());
 
--- sample data
+-- ROLES
+INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
+(1, 'Administrator', 'All privileges', '', NOW(), NOW());
+INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
+(2, 'Operator', 'Task surveillance and management', '', NOW(), NOW());
+INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
+(3, 'Controller', 'Task surveillance', '', NOW(), NOW());
+
+-- USERS_ROLES
+INSERT INTO users_roles (user_id, role_id, created) VALUES
+(1, 1, NOW());
+INSERT INTO users_roles (user_id, role_id, created) VALUES
+(2, 2, NOW());
+INSERT INTO users_roles (user_id, role_id, created) VALUES
+(3, 3, NOW());
+
+-- TASKS (sample data)
 -- See 'https://www.guru99.com/crontab-in-linux-with-examples.html' for understanding cron-like examples
 INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, created, modified) VALUES
 (1, 'NONE', 'Task 1', '/path/task1.config', '0', '7,17', '*', '*', '*', '1', '1', NOW(), NOW(), NOW());
@@ -88,13 +132,17 @@ INSERT INTO properties (id, name, value) values
 (1,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
 INSERT INTO properties (id, name, value) values
 (2,'security.2fa.code.email', 'No');
+INSERT INTO properties (id, name, value) values
+(3,'log.size', '100');
+INSERT INTO properties (id, name, value) values
+(4,'log.refresh.time', '60');
 -- NOTE: some mail settings in the 'beetroot.cfg' can be overwritten here:
 -- INSERT INTO properties (id, name, value) values 
--- (2,'mail.host', 'localhost');
+-- (5,'mail.host', 'localhost');
 -- INSERT INTO properties (id, name, value) values
--- (3,'mail.port', '2500');
+-- (6,'mail.port', '2500');
 -- INSERT INTO properties (id, name, value) values
--- (4,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
+-- (7,'mail.mailer', 'beetroot.web-mailer@autumo.ch');
 
 
 
