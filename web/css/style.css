@@ -1051,7 +1051,6 @@ button {
     float: left;
 }
 #terminal {
-	clear: top;
     background-color: #111111;
     -moz-border-radius: 0px;
 	-webkit-border-radius: 0px 0px 8px 8px;
@@ -1187,7 +1186,7 @@ button {
  */
 
 /* Animation for blinking terminal dot */
-@keyframes "blink" {
+@keyframes blink {
   from, to {
     opacity: 0.3;
   }

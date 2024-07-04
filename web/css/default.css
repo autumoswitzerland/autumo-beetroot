@@ -90,3 +90,13 @@ footer {
 	color: #ffffff!important;
 	background-color: #ffcc00!important;
 }
+@media (max-width:550px) {
+	.maintitle {
+		display: none;
+	}
+}
+@media (max-width:900px) {
+	.title-right {
+		display: none;
+	}
+}
