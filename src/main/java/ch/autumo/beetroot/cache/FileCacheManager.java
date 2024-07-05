@@ -59,7 +59,6 @@ public class FileCacheManager {
 	private Map<String, FileCache> cacheMap = new ConcurrentHashMap<String, FileCache>();
 	
 	private long size = 0;
-	private boolean maxSizeReached = false;
 	
 	
 	/**
@@ -83,18 +82,10 @@ public class FileCacheManager {
 	}
 
 	/**
-	 * Is max. cache size reached?
-	 * @return true, if so
-	 */
-	public boolean isMaxSizeReached() {
-		return maxSizeReached;
-	}
-
-	/**
 	 * Is there space left in the cache?
 	 * 
 	 * @param oldValueInBytes old amount of bytes that have been used
-	 * 			for the sam resource
+	 * 			for the same resource
 	 * @param newValueInBytes new amount of bytes that is used by the
 	 * 			changed resource
 	 * @return true, is there is space, otherwise false
@@ -115,22 +106,15 @@ public class FileCacheManager {
 	 * Update cache size.
 	 * 
 	 * @param oldValueInBytes old amount of bytes that have been used
-	 * 			for the sam resource
+	 * 			for the same resource
 	 * @param newValueInBytes new amount of bytes that is used by the
 	 * 			changed resource
-	 * @return true if max. cache size has been reached, otherwise false
+	 * @return new cache size;
 	 */
-	public synchronized boolean updateCacheSize(long oldValueInBytes, long newValueInBytes) {
-		
+	public synchronized long updateCacheSize(long oldValueInBytes, long newValueInBytes) {
 		size -= oldValueInBytes;
 		size += newValueInBytes;
-		
-		if (size > MAX_CACHE_SIZE)
-			maxSizeReached = true;
-		else
-			maxSizeReached = false;
-		
-		return maxSizeReached;
+		return size;
 	}
 
 	/**
@@ -182,7 +166,8 @@ public class FileCacheManager {
 	 * Find or create file cache.
 	 * 
 	 * @param path file path
-	 * @param forceCaching caching is forced when true if max. cache size isn't reached
+	 * @param forcedCaching caching is forced when true if max. cache size isn't reached; 
+	 * 			force caching breaks the file size limit, but not the cache size limit!
 	 * @return file cache
 	 * @throws IOException IO exception
 	 */
@@ -219,7 +204,8 @@ public class FileCacheManager {
 	 * Find or create file cache.
 	 * 
 	 * @param path resource path
-	 * @param forcedCaching caching is forced when true if max. cache size isn't reached.
+	 * @param forcedCaching caching is forced when true if max. cache size isn't reached; 
+	 * 			force caching breaks the file size limit, but not the cache size limit!
 	 * @return file cache
 	 * @throws IOException IO exception
 	 */
@@ -294,9 +280,17 @@ public class FileCacheManager {
 			final FileCache fCache = cacheMap.get(key);
 			fCache.clear();
 		}
+		this.size = 0;
 		cacheMap.clear();
 	}
 	
+	/**
+	 * Get maximum size of this cache.
+	 * @return max. size
+	 */
+	public long getMaxSize() {
+		return MAX_CACHE_SIZE;
+	}
 	
 	/**
 	 * Get normalized path.

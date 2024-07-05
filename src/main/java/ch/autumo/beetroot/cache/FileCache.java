@@ -139,7 +139,7 @@ public class FileCache  {
 	 * 
 	 * @param filePath file path
 	 * @param mimeType mime type, e.g. "text/html"
-	 * @param forcedCaching force caching?
+	 * @param forcedCaching force caching? Force caching breaks the file size limit, but not the cache size limit!
 	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, String mimeType, boolean forcedCaching) throws IOException {
@@ -154,7 +154,7 @@ public class FileCache  {
 	 * @param filePath file path
 	 * @param contentType content header type, e.g. 
 	 * 			"text/html; charset=UTF-8"
-	 * @param forcedCaching force caching?
+	 * @param forcedCaching force caching? Force caching breaks the file size limit, but not the cache size limit!
 	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, ContentType contentType, boolean forcedCaching) throws IOException {
@@ -196,29 +196,30 @@ public class FileCache  {
 	
 	/**
 	 * File cache constructor.
+	 * Resources are immutable, hence no re-caching will be done.
 	 * 
 	 * @param resourcePath resource path
 	 * @throws IOException IO exception
 	 */
 	public FileCache(String resourcePath) throws IOException {
-		
 		this(resourcePath, (String) null);
 	}
 	
 	/**
 	 * File cache constructor.
+	 * Resources are immutable, hence no re-caching will be done.
 	 * 
 	 * @param resourcePath resource path
 	 * @param mimeType mime type, e.g. "text/html"
 	 * @throws IOException IO exception
 	 */
 	public FileCache(String resourcePath, String mimeType) throws IOException {
-		
 		this(resourcePath, getContentType(mimeType));
 	}	
 	
 	/**
 	 * File cache constructor.
+	 * Resources are immutable, hence no re-caching will be done.
 	 * 
 	 * @param resourcePath resource path
 	 * @param contentType content header type, e.g. 
@@ -449,6 +450,14 @@ public class FileCache  {
 	}
 
     /**
+     * Get file size.
+     * @return file size
+     */
+    public long getFileSize() {
+		return fileSize;
+	}
+    
+    /**
      * Is it an archive?
      * @return is it an archive
      */
@@ -458,6 +467,7 @@ public class FileCache  {
 
     /**
      * Is it a binary?
+	 * Resources are immutable, hence no re-caching will be done.
      * @return is it a binary
      */
 	public boolean isBinary() {

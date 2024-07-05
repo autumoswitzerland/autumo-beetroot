@@ -38,7 +38,7 @@
 			
 		</RollingFile>
 		
-		<!-- Used to show server log on the web -->
+		<!-- Used to show server log on the web, remove if not needed -->
 		<LogEventAppender name="logEventAppender" />
 		
 	</Appenders>
@@ -47,11 +47,13 @@
 
 		<Logger name="ch.autumo.beetroot" level="info" additivity="false">
 			<AppenderRef ref="console" />
+			<!-- Used to show server log on the web, remove if not needed -->
 			<AppenderRef ref="logEventAppender" />
 		</Logger>
 
 		<Root level="info" additivity="false">
 			<AppenderRef ref="console" />
+			<!-- Used to show server log on the web, remove if not needed -->
 			<AppenderRef ref="logEventAppender" />
 		</Root>
 		

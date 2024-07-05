@@ -64,6 +64,7 @@
 	</Package>
         
 	<!-- System  -->
+	<!-- Used to show server log on the web, remove if not needed -->
 	<Package name="ch.autumo.beetroot.handler.system">
 	    <Route path="/:lang/system/log" handler="LogHandler" name="log" />
 	</Package>
