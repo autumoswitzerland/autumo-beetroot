@@ -119,7 +119,11 @@ public class DefaultViewHandler extends BaseHandler {
 					
 				} else {
 					
-					htmlData += "<tr><th>"+col[1]+"</th>" + extractSingleTableData(session, set, col[0], dbIdx, entity) + "</tr>\n";		
+					String td = extractSingleTableData(session, set, col[0], dbIdx, entity) + "</tr>\n";
+					if (td.indexOf("null") != -1)
+						td = td.replace("null", "");
+					
+					htmlData += "<tr><th>"+col[1]+"</th>" + td;		
 				}
 			}		
 		} finally {

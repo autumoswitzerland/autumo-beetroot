@@ -5,7 +5,7 @@
   Version: 3.0 - 2023 autumo GmbH
  -->
 
-<Configuration status="error" name="BeetRootConfig">
+<Configuration status="error" name="BeetRootConfig" strict="true">
 
 	<Properties>
 		<Property name="basePath">${sys:ROOTPATH}/log</Property>

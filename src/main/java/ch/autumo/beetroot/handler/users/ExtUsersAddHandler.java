@@ -85,15 +85,39 @@ public class ExtUsersAddHandler extends UsersAddHandler {
 			final List<Model> associatedRoles = new ArrayList<Model>(); // empty
 			final List<Model> unassociatedRoles = Role.listAll(Role.class);
 			
-			final StringBuffer snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
+			// We have to deal with possible retry cases here, since roles is a transient filed (see 'columns.cfg')
+			if (super.isRetryCall(session)) {
+				// Retry case
+				final String assignedIds = session.getParms().get("assignedIds");
+				if (assignedIds != null && assignedIds.length() > 0) {
+					final String roleIds[] = assignedIds.split(",");
+					for (int i = 0; i < roleIds.length; i++) {
+						final Role assoCrole = (Role) Role.read(Role.class, Integer.valueOf(roleIds[i]));
+						associatedRoles.add(assoCrole);
+						unassociatedRoles.remove(assoCrole);
+					}
+				}
+			}			
 			
+			final StringBuffer snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
 			super.parseAssociatedEntities(snippet, associatedRoles, session);
 			super.parseUnassociatedEntities(snippet, unassociatedRoles,session);
-			
 			return snippet.toString();
 		}
 		
 		return "";
+	}
+	
+	@Override
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+		if (super.isRetryCall(session)) {
+			final String assignedIds = session.getParms().get("assignedIds");
+			text = text.replace("{$assignedIds}", assignedIds);
+		} else {
+			if (text.contains("{$assignedIds}"))
+				text = text.replace("{$assignedIds}", "");
+		}
+		return text;
 	}
 	
 	@Override

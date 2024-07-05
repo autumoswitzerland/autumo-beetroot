@@ -17,9 +17,9 @@
 -- \connect beetroot;
 
 
+DROP TABLE IF EXISTS users_roles CASCADE;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS users_roles CASCADE;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS properties;
 
@@ -28,7 +28,6 @@ DROP INDEX idx_user_id;
 
 DROP SEQUENCE IF EXISTS roles_seq;
 DROP SEQUENCE IF EXISTS users_seq;
-DROP SEQUENCE IF EXISTS users_roles_seq;
 DROP SEQUENCE IF EXISTS tasks_seq;
 DROP SEQUENCE IF EXISTS properties_seq;
 
@@ -63,8 +62,6 @@ CREATE TABLE roles (
     modified TIMESTAMP(0) DEFAULT NULL,
     unique(name)
 );
-
-CREATE SEQUENCE users_roles_seq;
 CREATE TABLE users_roles (
 	user_id INT NOT NULL CHECK (user_id > 0),
     role_id INT NOT NULL CHECK (role_id > 0),

@@ -678,34 +678,35 @@ public class DB {
 		PreparedStatement stmt3 = null;
 		ResultSet keySet = null;
 		int savedId = Model.ID_UNASSIGNED;
-		final String tabelName = Beans.classToTable(entity.getClass());
+		final String tableName = Beans.classToTable(entity.getClass());
 		try {
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			//NO SEMICOLON
-			stmt = conn.prepareStatement("INSERT INTO "+tabelName+" (" + columns + ") VALUES (" + values + ")", Statement.RETURN_GENERATED_KEYS);
+			stmt = conn.prepareStatement("INSERT INTO "+tableName+" (" + columns + ") VALUES (" + values + ")", Statement.RETURN_GENERATED_KEYS);
 			stmt.executeUpdate();
 			// Get generated key
 			boolean found = false;
-			if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
-				stmt2 = conn.prepareStatement("select "+tabelName+"_seq.currval from dual");
-				keySet = stmt2.executeQuery();
-				found = keySet.next();
-				if (found)
-					savedId = (int) keySet.getLong(1);
+
+			// Get ID if table in no many-to-many-relation table
+			if (!tableName.contains("_")) {
+				if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
+					stmt2 = conn.prepareStatement("select "+tableName+"_seq.currval from dual");
+					keySet = stmt2.executeQuery();
+					found = keySet.next();
+					if (found)
+						savedId = (int) keySet.getLong(1);
+				} else {
+					keySet = stmt.getGeneratedKeys();
+					found = keySet.next();
+					if (found)
+						savedId = keySet.getInt(1);
+				}
 			} else {
-				keySet = stmt.getGeneratedKeys();
-				found = keySet.next();
-				if (found)
-					savedId = keySet.getInt(1);
-			}
-			
-			// For many-to-many-relation tables, there's maybe no id, so
-			// we return the pseudo id for these tables: -2;
-			if (!found && tabelName.contains("_")) {
+				// For many-to-many-relation tables, there's maybe no id, so
+				// we return the pseudo id for these tables: -2;
 				found = true;
-				savedId = -2;
+				savedId = Model.ID_M2M_PSEUDO;
 			}
-			
 		} catch (SQLException e) {
 			LOG.error("Couldn't save entity!", e);
 			return Integer.valueOf(-1);

@@ -89,23 +89,35 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 			String columnName, String guiColName, int idx) throws Exception {
 		
 		if (columnName.equals("roles")) {
-			
-			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
+
 			final List<Model> unassociatedRoles = Role.listAll(Role.class);
 			final List<Model> associatedRoles = new ArrayList<Model>();
 			
-			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
-				final UserRole userRole = (UserRole) iterator.next();
-				final Role role = (Role) userRole.getAssociatedReference(Role.class);
-				associatedRoles.add(role);
-				unassociatedRoles.remove(role);
+			// We have to deal with possible retry cases here, since roles is a transient filed (see 'columns.cfg')
+			if (super.isRetryCall(session)) {
+				// Retry case
+				final String assignedIds = session.getParms().get("assignedIds");
+				if (assignedIds != null && assignedIds.length() > 0) {
+					final String roleIds[] = assignedIds.split(",");
+					for (int i = 0; i < roleIds.length; i++) {
+						final Role assoCrole = (Role) Role.read(Role.class, Integer.valueOf(roleIds[i]));
+						associatedRoles.add(assoCrole);
+						unassociatedRoles.remove(assoCrole);
+					}
+				}
+			} else {
+				final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
+				for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
+					final UserRole userRole = (UserRole) iterator.next();
+					final Role role = (Role) userRole.getAssociatedReference(Role.class);
+					associatedRoles.add(role);
+					unassociatedRoles.remove(role);
+				}
 			}
 			
 			final StringBuffer snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
-			
 			super.parseAssociatedEntities(snippet, associatedRoles, session);
 			super.parseUnassociatedEntities(snippet, unassociatedRoles, session);
-			
 			return snippet.toString();
 		}
 		
@@ -113,8 +125,27 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 	}
 
 	@Override
+	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+		if (super.isRetryCall(session)) {
+			final String assignedIds = session.getParms().get("assignedIds");
+			text = text.replace("{$assignedIds}", assignedIds);
+		} else {
+			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
+			String assignedIds = "";
+			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
+				final UserRole userRole = (UserRole) iterator.next();
+				assignedIds += userRole.getRoleId()+","; 
+			}
+			if (assignedIds.endsWith(","))
+				assignedIds = assignedIds.substring(0, assignedIds.length() - 1);
+			text = text.replace("{$assignedIds}", assignedIds);
+		}
+		return text;
+	}
+	
+	@Override
 	public Class<?> getRedirectHandler() {
 		return ExtUsersIndexHandler.class;
 	}
-	
+
 }

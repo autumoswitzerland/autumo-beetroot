@@ -275,7 +275,10 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	 * @throws Exception exception
 	 */
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {
-		return this.extractSingleInputDiv(session, data.get(columnName), rsmd, columnName, guiColName, idx);
+		String val = data.get(columnName);
+		if (val == null) // TRANSIENT values
+			val = "";
+		return this.extractSingleInputDiv(session, val, rsmd, columnName, guiColName, idx);
 	}
 
 	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {

@@ -200,7 +200,11 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @throws Exception exception
 	 */
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
-		final String val = this.formatSingleValueForGUI(session, set.getObject(idx).toString().trim(), columnName, idx, entity);
+		final Object dbObj = set.getObject(idx);
+		String dbVal = new String("");
+		if (dbObj != null)
+			dbVal = dbObj.toString().trim();
+		final String val = this.formatSingleValueForGUI(session, dbVal, columnName, idx, entity);
 		return this.extractSingleInputDiv(session, val, set.getMetaData(), columnName, guiColName, idx, false); // true); // ->no PW from DB anymore
 	}
 	
@@ -220,7 +224,10 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @throws Exception exception
 	 */	
 	protected String extractSingleInputDiv(BeetRootHTTPSession session, Map<String, String> data, ResultSetMetaData rsmd, String columnName, String guiColName, int idx) throws Exception {
-		return this.extractSingleInputDiv(session, data.get(columnName), rsmd, columnName, guiColName, idx, false);
+		String val = data.get(columnName);
+		if (val == null) // TRANSIENT values
+			val = "";
+		return this.extractSingleInputDiv(session, val, rsmd, columnName, guiColName, idx, false);
 	}
 	
 	private String extractSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd, String columnName, String guiColName, int idx, boolean pwFromDb) throws Exception {

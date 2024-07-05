@@ -23,9 +23,11 @@
 -- ALTER USER beetroot QUOTA 100M ON ????
 
 
+ALTER TABLE users_roles DROP CONSTRAINT fk_user;
+ALTER TABLE users_roles DROP CONSTRAINT fk_role;
+
 DROP SEQUENCE roles_seq;
 DROP SEQUENCE users_seq;
-DROP SEQUENCE users_roles_seq;
 DROP SEQUENCE tasks_seq;
 DROP SEQUENCE properties_seq;
 
@@ -154,13 +156,13 @@ END;
 -- By default, the extended roles are used (own role table), the role
 -- attribute in the user is obsolete!
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', '', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(users_seq.NEXTVAL, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', ' ', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 -- initial password is 'beetroot' for operator
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', '', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(users_seq.NEXTVAL, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', ' ', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 -- initial password is 'beetroot' for controller
 INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', 'NONE', 'theme=default', '', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(users_seq.NEXTVAL, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', 'NONE', 'theme=default', ' ', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ROLES
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES

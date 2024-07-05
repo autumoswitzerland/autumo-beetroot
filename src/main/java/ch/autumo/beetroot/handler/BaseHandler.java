@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -876,33 +877,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Refresh user roles for and permissions current user.
-	 * 
-	 * @param currentUserId current user id of the currently logged-in user
-	 * @param session HTTP session
-	 */
-	protected final void refreshUserRoles(int currentUserId, BeetRootHTTPSession session) {
-		String roles = "";
-		String permissions = "";
-		
-		final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(currentUserId));
-		for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
-			final UserRole userRole = (UserRole) iterator.next();
-			final Role role = (Role) Role.read(Role.class, userRole.getRoleId());
-			roles += role.getName()+",";
-			permissions += role.getPermissions()+",";
-		}
-		if (usersRoles.size() > 0) {
-			roles = roles.substring(0, roles.length() - 1);
-			if (permissions.endsWith(","))
-				permissions = permissions.substring(0, permissions.length() - 1);
-		}
-		
-		session.getUserSession().set("userroles", roles.replaceAll("\\s", "").toLowerCase());
-		session.getUserSession().set("userpermissions", permissions.replaceAll("\\s", "").toLowerCase());		
-	}
-	
-	/**
 	 * Check if unique fields are unique.
 	 * 
 	 * @param session sessions
@@ -984,6 +958,33 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 		
 		return null; // ok !
+	}
+	
+	/**
+	 * Refresh user roles and permissions for current user.
+	 * 
+	 * @param currentUserId current user id of the currently logged-in user
+	 * @param session HTTP session
+	 */
+	protected final void refreshUserRoles(int currentUserId, BeetRootHTTPSession session) {
+		String roles = "";
+		String permissions = "";
+		
+		final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(currentUserId));
+		for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
+			final UserRole userRole = (UserRole) iterator.next();
+			final Role role = (Role) Role.read(Role.class, userRole.getRoleId());
+			roles += role.getName()+",";
+			permissions += role.getPermissions()+",";
+		}
+		if (usersRoles.size() > 0) {
+			roles = roles.substring(0, roles.length() - 1);
+			if (permissions.endsWith(","))
+				permissions = permissions.substring(0, permissions.length() - 1);
+		}
+		
+		session.getUserSession().set("userroles", roles.replaceAll("\\s", "").toLowerCase());
+		session.getUserSession().set("userpermissions", permissions.replaceAll("\\s", "").toLowerCase());		
 	}
 	
 	/**
@@ -1582,15 +1583,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (text.contains("{$lang_menu_entries}")) {
 						
 						// We determine the right route according to the web resource path -> generic!
+						// We do not language re-route with post or put retry post data, this would be a safety issue!
 						String route = "home";
 						final String res = this.getResource();
-						
 						if (res == null) {
 							route = "home";
 						} else {
 							final int i = res.indexOf(":lang");
 							if (i == -1) {
-								route = "home";
+								route = "home"; // wrong
 							} else {
 								route = res.substring(i + 6);
 								final int j = route.indexOf(".");
@@ -1599,7 +1600,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 								}
 							}
 						}
-
 						if (origId > 0) {
 							final String modifyID = userSession.getModifyId(origId, getEntity());
 							route = route + "?id=" + modifyID;
@@ -1937,29 +1937,29 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				final boolean change = session.getUri().endsWith("/users/change");
 				final boolean add = session.getUri().endsWith("/"+getEntity()+"/add");
 				
-				if (origId != -1 || change || reset || add ) {
-				
-					// we have an id, ergo it is a CUD operation
-				
-					final String _method = session.getParms().get("_method");
-					final String upMethod = urlParams.get("_method");
-					final boolean retryCall = upMethod != null && upMethod.length() != 0 && upMethod.equals("RETRY");
-					final boolean requestCall = _method != null && _method.length() != 0 && _method.equals("REQUEST");
+				if (origId != -1 || change || reset || add ) { // + edit or delete --> origId != -1
+
+					final String putOrPostMethod = session.getParms().get("_method");
+					final boolean requestCall = putOrPostMethod != null && putOrPostMethod.length() != 0 && putOrPostMethod.equals("REQUEST");
+					
+					final String parmMethod = urlParams.get("_method");
+					final boolean retryCall = parmMethod != null && parmMethod.length() != 0 && parmMethod.equals("RETRY");
 					
 					
 					// ======== 1. Retry call test =================
 					
 					if (retryCall) {
 						
-						// Failed 'add'; do nothing and read the formular again
+						// Retry when adding 
+						
+						// Failed 'add' retry case; do nothing and read the formular again
 						// We have to add the RETRY again to the session params!
 						final List<String> retry = new ArrayList<String>();
 						retry.add("RETRY");
 						session.getParameters().put("_method", retry);
 							
-						// create a new ID pair, id somehow the orig has been lost, shouldn't happen actually!
+						// create a new ID pair, if somehow the orig has been lost, shouldn't happen actually!
 						userSession.createIdPair(origId, getEntity());
-
 						
 					// ======== 2. Request call test ================
 						
@@ -1973,7 +1973,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 					// ======== 3. Main HTTP: No method (save) ======
 						
-					} else if (_method == null || _method.length() == 0) { 
+					} else if (putOrPostMethod == null || putOrPostMethod.length() == 0) { 
 						
 						// add with id -> save
 						HandlerResponse response = this.saveData((BeetRootHTTPSession) session);
@@ -2005,7 +2005,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 					// ======== 4. Main HTTP: PUT (update) ==========
 						
-					} else if (_method.equals("PUT")) {  // and password reset
+					} else if (putOrPostMethod.equals("PUT")) {  // and password reset
 						
 						// edit with id -> update
 						HandlerResponse response = this.updateData((BeetRootHTTPSession)session, origId);
@@ -2035,7 +2035,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 					// ======== 5. Main HTTP: POST (delete) ========
 						
-					} else if (_method.equals("POST")) {
+					} else if (putOrPostMethod.equals("POST")) {
 						
 						// delete with id
 						HandlerResponse response = this.deleteData((BeetRootHTTPSession)session, origId);
@@ -2193,6 +2193,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}			
 		}
     }
+	
+	/**
+	 * Is it a retry call?
+	 * 
+	 * @param session HTTP session
+	 * @return true if so
+	 */
+	public boolean isRetryCall(BeetRootHTTPSession session) {
+		final String parmMethod = session.getParms().get("_method");
+		return parmMethod != null && parmMethod.length() != 0 && parmMethod.equals("RETRY");		
+	}
 	
 	/**
 	 * Set current DB id of entity processed, for 'index.html' pages
@@ -2791,6 +2802,25 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public void addHtmlDataLine(String line) {
 		this.htmlData += line + "\n";
 	}
+
+	/**
+	 * This replaces a value in a HTML element with a specific ID.
+	 * 
+	 * @param text text to parse and return
+	 * @param id HTML element with specific ID
+	 * @return patched HTML
+	 */
+	public static String patchInputValue(String text, String id, String newValue) {
+		final String regex = "(<[^>]*\\sid\\s*=\\s*['\"]" + Pattern.quote(id) + "['\"][^>]*\\svalue\\s*=\\s*\")(.*?)(\")";
+        final Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        final Matcher matcher = pattern.matcher(text);
+        final StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(1) + newValue + matcher.group(3));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();			
+	}
 	
 	/**
 	 * Replace some more variables in template.
@@ -3058,5 +3088,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			return continueRemoval;
 		}		
 	}
-	
+
 }
+
+

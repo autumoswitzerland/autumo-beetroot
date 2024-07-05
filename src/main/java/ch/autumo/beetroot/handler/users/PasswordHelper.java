@@ -90,14 +90,9 @@ public class PasswordHelper {
 	public static String getHTMLMessages(RuleResult result) {
 		String msgs = "";
 		final List<String> list = PasswordHelper.getMessages(result);
-		int i = 0;
 		for (Iterator<String> iterator = list.iterator(); iterator.hasNext();) {
 			final String m = iterator.next();
-			if (i == 0)
-				msgs += m + "<br>";
-			else
-				msgs += "&emsp;&emsp;&emsp;" + m + "<br>"; // nasty.
-			i++;
+			msgs += m + "<br>";
 		}
 		return msgs;
 	}
