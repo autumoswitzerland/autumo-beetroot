@@ -20,7 +20,6 @@ package ch.autumo.beetroot.cache;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.print.Printable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
