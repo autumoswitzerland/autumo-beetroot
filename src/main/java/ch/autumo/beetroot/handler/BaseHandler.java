@@ -84,7 +84,7 @@ import jakarta.activation.MimeType;
  */
 public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
-	private final static Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
 	// Precision HTML input types
 	protected static List<String> PRECISION_INPUT_TYPES = Arrays.asList(new String[] {"email", "password", "search", "tel", "text", "url"});

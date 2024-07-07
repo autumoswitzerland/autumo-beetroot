@@ -39,24 +39,24 @@ import ch.autumo.beetroot.server.message.ServerCommand;
  */
 public class Communicator {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(Communicator.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(Communicator.class.getName());
 
 	/** Max. message size: 512 kBytes */
-	public final static int MAX_MSG_SIZE = 512 * 1024;
+	public static final int MAX_MSG_SIZE = 512 * 1024;
 	
 	/** Connection timeout in seconds */
-	public final static int TIMEOUT = 5;
+	public static final int TIMEOUT = 5;
 	
 	/** Stop command */
-	public final static String CMD_STOP = "STOP";
+	public static final String CMD_STOP = "STOP";
 	/** Health command */
-	public final static String CMD_HEALTH = "HEALTH";
+	public static final String CMD_HEALTH = "HEALTH";
 	/** File delete */
-	public final static String CMD_FILE_DELETE = "FILE_DELETE";
+	public static final String CMD_FILE_DELETE = "FILE_DELETE";
 	/** File request for download */
-	public final static String CMD_FILE_REQUEST = "FILE_REQUEST";
+	public static final String CMD_FILE_REQUEST = "FILE_REQUEST";
 	/** File receive request for upload */
-	public final static String CMD_FILE_RECEIVE_REQUEST = "FILE_RECEIVE_REQUEST";
+	public static final String CMD_FILE_RECEIVE_REQUEST = "FILE_RECEIVE_REQUEST";
 	
 	/**
 	 * User agents used for tunneled server commands. 

@@ -38,7 +38,7 @@ import ch.autumo.beetroot.utils.Helper;
  */
 public class SessionManager {
 	
-	protected final static Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
 	
 	
 	private static SessionManager instance = null;	

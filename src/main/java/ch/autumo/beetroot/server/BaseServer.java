@@ -72,7 +72,7 @@ import ch.autumo.beetroot.utils.Web;
  */
 public abstract class BaseServer {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
 	
 	private static String rootPath = null;
 
@@ -1110,18 +1110,15 @@ public abstract class BaseServer {
 		        		LOG.error("Admin server connection listener failed! We recommend to restart the server!", e);
 		        	
 		        } finally {
-		        	
-		        	if (!BaseServer.this.serverStop) {
-		        		if (serverSocket != null && serverSocket.isClosed()) {
-		        			try {
-		        				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
-			    				if (serverTimeout > 0)
-			    					serverSocket.setSoTimeout(serverTimeout);
-		        			} catch (IOException e) {
-		        				// That's wild, I know 
-		        			}
-		        		}
-		        	}
+		        	if (!BaseServer.this.serverStop && serverSocket != null && serverSocket.isClosed()) {
+	        			try {
+	        				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
+		    				if (serverTimeout > 0)
+		    					serverSocket.setSoTimeout(serverTimeout);
+	        			} catch (IOException e) {
+	        				// That's wild, I know 
+	        			}
+	        		}
 	            }				
             } 
 		

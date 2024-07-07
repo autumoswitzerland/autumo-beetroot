@@ -33,12 +33,12 @@ import ch.autumo.beetroot.server.modules.Dispatcher;
  */
 public class LogDispatcher implements Dispatcher {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(LogDispatcher.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(LogDispatcher.class.getName());
 	
 	/** Unique ID */
 	public static final String ID = "autumo-beetroot-log"; 
 	
-	private LocalLog log = new LocalLog();
+	private LocalLog localLog = new LocalLog();
 	
 	@Override
 	public String getId() {
@@ -48,7 +48,7 @@ public class LogDispatcher implements Dispatcher {
 	@Override
 	public ClientAnswer dispatch(ServerCommand serverCommand) {
 		try {
-			return log.getLog();
+			return localLog.getLog();
 		} catch (Exception e) {
 			LOG.error("Couldn't get extended server log!", e);
 			return new ClientAnswer(ClientAnswer.TYPE_ERROR);

@@ -43,7 +43,7 @@ import ch.autumo.beetroot.utils.Time;
  */
 public class ChangeHandler extends BaseHandler {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(ChangeHandler.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(ChangeHandler.class.getName());
 	
 	private String entity = null;
 	

@@ -20,6 +20,7 @@ package ch.autumo.beetroot.cache;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.print.Printable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -72,13 +73,22 @@ public class FileCacheTest {
 		boolean hasSpace = false;
 		
 		//Path lpath = null;
+		boolean first = true;
 		LOOP: for (Iterator<Path> iterator = allFiles.iterator(); iterator.hasNext();) {
 			Path path = iterator.next();
 			long fs = path.toFile().length();
+			long s0 = 0;
+			long s1 = 0;
 			hasSpace =FileCacheManager.getInstance().hasSpace(0, fs);
 			if (hasSpace) {
 				FileCache fc = FileCacheManager.getInstance().findOrCreate(path);
 				System.out.println("FC: Adding "+fc.getFullPath());
+				if (!first) {
+					s0 = s1;
+					first = false;
+				}
+				s1 = fc.getFileSize();
+				assertTrue("Cache doesn't grow!", s1 > s0);
 			} else {
 				assertFalse("Still has space!", FileCacheManager.getInstance().hasSpace(0, fs));
 				System.out.println("Size: "+ FileCacheManager.getInstance().getSize());

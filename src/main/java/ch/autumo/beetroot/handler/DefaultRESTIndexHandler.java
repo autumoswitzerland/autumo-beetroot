@@ -37,7 +37,7 @@ import ch.autumo.beetroot.utils.Beans;
  */
 public class DefaultRESTIndexHandler extends BaseHandler {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(DefaultRESTIndexHandler.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(DefaultRESTIndexHandler.class.getName());
 	
 	private int maxRecPerPage = 20;
 	

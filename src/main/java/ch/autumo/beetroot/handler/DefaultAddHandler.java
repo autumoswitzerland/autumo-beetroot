@@ -51,7 +51,7 @@ import ch.autumo.beetroot.utils.Web;
  */
 public abstract class DefaultAddHandler extends BaseHandler {
 
-	private final static Logger LOG = LoggerFactory.getLogger(DefaultAddHandler.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultAddHandler.class.getName());
 	
 	private Map<String, Class<?>> refs = null;
 

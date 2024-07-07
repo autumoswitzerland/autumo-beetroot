@@ -43,7 +43,7 @@ import ch.autumo.beetroot.utils.Time;
  */
 public class ResetHandler extends BaseHandler {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(ResetHandler.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(ResetHandler.class.getName());
 	
 	private String entity = null;
 	

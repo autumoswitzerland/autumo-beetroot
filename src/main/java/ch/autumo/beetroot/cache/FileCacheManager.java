@@ -39,7 +39,7 @@ import ch.autumo.beetroot.Constants;
  */
 public class FileCacheManager {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(FileCacheManager.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(FileCacheManager.class.getName());
 
 	// file buffer size
 	static {

@@ -33,7 +33,7 @@ import jakarta.activation.MimeTypeRegistry;
  */
 public class MimeTypeFile implements MimeTypeRegistry {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(MimeTypeFile.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(MimeTypeFile.class.getName());
 	
 	private Hashtable<String, MimeTypeEntry> mimeTypeMap = new Hashtable<String, MimeTypeEntry>();
 

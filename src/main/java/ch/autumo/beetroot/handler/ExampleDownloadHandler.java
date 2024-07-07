@@ -34,7 +34,7 @@ import ch.autumo.beetroot.utils.Web;
  */
 public class ExampleDownloadHandler extends BaseHandler {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(ExampleDownloadHandler.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(ExampleDownloadHandler.class.getName());
 	
 	public ExampleDownloadHandler(String entity) {
 		super(entity);

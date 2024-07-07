@@ -28,7 +28,7 @@ import ch.autumo.beetroot.Constants;
  */
 public class SecureApplicationHolder {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(SecureApplicationHolder.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(SecureApplicationHolder.class.getName());
 	
 	private static SecureApplicationHolder holder = null;
 	private static final SecApp SEC_APP= new SecApp();

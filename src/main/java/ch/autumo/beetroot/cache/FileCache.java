@@ -40,7 +40,7 @@ import ch.autumo.beetroot.utils.MIME;
  */
 public class FileCache  {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(FileCache.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(FileCache.class.getName());
 	
 	// file buffer size
 	static {

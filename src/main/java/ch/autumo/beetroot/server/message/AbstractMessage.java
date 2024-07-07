@@ -39,7 +39,7 @@ import ch.autumo.beetroot.Constants;
  */
 public abstract class AbstractMessage {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(AbstractMessage.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(AbstractMessage.class.getName());
 	
 	/** message part separator */
 	public static final String MSG_PART_SEPARATOR = "#|#";

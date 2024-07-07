@@ -43,7 +43,7 @@ import jakarta.mail.internet.MimeMultipart;
  */
 public class JakartaMailer extends AbstractMailer {
 
-	private final static Logger LOG = LoggerFactory.getLogger(JakartaMailer.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(JakartaMailer.class.getName());
 
 	@Override
 	public void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {

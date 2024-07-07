@@ -44,7 +44,7 @@ import ch.autumo.beetroot.server.modules.log.LogFactory;
  */
 public class LogHandler extends BaseHandler {
 
-	private final static Logger LOG = LoggerFactory.getLogger(LogHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(LogHandler.class);
 
 	/** Default log size . */
 	public static int DEFAULT_LOG_SIZE = LogEventAppender.DEFAULT_LOG_SIZE;
@@ -61,7 +61,7 @@ public class LogHandler extends BaseHandler {
 	public static final int MINIMUM_REFRESH_TIME = 15;
 	
 	/** Log pattern. Note: 'im' not recognized in pattern. */
-	private final static String LOG_PATTERN = "%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-35.35c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n";
+	private static final String LOG_PATTERN = "%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-35.35c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n";
 	
 	private static Pattern PATTERN_REFRESH = Pattern.compile("\\{\\$logRefreshTime\\}");
 	

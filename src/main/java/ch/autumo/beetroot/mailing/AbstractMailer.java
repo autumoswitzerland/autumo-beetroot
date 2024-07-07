@@ -47,7 +47,7 @@ import ch.autumo.beetroot.utils.Web;
  */
 public abstract class AbstractMailer implements Mailer {
 
-	private final static Logger LOG = LoggerFactory.getLogger(AbstractMailer.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractMailer.class.getName());
 	
 	protected String mailformats[] = null;
 	protected boolean auth = false;

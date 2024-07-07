@@ -35,7 +35,7 @@ import ch.autumo.beetroot.Session;
  */
 public class ExampleUploadHandler extends BaseHandler {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(ExampleUploadHandler.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(ExampleUploadHandler.class.getName());
 	
 	public ExampleUploadHandler(String entity) {
 		super(entity);

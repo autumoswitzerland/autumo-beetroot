@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
   */
 public class BeanField {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(BeanField.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeanField.class.getName());
 	
 	private String dbName;
 	private String beanName;

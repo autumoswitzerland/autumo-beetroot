@@ -30,7 +30,7 @@ import ch.autumo.beetroot.utils.Helper;
  */
 public class BeetRootServer extends BaseServer {
 	
-	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootServer.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootServer.class.getName());
 	
 	/**
 	 * Create an beetRoot server.

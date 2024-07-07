@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
   */
 public class DBField {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(DBField.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(DBField.class.getName());
 	
 	private String name;
 	private String type;

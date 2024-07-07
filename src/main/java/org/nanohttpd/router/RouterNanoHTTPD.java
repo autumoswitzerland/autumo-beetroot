@@ -74,7 +74,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      * logger to log to.
      */
     //private static final Logger LOG = Logger.getLogger(RouterNanoHTTPD.class.getName());
-	protected final static Logger LOG = LoggerFactory.getLogger(RouterNanoHTTPD.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(RouterNanoHTTPD.class.getName());
 
     public interface UriResponder {
 

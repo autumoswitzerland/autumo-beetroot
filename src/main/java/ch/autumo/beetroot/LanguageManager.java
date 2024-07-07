@@ -40,7 +40,7 @@ import ch.autumo.beetroot.utils.Web;
  */
 public class LanguageManager {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(LanguageManager.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(LanguageManager.class.getName());
 	
 	public static final String DEFAULT_LANG = "en";
 	

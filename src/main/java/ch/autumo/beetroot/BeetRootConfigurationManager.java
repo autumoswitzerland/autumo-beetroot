@@ -48,7 +48,7 @@ import ch.autumo.beetroot.utils.Security;
  */
 public class BeetRootConfigurationManager {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootConfigurationManager.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootConfigurationManager.class.getName());
 	
 	private static BeetRootConfigurationManager manager = null;
 	private static String rootPath = null;

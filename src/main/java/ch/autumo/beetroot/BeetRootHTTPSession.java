@@ -56,7 +56,7 @@ import ch.autumo.beetroot.handler.ErrorHandler;
  */
 public class BeetRootHTTPSession extends HTTPSession {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootHTTPSession.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootHTTPSession.class.getName());
 	
 	static {
 		

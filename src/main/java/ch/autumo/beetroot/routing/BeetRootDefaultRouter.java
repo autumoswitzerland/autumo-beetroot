@@ -41,7 +41,7 @@ public class BeetRootDefaultRouter implements Router {
 	/**
 	 * Log.
 	 */
-	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootDefaultRouter.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootDefaultRouter.class.getName());
 	
 	/**
 	 * Get not implemented handler class.

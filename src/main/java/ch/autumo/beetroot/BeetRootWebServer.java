@@ -83,7 +83,7 @@ import ch.autumo.beetroot.utils.Web;
  */
 public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootService {
 	
-	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootWebServer.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootWebServer.class.getName());
 	
 	private Class<?> defaultHandlerClass = TasksIndexHandler.class;
 	private String defaultHandlerEntity = "tasks";

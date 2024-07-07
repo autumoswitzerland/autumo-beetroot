@@ -45,7 +45,7 @@ import ch.autumo.beetroot.Session;
  */
 public class DB {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(DB.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(DB.class.getName());
 	
     /**
      * Maximum of referenced records to be loaded.

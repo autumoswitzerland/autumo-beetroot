@@ -42,7 +42,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	protected final static Logger LOG = LoggerFactory.getLogger(AbstractBeetRootServlet.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(AbstractBeetRootServlet.class.getName());
 	
 	private BeetRootService beetRootService = null;
 	private Map<String, BeetRootHTTPSession> sessions = new ConcurrentHashMap<String, BeetRootHTTPSession>();

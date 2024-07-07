@@ -37,7 +37,7 @@ import ch.autumo.beetroot.utils.OS;
  */
 public class FileTransfer {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(FileTransfer.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(FileTransfer.class.getName());
 	
 	/** file server default port */
 	public static int DEFAULT_FILE_SERVER_PORT = 9777;
@@ -45,7 +45,7 @@ public class FileTransfer {
 	public static int DEFAULT_FILE_RECEIVER_PORT = 9779;
 	
 	/** File get */
-	public final static String CMD_FILE_GET = "FILE_GET";
+	public static final String CMD_FILE_GET = "FILE_GET";
 	
 	/** default buffer length in Kb for sending bits of a file */
 	public static int DEFAULT_BUFFER_LEN = 32;

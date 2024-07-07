@@ -58,7 +58,7 @@ public abstract class Model implements Entity {
 
     private static final long serialVersionUID = 1L;
 
-	protected final static Logger LOG = LoggerFactory.getLogger(Model.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(Model.class.getName());
     
 	/**
 	 * Unassigned id; a model has been created

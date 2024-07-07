@@ -60,7 +60,7 @@ import ch.autumo.beetroot.utils.UtilsException;
  */
 public class FileServer {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(FileServer.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(FileServer.class.getName());
 	
 	/** the base server */
 	private BaseServer baseServer = null;

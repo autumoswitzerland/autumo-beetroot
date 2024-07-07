@@ -45,7 +45,7 @@ import ch.autumo.beetroot.utils.SSL;
  */
 public class ClientFileTransfer extends FileTransfer {
 	
-	protected final static Logger LOG = LoggerFactory.getLogger(ClientFileTransfer.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(ClientFileTransfer.class.getName());
 	
 	private static SocketFactory socketFactory = null;
 	

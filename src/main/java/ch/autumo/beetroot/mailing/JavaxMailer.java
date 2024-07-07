@@ -47,7 +47,7 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
  */
 public class JavaxMailer extends AbstractMailer {
 
-	private final static Logger LOG = LoggerFactory.getLogger(JavaxMailer.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(JavaxMailer.class.getName());
 	
 	@Override
 	public void mail(String[] to, String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {

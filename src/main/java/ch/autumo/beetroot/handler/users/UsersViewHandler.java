@@ -40,7 +40,7 @@ import ch.autumo.beetroot.utils.UtilsException;
  */
 public class UsersViewHandler extends DefaultViewHandler {
 
-	private final static Logger LOG = LoggerFactory.getLogger(UsersViewHandler.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(UsersViewHandler.class.getName());
 	
 	protected String userName = null;
 	

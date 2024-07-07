@@ -42,12 +42,12 @@ import ch.autumo.beetroot.annotations.Unique;
  */
 public class Beans {
 
-	private final static Logger LOG = LoggerFactory.getLogger(Beans.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(Beans.class.getName());
 
 	/**
 	 * Snake case converter (AKA camel-case to database naming convention with underscore characters).
 	 */
-	private final static SnakeCaseStrategy SNAKE_CASE = new SnakeCaseStrategy();
+	private static final SnakeCaseStrategy SNAKE_CASE = new SnakeCaseStrategy();
 	
 	/**
 	 * Get database table column name by bean property name.

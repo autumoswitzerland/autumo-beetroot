@@ -69,7 +69,7 @@ import ch.autumo.beetroot.Entity;
  */
 public class BeanProcessor {
 
-	private final static Logger LOG = LoggerFactory.getLogger(BeanProcessor.class.getName());
+	private static final Logger LOG = LoggerFactory.getLogger(BeanProcessor.class.getName());
 	
 	/**
 	 * Special array value used by {@code mapColumnsToProperties} that indicates

@@ -49,7 +49,7 @@ import ch.autumo.beetroot.utils.OS;
  */
 public class Plant {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(Plant.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(Plant.class.getName());
 
 	public static final String RELEASE = Constants.APP_VERSION;
 

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BeetRootClientHandler extends ClientHandler {
 
-	protected final static Logger LOG = LoggerFactory.getLogger(BeetRootClientHandler.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootClientHandler.class.getName());
 	
     private final BeetRootWebServer nanoHttpd;
     private final InputStream nanoInputStream;
