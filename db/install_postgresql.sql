@@ -23,9 +23,6 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS properties;
 
-DROP INDEX idx_role_id;
-DROP INDEX idx_user_id;
-
 DROP SEQUENCE IF EXISTS roles_seq;
 DROP SEQUENCE IF EXISTS users_seq;
 DROP SEQUENCE IF EXISTS tasks_seq;

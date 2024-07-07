@@ -26,9 +26,6 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS properties;
 
-DROP INDEX idx_role_id ON users_roles;
-DROP INDEX idx_user_id ON users_roles;
-
 
 CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
