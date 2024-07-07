@@ -212,7 +212,7 @@ public abstract class AbstractMailer implements Mailer {
 		}
 
 		
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 	    String line;
 	    while ((line = br.readLine()) != null)
 	    	sb.append(line+"\n");

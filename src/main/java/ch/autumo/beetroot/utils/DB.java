@@ -347,7 +347,7 @@ public class DB {
 	 * 
 	 * @param entityClass entity class
 	 * @param id DB record id
-	 * @return entity bean
+	 * @return entity bean or null (not found)
 	 * @throws SQLException SQL exception
 	 */
 	public static Model selectRecord(Class<?> entityClass, int id) throws SQLException {
@@ -361,9 +361,10 @@ public class DB {
 			stmt = conn.createStatement();
 			final String stmtStr = "SELECT * FROM " + table + " WHERE id="+id;
 			set = stmt.executeQuery(stmtStr);
-			set.next(); // one record !
-			entity = Beans.createBean(entityClass, set);
-			entity.setStored(true);
+			if (set.next()) { // one record !
+				entity = Beans.createBean(entityClass, set);
+				entity.setStored(true);
+			}
 		} finally {
 			if (set != null)
 				set.close();
@@ -568,13 +569,13 @@ public class DB {
 	/**
 	 * Delete a record.
 	 * 
-	 * @param entity entity
+	 * @param model model
 	 * @throws Exception exception
 	 */
 	public static void delete(Model model) throws Exception {
 		DB.delete(Beans.classToTable(model.modelClass()), model.getId());
 	}
-	
+
 	/**
 	 * Delete a record.
 	 * 
@@ -646,9 +647,6 @@ public class DB {
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
 			stmt = conn.createStatement();
 			final String stmtStr = "UPDATE "+tabelName+" SET " + updateClause + " WHERE id=" + entity.getId();
-			
-			System.out.println(stmtStr);
-			
 			stmt.executeUpdate(stmtStr);
 		} catch (Exception e) {
 			LOG.error("Couldn't update entity!", e);
@@ -662,7 +660,7 @@ public class DB {
 			}
 		}		
 	}
-	
+
 	/**
 	 * Insert new entity.
 	 * 
@@ -675,7 +673,6 @@ public class DB {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		PreparedStatement stmt2 = null;
-		PreparedStatement stmt3 = null;
 		ResultSet keySet = null;
 		int savedId = Model.ID_UNASSIGNED;
 		final String tableName = Beans.classToTable(entity.getClass());
@@ -718,8 +715,6 @@ public class DB {
 					stmt.close();
 				if (stmt2 != null)
 					stmt2.close();
-				if (stmt3 != null)
-					stmt3.close();
 				if (conn != null)
 					conn.close();
 			} catch (SQLException e2) {
@@ -739,7 +734,7 @@ public class DB {
 	public static String getValue(ResultSet set, String dbColumnName) throws SQLException {
 		String v = set.getString(dbColumnName);
 		if (v != null && v.length() != 0)
-			return Web.escapeHtml(v);
+			return Web.escapeHtmlReserved(v);
 		return v;
 	}
 	
@@ -852,5 +847,224 @@ public class DB {
 			model.put(tableName, databaseFields);
 		}
 	}
-		
+
+	
+	
+	// -------- Global transaction methods --------
+
+	
+	/**
+	 * Get an new global DB connection.
+	 * 
+	 * You have to roll back or commit the transaction, before you retire
+	 * it with {@link #retireGlobalConnection(Connection)}. If you use {@link DB}
+	 * roll-backs are done automatically and you'll receive an {@link SQLException}.
+	 * 
+	 * Don't close it by yourself!
+	 * 
+	 * @return global DB connection
+	 * @throws SQLException SQL exception
+	 */
+	public static Connection newGlobalConnection() throws SQLException {
+		return BeetRootDatabaseManager.getInstance().getGlobalConnection();
+	}
+
+	/**
+	 * Retire a global DB connection.
+	 * 
+	 * @see #newGlobalConnection()
+	 * 
+	 * @throws SQLException SQL exception
+	 */
+	public static void retireGlobalConnection(Connection conn) throws SQLException {
+		BeetRootDatabaseManager.getInstance().retireGlobalConnection(conn);
+	}
+	
+	/**
+	 * Insert new entity.
+	 * 
+	 * @param conn global connection
+	 * @param entity entity
+	 * @param columns columns; "a,b,c".
+	 * @param values values; "'1','2','3'".
+	 * @return generated id
+	 * @throws SQLException SQL Exception
+	 */
+	public static Integer insert(Connection conn, Entity entity, String columns, String values) throws SQLException {
+		conn.setAutoCommit(false);
+		PreparedStatement stmt = null;
+		PreparedStatement stmt2 = null;
+		ResultSet keySet = null;
+		int savedId = Model.ID_UNASSIGNED;
+		final String tableName = Beans.classToTable(entity.getClass());
+		boolean ex = false;
+		try {
+			//NO SEMICOLON
+			stmt = conn.prepareStatement("INSERT INTO "+tableName+" (" + columns + ") VALUES (" + values + ")", Statement.RETURN_GENERATED_KEYS);
+			stmt.executeUpdate();
+			// Get generated key
+			boolean found = false;
+
+			// Get ID if table in no many-to-many-relation table
+			if (!tableName.contains("_")) {
+				if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
+					stmt2 = conn.prepareStatement("select "+tableName+"_seq.currval from dual");
+					keySet = stmt2.executeQuery();
+					found = keySet.next();
+					if (found)
+						savedId = (int) keySet.getLong(1);
+				} else {
+					keySet = stmt.getGeneratedKeys();
+					found = keySet.next();
+					if (found)
+						savedId = keySet.getInt(1);
+				}
+			} else {
+				// For many-to-many-relation tables, there's maybe no id, so
+				// we return the pseudo id for these tables: -2;
+				found = true;
+				savedId = Model.ID_M2M_PSEUDO;
+			}
+		} catch (SQLException e) {
+			ex = true;
+			LOG.error("Couldn't save entity within a global transaction!", e);
+			throw new SQLException("Couldn't save entity within global transaction!", e);
+		} finally {
+			try {
+				if (keySet != null)
+					keySet.close();
+				if (stmt != null)
+					stmt.close();
+				if (stmt2 != null)
+					stmt2.close();
+				if (ex)
+					conn.rollback();
+			} catch (SQLException e2) {
+			}
+		}
+		return Integer.valueOf(savedId);
+	}
+	
+	/**
+	 * Update entity.
+	 * 
+	 * @param conn global connection
+	 * @param entity entity
+	 * @param columns columns; "a,b,c".
+	 * @param values values; "'1','2','3'".
+	 * @throws SQLException SQL Exception
+	 */
+	public static void update(Connection conn, Entity entity, String columns, String values) throws SQLException {
+		conn.setAutoCommit(false);
+		Statement stmt = null;
+		String updateClause = ""; 
+		final String cols[] = columns.split(",");
+		final String vals[] = values.split(",");
+		final String tabelName = Beans.classToTable(entity.getClass());
+		boolean ex = false;
+		try {
+			if (cols.length != vals.length)
+				throw new IllegalArgumentException("The amount of columns doesn't match the amount of values for the update statement!");
+			for (int i = 0; i < vals.length; i++) {
+				if (vals.length == i + 1)
+					updateClause += cols[i] + "="+vals[i]+"";
+				else
+					updateClause += cols[i] + "="+vals[i]+",";				
+			}
+			stmt = conn.createStatement();
+			final String stmtStr = "UPDATE "+tabelName+" SET " + updateClause + " WHERE id=" + entity.getId();
+			stmt.executeUpdate(stmtStr);
+		} catch (Exception e) {
+			ex = true;
+			LOG.error("Couldn't update entity within global transaction!", e);
+			throw new SQLException("Couldn't save entity within global transaction!", e);
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (ex)
+					conn.rollback();
+			} catch (SQLException e2) {
+			}
+		}		
+	}
+
+	/**
+	 * Delete a record.
+	 * 
+	 * @param conn global connection
+	 * @param entity entity table name
+	 * @param id if
+	 * @throws SQLException SQL Exception
+	 */
+	public static void delete(Connection conn, String entity, int id) throws SQLException {
+		conn.setAutoCommit(false);
+		Statement stmt = null;
+		boolean ex = false;
+		try {
+			// Delete data !
+			stmt = conn.createStatement();
+			String stmtStr = "DELETE FROM "+entity+" WHERE id=" + id;
+			stmt.executeUpdate(stmtStr);
+		} catch (Exception e) {
+			ex = true;
+			LOG.error("Couldn't delete entity within global transaction!", e);
+			throw new SQLException("Couldn't delete entity within global transaction!", e);
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (ex)
+				conn.rollback();
+		}
+	}
+
+	/**
+	 * Delete a many-to-many-relation record.
+	 * 
+	 * @param conn global connection
+	 * @param model model
+	 * @param foreignDbKeys DB foreign keys as given by the keys within
+	 * 			the return value of the model method {@link Model#getForeignReferences()}
+	 * @throws SQLException SQL Exception
+	 */
+	public static void delete(Connection conn, Model model, Set<String> foreignDbKeys) throws SQLException {
+		conn.setAutoCommit(false);
+		String clause = "";
+		for (Iterator<String> iterator = foreignDbKeys.iterator(); iterator.hasNext();) {
+			final String fk = iterator.next();
+			String v = model.get(fk);
+			clause += (fk + " = '" + v + "' AND ");
+		}
+		clause = clause.substring(0, clause.length() - 5);
+		final String entity = Beans.classToTable(model.modelClass());
+		Statement stmt = null;
+		boolean ex = false;
+		try {
+			// Delete data !
+			stmt = conn.createStatement();
+			String stmtStr = "DELETE FROM "+entity+" WHERE " + clause;
+			stmt.executeUpdate(stmtStr);
+		} catch (Exception e) {
+			ex = true;
+			LOG.error("Couldn't delete relation entity within global transaction!", e);
+			throw new SQLException("Couldn't relation delete entity within global transaction!", e);
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (ex)
+				conn.rollback();
+		}		
+	}	
+
+	/**
+	 * Delete a record.
+	 * 
+	 * @param conn global connection
+	 * @param entity entity
+	 * @throws SQLException SQL Exception
+	 */
+	public static void delete(Connection conn, Entity entity) throws SQLException {
+		DB.delete(conn, Beans.classToTable(entity.getClass()), entity.getId());
+	}
+	
 }

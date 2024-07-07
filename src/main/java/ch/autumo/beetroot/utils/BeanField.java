@@ -39,6 +39,7 @@ public class BeanField {
 	private boolean unique = false;
 
 	private Method getterMethod = null;
+	private Method setterMethod = null;
 	
 	/**
 	 * Constructor.
@@ -49,18 +50,31 @@ public class BeanField {
 	 * @param isNullable is nullable? 
 	 * @param unique is unique?
 	 * @param getterMethod getter method
+	 * @param setterMethod setter method
 	 */
-	public BeanField(String dbName, String beanName, Class<?> type, boolean isNullable, boolean unique, Method getterMethod) {
+	public BeanField(
+				String dbName, 
+				String beanName, 
+				Class<?> type, 
+				boolean isNullable, 
+				boolean unique, 
+				Method getterMethod, 
+				Method setterMethod) {
 		this.dbName = dbName;
 		this.beanName = beanName;
 		this.type = type;
 		this.isNullable = isNullable;
 		this.unique = unique;
 		this.getterMethod = getterMethod;
+		this.setterMethod = setterMethod;
 	}		
 
 	public Method getGetterMethod() {
 		return getterMethod;
+	}
+	
+	public Method getSetterMethod() {
+		return setterMethod;
 	}
 	
 	public String getDbName() {

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 
+
 /**
  * File cache manager.
  */
@@ -166,7 +167,7 @@ public class FileCacheManager {
 	 * Find or create file cache.
 	 * 
 	 * @param path file path
-	 * @param forcedCaching caching is forced when true if max. cache size isn't reached; 
+	 * @param forceCaching caching is forced when true if max. cache size isn't reached; 
 	 * 			force caching breaks the file size limit, but not the cache size limit!
 	 * @return file cache
 	 * @throws IOException IO exception
@@ -192,9 +193,7 @@ public class FileCacheManager {
 		
 			final FileCache fc = new FileCache(path.toAbsolutePath(), mimeType);
 			cacheMap.put(pstr, fc);
-			
 			LOG.trace("FileCache added: " + fc.getFullPath() + ", cachesize="+this.size);
-			
 			return fc;
 		}
 		return cacheMap.get(pstr);
@@ -217,9 +216,7 @@ public class FileCacheManager {
 		
 			final FileCache fc = new FileCache(path.toAbsolutePath(), mimeType, forcedCaching);
 			cacheMap.put(pstr, fc);
-			
 			LOG.trace("FileCache added: " + fc.getFullPath() + ", cachesize="+this.size);
-			
 			return fc;
 		}
 		return cacheMap.get(pstr);
@@ -237,11 +234,8 @@ public class FileCacheManager {
 		final String rstr = "resource:" + resourcePath; 
 		final String mimeType = Constants.MIME_TYPES_MAP.getContentType(resourcePath);
 		if (!cacheMap.containsKey(rstr)) {
-		
 			final FileCache fc = new FileCache(resourcePath, mimeType);
-			
 			LOG.trace("FileCache added: " + fc.getFullPath() + ", cachesize="+this.size);
-			
 			cacheMap.put(rstr, fc);
 			return fc;
 		}

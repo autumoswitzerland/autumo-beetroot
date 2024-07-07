@@ -87,24 +87,14 @@ public class ExampleUploadHandler extends BaseHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String line, BeetRootHTTPSession session) {
-
+	public void render(BeetRootHTTPSession session) {
 		int mus = BeetRootConfigurationManager.getInstance().getInt("web_max_upload_size");
 		if (mus == -1) {
 			mus = 32;
 			LOG.warn("Using 32 MB for max. upload file size.");
 		}
-		
-		if (line.contains("{$maxFileUploadSizeMb}")) {
-			
-			line = line.replace("{$maxFileUploadSizeMb}", ""+mus);
-		}
-		if (line.contains("{$maxFileUploadSize}")) {
-			
-			line = line.replace("{$maxFileUploadSize}", "" + (mus * 1024 * 1024));
-		}
-		
-		return line;
+		setVar("maxFileUploadSizeMb", ""+mus);
+		setVar("maxFileUploadSize", "" + (mus * 1024 * 1024));
 	}
 	
 }

@@ -34,15 +34,9 @@ public class Error404Handler extends BaseHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String line, BeetRootHTTPSession session) {
-
-		if (line.contains("{$title}"))
-			line = line.replace("{$title}", "The requested page doesn't exist. (ERROR 404)");
-		
-		if (line.contains("{$message}"))
-			line = line.replace("{$message}", " ");
-		
-		return line;
+	public void render(BeetRootHTTPSession session) {
+		setVar("title", "The requested page doesn't exist. (ERROR 404)");
+		setVar("{$message}", " ");
 	}
 
 	@Override

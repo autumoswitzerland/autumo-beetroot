@@ -69,9 +69,9 @@ public class UsersViewHandler extends DefaultViewHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+	public void render(BeetRootHTTPSession session) {
 		// user name
-		return text.replaceAll("\\{\\$userName\\}", userName);
+		setVar("userName", userName);
 	}
 
 	@Override

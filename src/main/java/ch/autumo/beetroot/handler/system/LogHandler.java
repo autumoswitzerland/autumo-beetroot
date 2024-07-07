@@ -21,11 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +35,7 @@ import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.modules.log.LogFactory;
+import ch.autumo.beetroot.utils.Web;
 
 
 /**
@@ -47,7 +46,7 @@ public class LogHandler extends BaseHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(LogHandler.class);
 
 	/** Default log size . */
-	public static int DEFAULT_LOG_SIZE = LogEventAppender.DEFAULT_LOG_SIZE;
+	public static final int DEFAULT_LOG_SIZE = LogEventAppender.DEFAULT_LOG_SIZE;
 	
 	/**
 	 * If there's a refresh time (tag: {$refreshTime}), this is the
@@ -62,8 +61,6 @@ public class LogHandler extends BaseHandler {
 	
 	/** Log pattern. Note: 'im' not recognized in pattern. */
 	private static final String LOG_PATTERN = "%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-35.35c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n";
-	
-	private static Pattern PATTERN_REFRESH = Pattern.compile("\\{\\$logRefreshTime\\}");
 	
 	private final PatternLayout layout;
 	
@@ -83,39 +80,37 @@ public class LogHandler extends BaseHandler {
 	 * Replaces variables in the whole page.
 	 */
 	@Override
-	public String replaceVariables(String text, BeetRootHTTPSession session) {
-		
+	public void renderAll(BeetRootHTTPSession session) {
 		// timer
-		if (text.contains("{$refresh}")) {
-			text = text.replace("{$refresh}", LanguageManager.getInstance().translate("base.name.refresh", session.getUserSession()));
-		} else if (text.contains("{$logRefreshTime}")) { // refresh time if needed!
-			String time;
-			try {
-				time = BeetRootDatabaseManager.getInstance().getProperty("log.refresh.time");
-				if (time == null) {
-					LOG.warn("Couldn't load refresh time from database; setting it to 60s.");
-					time = ""+DEFAULT_REFRESH_TIME; //seconds
-				}
-				
-				if (Integer.valueOf(time).intValue() < 15) {
-					// minimum polling time = 15s
-					time = ""+DEFAULT_REFRESH_TIME; //seconds
-				}
-				
-				text = PATTERN_REFRESH.matcher(text).replaceFirst(time);
-			} catch (Exception e) {
-				LOG.warn("Couldn't load refresh time from database; setting it to 60s.", e);
-				text = PATTERN_REFRESH.matcher(text).replaceFirst(""+DEFAULT_REFRESH_TIME);
+		setVarAll("refresh", LanguageManager.getInstance().translate("base.name.refresh", session.getUserSession()));
+
+		String time;
+		try {
+			time = BeetRootDatabaseManager.getInstance().getProperty("log.refresh.time");
+			if (time == null) {
+				LOG.warn("Couldn't load refresh time from database; setting it to 60s.");
+				time = ""+DEFAULT_REFRESH_TIME; //seconds
 			}
+			
+			if (Integer.parseInt(time) < 15) {
+				// minimum polling time = 15s
+				time = ""+DEFAULT_REFRESH_TIME; //seconds
+			}
+			
+			
+			setVarAll("logRefreshTime", time);
+			
+		} catch (Exception e) {
+			LOG.warn("Couldn't load refresh time from database; setting it to 60s.", e);
+			setVarAll("logRefreshTime", DEFAULT_REFRESH_TIME);
 		}
-		return text;
 	}
 	
 	/**
 	 * Replaces variables template only.
 	 */
 	@Override
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+	public void render(BeetRootHTTPSession session) {
 		
 		int nlines = DEFAULT_LOG_SIZE;
 		String sSize;
@@ -123,7 +118,7 @@ public class LogHandler extends BaseHandler {
 			sSize = BeetRootDatabaseManager .getInstance().getProperty("log.size");
 			if (sSize != null) {
 				try {
-					nlines = Integer.valueOf(sSize).intValue();
+					nlines = Integer.parseInt(sSize);
 				} catch (Exception e) {
 					LOG.error("Couldn't read 'log.size' from database properties! Using default log size '"+DEFAULT_LOG_SIZE+"'!", e);
 					nlines = DEFAULT_LOG_SIZE;
@@ -135,7 +130,7 @@ public class LogHandler extends BaseHandler {
 			LOG.error("Couldn't read 'log.size' from database properties! Using default log size '"+DEFAULT_LOG_SIZE+"'!", e);
 			nlines = DEFAULT_LOG_SIZE;
 		}
-		text = text.replace("{$logSize}", ""+nlines);
+		setVar("logSize", ""+nlines);
 		
 		ClientAnswer answer;
 		try {
@@ -144,14 +139,14 @@ public class LogHandler extends BaseHandler {
 			LOG.error("Couldn't read answer!", e);
 			// Nothing to be done
 			answer = new ClientAnswer();
-			answer.setEntity("No backend server log available!"); //TODO trans
+			answer.setEntity(LanguageManager.getInstance().translate("system.log.nobackend", session.getUserSession()));
 		}
 
-		text = text.replace("{$logSource}", answer.getEntity());
+		setVar("logSource", answer.getEntity());
 		
 		final Object obj = answer.getObject();
 		if (obj != null) {
-			final StringBuffer buf = new StringBuffer();
+			final StringBuilder buf = new StringBuilder();
 			@SuppressWarnings("unchecked")
 			final List<LogEvent> events = (List<LogEvent>) obj;
 			for (Iterator<LogEvent> iterator = events.iterator(); iterator.hasNext();) {
@@ -159,10 +154,8 @@ public class LogHandler extends BaseHandler {
 				final String line = this.format(event);
 				buf.append(line);
 			}
-			text = text.replace("{$logData}", buf.toString());
+			setVar("logData", buf.toString());
 		}
-		
-		return text;		
 	}
 	
     public String format(LogEvent event) {
@@ -172,7 +165,7 @@ public class LogHandler extends BaseHandler {
         formattedMessage = processCustomPatternReferences(formattedMessage, event);
 
         // Escape HTML characters to avoid issues with displaying in HTML
-        formattedMessage = escapeHtml(formattedMessage);
+        formattedMessage = Web.escapeHtmlReserved(formattedMessage);
 
         // Replace ANSI escape codes with corresponding HTML styles
         formattedMessage = replaceAnsiWithHtml(formattedMessage);
@@ -192,59 +185,48 @@ public class LogHandler extends BaseHandler {
         // Apply your custom formatting logic here
         return "Custom IM: " + message; // Example formatting
     }
-    
-    private String escapeHtml(String input) {
-        if (Strings.isBlank(input)) {
-            return input;
-        }
-        return input.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("\"", "&quot;")
-                    .replace("'", "&#39;");
-    }
 
     private String replaceAnsiWithHtml(String input) {
 
         // Standard colors
-        input = input.replaceAll("\\[30m", "<span style=\"color: darkgrey;\">");
-        input = input.replaceAll("\\[31m", "<span style=\"color: darkred;\">");
-        input = input.replaceAll("\\[32m", "<span style=\"color: green;\">");
-        input = input.replaceAll("\\[33m", "<span style=\"color: yellow;\">");
-        input = input.replaceAll("\\[34m", "<span style=\"color: blue;\">");
-        input = input.replaceAll("\\[35m", "<span style=\"color: magenta;\">");
-        input = input.replaceAll("\\[36m", "<span style=\"color: cyan;\">");
-        input = input.replaceAll("\\[37m", "<span style=\"color: lightgrey;\">");
+        input = input.replace("[30m", "<span style=\"color: darkgrey;\">");
+        input = input.replace("[31m", "<span style=\"color: darkred;\">");
+        input = input.replace("[32m", "<span style=\"color: green;\">");
+        input = input.replace("[33m", "<span style=\"color: yellow;\">");
+        input = input.replace("[34m", "<span style=\"color: blue;\">");
+        input = input.replace("[35m", "<span style=\"color: magenta;\">");
+        input = input.replace("[36m", "<span style=\"color: cyan;\">");
+        input = input.replace("[37m", "<span style=\"color: lightgrey;\">");
 
         // Standard bright colors
-        input = input.replaceAll("\\[1;30m", "<span style=\"color: lightgrey;\">");
-        input = input.replaceAll("\\[1;31m", "<span style=\"color: red;\">");
-        input = input.replaceAll("\\[1;32m", "<span style=\"color: #90EE90;\">");
-        input = input.replaceAll("\\[1;33m", "<span style=\"color: #FFFFE0;\">");
-        input = input.replaceAll("\\[1;34m", "<span style=\"color: #ADD8E6;\">");
-        input = input.replaceAll("\\[1;35m", "<span style=\"color: #FF80FF;\">");
-        input = input.replaceAll("\\[1;36m", "<span style=\"color: #E0FFFF;\">");
-        input = input.replaceAll("\\[1;37m", "<span style=\"color: white;\">");
+        input = input.replace("[1;30m", "<span style=\"color: lightgrey;\">");
+        input = input.replace("[1;31m", "<span style=\"color: red;\">");
+        input = input.replace("[1;32m", "<span style=\"color: #90EE90;\">");
+        input = input.replace("[1;33m", "<span style=\"color: #FFFFE0;\">");
+        input = input.replace("[1;34m", "<span style=\"color: #ADD8E6;\">");
+        input = input.replace("[1;35m", "<span style=\"color: #FF80FF;\">");
+        input = input.replace("[1;36m", "<span style=\"color: #E0FFFF;\">");
+        input = input.replace("[1;37m", "<span style=\"color: white;\">");
         
         // beetRoot ANSI colors
-        input = input.replaceAll("\\[90m", "<span style=\"color: darkgrey;\">");
-        input = input.replaceAll("\\[91m", "<span style=\"color: red;\">");
-        input = input.replaceAll("\\[92m", "<span style=\"color: green;\">");
-        input = input.replaceAll("\\[93m", "<span style=\"color: yellow;\">");
-        input = input.replaceAll("\\[94m", "<span style=\"color: blue;\">");
-        input = input.replaceAll("\\[95m", "<span style=\"color: magenta;\">");
-        input = input.replaceAll("\\[96m", "<span style=\"color: cyan;\">");
-        input = input.replaceAll("\\[97m", "<span style=\"color: lightgrey;\">");
+        input = input.replace("[90m", "<span style=\"color: darkgrey;\">");
+        input = input.replace("[91m", "<span style=\"color: red;\">");
+        input = input.replace("[92m", "<span style=\"color: green;\">");
+        input = input.replace("[93m", "<span style=\"color: yellow;\">");
+        input = input.replace("[94m", "<span style=\"color: blue;\">");
+        input = input.replace("[95m", "<span style=\"color: magenta;\">");
+        input = input.replace("[96m", "<span style=\"color: cyan;\">");
+        input = input.replace("[97m", "<span style=\"color: lightgrey;\">");
 
         // Resets
-        input = input.replaceAll("\\[0m", "</span>");
-        input = input.replaceAll("\\[m", "</span>");
+        input = input.replace("[0m", "</span>");
+        input = input.replace("[m", "</span>");
         
-        // Special words
-        input = input.replaceAll("READER", "<span style=\"color: green;\">READER</span>");
-        input = input.replaceAll("READING", "<span style=\"color: green;\">READING</span>");
-        input = input.replaceAll("WRITER", "<span style=\"color: red;\">WRITER</span>");
-        input = input.replaceAll("WRITING", "<span style=\"color: red;\">WRITING</span>");
+        // Special words (artistic freedom)
+        input = input.replace("READER", "<span style=\"color: green;\">READER</span>");
+        input = input.replace("READING", "<span style=\"color: green;\">READING</span>");
+        input = input.replace("WRITER", "<span style=\"color: red;\">WRITER</span>");
+        input = input.replace("WRITING", "<span style=\"color: red;\">WRITING</span>");
         
         return input;
     }

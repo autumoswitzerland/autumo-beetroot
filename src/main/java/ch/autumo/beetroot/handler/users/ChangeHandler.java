@@ -220,16 +220,12 @@ public class ChangeHandler extends BaseHandler {
 	}
 	
 	@Override
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
-		
+	public void render(BeetRootHTTPSession session) {
 		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
-		if (text.indexOf("{$passElem}") != -1) {
-			if (jsPwValidator)
-				text = text.replace("{$passElem}", "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\"></div>");
-			else
-				text = text.replace("{$passElem}", "<input type=\"password\" name=\"password\" id=\"password\">");
-		}
-		return text;
+		if (jsPwValidator)
+			setVar("passElem", "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\"></div>");
+		else
+			setVar("{$passElem}", "<input type=\"password\" name=\"password\" id=\"password\">");
 	}
 
 	@Override

@@ -33,15 +33,9 @@ public class NotImplementedHandler extends BaseHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String line, BeetRootHTTPSession session) {
-
-		if (line.contains("{$title}"))
-			line = line.replace("{$title}", "There's nothing under this page! Soooo sorry...NOT!");
-
-		if (line.contains("{$message}"))
-			line = line.replace("{$message}", " ");
-		
-		return line;
+	public void render(BeetRootHTTPSession session) {
+		setVar("title", "There's nothing under this page! Soooo sorry...NOT!");
+		setVar("message", " ");
 	}
 
 	@Override

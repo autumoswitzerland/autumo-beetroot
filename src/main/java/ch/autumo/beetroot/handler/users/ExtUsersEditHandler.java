@@ -17,6 +17,7 @@
  */
 package ch.autumo.beetroot.handler.users;
 
+import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
+import ch.autumo.beetroot.utils.DB;
 
 
 /**
@@ -46,19 +48,27 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 	@Override
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 
-		// 1. Update entity
-		HandlerResponse response = super.updateData(session, id); 
+		final HandlerResponse response = super.updateData(session, id); 
 		if (response != null ) {
 			// not null is bad
 			return response;
 		}
 		
-		// 2. delete all relations
-		List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(id));
-		for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();)
-			iterator.next().delete();
+		// This is done very detailed here. To write less code, you
+		// could delete all users-roles-associations and only save
+		// the associated relations in a global TX.
 		
-		// 2. Save relation
+		boolean update = false;
+		
+		// 0. Load relations
+		final List<Model> usersRoles = Model.where(UserRole.class, "user_id = ?", Integer.valueOf(id));
+		
+		
+		// 1. Create a global TX
+		final Connection conn = DB.newGlobalConnection();
+		
+		
+		// 2. Save relations if necessary
 		final String assignedIds = session.getParms().get("assignedIds");
 		if (assignedIds != null && assignedIds.length() > 0) {
 			final String roleIds[] = assignedIds.split(",");
@@ -66,20 +76,47 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 				final UserRole ur = new UserRole();
 				ur.setUserId(id);
 				ur.setRoleId(Integer.valueOf(roleIds[i]));
-				int urid = ur.save().intValue();
-				// pseudo id -2 is valid at this point (for many-to many tables that have no id)
-				if (urid == -1) {
-					return new HandlerResponse(
-							HandlerResponse.STATE_NOT_OK, 
-							LanguageManager.getInstance().translate("base.error.handler.savedid.rel", 
-							session.getUserSession())
-						);
+				if (!usersRoles.contains(ur)) {
+					int urid = ur.save(conn).intValue();
+					// pseudo id -2 is valid at this point (for many-to many tables that have no id)
+					if (urid == -1) {
+						return new HandlerResponse(
+								HandlerResponse.STATE_NOT_OK, 
+								LanguageManager.getInstance().translate("base.error.handler.savedid.rel", 
+								session.getUserSession())
+							);
+					}
+					update = true;
 				}
 			}
-			// Refresh current's user roles if they have been updated
-			if (super.isCurrentUserUpdate(session))
-				super.refreshUserRoles(id, session);
 		}
+		
+		// 3. Delete relations if necessary
+		final String availableIds = session.getParms().get("availableIds");
+		if (availableIds != null && availableIds.length() > 0) {
+			final String roleIds[] = availableIds.split(",");
+			for (int i = 0; i < roleIds.length; i++) {
+				final UserRole ur = new UserRole();
+				ur.setUserId(id);
+				ur.setRoleId(Integer.valueOf(roleIds[i]));
+				if (usersRoles.contains(ur)) {		
+					ur.delete(conn);
+					update = true;
+				}
+			}
+
+		}
+		
+		
+		// 3. Commit
+		conn.commit();
+		DB.retireGlobalConnection(conn);
+
+		
+		// 4. Refresh current's user roles if they have been updated
+		if (update && super.isCurrentUserUpdate(session))
+			super.refreshUserRoles(id, session);
+		
 		
 		return null;
 	}
@@ -106,7 +143,7 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 					}
 				}
 			} else {
-				final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
+				final List<Model> usersRoles = Model.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
 				for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
 					final UserRole userRole = (UserRole) iterator.next();
 					final Role role = (Role) userRole.getAssociatedReference(Role.class);
@@ -115,7 +152,7 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 				}
 			}
 			
-			final StringBuffer snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
+			final StringBuilder snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
 			super.parseAssociatedEntities(snippet, associatedRoles, session);
 			super.parseUnassociatedEntities(snippet, unassociatedRoles, session);
 			return snippet.toString();
@@ -125,12 +162,12 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+	public void render(BeetRootHTTPSession session) {
 		if (super.isRetryCall(session)) {
 			final String assignedIds = session.getParms().get("assignedIds");
-			text = text.replace("{$assignedIds}", assignedIds);
+			setVar("assignedIds", assignedIds);
 		} else {
-			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
+			final List<Model> usersRoles = Model.where(UserRole.class, "user_id = ?", Integer.valueOf(super.getCurrentEntityDbId()));
 			String assignedIds = "";
 			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
 				final UserRole userRole = (UserRole) iterator.next();
@@ -138,9 +175,8 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 			}
 			if (assignedIds.endsWith(","))
 				assignedIds = assignedIds.substring(0, assignedIds.length() - 1);
-			text = text.replace("{$assignedIds}", assignedIds);
+			setVar("assignedIds", assignedIds);
 		}
-		return text;
 	}
 	
 	@Override

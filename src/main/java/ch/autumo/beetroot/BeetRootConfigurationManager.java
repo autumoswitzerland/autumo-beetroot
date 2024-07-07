@@ -243,6 +243,15 @@ public class BeetRootConfigurationManager {
 			throw new Exception("Couldn't read general server configuration '" + file + "' !");
 		}
 		
+		// load some main props separately
+		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
+		if (this.csrf)
+	    	LOG.info("CSRF activated!");
+		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
+		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
+		if (this.translateTemplates)
+	    	LOG.info("Web templates are translated.");
+		
 		isInitialized = true;
 	}
 	
@@ -298,15 +307,6 @@ public class BeetRootConfigurationManager {
 	public String getFullConfigBasePath() {
 		return fullConfigBasePath;
 	}
-
-	/**
-	 * Set if templates should be translated.
-	 * 
-	 * @param translateTemplates true if templates should be translated
-	 */
-	public void setTranslateTemplates(boolean translateTemplates) {
-		this.translateTemplates = translateTemplates;
-	}
 	
 	/**
 	 * Translated templates?
@@ -317,29 +317,11 @@ public class BeetRootConfigurationManager {
 	}
 	
 	/**
-	 * Set if extended roles should be used.
-	 * 
-	 * @param extendedRoles true if extended roles should be used
-	 */
-	public void setExtendedRoles(boolean extendedRoles) {
-		this.extendedRoles = extendedRoles;
-	}
-	
-	/**
 	 * Use extended roles?
 	 * @return true if extended roles should be used
 	 */
 	public boolean useExtendedRoles() {
 		return this.extendedRoles;
-	}
-	
-	/**
-	 * Set if CSRF should be used.
-	 * 
-	 * @param csrf true if CSRF should be used
-	 */
-	public void setCsrf(boolean csrf) {
-		this.csrf = csrf;
 	}
 	
 	/**

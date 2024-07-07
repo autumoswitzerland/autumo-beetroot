@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 import ch.autumo.beetroot.security.SecureApplicationHolder;
+import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.DBField;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.OS;
@@ -331,6 +332,41 @@ public class BeetRootDatabaseManager {
 		return dataSource.getConnection();
 	}
 
+	/**
+	 * Get an new global DB connection.
+	 * 
+	 * You have to roll back or commit the transaction, before you retire
+	 * it with {@link #retireGlobalConnection(Connection)}. If you use {@link DB}
+	 * roll-backs are done automatically and you'll receive an {@link SQLException}.
+	 * 
+	 * Don't close it by yourself!
+	 * 
+	 * @return global DB connection
+	 * @throws SQLException SQL exception
+	 */
+	public Connection getGlobalConnection() throws SQLException {
+		final Connection conn = dataSource.getConnection();
+		conn.setAutoCommit(false);
+		return conn;
+	}
+
+	/**
+	 * Retire a global DB connection.
+	 * 
+	 * @see #getGlobalConnection()
+	 * 
+	 * @throws SQLException SQL exception
+	 */
+	public void retireGlobalConnection(Connection conn) throws SQLException {
+		if (!conn.isClosed()) {
+			conn.setAutoCommit(true);
+			try {
+				conn.close();
+			} catch (Exception e) {
+			}
+		}
+	}
+	
 	public boolean isH2Db() {
 		return isH2Db;
 	}

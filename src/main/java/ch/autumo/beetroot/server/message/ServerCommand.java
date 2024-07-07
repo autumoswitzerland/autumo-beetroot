@@ -293,7 +293,7 @@ public class ServerCommand extends AbstractMessage {
 	@Override
 	public String getJsonTransferString() throws IOException {
 		
-		final StringBuffer json = new StringBuffer();
+		final StringBuilder json = new StringBuilder();
 		json.append("\"serverName\":\""+serverName+"\",");
 		json.append("\"dispatcherId\":\""+dispatcherId+"\",");
 		json.append("\"message\":\""+message.trim()+"\",");

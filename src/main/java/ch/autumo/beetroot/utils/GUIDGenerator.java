@@ -38,7 +38,7 @@ public class GUIDGenerator {
 	 * @return The generated GUID.
 	 */
 	public static String generate() {
-		StringBuffer id = new StringBuffer();
+		final StringBuilder id = new StringBuilder();
 		encode(id, MACHINE_DESCRIPTOR);
 		encode(id, Runtime.getRuntime());
 		encode(id, Thread.currentThread());
@@ -53,7 +53,7 @@ public class GUIDGenerator {
 	 * @param b The buffer.
 	 * @param obj The object.
 	 */
-	private static void encode(StringBuffer b, Object obj) {
+	private static void encode(StringBuilder b, Object obj) {
 		encode(b, obj.hashCode());
 	}
 	
@@ -63,8 +63,8 @@ public class GUIDGenerator {
 	 * @param b The buffer.
 	 * @param value The value.
 	 */
-	private static void encode(StringBuffer b, int value) {
-		String hex = Integer.toHexString(value);
+	private static void encode(StringBuilder b, int value) {
+		final String hex = Integer.toHexString(value);
 		int hexSize = hex.length();
 		for (int i = 8; i > hexSize; i--) {
 			b.append('0');
@@ -78,8 +78,8 @@ public class GUIDGenerator {
 	 * @param b The buffer.
 	 * @param value The value.
 	 */
-	private static void encode(StringBuffer b, long value) {
-		String hex = Long.toHexString(value);
+	private static void encode(StringBuilder b, long value) {
+		final String hex = Long.toHexString(value);
 		int hexSize = hex.length();
 		for (int i = 16; i > hexSize; i--) {
 			b.append('0');
@@ -93,7 +93,7 @@ public class GUIDGenerator {
 	 * @return The calculated machine id.
 	 */
 	private static String getMachineDescriptor() {
-		StringBuffer descriptor = new StringBuffer();
+		final StringBuilder descriptor = new StringBuilder();
 		descriptor.append(System.getProperty("os.name"));
 		descriptor.append("::");
 		descriptor.append(System.getProperty("os.arch"));
@@ -102,7 +102,7 @@ public class GUIDGenerator {
 		descriptor.append("::");
 		descriptor.append(System.getProperty("user.name"));
 		descriptor.append("::");
-		StringBuffer b = buildNetworkInterfaceDescriptor();
+		final StringBuilder b = buildNetworkInterfaceDescriptor();
 		if (b != null) {
 			descriptor.append(b);
 		} else {
@@ -124,7 +124,7 @@ public class GUIDGenerator {
 	 * 
 	 * @return A descriptor fragment, or null if the method fails.
 	 */
-	private static StringBuffer buildNetworkInterfaceDescriptor() {
+	private static StringBuilder buildNetworkInterfaceDescriptor() {
 		Enumeration<NetworkInterface> e1;
 		try {
 			e1 = NetworkInterface.getNetworkInterfaces();
@@ -132,12 +132,12 @@ public class GUIDGenerator {
 			// not available
 			return null;
 		}
-		StringBuffer b = new StringBuffer();
+		final StringBuilder b = new StringBuilder();
 		while (e1.hasMoreElements()) {
 			NetworkInterface ni = (NetworkInterface) e1.nextElement();
-			StringBuffer b1 = getMACAddressDescriptor(ni);
-			StringBuffer b2 = getInetAddressDescriptor(ni);
-			StringBuffer b3 = new StringBuffer();
+			final StringBuilder b1 = getMACAddressDescriptor(ni);
+			final StringBuilder b2 = getInetAddressDescriptor(ni);
+			final StringBuilder b3 = new StringBuilder();
 			if (b1 != null) {
 				b3.append(b1);
 			}
@@ -162,7 +162,7 @@ public class GUIDGenerator {
 	 * 
 	 * @return A descriptor fragment, or null if the method fails.
 	 */
-	private static StringBuffer getMACAddressDescriptor(NetworkInterface ni) {
+	private static StringBuilder getMACAddressDescriptor(NetworkInterface ni) {
 		byte[] haddr;
 		try {
 			haddr = ni.getHardwareAddress();
@@ -170,7 +170,7 @@ public class GUIDGenerator {
 			// not available.
 			haddr = null;
 		}
-		StringBuffer b = new StringBuffer();
+		final StringBuilder b = new StringBuilder();
 		if (haddr != null) {
 			for (int i = 0; i < haddr.length; i++) {
 				if (b.length() > 0) {
@@ -191,8 +191,8 @@ public class GUIDGenerator {
 	 * 
 	 * @return A descriptor fragment, or null if the method fails.
 	 */
-	private static StringBuffer getInetAddressDescriptor(NetworkInterface ni) {
-		StringBuffer b = new StringBuffer();
+	private static StringBuilder getInetAddressDescriptor(NetworkInterface ni) {
+		final StringBuilder b = new StringBuilder();
 		Enumeration<InetAddress> e2 = ni.getInetAddresses();
 		while (e2.hasMoreElements()) {
 			InetAddress addr = (InetAddress) e2.nextElement();

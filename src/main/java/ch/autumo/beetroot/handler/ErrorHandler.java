@@ -45,17 +45,12 @@ public class ErrorHandler extends BaseHandler {
 	}
 
 	@Override
-	public String replaceTemplateVariables(String line, BeetRootHTTPSession session) {
-
-		if (line.contains("{$title}") && title != null && title.length() != 0)
-			line = line.replace("{$title}", this.title);
-		
-		if (line.contains("{$message}") && title != null && title.length() != 0)
-			line = line.replace("{$message}", this.message);
+	public void render(BeetRootHTTPSession session) {
+		setVar("title", this.title);
+		if (title != null && title.length() != 0)
+			setVar("message", this.message);
 		else
-			line = line.replace("{$message}", "");
-		
-		return line;
+			setVar("message", "");
 	}
 
 	@Override

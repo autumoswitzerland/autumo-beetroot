@@ -35,6 +35,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.logging.log4j.util.Strings;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -54,10 +55,44 @@ import ch.autumo.beetroot.Constants;
 public class Web {
 	
     /**
-     * HTML escape value.
+     * HTML escape (reserved characters only) value. 
+     * 
+     * @param input value to escape
+     * @return escaped value
+     */
+    public static String escapeHtmlReserved(String input) {
+        if (Strings.isBlank(input)) {
+            return input;
+        }
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&apos;");
+    }
+    
+    /**
+     * HTML escape value, simple tags like &lt;br&gt;
+     * are allowed. 
+     * 
+     * @param input value to escape
+     * @return escaped value
+     */
+    public static String escapeHtmlReserved2(String input) {
+        if (Strings.isBlank(input)) {
+            return input;
+        }
+        return input.replace("&", "&amp;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&apos;");
+    }
+    
+    /**
+     * HTML escape value. Includes "Umlaute".
      * 
      * @param value to escape
      * @return value escaped value
+     * @deprecated
      */
     public static String escapeHtml(String value) {
     	return StringEscapeUtils.escapeHtml4(value);

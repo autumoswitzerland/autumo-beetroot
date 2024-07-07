@@ -92,10 +92,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	private boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 	private String cmdMode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_MODE, "sockets");
 	
-	private boolean csrf = true;
-	private boolean extendedRoles = true;
-	private boolean translateTemplates = false;
-	
 	private boolean isWebCmdMode = false;
 	
     private boolean insertServletNameInTemplateRefs = false;
@@ -143,19 +139,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 		
 		try {
-
-			csrf = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
-			if (csrf)
-		    	LOG.info("CSRF activated!");
-			BeetRootConfigurationManager.getInstance().setCsrf(csrf);
-
-			extendedRoles = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
-			BeetRootConfigurationManager.getInstance().setExtendedRoles(extendedRoles);
-
-			translateTemplates = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
-			if (translateTemplates)
-		    	LOG.info("Web templates are translated.");
-			BeetRootConfigurationManager.getInstance().setTranslateTemplates(translateTemplates);
 			
 			// Aren't we allowed to delete admin-role? If so, install listener for prevention
 			if (!BeetRootConfigurationManager.getInstance().getYesOrNo("web_admin_role_delete", Constants.NO)) {
@@ -438,16 +421,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 	    // first try...
 	    try {
-	    	
 	    	LanguageManager.getInstance();
-	    	
 	    } catch (Exception e) {
-	    	
-	    	String langs = BeetRootConfigurationManager.getInstance().getString("web_languages");
-	    	
-			LOG.warn("Language(s) '"+langs+"' has/have been configured, but the translations are missing!");
-			String t = LanguageManager.getInstance().translate("base.err.lang.title", LanguageManager.DEFAULT_LANG);
-			String m = LanguageManager.getInstance().translate("base.err.lang.msg", LanguageManager.DEFAULT_LANG, langs);
+	    	//String langs = BeetRootConfigurationManager.getInstance().getString("web_languages");
+			LOG.warn("No default translation file 'lang_default.properties' or 'tmpl_lang_default.properties' (if 'web_translations switched' on) found! That is not desirable!");
+			String t = "Language configuration error";
+			String m = "No default translation file found! That is not desirable! This Message is NOT translated!";
 			return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 		}
 	    
@@ -961,7 +940,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		} else { // start parsing app, logged in !
 			
 		    // use CSRF tokens ?
-		    if (csrf) {
+		    if (BeetRootConfigurationManager.getInstance().useCsrf()) {
 		    	try {
 			    	if (!csrf(session, userSession)) {
 			    		
@@ -1001,7 +980,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
         
 	    // use CSRF tokens ?
-	    if (csrf) {
+	    if (BeetRootConfigurationManager.getInstance().useCsrf()) {
 	    	try {
 				if (!csrf(session, userSession)) {
 					

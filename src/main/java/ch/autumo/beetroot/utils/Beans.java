@@ -285,7 +285,7 @@ public class Beans {
 	 * Update the given model with entity from bean/model annotations,
 	 * if it hasn't been updated yet.
 	 * 
-	 * We access information PLANt has generated us with annotations, so
+	 * We access information PLANT has generated us with annotations, so
 	 * don't have to access database for meta data again!
 	 * 
 	 * @param entity entity
@@ -333,17 +333,26 @@ public class Beans {
 	    		if (field.isAnnotationPresent(Unique.class))
 	    			isUnique = true;
 	    	
-	    		final String methodName = "get" + beanName.substring(0, 1).toUpperCase() + beanName.substring(1, beanName.length());
-	    		Method method = null;
+	    		final String gMethodName = "get" + beanName.substring(0, 1).toUpperCase() + beanName.substring(1, beanName.length());
+	    		Method gMethod = null;
 				try {
-					method = clz.getDeclaredMethod(methodName);
+					gMethod = clz.getDeclaredMethod(gMethodName);
 				} catch (Exception e) {
-					LOG.error("Method '"+methodName+"' not found in class'"+clz.getName()+"! Your bean is corrupted!", e);
+					LOG.error("Method '"+gMethodName+"' not found in class'"+clz.getName()+"! Your bean is corrupted!", e);
 					throw new RuntimeException(e); // not good!
 				}
 	    		
+	    		final String sMethodName = "set" + beanName.substring(0, 1).toUpperCase() + beanName.substring(1, beanName.length());
+	    		Method sMethod = null;
+				try {
+					sMethod = clz.getDeclaredMethod(sMethodName, field.getType());
+				} catch (Exception e) {
+					LOG.error("Method '"+sMethodName+"' not found in class'"+clz.getName()+"! Your bean is corrupted!", e);
+					throw new RuntimeException(e); // not good!
+				}
+				
                 // We don't need type or default value here -> null
-                final BeanField beanField = new BeanField(dbColumnName, beanName, field.getType(), isNullable, isUnique, method);
+                final BeanField beanField = new BeanField(dbColumnName, beanName, field.getType(), isNullable, isUnique, gMethod, sMethod);
                 beanFields.putIfAbsent(dbColumnName, beanField);
 	    	}
 	    	

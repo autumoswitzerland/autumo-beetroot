@@ -197,7 +197,7 @@ public class ClientAnswer extends AbstractMessage {
 
 	@Override
 	public String getJsonTransferString() throws IOException {
-		final StringBuffer json = new StringBuffer();
+		final StringBuilder json = new StringBuilder();
 		json.append("\"type\":\""+type+"\",");
 		json.append("\"message\":\""+message.trim()+"\",");
 		json.append("\"entity\":\""+entity.trim()+"\",");

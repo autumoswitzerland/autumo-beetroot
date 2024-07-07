@@ -45,7 +45,7 @@ public class ExtUsersAddHandler extends UsersAddHandler {
 	public HandlerResponse saveData(BeetRootHTTPSession session) throws Exception {
 
 		// 1. Save entity
-		HandlerResponse response = super.saveData(session); 
+		final HandlerResponse response = super.saveData(session); 
 		if (response != null && response.getStatus() == HandlerResponse.STATE_NOT_OK) {
 			return response;
 		}
@@ -99,7 +99,7 @@ public class ExtUsersAddHandler extends UsersAddHandler {
 				}
 			}			
 			
-			final StringBuffer snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
+			final StringBuilder snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
 			super.parseAssociatedEntities(snippet, associatedRoles, session);
 			super.parseUnassociatedEntities(snippet, unassociatedRoles,session);
 			return snippet.toString();
@@ -109,15 +109,13 @@ public class ExtUsersAddHandler extends UsersAddHandler {
 	}
 	
 	@Override
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+	public void render(BeetRootHTTPSession session) {
 		if (super.isRetryCall(session)) {
 			final String assignedIds = session.getParms().get("assignedIds");
-			text = text.replace("{$assignedIds}", assignedIds);
+			setVar("assignedIds", assignedIds);
 		} else {
-			if (text.contains("{$assignedIds}"))
-				text = text.replace("{$assignedIds}", "");
+			setVar("assignedIds", "");
 		}
-		return text;
 	}
 	
 	@Override

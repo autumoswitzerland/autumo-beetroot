@@ -305,7 +305,7 @@ public class Session implements Serializable {
 	
 	/**
 	 * Check if user has a role (DB role table).
-	 * @paran role user role
+	 * @param role user role
 	 * @return true, if so
 	 */
 	public boolean hasUserRole(String role) {
@@ -330,7 +330,7 @@ public class Session implements Serializable {
 
 	/**
 	 * Check if user has a permission (DB role table).
-	 * @paran perm user permission
+	 * @param perm user permission
 	 * @return true, if so
 	 */
 	public boolean hasUserPermission(String perm) {

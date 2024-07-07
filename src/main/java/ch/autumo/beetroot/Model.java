@@ -18,6 +18,8 @@
 package ch.autumo.beetroot;
 
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -87,7 +89,19 @@ public abstract class Model implements Entity {
 	}
 	
 	/**
-	 * Bean model map.
+	 * Bean model map:
+	 * <pre>
+	 * 	table-name -&gt; 
+	 * 		[columnName -&gt; 
+	 * 			beanField [ 
+	 * 					columnName, 
+	 * 					beanAttributeName, 
+	 * 					javaType, 
+	 * 					nullable?, 
+	 * 					unique?
+	 *				]
+	 *			]
+	 * </pre>
 	 */
     private static final Map<String, Map<String, BeanField>> MODEL = new HashMap<String, Map<String, BeanField>>();
     
@@ -159,6 +173,10 @@ public abstract class Model implements Entity {
      * @return bean value
      */
 	public String get(String fieldName) {
+		
+		if (fieldName.equals("id"))
+			return "" + this.getId();
+		
 		Method method;
 		String mName = null;
 		String val = null;
@@ -221,6 +239,34 @@ public abstract class Model implements Entity {
 	}
 
 	/**
+	 * Save this entity bean to database.
+	 * 
+	 * @return generated id or -1 if entity couldn't be saved or 
+	 * 			the pseudo id -2 for many-to-many relation tables 
+	 * 			that have no id
+	 * @throws SQLException SQL Exception
+	 */
+	public Integer save(Connection conn) throws SQLException {
+		
+		String stmtParts[] = null;
+		
+		try {
+			stmtParts = this.getStatementParts(true);
+		} catch (Exception e) {
+			LOG.error("Entity not saved!", e);
+			return Integer.valueOf(ID_INVALID);
+		}
+		
+		final Integer saveId = DB.insert(conn, this, stmtParts[0], stmtParts[1]);
+		if (saveId == ID_INVALID)
+			return saveId;
+		
+		this.setId(saveId.intValue());
+		this.isStored = true;
+		return saveId;
+	}
+	
+	/**
 	 * Update this entity bean in database.
 	 */
 	public void update() {
@@ -232,6 +278,24 @@ public abstract class Model implements Entity {
 			Integer.valueOf(-1);
 		}
 		DB.update(this, stmtParts[0], stmtParts[1]);
+		this.isStored = true;
+	}
+	
+	/**
+	 * Update this entity bean in database.
+	 * 
+	 * @param conn global connection
+	 * @throws SQLException SQL Exception
+	 */
+	public void update(Connection conn) throws SQLException {
+		String stmtParts[] = null;
+		try {
+			stmtParts = this.getStatementParts(false);
+		} catch (Exception e) {
+			LOG.error("Entity not updated!", e);
+			Integer.valueOf(-1);
+		}
+		DB.update(conn, this, stmtParts[0], stmtParts[1]);
 		this.isStored = true;
 	}
 	
@@ -251,6 +315,23 @@ public abstract class Model implements Entity {
 		isStored = false;
 	}
 
+	/**
+	 * Delete this entity bean!
+	 * 
+	 * @param conn global connection
+	 * @throws SQLException SQL Exception
+	 */
+	public void delete(Connection conn) throws SQLException {
+		if ((id == ID_UNASSIGNED || id == ID_M2M_PSEUDO) && this.getForeignReferences().size() > 1) {
+			// we can assume it is a many-to-many bean! It's wild...
+			final Set<String> foreignDbKeys = this.getForeignReferences().keySet();
+			DB.delete(conn, this, foreignDbKeys);
+		} else {
+			DB.delete(conn, this);
+		}
+		isStored = false;
+	}
+	
 	/**
 	 * Set stored state.
 	 * 
@@ -334,9 +415,51 @@ public abstract class Model implements Entity {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
 		final Model other = (Model) obj;
-		return this.modelClass().equals(other.modelClass())
-				&& this.getId() == other.id;  
+		final java.util.Map<String, Class<?>> fks = this.getForeignReferences();
+		if ((id == ID_UNASSIGNED || id == ID_M2M_PSEUDO) &&  fks.size() > 1) {
+			boolean eq = this.modelClass().equals(other.modelClass());
+			if (eq) {
+				for (Map.Entry<String, Class<?>> entry : fks.entrySet()) {
+					final String key = entry.getKey();
+					final Object aId0 = get(key);
+					final Object aId1 = other.get(key);
+					eq = eq && aId0.equals(aId1);
+				}
+				return eq;
+			}
+		} else {
+			return this.modelClass().equals(other.modelClass())
+					&& this.getId() == other.id;
+		}
+		return false;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Model clone = null;
+		try {
+			clone = (Model) modelClass().getDeclaredConstructor().newInstance();			
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
+		Beans.updateModel(this, MODEL);
+		try {
+			final String tableName = Beans.classToTable(modelClass());
+			final Map<String, BeanField> bean = MODEL.get(tableName);
+			for (Map.Entry<String, BeanField> entry : bean.entrySet()) {
+				BeanField beanField = entry.getValue();
+				final Object val = beanField.getGetterMethod().invoke(this);
+				beanField.getSetterMethod().invoke(clone, val);
+			}
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
+		clone.setId(ID_UNASSIGNED);
+		clone.setStored(false);
+		return clone;
 	}
 
 	/**
@@ -478,7 +601,20 @@ public abstract class Model implements Entity {
 			return null;
 		}		
 	}
-    
+	
+    /**
+     * Checks if the entity exists in the DB. If you
+     * further process an existing entity, better call
+     * {@link #read(Class, int)}.
+     * 
+     * @param entity entity bean class
+     * @param id ID
+     * @return true, if it exists
+     */
+	public static boolean exists(Class<?> entity, int id) {
+		return Model.read(entity, id) != null;
+	}	
+	
 	/**
 	 * List all entities of the given entity bean.
 	 * Be aware: This doesn't limit the amount of

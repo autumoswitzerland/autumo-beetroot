@@ -176,7 +176,7 @@ public class Fertilizer {
 
 	public String parse() throws FertilizerException {
 		
-		final StringBuffer result = new StringBuffer();
+		final StringBuilder result = new StringBuilder();
 		
 		// ---- Checks
 		
@@ -366,7 +366,7 @@ public class Fertilizer {
 	
 	private String processBean() {
 
-		final StringBuffer contents = new StringBuffer();
+		final StringBuilder contents = new StringBuilder();
 	
 		/*
 		contents.append("    public " + Beans.tableToClassName(this.dbEntity) + "() {\n");

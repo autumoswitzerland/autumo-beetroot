@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,18 +43,25 @@ public class LanguageManager {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(LanguageManager.class.getName());
 	
+	
 	public static final String DEFAULT_LANG = "en";
+	
+	private static final String DEFAULT_LOCALE_NAME = "default";
+	
+	private static final String URL_LANG_TAG = ":lang";
+    private static final String BUNDLE_LOC = "web/lang/";
 	
 	private static LanguageManager instance = null;	
 	
-    private static Map<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
-    private static Map<String, ResourceBundle> template_bundles = new ConcurrentHashMap<String, ResourceBundle>();
-	
+    private static final Map<String, ResourceBundle> bundles = new ConcurrentHashMap<String, ResourceBundle>();
+    private static final Map<String, ResourceBundle> template_bundles = new ConcurrentHashMap<String, ResourceBundle>();
+
     private static ResourceBundle defaultTrans = null;
     private static ResourceBundle defaultTransTmpl = null;
     
 	private static String defaultLang = DEFAULT_LANG;
 	private static String langs[] = null;
+	
 	
 	/**
 	 * Access language manager.
@@ -65,79 +73,132 @@ public class LanguageManager {
         if (instance == null) {
         	
         	instance = new LanguageManager();
-        	ClassLoader loader = null;
-        	
-        	// default lang
-        	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-        	if (context != null) {
-        		
-    			File file = new File(Web.getRealPath(context) + "web/lang/");
-    			URI uri = file.toURI();
-        		URL urls[] = null;
-        		try {
-        			urls = new URL[]{ uri.toURL()};
-        		} catch (MalformedURLException e) {
-        			throw new RuntimeException("Cannot get resource bundles within servlet context extra loader!", e);
-				}
-        		
-        		loader = new URLClassLoader(urls);
-            	defaultTrans = ResourceBundle.getBundle("lang", new Locale("default"), loader);
-        		if (defaultTrans == null)
-                	defaultTrans = ResourceBundle.getBundle("/web/lang/lang", new Locale("default"), Thread.currentThread().getContextClassLoader());
 
-            	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
-	        		loader = new URLClassLoader(urls);
-	            	defaultTransTmpl = ResourceBundle.getBundle("tmpl_lang", new Locale("default"), loader);
-	        		if (defaultTransTmpl == null)
-	        			defaultTransTmpl = ResourceBundle.getBundle("/web/lang/tmpl_lang", new Locale("default"), Thread.currentThread().getContextClassLoader());
-            	}
-        		
-        	} else {
-            	defaultTrans = ResourceBundle.getBundle("web/lang/lang", new Locale("default"));
-            	if (BeetRootConfigurationManager.getInstance().translateTemplates())
-            		defaultTransTmpl = ResourceBundle.getBundle("web/lang/tmpl_lang", new Locale("default"));
-        	}
+        	// Context
+        	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
         	
-        	// langs
+        	// 0. Configuration languages
         	langs = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
         	if (langs.length > 0)
         		defaultLang = langs[0];
-        	
         	if (langs.length == 0)
         		defaultLang = "en";
         	
+        	
+        	// 1. Default language bundles
+        	ClassLoader loader = null;
+        	ClassLoader tmplLoader = null;
+        	final Locale defaultLocale = new Locale(DEFAULT_LOCALE_NAME);
+        	for (int i = 0; i < langs.length; i++) {
+            	
+            	// a. Within servlets
+            	if (context != null) {
+        			URI uri = new File(Web.getRealPath(context) + BUNDLE_LOC).toURI();
+            		URL urls[] = null;
+            		try {
+            			urls = new URL[]{ uri.toURL()};
+            		} catch (MalformedURLException e) {
+            			throw new RuntimeException("Cannot get resource bundles within servlet context extra loader!", e);
+    				}
+            		loader = new URLClassLoader(urls);
+                	defaultTrans = ResourceBundle.getBundle("lang", defaultLocale, loader);
+            		if (defaultTrans == null)
+                    	defaultTrans = ResourceBundle.getBundle(BUNDLE_LOC + "lang", defaultLocale, Thread.currentThread().getContextClassLoader());
+
+                	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+                		tmplLoader = new URLClassLoader(urls);
+    	            	defaultTransTmpl = ResourceBundle.getBundle("tmpl_lang", defaultLocale, tmplLoader);
+    	        		if (defaultTransTmpl == null)
+    	        			defaultTransTmpl = ResourceBundle.getBundle(BUNDLE_LOC + "tmpl_lang", new Locale("default"), Thread.currentThread().getContextClassLoader());
+                	}
+            	// b. Within server
+            	} else {
+                	defaultTrans = ResourceBundle.getBundle(BUNDLE_LOC + "lang", defaultLocale);
+                	if (BeetRootConfigurationManager.getInstance().translateTemplates())
+                		defaultTransTmpl = ResourceBundle.getBundle(BUNDLE_LOC + "tmpl_lang", defaultLocale);
+            	}				
+			}
+        	
+        	
+        	// 2. Bundles for languages, we do not want to let RB's determine languages
+        	//    for bundles in case a language is not present; this only works well
+        	//    on desktop where a desktop locale (fallback) makes sense!
+        	
         	ResourceBundle bundle = null;
         	ResourceBundle bundleTmpl = null;
-
-        	for (int i = 0; i < langs.length; i++) {
+        	for (int i = 0; i < langs.length; i++) { // configuration languages
 				
-        		// NOTICE: not yet country specific supported.
+        		// NOTICE: Not country-specific supported.
         		final Locale locale = new Locale(langs[i]);
         		
+        		// a. Within servlets
         		if (context == null) {
-        			
-        			bundle = ResourceBundle.getBundle("web/lang/lang", locale);
-        			
-                	if (BeetRootConfigurationManager.getInstance().translateTemplates())
-                		bundleTmpl = ResourceBundle.getBundle("web/lang/tmpl_lang", locale);
-        		}
-        		else {
-        			
-                	bundle = ResourceBundle.getBundle("lang", locale, loader);
-                	if (bundle == null)
-            			bundle = ResourceBundle.getBundle("/web/lang/lang", locale, Thread.currentThread().getContextClassLoader());
-                	
-                	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
-	                	bundleTmpl = ResourceBundle.getBundle("tmpl_lang", locale, loader);
-	                	if (bundleTmpl == null)
-	                		bundleTmpl = ResourceBundle.getBundle("/web/lang/tmpl_lang", locale, Thread.currentThread().getContextClassLoader());
+        			try {
+	        			bundle = ResourceBundle.getBundle(BUNDLE_LOC + "lang", locale,
+					    				ResourceBundle.Control.getNoFallbackControl(
+					    				        ResourceBundle.Control.FORMAT_DEFAULT));
+					} catch (MissingResourceException e) {
+						LOG.warn("Language '"+langs[i]+"' has been configured, but no standard translation file found, default -> translations file will be used!");
+					}
+        			try {
+                    	if (BeetRootConfigurationManager.getInstance().translateTemplates())
+                    		bundleTmpl = ResourceBundle.getBundle(BUNDLE_LOC + "tmpl_lang", locale,
+                    				ResourceBundle.Control.getNoFallbackControl(
+                    				        ResourceBundle.Control.FORMAT_DEFAULT));
+					} catch (MissingResourceException e) {
+						LOG.warn("Language '"+langs[i]+"' has been configured, but no template translation file found -> default translations file will be used!");
+					}
+        		// b. Within server
+        		} else {
+        			try {
+	                	bundle = ResourceBundle.getBundle("lang", locale, loader,
+			    				ResourceBundle.Control.getNoFallbackControl(
+			    				        ResourceBundle.Control.FORMAT_DEFAULT));
+					} catch (MissingResourceException e) {
+						 // No issue yet!
+					}
+                	if (bundle == null) {
+            			try {
+	            			bundle = ResourceBundle.getBundle(BUNDLE_LOC + "/lang", locale, Thread.currentThread().getContextClassLoader(),
+						    				ResourceBundle.Control.getNoFallbackControl(
+						    				        ResourceBundle.Control.FORMAT_DEFAULT));
+    					} catch (MissingResourceException e) {
+    						LOG.warn("Language '"+langs[i]+"' has been configured, but no standard translation file found -> default translations file will be used!");
+    					}
+                	}
+        			try {
+	                	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+		                	bundleTmpl = ResourceBundle.getBundle("tmpl_lang", locale, tmplLoader,
+							    				ResourceBundle.Control.getNoFallbackControl(
+							    				        ResourceBundle.Control.FORMAT_DEFAULT));
+	                	}
+					} catch (MissingResourceException e) {
+						 // No issue yet!
+					}
+                	if (bundleTmpl == null) {
+            			try {
+	                		bundleTmpl = ResourceBundle.getBundle(BUNDLE_LOC + "/tmpl_lang", locale, Thread.currentThread().getContextClassLoader(),
+							    				ResourceBundle.Control.getNoFallbackControl(
+							    				        ResourceBundle.Control.FORMAT_DEFAULT));
+						} catch (MissingResourceException e) {
+							LOG.warn("Language '"+langs[i]+"' has been configured, but no template translation file found -> default translations file will be used!");
+						}
                 	}
         		}
         		
-            	bundles.put(langs[i], bundle);
+        		
+        		// 3. Assign found language or default; default is what is configured!
+        		if (bundle == null)
+        			bundles.put(langs[i], defaultTrans);
+        		else
+        			bundles.put(langs[i], bundle);
             	
-            	if (BeetRootConfigurationManager.getInstance().translateTemplates())
-            		template_bundles.put(langs[i], bundleTmpl);
+            	if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+            		if (bundleTmpl == null)
+            			template_bundles.put(langs[i], defaultTransTmpl);
+            		else
+                		template_bundles.put(langs[i], bundleTmpl);
+            	}
 			}
         }
         return instance;
@@ -147,8 +208,7 @@ public class LanguageManager {
 	}
 
 	/**
-	 * Translate method for the template engine and for
-	 * users of this framework.
+	 * Translate method for the template engine.
 	 * 
 	 * It is internally used only.
 	 * 
@@ -160,28 +220,61 @@ public class LanguageManager {
 	 * @return translated text
 	 */
 	public String translateTemplate(String key, Session userSession) {
+		return this.translateTemplate(key, userSession, null);
+	}
+	
+	/**
+	 * Translate method for the template engine.
+	 * 
+	 * It is internally used only.
+	 * 
+	 * Template language files are place in the directory:
+	 * 'web/lang'; e.g. 'tmpl_lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
+	 * @param userSession the user session
+	 * @param values place-holder values
+	 * @return translated text
+	 */
+	public String translateTemplate(String key, Session userSession, String values[]) {
 		final String lang = userSession.getUserLang();
+		return translateTemplate(key, lang, values);
+	}
+	
+	/**
+	 * Translate method for the template engine.
+	 * 
+	 * It is internally used only.
+	 * 
+	 * Template language files are place in the directory:
+	 * 'web/lang'; e.g. 'tmpl_lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
+	 * @param lang language
+	 * @param values placeholder values
+	 * @return translated text
+	 */	
+	public String translateTemplate(String key, String lang, String values[]) {
 		ResourceBundle bundle = template_bundles.get(lang);
 		String text = null;
-		
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
 	    	LOG.info("No template translation for key '"+key+"' found! trying default language '"+DEFAULT_LANG+"'.");
-	    	bundle = bundles.get(DEFAULT_LANG);
+	    	bundle = template_bundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
 			} catch (Exception e2) {
 		    	LOG.info("No template translation for key '"+key+"' for default language found! trying default translations 'lang_default.properties'.");
 		    	try {
-					text = defaultTrans.getString(key);
+					text = defaultTransTmpl.getString(key);
 				} catch (Exception e3) {
 			    	LOG.warn("No template translation found at all for key '"+key+"'! *Sniff*");
 					return null;
 				}
 			}
 		}
-		return text;		
+		return Web.escapeHtmlReserved(MessageFormat.format(text, ((Object[]) values) ));
 	}
 
 	/**
@@ -235,7 +328,7 @@ public class LanguageManager {
 				}
 			}
 		}
-		return MessageFormat.format(text, arguments);
+		return Web.escapeHtmlReserved2(MessageFormat.format(text, arguments));
 	}
 	
 	/**
@@ -294,7 +387,7 @@ public class LanguageManager {
 				}
 			}
 		}
-		return MessageFormat.format(text, arguments);		
+		return Web.escapeHtmlReserved2(MessageFormat.format(text, arguments));
 	}
 	
 	/**
@@ -370,11 +463,11 @@ public class LanguageManager {
 		final String lang = parseLang(uri);
 		String res = configResource;
 		
-		if (configResource.contains(":lang")) {
+		if (configResource.contains(URL_LANG_TAG)) {
 			if (lang != null)
-				res = configResource.replace(":lang", lang);
+				res = configResource.replace(URL_LANG_TAG, lang);
 			else
-				res = configResource.replace(":lang/", "");
+				res = configResource.replace(URL_LANG_TAG+"/", "");
 		}		
 		return res;
 	}
@@ -390,9 +483,9 @@ public class LanguageManager {
 	public String getResourceByLang(String configResource, String lang) {
 		
 		String res = configResource;
-		if (configResource.contains(":lang")) {
+		if (configResource.contains(URL_LANG_TAG)) {
 			
-			res = configResource.replace(":lang", lang);
+			res = configResource.replace(URL_LANG_TAG, lang);
 		}		
 		return res;
 	}	
@@ -408,9 +501,9 @@ public class LanguageManager {
 	public String getResourceWithoutLang(String configResource, String lang) {
 		
 		String res = configResource;
-		if (configResource.contains(":lang/")) {
+		if (configResource.contains(URL_LANG_TAG+"/")) {
 			
-			res = configResource.replace(":lang/", "");
+			res = configResource.replace(URL_LANG_TAG+"/", "");
 		}		
 		return res;
 	}	
@@ -440,9 +533,9 @@ public class LanguageManager {
 			}
 			
 			if (lang != null && lang.length() != 0)
-				res = configResource.replace(":lang", lang);
+				res = configResource.replace(URL_LANG_TAG, lang);
 			else
-				res = configResource.replace(":lang/", "");
+				res = configResource.replace(URL_LANG_TAG+"/", "");
 		}
 		return res;
 	}
@@ -467,7 +560,7 @@ public class LanguageManager {
 		
 		if (!f.exists()) {
 			if (configResource.contains(":lang/")) {
-				possibleBlockResource = configResource.replace(":lang/", "");	
+				possibleBlockResource = configResource.replace(URL_LANG_TAG+"/", "");	
 			} else {
 				possibleBlockResource = configResource;
 			}
@@ -502,7 +595,7 @@ public class LanguageManager {
 	
 	public String getLanguage(Session userSession) {
 		
-		String lang = (String) userSession.getUserLang();
+		String lang = userSession.getUserLang();
 		if (lang == null || lang.length() == 0) {
 			//from db
 			lang = this.getLanguageFromDb(userSession);
@@ -549,7 +642,6 @@ public class LanguageManager {
 			try {
 				BeetRootDatabaseManager.getInstance().updateLanguage(newLanguage, uid.intValue());
 			} catch (Exception e) {
-				
 				LOG.warn("Cannot update user language with id '"+uid.toString()+"'!");
 			}
 		}

@@ -30,7 +30,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -80,61 +80,91 @@ import jakarta.activation.MimeType;
 
 
 /**
- * Base handler - The "Heart" of beetRoot.
+ * Base handler - The "Heart" of beetRoot. A handler is mapped by a route
+ * defined in 'cfg/routing.xml'.
+ * <br><br>
+ * Use {@link #setVar(String, Object)} in your overwritten methods {@link #render(BeetRootHTTPSession)}
+ * to replace template variables.
+ * <br><br>
+ * Use {@link #setVarAll(String, Object)} in your overwritten methods {@link #renderAll(BeetRootHTTPSession)}
+ * to replace variables within the whole HTML document.
+ * <br><br>
+ * Beside the CRUD methods
+ * <ul>
+ * <li>{@link #readData(BeetRootHTTPSession, int)} (index,view,edit),</li>
+ * <li>{@link #saveData(BeetRootHTTPSession)} (add),</li>
+ * <li>{@link #updateData(BeetRootHTTPSession, int)} (edit) and</li>
+ * <li>{@link #deleteData(BeetRootHTTPSession, int)} (delete)</li>
+ * </ul>
+ * you usually need to overwrite the following methods:
+ * <ul>
+ * <li>{@link #getBeanClass()} (when serving entities),</li>
+ * <li>{@link #getTitle(Session)} (Show specific title)</li>
+ * <li>{@link #getRedirectHandler()} (for redirecting)</li>
+ * <li>{@link #hasAccess(Session)} (authorization)</li>
+ * </ul>
+ * Depending on the handler, you might want to overwrite more methods. There are methods for
+ * everything, and you should be able to do anything with the template engine. For a good 
+ * overview, see users as well system handler source codes.
  */
 public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
+	private static final String STR_EMAIL = "email";
+	private static final String STR_PASSWORD = "password";
+	private static final String URL_WEB_HTML_PREFIX = "web/html/";
+	private static final String MIME_TYPE_HTML = "text/html";
+	private static final String LANG_TAG_PREFIX = "{$l.";
+
 	// Precision HTML input types
-	protected static List<String> PRECISION_INPUT_TYPES = Arrays.asList(new String[] {"email", "password", "search", "tel", "text", "url"});
+	protected static final List<String> PRECISION_INPUT_TYPES = Arrays.asList(STR_EMAIL, STR_PASSWORD, "search", "tel", "text", "url");
+	
 	
 	// link reference patterns 
-	private static Pattern PATTERN_HREF = Pattern.compile("href=\\\"(?!#.*)(?!\\{.*)");
-	private static Pattern PATTERN_SRC = Pattern.compile("src=\\\"(?!#.*)(?!\\{.*)");
-	private static Pattern PATTERN_ACTION = Pattern.compile("action=\\\"(?!#.*)(?!\\{.*)");
-	private static Pattern PATTERN_LOCATION = Pattern.compile("location='(?!#.*)(?!\\{.*)");
-
-	// link reference reverse patterns
-	private static Pattern PATTERN_HREF_REV;
-	private static Pattern PATTERN_SRC_REV;
-	private static Pattern PATTERN_ACTION_REV;
-	private static Pattern PATTERN_LOCATION_REV;
+	private static final Pattern PATTERN_HREF = Pattern.compile("href=\\\"(?!#.*)(?!\\{.*)");
+	private static final Pattern PATTERN_SRC = Pattern.compile("src=\\\"(?!#.*)(?!\\{.*)");
+	private static final Pattern PATTERN_ACTION = Pattern.compile("action=\\\"(?!#.*)(?!\\{.*)");
+	private static final Pattern PATTERN_LOCATION = Pattern.compile("location='(?!#.*)(?!\\{.*)");
 	
 	// Get text patterns
-	private static Pattern PATTERN_ID = Pattern.compile("\\{\\$id\\}");
-	private static Pattern PATTERN_DBID = Pattern.compile("\\{\\$dbid\\}");
-	private static Pattern PATTERN_DISPLAY_NAME = Pattern.compile("\\{\\$displayName\\}");
-	private static Pattern PATTERN_CSRF_TOKEN = Pattern.compile("\\{\\$csrfToken\\}");
-	private static Pattern PATTERN_TITLE = Pattern.compile("\\{\\$title\\}");
-	private static Pattern PATTERN_USER = Pattern.compile("\\{\\$user\\}");
-	private static Pattern PATTERN_USERFULL = Pattern.compile("\\{\\$userfull\\}");
-	private static Pattern PATTERN_LANG = Pattern.compile("\\{\\$lang\\}");
-	private static Pattern PATTERN_THEME = Pattern.compile("\\{\\$theme\\}");
-	private static Pattern PATTERN_ANTITHEME = Pattern.compile("\\{\\$antitheme\\}");
+	private static final Pattern PATTERN_ID = Pattern.compile("\\{\\$id\\}");
+	private static final Pattern PATTERN_DBID = Pattern.compile("\\{\\$dbid\\}");
+	private static final Pattern PATTERN_DISPLAY_NAME = Pattern.compile("\\{\\$displayName\\}");
+	private static final Pattern PATTERN_CSRF_TOKEN = Pattern.compile("\\{\\$csrfToken\\}");
+	private static final Pattern PATTERN_TITLE = Pattern.compile("\\{\\$title\\}");
+	private static final Pattern PATTERN_USER = Pattern.compile("\\{\\$user\\}");
+	private static final Pattern PATTERN_USERFULL = Pattern.compile("\\{\\$userfull\\}");
+	private static final Pattern PATTERN_LANG = Pattern.compile("\\{\\$lang\\}");
+	private static final Pattern PATTERN_THEME = Pattern.compile("\\{\\$theme\\}");
+	private static final Pattern PATTERN_ANTITHEME = Pattern.compile("\\{\\$antitheme\\}");
 	
 	// sub-resource patterns
-	private static Pattern PATTERN_REDIRECT_INDEX = Pattern.compile("\\{\\$redirectIndex\\}");
-	//private static Pattern PATTERN_CHECK_BOX_LOGIC = Pattern.compile("\\{\\$checkBoxLogic\\}");
-	private static Pattern PATTERN_SEVERITY = Pattern.compile("\\{\\$severity\\}");
-	private static Pattern PATTERN_MESSAGE = Pattern.compile("\\{\\$message\\}");
-	private static Pattern PATTERN_USERINFO = Pattern.compile("\\{\\$userinfo\\}");
-	private static Pattern PATTERN_USERLINK = Pattern.compile("\\{\\$userlink\\}");
-	private static Pattern PATTERN_LANG_MENU_ENTRIES = Pattern.compile("\\{\\$lang_menu_entries\\}");
-	//private static Pattern PATTERN_ADMIN_MENU = Pattern.compile("\\{\\$adminmenu\\}");
-	//private static Pattern PATTERN_LOGIN_OR_LOGOUT = Pattern.compile("\\{\\$loginorlogout\\}");
+	private static final Pattern PATTERN_REDIRECT_INDEX = Pattern.compile("\\{\\$redirectIndex\\}");
+	private static final Pattern PATTERN_SEVERITY = Pattern.compile("\\{\\$severity\\}");
+	private static final Pattern PATTERN_MESSAGE = Pattern.compile("\\{\\$message\\}");
+	private static final Pattern PATTERN_USERINFO = Pattern.compile("\\{\\$userinfo\\}");
+	private static final Pattern PATTERN_USERLINK = Pattern.compile("\\{\\$userlink\\}");
+	private static final Pattern PATTERN_LANG_MENU_ENTRIES = Pattern.compile("\\{\\$lang_menu_entries\\}");
 	
 	// Additional patterns
-	private static Pattern PATTERN_SEMICOLON = Pattern.compile(";");
-	private static Pattern PATTERN_COLON = Pattern.compile(":");
-	private static Pattern PATTERN_RIGHT_CURLY_BRACKET = Pattern.compile("}");
-	private static Pattern PATTERN_SPACE = Pattern.compile(" ");
+	private static final Pattern PATTERN_SEMICOLON = Pattern.compile(";");
+	private static final Pattern PATTERN_COLON = Pattern.compile(":");
+	private static final Pattern PATTERN_RIGHT_CURLY_BRACKET = Pattern.compile("}");
+	private static final Pattern PATTERN_SPACE = Pattern.compile(" ");
 	
 	public static final int MSG_TYPE_INFO = 0;
 	public static final int MSG_TYPE_WARN = 1;
 	public static final int MSG_TYPE_ERR = -1;
 	
-	private StringBuffer buffer = new StringBuffer();
+	// link reference reverse patterns
+	private Pattern pattern_href_rev = null;
+	private Pattern pattern_scr_rev;
+	private Pattern pattern_action_rev;
+	private Pattern pattern_location_rev;
+	
+	
+	private StringBuilder buffer = new StringBuilder();	
 	
 	protected TreeMap<Integer, String> columns = null;
 	protected Map<String, String> initialValues = null;
@@ -163,12 +193,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private BeetRootHTTPSession currentSession = null;
 	
-	private StringBuffer checkBoxLogic = new StringBuffer();
+	private StringBuilder checkBoxLogic = new StringBuilder();
 
 	private IfSectionHandler ish = null;
 	
 	private boolean redirectedMarker = false;
-	//private boolean loginMarker = false;
 
 	// start time
 	private long baseHandlerStart = 0;
@@ -176,19 +205,22 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	@SuppressWarnings("unused")
 	private boolean measureDuration = false;
 	
+	private final Map<String, String> vars = new HashMap<String, String>();
+	private final Map<String, String> varsAll = new HashMap<String, String>();
+	
 	
 	/**
 	 * Base Handler.
 	 */
-	public BaseHandler() {
+	protected BaseHandler() {
 	}
 
 	/**
 	 * Base Handler.
 	 * 
-	 * @param entity entity, plural & lower-case; e.g. 'roles, users or properties'
+	 * @param entity entity, plural &amp; lower-case; e.g. 'roles, users or properties'
 	 */
-	public BaseHandler(String entity) {
+	protected BaseHandler(String entity) {
 		this.entity = entity;
 	}
 	
@@ -200,21 +232,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public void initialize(BeetRootHTTPSession session) {
 		
-		// if (measureDuration) baseHandlerStart  = System.currentTimeMillis();
-		
 		// IF section handler
 		ish = new IfSectionHandler(this);
 		
 		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 		
 		if (servletName != null && servletName.length() != 0) {
-			
 			insertServletNameInTemplateRefs = true;
-			
-			PATTERN_HREF_REV = Pattern.compile("href=\\\"/"+servletName+"http");
-			PATTERN_SRC_REV = Pattern.compile("src=\\\"/"+servletName+"http");
-			PATTERN_ACTION_REV = Pattern.compile("action=\\\"/"+servletName+"http");
-			PATTERN_LOCATION_REV = Pattern.compile("location='/"+servletName+"http");
+			pattern_href_rev = Pattern.compile("href=\\\"/"+servletName+"http");
+			pattern_scr_rev = Pattern.compile("src=\\\"/"+servletName+"http");
+			pattern_action_rev = Pattern.compile("action=\\\"/"+servletName+"http");
+			pattern_location_rev = Pattern.compile("location='/"+servletName+"http");
 		}
 		
 		// nothing to do!
@@ -244,7 +272,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		// Special case JSON: overwrite languages, not needed!
 		if (session.getUri().endsWith(Constants.JSON_EXT)) {
-			res = "web/html/"+entity+"/columns.cfg";
+			res = URL_WEB_HTML_PREFIX+entity+"/columns.cfg";
 		} else {
 			if (userSession == null)
 				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
@@ -276,9 +304,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			LOG.trace("Resource '" + res + "' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			if (!session.getUri().endsWith(Constants.JSON_EXT)) {
 				if (userSession == null)
-					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
+					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
 				else
-					res = LanguageManager.getInstance().getResource("web/html/"+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
+					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
 			}
 			try {
 				if (context == null)
@@ -297,7 +325,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (tryFurther) {
 				tryFurther = false;
 				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
-				res = LanguageManager.getInstance().getResourceWithoutLang("web/html/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
+				res = LanguageManager.getInstance().getResourceWithoutLang(URL_WEB_HTML_PREFIX+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
 				try {
 					if (context == null)
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
@@ -479,15 +507,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    }
 		    
 		} catch (Exception e) {
-			
 			// Not good !
-			
 			LOG.error("Couldn't read columns for entity '"+entity+"' from file '" + fc.getFullPath() + "'!\n"
 					+ "Create this file and add such a line for every column you want to show:\n"
 					+ "columnName=Name of Column on Web Page", e);
-			
-			//OSUtils.fatalExit();
-			
 		} finally {
 			
 			if (br != null) {
@@ -557,6 +580,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			case MSG_TYPE_INFO: addSuccessMessage(origMsg); break; 
 			case MSG_TYPE_WARN: addWarningMessage(origMsg); break; 
 			case MSG_TYPE_ERR: addErrorMessage(origMsg); break; 
+			default: addWarningMessage(origMsg);
 		}
 		
 		this.messageType = messageType;
@@ -570,7 +594,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @return colum map
 	 */
-	public TreeMap<Integer, String> columns() {
+	public SortedMap<Integer, String> columns() {
 		return columns;
 	}
 
@@ -605,10 +629,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final String params[] = cfgLine.split("=");
 		final String colName = params[0].trim();
 		String guiColName = params[1];
-		
-		// We don't want this! We leave full control to 'columns.cfg'
-		//guiColName = TextUtils.escapeHtml(guiColName);
-		
+		// We actually allow HTML here!
+		//guiColName = Web.escapeHtmlReserved(guiColName);
 		return new String[] {colName, guiColName};
 	}
 	
@@ -692,7 +714,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			val = DB.escapeValuesForDb(val);
 			
-			if (dbPwEnc && col[0].equalsIgnoreCase("password")) {
+			if (dbPwEnc && col[0].equalsIgnoreCase(STR_PASSWORD)) {
 				val = Security.hashPw(val);
 			}
 
@@ -758,7 +780,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	public String getUpdateSetClause(BeetRootHTTPSession session, String onOffMapName) throws Exception {
 
-		//final boolean dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
+		// No PW update here!
 		final boolean dbAutoMod = BeetRootConfigurationManager.getInstance().getYesOrNo("db_auto_update_modified");
 		
 		String clause = "";
@@ -773,18 +795,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (transientFields.contains(col[0]))
 				continue LOOP;
 
-			if (col[0].equalsIgnoreCase("password")) // passwords are not allowed to be updated!
+			if (col[0].equalsIgnoreCase(STR_PASSWORD)) // passwords are not allowed to be updated!
 				continue LOOP;
 			
 			
 			String val = session.getParms().get(col[0]);
 			val = DB.escapeValuesForDb(val);
-			
-			/*
-			if (dbPwEnc && col[0].equals("password")) {
-				val = Utils.encode(val, SecureApplicationHolder.getInstance().getSecApp());
-			}
-			*/
 			
 			// Informix wants 't' or 'f'
 			if (val.equalsIgnoreCase("true")) {
@@ -824,8 +840,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (col[0].equals("lastname")) {
 					userSession.set("lastname", val);
 				}
-				if (col[0].equals("email")) {
-					userSession.set("email", val);
+				if (col[0].equals(STR_EMAIL)) {
+					userSession.set(STR_EMAIL, val);
 				}
 				if (col[0].equals("two_fa")) {
 					userSession.set("two_fa", val);
@@ -911,7 +927,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					String val = session.getParms().get(uniqueFields[i]);
 					stmtStr += uniqueFields[i] + "='"+val+"'";
 					//NO SEMICOLON
-					//stmtStr += ";";
 					stmt = conn.createStatement();
 					// we only need the result set for the column meta data
 					stmt.setFetchSize(1);
@@ -977,7 +992,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			roles += role.getName()+",";
 			permissions += role.getPermissions()+",";
 		}
-		if (usersRoles.size() > 0) {
+		if (!usersRoles.isEmpty()) {
 			roles = roles.substring(0, roles.length() - 1);
 			if (permissions.endsWith(","))
 				permissions = permissions.substring(0, permissions.length() - 1);
@@ -1000,7 +1015,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		currRessource = LanguageManager.getInstance().getResource(currRessource, session.getUri());		
 
 		// prepare text buffer
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		
 		// process JSON templates
 		Scanner sc = null;
@@ -1010,9 +1025,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				String text = sc.nextLine();
 				
-				//text = this.preParse(text, session);
-				
 				// template specific variables
+				this.render(session);
+				this.renderAll(session);
 				final String res = this.replaceTemplateVariables(text, session);
 				if (res != null && res.length() != 0)
 					text = res;
@@ -1093,7 +1108,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String templateResource = getResource();
 		
 		// prepare text buffer
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		
 		// process templates
 		Scanner sc = null;
@@ -1221,6 +1236,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						}
 						
 						// template specific variables
+						this.render(session);
+						this.renderAll(session);
 						final String res = this.replaceTemplateVariables(text, session);
 						if (res != null && res.length() != 0)
 							text = res;
@@ -1292,11 +1309,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 				
 				// replace further overall variables!
+				this.renderAll(session);
 				String resRepl = this.replaceVariables(text, session);
 				if (resRepl != null && resRepl.length() > 0)
 					text = resRepl;
 
-				// replace template language translations if any
+				// Replace template language translations if any.
+				// It is important that this is last, possible value 
+				// place-holders should be replaced before translation
+				// takes them into account!
+				// E.g. -> {$l.transvar,{$var1},{$var1}}
 				text = this.replaceLanguageVariables(text, session);
 				
 				
@@ -1313,10 +1335,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					text = PATTERN_LOCATION.matcher(text).replaceAll("location='/"+servletName);
 					if (this.hasExternalLinks()) {
 						// hack: we have to re-replace http and https links....
-						text = PATTERN_HREF_REV.matcher(text).replaceAll("href=\"http");
-						text = PATTERN_SRC_REV.matcher(text).replaceAll("src=\"http");
-						text = PATTERN_ACTION_REV.matcher(text).replaceAll("action=\"http");
-						text = PATTERN_LOCATION_REV.matcher(text).replaceAll("location='http");
+						text = pattern_href_rev.matcher(text).replaceAll("href=\"http");
+						text = pattern_scr_rev.matcher(text).replaceAll("src=\"http");
+						text = pattern_action_rev.matcher(text).replaceAll("action=\"http");
+						text = pattern_location_rev.matcher(text).replaceAll("location='http");
 					}
 				}
 
@@ -1393,11 +1415,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * configuration (beetroog.cfg -&gt; 'web_roles') and translated in the web masks if a translation 
 	 * is available.
 	 * 
-	 * If you want to use your own user/role or ACL setup; e.g. reading roles from 
-	 * your own database table, you be better off overwriting
-	 * {@link #extractCustomSingleInputDiv(BeetRootHTTPSession, String, ResultSetMetaData, String, String, int)}
-	 * and {@link #useExternalRoles()} = true; in this case this method isn't 
-	 * called at all!
+	 * Not used by the extended role management. which is default!
 	 * 
 	 * Note: The extended user roles management is activated by default, so these roles aren't used!
 	 * 
@@ -1414,7 +1432,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param list the list with the associated entities
 	 * @param session beetRoot session
 	 */
-	protected void parseAssociatedEntities(StringBuffer snippet, List<Model> list, BeetRootHTTPSession session) {
+	protected void parseAssociatedEntities(StringBuilder snippet, List<Model> list, BeetRootHTTPSession session) {
 		this.parseAssociations("{$assignedRoles}", snippet, list, session);
 	}
 	
@@ -1425,11 +1443,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param list the list with the un-associated entities
 	 * @param session beetRoot session
 	 */
-	protected void parseUnassociatedEntities(StringBuffer snippet, List<Model> list, BeetRootHTTPSession session) {
+	protected void parseUnassociatedEntities(StringBuilder snippet, List<Model> list, BeetRootHTTPSession session) {
 		this.parseAssociations("{$unassignedRoles}", snippet, list, session);
 	}
 	
-	private void parseAssociations(String tag, StringBuffer snippet, List<Model> list, BeetRootHTTPSession session) {
+	private void parseAssociations(String tag, StringBuilder snippet, List<Model> list, BeetRootHTTPSession session) {
 		final int idx = snippet.indexOf(tag);
 		if (idx == -1)
 			return;
@@ -1444,21 +1462,21 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		snippet.replace(idx, idx + tag.length(), txt);
 	}
 	
-	private void parseTemplateHead(StringBuffer template, String variable) {
+	private void parseTemplateHead(StringBuilder template, String variable) {
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
 		template.replace(idx, idx + variable.length(), this.getHtmlHead());
 	}
 	
-	private void parseTemplateData(StringBuffer template, String variable) {
+	private void parseTemplateData(StringBuilder template, String variable) {
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
 		template.replace(idx, idx + variable.length(), this.getHtmlData());
 	}
 
-	private void parsePaginator(StringBuffer template, String variable, BeetRootHTTPSession session) {
+	private void parsePaginator(StringBuilder template, String variable, BeetRootHTTPSession session) {
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
@@ -1468,7 +1486,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session, int origId) throws FileNotFoundException {
 		
 		final Session userSession = session.getUserSession();
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
 		String currRessource = LanguageManager.getInstance().getBlockResource(resource, userSession);		
@@ -1478,7 +1496,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		LOOP: while (sc.hasNextLine()) {
 			
 			String text = sc.nextLine();
-			//text = this.preParse(text, session);
 			
 			// Remove lines?
 			if(ish.continueRemoval(text, userSession, "subresource"))
@@ -1487,10 +1504,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			switch (type) {
 			
 				case "{#head}":
-
-					// DONE in overal method
-					//if (text.contains("{$title}"))
-					//	text = text.replace("{$title}", getUpperCaseEntity());
+					// title ->DONE in overall method
 					break;
 
 				case "{#message}":
@@ -1568,12 +1582,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 						if (checkBoxLogic.length() > 0) {
 							text = text.replace("{$checkBoxLogic}", checkBoxLogic.toString());
-							//text = PATTERN_CHECK_BOX_LOGIC.matcher(text).replaceFirst(checkBoxLogic.toString());
 						} else {
 							text = text.replace("{$checkBoxLogic}", " ");
-							//text = PATTERN_CHECK_BOX_LOGIC.matcher(text).replaceFirst(" ");
 						}
-						checkBoxLogic = new StringBuffer();
+						checkBoxLogic = new StringBuilder();
 					}
 					
 					break;
@@ -1627,14 +1639,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					
 					final List<String> userroles = userSession.getUserRoles();
 
-					/**
-					// This is only a cosmetic precaution, menus shouldn't
-					// be shown anyways without a logged-in user.
-					if (userrole == null && text.contains("<a href=") || text.contains("<hr")) {
-						text  = " ";
-					}
-					*/
-					
 					if (text.contains("{$adminmenu}")) {
 						
 						if (userroles.contains("Administrator")) {
@@ -1697,7 +1701,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// Remove lines?
 			if(ish.continueRemoval(text, userSession, "template"))
 				continue LOOP;
-			//addLine(this.preParse(text, session));
 			addLine(text);
 		}
 		sc.close();
@@ -1819,8 +1822,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @return buffer with resource
 	 * @throws FileNotFoundException if file is not found
 	 */
-	protected StringBuffer readSnippetResource(String resource, Session userSession) throws FileNotFoundException {
-		final StringBuffer sb = new StringBuffer();
+	protected StringBuilder readSnippetResource(String resource, Session userSession) throws FileNotFoundException {
+		final StringBuilder sb = new StringBuilder();
 		final String res = LanguageManager.getInstance().getResource(resource, userSession);
 		final Scanner sc = this.getNewScanner(res);
 		while (sc.hasNextLine()) {
@@ -1863,7 +1866,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 	@Override
 	public String getMimeType() {
-		return "text/html";
+		return MIME_TYPE_HTML;
 	}
 	
 	@Override
@@ -1894,10 +1897,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 			// access control
 			if (!this.hasAccess(userSession)) {
-				Map<String, String> params = session.getParms();
 				return serveDefaultRedirectHandler(
 										(BeetRootHTTPSession)session, 
-										params, 
 										LanguageManager.getInstance().translate("base.error.noaccess.msg", userSession), 
 										MSG_TYPE_ERR
 									);
@@ -1981,8 +1982,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						if (response == null || (response.getStatus() == HandlerResponse.STATE_OK && response.getType() == HandlerResponse.TYPE_FORM)) { // Ok in this case
 							
 							String m = LanguageManager.getInstance().translate("base.info.saved", userSession, getUpperCaseEntity());
-							
-							//if (measureDuration) this.processTime();
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 
@@ -2017,10 +2016,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 						if (response == null || response.getStatus() == HandlerResponse.STATE_OK) {// Ok in this case
 							
-							//String m = LanguageManager.getInstance().translate("base.info.updated", userSession, origId, getUpperCaseEntity());
 							String m = LanguageManager.getInstance().translate("base.info.updated", userSession, getUpperCaseEntity());
-							
-							//if (measureDuration) this.processTime();
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
 						
@@ -2304,7 +2300,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private List<String> getIfValuesFromTemplate(String line) {
 		String strs[] = line.split("=", 2);
 		if (strs.length != 2)
-			return Arrays.asList(new String[] {});
+			return new ArrayList<String>();
 		strs[1] = PATTERN_SEMICOLON.matcher(strs[1]).replaceAll("");
 		strs[1] = PATTERN_COLON.matcher(strs[1]).replaceAll("");
 		strs[1] = PATTERN_RIGHT_CURLY_BRACKET.matcher(strs[1]).replaceAll("");
@@ -2340,7 +2336,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
         
 		final BaseHandler handler = (BaseHandler) obj;
-        handler.initialize((BeetRootHTTPSession)session);
+        handler.initialize(session);
         handler.setMessageType(messageType);
         
         final UriResource ur = new UriResource(null, handlerClass, entity);
@@ -2390,7 +2386,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * Used when an handler access failed!
 	 * 
 	 * @param session HTTP session
-	 * @param newParams new parameters
 	 * @param msg message
 	 * @param messageType message type
 	 * @return response
@@ -2398,7 +2393,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	private Response serveDefaultRedirectHandler(			
 			BeetRootHTTPSession session, 
-			Map<String, String> newParams, 
 			String msg, int messageType) throws Exception {
 		
 		final Session userSession = session.getUserSession();
@@ -2455,8 +2449,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		userSession.removeAllIds(); // important, we need to generate new ones!
 		
-		final String entity = this.getEntity();
-		Object obj = construct(session, getRedirectHandler(), entity, msg, messageType);
+		final String ent = this.getEntity();
+		Object obj = construct(session, getRedirectHandler(), ent, msg, messageType);
 		
 		if (!(obj instanceof BaseHandler)) {
 			return (Response) obj;
@@ -2468,11 +2462,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         try {
 
         	// set current page if any
-            final String page = (String) userSession.get("page-"+entity);
+            final String page = (String) userSession.get("page-"+ent);
     		if (page != null) {
     			session.overwriteParameter("page", page);
     			// consume!
-    			userSession.remove("page-"+entity);
+    			userSession.remove("page-"+ent);
     		}
     		
     		// read index data
@@ -2612,8 +2606,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				  "<!DOCTYPE html>\n"
 				+ "<html lang=\"en\">\n"
 				+ "<head>\n"
-				+ "	<meta charset=\"utf-8\">\n"
-				+ "	<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + url + "\" />\n"
+				+ "<meta charset=\"utf-8\">\n"
+				+ "<meta http-equiv=\"Refresh\" content=\"0; url=" + sn + userSession.getUserLang() + "/" + url + "\" />\n"
 				+ "</head>\n"
 				+ "</html>\n"
 				+ "";
@@ -2754,7 +2748,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * 
 	 * @return HTTP session
 	 */
-	final public BeetRootHTTPSession getCurrentSession() {
+	public final BeetRootHTTPSession getCurrentSession() {
 		return currentSession;
 	}
 
@@ -2814,12 +2808,63 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final String regex = "(<[^>]*\\sid\\s*=\\s*['\"]" + Pattern.quote(id) + "['\"][^>]*\\svalue\\s*=\\s*\")(.*?)(\")";
         final Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         final Matcher matcher = pattern.matcher(text);
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         while (matcher.find()) {
             matcher.appendReplacement(sb, matcher.group(1) + newValue + matcher.group(3));
         }
         matcher.appendTail(sb);
         return sb.toString();			
+	}
+	
+	/**
+	 * Overwrite to set your template variables.
+	 * 
+	 * Only use the pure names without bracket-limiters
+	 * and $-sign; e.g., In template '{$name}' -> 'name' as variable.
+	 * 
+	 * Example: <code>setVar("name", "Gandalf")</code>.
+	 * 
+	 * @param session HTTP session
+	 */
+	public void render(BeetRootHTTPSession session) {
+	}
+	
+	/**
+	 * Overwrite to set your variables for the hole HTML page.
+	 * 
+	 * Only use the pure names without bracket-limiters
+	 * and $-sign; e.g., In template '{$name}' -> 'name' as variable.
+	 * 
+	 * Example: <code>setVarAll("name", "The Almighty")</code>.
+	 * 
+	 * @param session HTTP session
+	 */
+	public void renderAll(BeetRootHTTPSession session) {
+	}
+	
+	/**
+	 * Set a template variable. Only use the pure names without bracket-limiters
+	 * and $-sign; e.g., In template '{$name}' -> 'name' as variable.
+	 *  
+	 * @param variable template variable without brackets and '$'.
+	 * @param replacement replacement text
+	 */
+	public final void setVar(String variable, Object replacement) {
+		if (variable != null)
+			vars.put(variable, replacement.toString());
+	}
+	
+	/**
+	 * Set a global variable. Variables are replace within the whole HTML page!
+	 * Only use the pure names without bracket-limiters
+	 * and $-sign; e.g., In template '{$name}' -> 'name' as variable.
+	 *  
+	 * @param variable template variable without brackets and '$'.
+	 * @param replacement replacement text
+	 */
+	public final void setVarAll(String variable, Object replacement) {
+		if (variable != null)
+			varsAll.put(variable, replacement.toString());
 	}
 	
 	/**
@@ -2830,7 +2875,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session HTTP session
 	 * @return parsed text or null
 	 */
-	public String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+	private String replaceTemplateVariables(String text, BeetRootHTTPSession session) {
+		for (Map.Entry<String, String> entry : vars.entrySet()) {
+			final String key = entry.getKey();
+			final String val = entry.getValue();
+			if (val != null && text.indexOf("{$"+key+"}") != -1) {
+				text = text.replace("{$"+key+"}", val);
+			}
+		}
 		return text;
 	}
 	
@@ -2842,7 +2894,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session HTTP session
 	 * @return parsed text or null
 	 */
-	public String replaceVariables(String text, BeetRootHTTPSession session) {
+	private String replaceVariables(String text, BeetRootHTTPSession session) {
+		for (Map.Entry<String, String> entry : varsAll.entrySet()) {
+			final String key = entry.getKey();
+			final String val = entry.getValue();
+			if (val != null && text.indexOf("{$"+key+"}") != -1) {
+				text = text.replace("{$"+key+"}", val);
+			}
+		}
 		return text;
 	}
 	
@@ -2857,13 +2916,26 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// Only when switched on!
 		if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
 			int idx = -1;
-			while ((idx = text.indexOf("{$lang.")) != -1) {
-				final int pos1 = idx + 7;
-				final int pos2 = text.indexOf("}");
-				String totrans = text.substring(pos1, pos2);
+			while ((idx = text.indexOf(LANG_TAG_PREFIX)) != -1) {
+				final int pos1 = idx + LANG_TAG_PREFIX.length();
+				final int posC = text.indexOf(",");
+				int pos2 = text.indexOf("}");
+				String totrans = null; 
+				String subValues = null; 
+				String subValuesArr[] = null; 
+				if (posC == -1)
+					totrans = text.substring(pos1, pos2); // no values to replace
+				else {
+					totrans = text.substring(pos1, posC);
+					subValues = text.substring(posC + 1, pos2);
+					if (subValues.length() > 0) {
+						subValuesArr = subValues.trim().split("\\s*,\\s*");
+					}
+				}
+				
 				String trans = "";
 				if (totrans.length() > 0)
-					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession());
+					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession(), subValuesArr);
 				text = text.substring(0, idx) + trans + text.substring(pos2 + 1);
 			}
 		}
@@ -2871,10 +2943,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Get paginator html code. Must only be implemented by index handlers
-	 * and is only called if there's a {$paginator} tag in a template.
+	 * Get HTML paginator code. Must only be implemented by index handlers
+	 * and is only called if there's a "{$paginator}" tag in a template.
 	 * @param session HTTP session  
-	 * @return html paginator code
+	 * @return HTML paginator code
 	 */
 	public String getPaginator(BeetRootHTTPSession session) {
 		throw new IllegalStateException("This method should not be called without a routed index template handler!");
@@ -2977,7 +3049,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 	protected void loginMarker(boolean redirectLogin) {
-		//this.loginMarker = redirectLogin;
 	}
 	
 	@SuppressWarnings("unused")
@@ -3026,8 +3097,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 			// Get states
 			Map<String, Boolean> currStates = ifTagStates.get(layer);
-			
-			// TODO we have to check all roles
 			
 			// Add initial states if not present for layer
 			if (currStates == null) {
@@ -3090,5 +3159,3 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 
 }
-
-

@@ -184,7 +184,7 @@ public class DefaultViewHandler extends BaseHandler {
 			val = LanguageManager.getInstance().translateOrDefVal("role."+val, val, session.getUserSession());
 		}
 		
-		val = Web.escapeHtml(val);
+		val = Web.escapeHtmlReserved(val);
 		
 		return "<td>" + val + "</td>";
 	}
