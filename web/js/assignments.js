@@ -56,11 +56,16 @@ function removeSelected() {
 }
 
 function updateAssignedIds() {
-    const ids = [];
+    const assignedIds = [];
+	const availabledIds = [];
     document.getElementById('assigned').querySelectorAll('.list-group-item').forEach(item => {
-        ids.push(item.getAttribute('data-id'));
+        assignedIds.push(item.getAttribute('data-id'));
     });
-    document.getElementById('assignedIds').value = ids.join(',');
+	document.getElementById('available').querySelectorAll('.list-group-item').forEach(item => {
+	    availabledIds.push(item.getAttribute('data-id'));
+	});
+    document.getElementById('assignedIds').value = assignedIds.join(',');
+	document.getElementById('availableIds').value = availabledIds.join(',');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

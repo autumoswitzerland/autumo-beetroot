@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot;
+package ch.autumo.beetroot.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -27,8 +27,9 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.autumo.beetroot.models.Product;
-import ch.autumo.beetroot.models.Variant;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.Model;
 
 
 /**
