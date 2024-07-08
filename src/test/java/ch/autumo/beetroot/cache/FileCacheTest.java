@@ -81,7 +81,7 @@ public class FileCacheTest {
 			hasSpace =FileCacheManager.getInstance().hasSpace(0, fs);
 			if (hasSpace) {
 				FileCache fc = FileCacheManager.getInstance().findOrCreate(path);
-				System.out.println("FC: Adding "+fc.getFullPath());
+				//System.out.println("FC: Adding "+fc.getFullPath());
 				if (!first) {
 					s0 = s1;
 					first = false;
@@ -90,8 +90,8 @@ public class FileCacheTest {
 				assertTrue("Cache doesn't grow!", s1 > s0);
 			} else {
 				assertFalse("Still has space!", FileCacheManager.getInstance().hasSpace(0, fs));
-				System.out.println("Size: "+ FileCacheManager.getInstance().getSize());
-				System.out.println("=====================");
+				//System.out.println("Size: "+ FileCacheManager.getInstance().getSize());
+				//System.out.println("=====================");
 				//lpath = path;
 				break LOOP;
 			}
@@ -106,8 +106,8 @@ public class FileCacheTest {
 		*/
 		
 		FileCacheManager.getInstance().clear();
-		System.out.println("FC: Size = "+FileCacheManager.getInstance().getSize());
-		assertTrue("File cahce should be zero!", FileCacheManager.getInstance().getSize() == 0);
+		//System.out.println("FC: Size = "+FileCacheManager.getInstance().getSize());
+		assertTrue("File cache should be zero!", FileCacheManager.getInstance().getSize() == 0);
 	}
 
 	@Test
@@ -118,8 +118,8 @@ public class FileCacheTest {
 		allFiles.forEach(System.out::println);
 		File f = allFiles.get(0).toFile();
 		FileCache fc = FileCacheManager.getInstance().findOrCreate(f.toPath());
-		System.out.println("FC: Adding binary file "+fc.getFullPath());
-		assertTrue("File should not be cached!", fc.isCached() == false);
+		//System.out.println("FC: Adding binary file "+fc.getFullPath());
+		assertTrue("File "+fc.getFullPath()+" should not be cached!", fc.isCached() == false);
 	}
 	
 	

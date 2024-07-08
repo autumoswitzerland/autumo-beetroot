@@ -54,13 +54,14 @@ public class ModelTest2 {
 		u.setStored(false);
 		u.setTwoFa(true);
 		u.setUsername("laforge");
-		System.out.println("ORIG: "+u);
+		//System.out.println("ORIG: "+u);
 
 		User uc = (User) u.clone();
-		System.out.println("COPY: "+uc);
+		//System.out.println("COPY: "+uc);
 		
 		// Now, we cheat
 		uc.setId(id);
+		
 		assertEquals(uc, u);
 	}
 	

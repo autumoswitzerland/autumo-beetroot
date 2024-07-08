@@ -178,7 +178,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * @throws Exception exception
 	 */
 	private void initModules(boolean isWithinServlet, String fullConfigBasePath) throws Exception {
-		
 		Initializer initializer = null;
 		final String clz = BeetRootConfigurationManager.getInstance().getString("ws_init_class");
 		if (clz != null && clz.length() != 0) {
@@ -186,7 +185,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			final Constructor<?> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             initializer = (Initializer) constructor.newInstance();
-            
             initializer.initModules(isWithinServlet, fullConfigBasePath);
 		}
 	}
@@ -332,13 +330,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				&& session.getHeaders().get("user-agent").equals(Communicator.USER_AGENT)) { 
 
 			/*
-			Map<String, String> m = session.getHeaders();
-			Set<String> s = m.keySet();
-			for (Iterator<String> iterator = s.iterator(); iterator.hasNext();) {
-				String k = iterator.next();
-				System.err.println("K:"+k+", V:"+m.get(k));
-			}	
-			*/	
+			 * Map<String, String> m = session.getHeaders();
+			 */	
 			
 			// check API key
 			final String webApiKeyInReq = session.getParms().get(apiKeyName);
@@ -1111,20 +1104,5 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			return script;
 		}
 	}
-
-//	private static void nonsenseThread() {
-//		final Thread thread = new Thread(() -> {
-//			try {
-//	            while (true) {
-//	            	LOG.info("Log some nonsense!");
-//	                Thread.sleep(1000);
-//	            }
-//	        } catch (InterruptedException e) {
-//	            System.err.println("Nonsense thread was interrupted!");
-//	        }				
-//	    });
-//		thread.setDaemon(true);
-//	    thread.start();
-//	}
 
 }

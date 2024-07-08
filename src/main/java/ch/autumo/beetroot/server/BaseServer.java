@@ -310,30 +310,7 @@ public abstract class BaseServer {
 		
 		startWebServer = configMan.getYesOrNo(Constants.KEY_WS_START);
 
-		
-		//------------------------------------------------------------------------------
-		
-		// Server dispatcher initialization
-		final String ds[] = configMan.getValues("dispatcher_");
-		for (int i = 0; i < ds.length; i++) {
-			Class<?> clazz;
-			String currDisp = null;
-			try {
-				currDisp = ds[i];
-				clazz = Class.forName(currDisp);
-				final Constructor<?> constructor = clazz.getDeclaredConstructor();
-	            constructor.setAccessible(true);
-	            final Dispatcher d = (Dispatcher) constructor.newInstance();
-	            // add dispatcher that handles server commands of distributed components/modules
-	            dispatchers.put(d.getId(), d);
-			} catch (Exception ex) {
-				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
-				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");
-				Helper.fatalExit();
-			}			
-		}
-		
-		
+				
 		//------------------------------------------------------------------------------
 		
 		
@@ -361,8 +338,6 @@ public abstract class BaseServer {
 				this.customOperation(operation, params);
 			}
 		}
-		
-		
 	}
 
 	/**
@@ -409,7 +384,7 @@ public abstract class BaseServer {
 	protected static String getRootPath() {
 		return rootPath;
 	}
-	
+		
 	/**
 	 * Start server and web server if configured.
 	 */
@@ -421,9 +396,13 @@ public abstract class BaseServer {
 			return;
 		
 		LOG.info("Server starting...");
-		if (LOG.isErrorEnabled())
+		
+		if (!LOG.isInfoEnabled())
 			System.out.println(ansiServerName + " Server starting...");
 
+		// Server dispatcher initialization
+		this.initializeDispatchers();
+		
 		// Protocol if web server is used
 		final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
 		
@@ -432,7 +411,7 @@ public abstract class BaseServer {
 			try {
 				
 				LOG.info("Starting internal web server...");
-				if (LOG.isErrorEnabled())
+				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " Starting internal web server...");
 				
 				try {
@@ -449,8 +428,6 @@ public abstract class BaseServer {
 				} catch (ClassNotFoundException e1) {
 					LOG.warn("NOTE: It seems you haven't installed Jakarta Mail; you'll not be able to reset your password!");
 					LOG.warn("      Check documentation for installing the Jakarta Mail libs.");
-					//System.out.println("["+ name +"] NOTE: It seems you haven't installed Jakarta Mail; you'll not be able to reset your password!");
-					//System.out.println("["+ name +"]       Check documentation for installing the Jakarta Mail libs.");
 				}				
 				
 				webServer = new BeetRootWebServer(portWebServer);
@@ -459,7 +436,7 @@ public abstract class BaseServer {
 				if (https) {
 					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(SSL.getKeystoreFile(), SSL.getKeystorePw()), null);
 					LOG.info("Web-Server communication is SSL (TLS) secured!");
-					if (LOG.isErrorEnabled())
+					if (!LOG.isInfoEnabled())
 						System.out.println(ansiServerName + " Web-Server communication is SSL (TLS) secured!");
 				}
 				
@@ -470,7 +447,7 @@ public abstract class BaseServer {
 				else
 					LOG.info("HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
 					
-				if (LOG.isErrorEnabled())
+				if (!LOG.isInfoEnabled())
 					if (https)
 						System.out.println(ansiServerName + " HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
 					else
@@ -488,7 +465,7 @@ public abstract class BaseServer {
 			try {
 		        this.serverSocketFactory = new SecureServerSocketFactory(SSL.makeSSLServerSocketFactory(), null);
 				LOG.info("Client-Server communication (with file transfers) is SSL secured!");
-				if (LOG.isErrorEnabled())
+				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " Client-Server communication (with file transfers) is SSL secured!");
 		        
 			} catch (Exception e) {
@@ -505,7 +482,7 @@ public abstract class BaseServer {
 			final String prot = https ? "HTTPS" : "HTTP";
 			if (startWebServer) { // good
 				LOG.info("Client-Server communication is tunneled through "+prot+".");
-				if (LOG.isErrorEnabled())
+				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " Client-Server communication is tunneled through "+prot+".");
 			} else {
 				LOG.error("You have specified to tunnel Client-Server communication through "+prot+" (admin_com_mode=web),");
@@ -518,7 +495,7 @@ public abstract class BaseServer {
 		// SHA3 communication encryption?
 		if (sha3Com) {
 			LOG.info("Client-Server communication is SHA3-256 encrypted!");
-			if (LOG.isErrorEnabled())
+			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " Client-Server communication is SHA3-256 encrypted!");
 		}
 		
@@ -542,7 +519,7 @@ public abstract class BaseServer {
 				}
 			} else {
 				LOG.info("No file storage has been configured, try using internal methods!");
-				if (LOG.isErrorEnabled())
+				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " No file storage has been configured, try using internal methods!");
 				startFileServer = true;
 				fileStorage = null;
@@ -552,7 +529,7 @@ public abstract class BaseServer {
 				fileServer = new FileServer(this, fileStorage);
 				fileServer.start();
 				LOG.info("File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileReceiver + ".");
-				if (LOG.isErrorEnabled())
+				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileReceiver + ".");
             }
 		}
@@ -564,7 +541,7 @@ public abstract class BaseServer {
 		server.start();
 		
 		LOG.info("Admin listener started on port "+portAdminServer+".");
-		if (LOG.isErrorEnabled())
+		if (!LOG.isInfoEnabled())
 			System.out.println(ansiServerName + " Admin listener started on port "+portAdminServer+".");
 
 		this.afterStart();
@@ -575,7 +552,7 @@ public abstract class BaseServer {
 		final String startup = OS.getReadableDuration(duration, TimeUnit.SECONDS);
 		
 		LOG.info("Server started - startup time: " + startup + ".");
-		if (LOG.isErrorEnabled())
+		if (!LOG.isInfoEnabled())
 			System.out.println(ansiServerName + " Server started - startup time: " + startup + ".");
 	}
 	
@@ -586,20 +563,20 @@ public abstract class BaseServer {
 		this.beforeStop();
 		if (startFileServer) {
 			LOG.info("Stopping internal file server...");
-			if (LOG.isErrorEnabled())
+			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " Stopping internal file server...");
 			fileServer.stop();
 			LOG.info("Internal file server stopped.");
-			if (LOG.isErrorEnabled())
+			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " Internal file server stopped.");
 		}
 		if (startWebServer) {
 			LOG.info("Stopping internal web server...");
-			if (LOG.isErrorEnabled())
+			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " Stopping internal web server...");
 			webServer.stop();
 			LOG.info("Internal web server stopped.");
-			if (LOG.isErrorEnabled())
+			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " Internal web server stopped.");
 		}
 		// Release database resources
@@ -610,7 +587,7 @@ public abstract class BaseServer {
 		}
 		this.afterStop();
 		LOG.info(name + " server stopped.");
-		if (LOG.isErrorEnabled())
+		if (!LOG.isInfoEnabled())
 			System.out.println(ansiServerName + " Server stopped.");
 	}
 
@@ -669,7 +646,7 @@ public abstract class BaseServer {
 				if (!BaseServer.this.serverStop) {
 					hookShutdown = true;
 					LOG.info("[CTRL-C] signal received! Shutting down...");
-					if (LOG.isErrorEnabled()) {
+					if (!LOG.isInfoEnabled()) {
 						System.out.println("");
 						System.out.println(BaseServer.ansiServerName + " " + Colors.darkYellow("[CTRL-C]") + " signal received! Shutting down...");
 					}
@@ -681,6 +658,33 @@ public abstract class BaseServer {
 				}
 			}
 		};
+	}
+	
+	/**
+	 * Initialize dispacther-modules.
+	 */
+	private void initializeDispatchers() {
+		final String ds[] = configMan.getValues("dispatcher_");
+		for (int i = 0; i < ds.length; i++) {
+			Class<?> clazz;
+			String currDisp = null;
+			try {
+				currDisp = ds[i];
+				clazz = Class.forName(currDisp);
+				final Constructor<?> constructor = clazz.getDeclaredConstructor();
+	            constructor.setAccessible(true);
+	            final Dispatcher d = (Dispatcher) constructor.newInstance();
+	            // add dispatcher that handles server commands of distributed components/modules
+	            dispatchers.put(d.getId(), d);
+	            LOG.info("- Modules: Dispatcher '"+currDisp+"' added.");
+	            if (!LOG.isInfoEnabled())
+		            System.out.println("- Modules: Dispatcher '"+currDisp+"' added.");
+			} catch (Exception ex) {
+				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
+				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");
+				Helper.fatalExit();
+			}			
+		}
 	}
 	
     /**
@@ -986,7 +990,7 @@ public abstract class BaseServer {
 		
 		// No output coloring here, because we don't want to risk if unparsed ASCII coloring
 		// messes up the logging of a probe, e.g. Windows service manager logs.
-		if (LOG.isErrorEnabled()) {
+		if (!LOG.isInfoEnabled()) {
 			System.out.println("");
 			if (hasNoIssues)
 				System.out.println(ansiServerName + " " + Colors.green("Server is running and healthy!"));
@@ -1155,7 +1159,7 @@ public abstract class BaseServer {
 			// Shutdown received?
 			if (answer instanceof StopAnswer) {
 				LOG.info("[STOP] signal received! Shutting down...");
-				if (LOG.isErrorEnabled()) {
+				if (!LOG.isInfoEnabled()) {
 					System.out.println("");
 					System.out.println(BaseServer.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
 				}

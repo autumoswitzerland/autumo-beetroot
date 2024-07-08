@@ -32,19 +32,21 @@ public class PasswordHashTest {
 	@Test
 	public void test() throws Exception {
 		
+		/*
 		long start = -1;
 		long end = -1;
+		*/
 		
 		Argon2HashProvider a = new Argon2HashProvider();
 		
-		start = System.currentTimeMillis();
+		//start = System.currentTimeMillis();
 		
 		String h = a.hash("ifacex");
 
-		end = System.currentTimeMillis();
-		System.out.println("Argon2 Time (ms): " + (end-start));		
+		//end = System.currentTimeMillis();
+		//System.out.println("Argon2 Time (ms): " + (end-start));		
 
-		System.err.println("Argon2 hash: " + h);		
+		//System.err.println("Argon2 hash: " + h);		
 		
 		assertTrue(a.verify("ifacex", h));
 		assertTrue(a.verify("ifacex", "$argon2id$v=19$m=65536,t=3,p=2$SLS4B4++8yzR00TJAoqezQ$fO3yb+JquGyEiL3ZSXmiLyXII6t2B1api19J8v8BDIQ"));
@@ -56,14 +58,14 @@ public class PasswordHashTest {
 		
 		PBKPD2HashProvider p = new PBKPD2HashProvider();
 		
-		start = System.currentTimeMillis();
+		//start = System.currentTimeMillis();
 		
 		h = p.hash("ifacex");
 		
-		end = System.currentTimeMillis();
-		System.out.println("PBKPD2 Time (ms): " + (end-start));		
+		//end = System.currentTimeMillis();
+		//System.out.println("PBKPD2 Time (ms): " + (end-start));		
 		
-		System.err.println("PBKPD2 hash: " + h);		
+		//System.err.println("PBKPD2 hash: " + h);		
 		
 		assertTrue(p.verify("ifacex", h));
 		assertTrue(p.verify("ifacex", "f1b42d6e77b788cd196df86b20192028be894926bcb8d05cfbe159e2c98746064efbc033b258310af76cf5ff2bb48864"));

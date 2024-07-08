@@ -18,10 +18,10 @@
 package ch.autumo.beetroot.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -48,57 +48,76 @@ public class ModelTest {
 	@Test
 	public void listAll1() {
 		List<Model> objects = Model.listAll(Product.class);
+		/*
 		for (Iterator<Model> iterator = objects.iterator(); iterator.hasNext();) {
 			Model entity = iterator.next();
 			System.out.println(entity);
 			System.out.println("intSecKey: " + entity.get("intSecKey"));
-		}		
+		}
+		*/	
+		assertTrue("Empty list!", objects.size() > 0);
 	}
 
 	@Test
 	public void findFirst() {
-		Model object = Model.findFirst(Product.class, "name = ?", "IfaceX");
-		System.out.println(object);
+		Model object = Model.findFirst(Product.class, "name = ?", "ifaceX");
+		//System.out.println("why"+object);
+		assertNotNull("No entity found!", object);
 	}
 
 	@Test
 	public void where() {
-		List<Model> objects = Model.where(Product.class, "name = ?", "IfaceX");
+		List<Model> objects = Model.where(Product.class, "name = ?", "ifaceX");
+		/*
 		for (Iterator<Model> iterator = objects.iterator(); iterator.hasNext();) {
 			Model entity = iterator.next();
 			System.out.println(entity);
-		}		
+		}
+		*/		
+		assertTrue("Empty result!", objects.size() > 0);
 	}
 
 	@Test
 	public void listAll2() {
 		List<Model> objects = Model.listAll(Variant.class);
+		/*
 		for (Iterator<Model> iterator = objects.iterator(); iterator.hasNext();) {
 			Model entity = iterator.next();
 			System.out.println(entity);
-		}		
+		}
+		*/		
+		assertTrue("Empty result!", objects.size() > 0);
 	}
 
 	@Test(expected = Exception.class)
 	public void readUpdateDelete() throws Exception {
 		Model object = Model.read(Product.class, 1);
-		System.out.println("READ:"+object);
+		//System.out.println("READ:"+object);
+		assertNotNull("No entity found!", object);
 		
 		Product p = (Product) object;
 		String old = p.getIntSecKey();
 		p.setIntSecKey("1111111111");
-		System.out.println("BF UPDATE:"+p);
+		//System.out.println("BF UPDATE:"+p);
+		
 		p.update();
 		Model object2 = Model.read(Product.class, 1);
 		Product p2 = (Product) object2;
 		
-		System.out.println("TEST:" + p2.getIntSecKey() + " = 1111111111");
+		//System.out.println("TEST:" + p2.getIntSecKey() + " = 1111111111");
 		assertEquals(p2.getIntSecKey(), "1111111111");
 		
 		p2.setIntSecKey(old);
 		p2.update();
 		
-		p2.delete(); // exception expected!
+		// Referential integrity
+		try {
+			p2.delete(); // exception expected!
+		} catch (Exception e) {
+			//e.printStackTrace();
+			throw e;
+		}
+		//assertTrue("Empty result!", objects.size() > 0);
 	}
 	
 	@Test
@@ -111,22 +130,28 @@ public class ModelTest {
 		int id = v.save();
 		
 		Model object = Model.read(Variant.class, id);
-		System.out.println(object);
+		//System.out.println(object);
+		assertTrue("No entity found!", object != null);
 
 		object = Model.findFirst(Variant.class, "id = ?", id);
-		System.out.println(object);
+		//System.out.println(object);
+		assertTrue("No entity found!", object != null);
 		
 		object = v.getAssociatedReference(Product.class);
-		System.out.println(object);
+		//System.out.println(object);
+		assertTrue("No entity found!", object != null);
 
 		Product p = (Product) object;
 		List<Model> objects = p.listReferences(Variant.class);
+		/*
 		for (Iterator<Model> iterator = objects.iterator(); iterator.hasNext();) {
 			Model entity = iterator.next();
 			System.out.println(entity);
-		}		
-
-		System.out.println(v.getTableName());
+		}
+		*/		
+		assertTrue("Empty result!", objects.size() > 0);
+		assertTrue("Empty result!", v.getTableName().equals("variants"));
+		//System.out.println(v.getTableName());
 		
 		v.delete();
 		
@@ -135,8 +160,7 @@ public class ModelTest {
 		object = Model.findFirst(Variant.class, "id = ?", id);
 		
 		assertNull(object);
-		
-		System.out.println(object);
+		//System.out.println(object);
 	}
 	
 }

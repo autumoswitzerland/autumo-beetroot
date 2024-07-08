@@ -17,6 +17,8 @@
  */
 package ch.autumo.beetroot.general;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -54,16 +56,24 @@ public class LanguageManagerTest {
 	@Test
 	public void test() {
 		
-		System.out.println("Template translation activated? " + BeetRootConfigurationManager.getInstance().translateTemplates());
+		boolean active = BeetRootConfigurationManager.getInstance().translateTemplates();
+		//System.out.println("Template translation activated? " + BeetRootConfigurationManager.getInstance().translateTemplates());
+		assertTrue("Translate templates not activated!", active);
 		
 		String arr[] = new String[] {"GalaxyClass", "2", "Warp Core Exception, blah blah..."};
 		
-		System.out.println(LanguageManager.getInstance().translate("base.err.handler.construct.msg", "en", "GalaxyClass", "2", "Warp Core Exception, blah blah...")); 
-		System.out.println(LanguageManager.getInstance().translate("base.err.handler.construct.msg", "en", ((Object[])arr)));
+		String s0 = LanguageManager.getInstance().translate("base.err.handler.construct.msg", "en", "GalaxyClass", "2", "Warp Core Exception, blah blah...");
+		//System.out.println(s0);
+		assertTrue("s0 not translated!",!s0.contains("{"));
+		String s1 = LanguageManager.getInstance().translate("base.err.handler.construct.msg", "en", ((Object[])arr));
+		//System.out.println(s1);
+		assertTrue("s1 not translated!",!s1.contains("{"));
 		
 		arr = new String[] {"Jean-Luc", "two"};
 		
-		System.out.println(LanguageManager.getInstance().translateTemplate("message", "Jean-Luc", arr)); 
+		String s2 = LanguageManager.getInstance().translateTemplate("message", "de", arr);
+		//System.out.println(s2); 
+		assertTrue("s2 not translated!",!s2.contains("{"));
 	}
 
 }

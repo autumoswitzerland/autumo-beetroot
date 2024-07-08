@@ -200,6 +200,13 @@
 	<dependencies>
 		
 		<dependency>
+		    <groupId>org.nanohttpd</groupId>
+		    <artifactId>nanohttpd</artifactId>
+		    <version>BEETROOT-2.3.4</version>
+		    <scope>provided</scope>
+		</dependency>		
+		
+		<dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-api</artifactId>
 		    <version>1.7.36</version>
@@ -360,15 +367,6 @@
 		    <scope>compile</scope> <!-- IMPORTANT! -->
 		</dependency>
 
-		<!--
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>5.0.0</version>
-		    <scope>compile</scope>
-		</dependency>
-		-->
-
 		<dependency>
     		<groupId>org.springframework.security</groupId>
     		<artifactId>spring-security-crypto</artifactId>
@@ -403,15 +401,7 @@
 		    <version>42.7.0</version>
 		    <scope>provided</scope>
 		</dependency>
-
-		<!--		
-		<dependency>
-		    <groupId>com.impossibl.pgjdbc-ng</groupId>
-		    <artifactId>pgjdbc-ng</artifactId>
-		    <version>0.8.9</version>
-		    <scope>provided</scope>
-		</dependency>
-		-->
+		<!-- com.impossibl.pgjdbc-ng : pgjdbc-ng : 0.8.9 -->
 		
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
@@ -419,13 +409,7 @@
 			<version>3.3.1</version>               
 		    <scope>provided</scope>
 		</dependency>
-
-		<dependency>
-		    <groupId>org.nanohttpd</groupId>
-		    <artifactId>nanohttpd</artifactId>
-		    <version>BEETROOT-2.3.4</version>
-		    <scope>provided</scope>
-		</dependency>		
+				
 				
   		<!-- Testing -->
         

@@ -17,7 +17,8 @@
  */
 package ch.autumo.beetroot;
 
-import java.util.Iterator;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -48,12 +49,15 @@ public class DBManagerTest {
 		
 		final List<DBField> fields = BeetRootDatabaseManager.getInstance().describeTable(table);
 
-		System.out.println("Amount of DB fields for table '"+table+"': " + fields.size());
-		
+		//System.out.println("Amount of DB fields for table '"+table+"': " + fields.size());
+		/*
 		for (Iterator<DBField> iterator = fields.iterator(); iterator.hasNext();) {
 			final DBField dbField = iterator.next();
 			System.out.println(dbField);
 		}
+		*/
+		
+		assertTrue("Bean fields (from DB colums) missing!", fields.size() == 7);
 	}
 	
 }

@@ -4,8 +4,12 @@ ch.autumo.beetroot.cache
 ch.autumo.beetroot.call
 ch.autumo.beetroot.crud
 ch.autumo.beetroot.handler
+ch.autumo.beetroot.handler.properties
+ch.autumo.beetroot.handler.roles
+ch.autumo.beetroot.handler.system
 ch.autumo.beetroot.handler.tasks
 ch.autumo.beetroot.handler.users
+ch.autumo.beetroot.handler.usersroles
 ch.autumo.beetroot.logging
 ch.autumo.beetroot.mailing
 ch.autumo.beetroot.mime
@@ -19,9 +23,9 @@ ch.autumo.beetroot.server.communication
 ch.autumo.beetroot.server.message
 ch.autumo.beetroot.server.message.file
 ch.autumo.beetroot.server.modules
+ch.autumo.beetroot.server.modules.log
 ch.autumo.beetroot.sms
 ch.autumo.beetroot.transport
 ch.autumo.beetroot.utils
 ch.autumo.beetroot.utils.security
 org.nanohttpd.router
-planted.beetroot.handler.properties
