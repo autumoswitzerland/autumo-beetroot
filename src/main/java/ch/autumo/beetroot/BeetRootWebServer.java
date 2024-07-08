@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -236,23 +235,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
      * @throws IOException IO exception
      */
 	public void start(boolean daemon) throws IOException {
-		
 		int timeout = - 1;
-		
 		try {
-			
 	        timeout = BeetRootConfigurationManager.getInstance().getInt("connection_timeout");
-	        
 	        if (timeout == -1) {
-	        	
 				timeout = 5000;
 				LOG.error("Using 5 seconds for client connection timeout.");
 	        }
-	        
 	        timeout = timeout * 1000;
-	        
 		} catch (Exception e) {
-			
 			timeout = 5000;
 			LOG.error("Couldn't read 'connection_timeout' from configuration. Using 5 seconds!");
 		}
@@ -268,9 +259,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
      */
 	@Override
     public void start(final int timeout, boolean daemon) throws IOException {
-    	
 		super.start(timeout, daemon);
-		
 		try {
 			SessionManager.getInstance().load();
 	    } catch (Exception e) {
@@ -283,15 +272,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
      */
 	@Override
     public void stop() {
-		
 		super.stop();
-		
         try {
             SessionManager.getInstance().save();
         } catch (Exception e) {
         	LOG.warn("Couldn't save current user sessions!", e);
         }
-        
 		// Clear cache
 		FileCacheManager.getInstance().clear();
     }	
@@ -570,7 +556,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							// certainty of 99.99% (first files, max. cache isn't reached at all)
 							// So we can getTextData !
 							css = cache.getTextData();
-							css = css.replaceAll("url\\('", "url('/"+servletName); //test it: "url('" -> "url('/"+servletName
+							//css = css.replaceAll("url\\('", "url('/"+servletName);
+							css = css.replace("url('", "url('/"+servletName); //test it: "url('" -> "url('/"+servletName
 							parsedCss.put(filePath, css);
 						} else {
 							css = parsedCss.get(filePath);
@@ -1222,14 +1209,14 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 */
 	private static class PwsParser {
 
-		public static Pattern PATTERN_INFO = Pattern.compile("\\{\\$pw.info\\}");
-		public static Pattern PATTERN_HIDE = Pattern.compile("\\{\\$pw.hide\\}");
-		public static Pattern PATTERN_SHOW = Pattern.compile("\\{\\$pw.show\\}");
-		public static Pattern PATTERN_CHARS = Pattern.compile("\\{\\$pw.chars\\}");
-		public static Pattern PATTERN_CAPITAL = Pattern.compile("\\{\\$pw.capital\\}");
-		public static Pattern PATTERN_NUMBER = Pattern.compile("\\{\\$pw.number\\}");
-		public static Pattern PATTERN_SPECIAL = Pattern.compile("\\{\\$pw.special\\}");
-		public static Pattern PATTERN_LETTER = Pattern.compile("\\{\\$pw.letter\\}");
+		public static final String PW_INFO = "{$pw.info}";
+		public static final String PW_HIDE = "{$pw.hide}";
+		public static final String PW_SHOW = "{$pw.show}";
+		public static final String PW_CHARS = "{$pw.chars}";
+		public static final String PW_CAPITAL = "{$pw.capital}";
+		public static final String PW_NUMBER = "{$pw.number}";
+		public static final String PW_SPECIAL = "{$pw.special}";
+		public static final String PW_LETTER = "{$pw.letter}";
 		
 		/**
 		 * Replace all variables.
@@ -1239,14 +1226,14 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		 * @return replaced java-script contents
 		 */
 		public static String parseAll(String script, Session userSession) {
-			script = PATTERN_INFO.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.info", userSession));
-			script = PATTERN_HIDE.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.hide", userSession));
-			script = PATTERN_SHOW.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.show", userSession));
-			script = PATTERN_CHARS.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.chars", userSession));
-			script = PATTERN_CAPITAL.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.capital", userSession));
-			script = PATTERN_NUMBER.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.number", userSession));
-			script = PATTERN_SPECIAL.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.special", userSession));
-			script = PATTERN_LETTER.matcher(script).replaceAll(LanguageManager.getInstance().translate("pw.letter", userSession));
+			script = script.replace(PW_INFO, LanguageManager.getInstance().translate("pw.info", userSession));
+			script = script.replace(PW_HIDE, LanguageManager.getInstance().translate("pw.hide", userSession));
+			script = script.replace(PW_SHOW, LanguageManager.getInstance().translate("pw.show", userSession));
+			script = script.replace(PW_CHARS, LanguageManager.getInstance().translate("pw.chars", userSession));
+			script = script.replace(PW_CAPITAL, LanguageManager.getInstance().translate("pw.capital", userSession));
+			script = script.replace(PW_NUMBER, LanguageManager.getInstance().translate("pw.number", userSession));
+			script = script.replace(PW_SPECIAL, LanguageManager.getInstance().translate("pw.special", userSession));
+			script = script.replace(PW_LETTER, LanguageManager.getInstance().translate("pw.letter", userSession));
 			return script;
 		}
 	}
