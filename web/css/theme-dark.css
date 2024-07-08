@@ -26,9 +26,6 @@ body {
 	background: url('/img/tiles-back-dark.png');
 	background-color: #444444;
 }
-.content {
-    background-color: #222222;
-}
 legend { 
     background-color: #222222 !important;
     color: #dddddd;
@@ -77,7 +74,7 @@ table {
     background-color: #222222;
 }
 table tr th {
-    color: #0093E6 !important;
+    color: #0093E6;
 }
 table tr td {
     color: #dddddd;
@@ -85,9 +82,14 @@ table tr td {
 table tr {
     border-bottom: 1px solid #444444;
 }
+p {
+    color: #0093E6 !important;
+}
+
 #actions-sidebar {
     background-color: #111111;
 }
+
 ul.pagination li.active a {
     color: #444444;
 }
@@ -97,6 +99,7 @@ ul.pagination li  {
 ul.pagination li a {
     color: #aaaaaa;
 }
+
 .list-group {
     min-height: 200px;
 	background-color: #444444;
@@ -108,9 +111,17 @@ ul.pagination li a {
 	border: 1px solid #444444;
 	color: #cccccc;
 }
-.container {
-    border-bottom: 1px solid #000000 !important;
+
+.content {
+    background-color: #222222;
 }
+.container {
+    border-bottom: 1px solid #000000;
+}
+#servicecontent {
+    background-color: hsla(0, 0%, 15%, 0.6);
+}
+
 .prev {
     border: 1px solid #aaaaaa;
 	border-radius: 8px;
@@ -121,11 +132,9 @@ ul.pagination li a {
 	border-radius: 8px;
 	background-color: #1D1D1D !important;
 }
-p {
-    color: #0093E6 !important;
-}
+
 .side-nav li.heading {
-    color: #0093E6 !important;
+    color: #0093E6;
 }
 .side-nav li a:not(.button) {
     color: #07b;
@@ -140,16 +149,17 @@ a:hover {
 .actions {
     color: #07b;
 }
+
 h1 {
     color: #dddddd !important;
 }
-
 h3 {
     color: #2DC7FE !important;
 }
 h5 {
 	color: #A2EEFF !important;
 }
+
 .content h4.errMsg {
     color: #0093E6 !important;
     padding-bottom: 0.5rem !important;
@@ -170,12 +180,13 @@ h5 {
     border: 1px solid #222222;
     border-width: 1px 0 0;
 }
-#servicecontent {
-    background-color: hsla(0, 0%, 15%, 0.6);
-}
+
 .ui-tooltip {
-	font-family: 'Aileron', sans-serif !important;
 	color: #ffffff;
 	background-color: #222222;
 	border-color: #ff0000;
+}
+
+.footerline {
+	color: #0E4E77 !important;	
 }

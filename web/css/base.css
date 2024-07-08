@@ -9,17 +9,25 @@
  *    user zoom.
  */
 html {
-    font-family: 'Aileron-light', sans-serif; /* 1 */
-    -ms-text-size-adjust: 100%; /* 2 */
-    -webkit-text-size-adjust: 100%; /* 2 */
+    font-family: 'Aileron', Helvetica, Roboto, Arial, sans-serif;
+    font-size: 100%;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
 }
 
 /**
- * Remove default margin.
+ * Body.
  */
 
 body {
     margin: 0;
+    background:#ddd;
+    color:#222;
+    cursor:auto;
+    font-style:normal;
+    font-weight:normal;
+    line-height:1.5;
+    position:relative
 }
 
 /* HTML5 display definitions
@@ -232,7 +240,7 @@ code,
 kbd,
 pre,
 samp {
-    font-family: monospace, monospace;
+    font-family: monospace;
     font-size: 1em;
 }
 
@@ -317,8 +325,7 @@ input::-moz-focus-inner {
 }
 
 /**
- * Address Firefox 4+ setting `line-height` on `input` using `!important` in
- * the UA stylesheet.
+ * Address Firefox 4+ setting `line-height` on `input`.
  */
 
 input {

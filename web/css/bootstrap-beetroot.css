@@ -128,8 +128,6 @@
 }
 
 .list-group {
-    /* --bs-list-group-color: var(--bs-body-color); */
-    /* --bs-list-group-bg: var(--bs-body-bg); */
     --bs-list-group-border-color: var(--bs-border-color);
     --bs-list-group-border-width: var(--bs-border-width);
     --bs-list-group-border-radius: var(--bs-border-radius);
@@ -176,7 +174,7 @@
 }
 
 .mb-2 {
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.5rem;
 }
 .btn {
     --bs-btn-padding-x: 0.75rem;

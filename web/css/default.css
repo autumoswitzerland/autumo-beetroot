@@ -64,11 +64,11 @@ footer {
 .mainslogan {
 	position: absolute;
 	right: 0px;
-	font-family: 'Gill Sans', sans-serif !important;
+	font-family: 'Gill Sans', sans-serif;
 	font-weight: lighter;
 	font-style: italic;
-	font-size: 1.6rem !important;
-	line-height: 1.6 !important;
+	font-size: 1.6rem;
+	line-height: 1.6;
 	color: #2dc7ff;
 	margin-top: 40px;
 	margin-right: 30px;
@@ -79,16 +79,15 @@ footer {
 	right: 0px;
 }
 .ui-tooltip {
-	font-family: 'Aileron', sans-serif !important;
 	background-color: #cccccc;
 }
 .twofabtn {
-	background-color: #cc9900!important;
+	background-color: #cc9900;
 	margin-right: 20px;
 }
 .twofabtn:hover {
 	color: #ffffff!important;
-	background-color: #ffcc00!important;
+	background-color: #ffcc00;
 }
 @media (max-width:550px) {
 	.maintitle {

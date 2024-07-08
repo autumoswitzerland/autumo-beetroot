@@ -20,8 +20,8 @@
 
 header {
 	font-size: 60px;
-	line-height: 64px !important;
-	background-color: #08253D !important;
+	line-height: 64px;
+	background-color: #08253D;
 	color: #222222;
 	height: 136px !important;
 	padding: 16px 0px;
@@ -45,8 +45,6 @@ form {
 	display: block;
 }
 
-footer {
-}
 .footerwrapper {
 	clear: both;
 	padding: 0;
@@ -62,7 +60,6 @@ footer {
 	color: #ffffff;
 	background-color: #111111;
 	text-align: right !important;
-	font-size: 18px;
 	width: 100%;
 }
 .footerline a {
@@ -81,7 +78,6 @@ strong, b {
 }
 
 p {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 1.0rem !important;
 	line-height: 1.8rem;
 	padding-bottom: 0px;
@@ -89,7 +85,6 @@ p {
 }
 
 li {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 1.2rem !important;
 	line-height: 2.0rem;
 }
@@ -112,9 +107,11 @@ ul.pagination li {
     padding: 10px;
 }
 .list-group-item {
+	color: #555555;
 	background-color: #cccccc;
 	border: 1px solid #bbbbbb;
 	cursor: pointer !important;
+	font-weight: lighter;
 }
 .btn-arrow {
     display: flex;
@@ -126,7 +123,7 @@ ul.pagination li {
 
 label {
 	font-size: 1.2em;
-	font-weight: 100;
+	font-weight: normal;
 }
 
 input {
@@ -140,27 +137,23 @@ legend {
 }
 
 h1 {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 2.0rem !important;
 	font-weight: 100 !important;
 	line-height: 2.0 !important;
 }
 h3 {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 2.0rem !important;
 	line-height: 2.0 !important;
 	color: #0e4e74 !important;
 	font-weight: 100;
 }
 h3.light {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 2.0rem !important;
 	line-height: 2.0 !important;
 	color: #A2EEFF !important;
 	font-weight: 100;
 }
 h4 {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 1.6rem !important;
 	line-height: 1.6 !important;
 	color: #0e4e74 !important;
@@ -168,15 +161,12 @@ h4 {
 }
 h5 {
 	padding-top: 8px;
-	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.1rem !important;
 	line-height: 1.1 !important;
 	color: #0093E6 !important;	
-	font-weight: 100;
 }
 
 .maintitle {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 3.0rem !important;
 	line-height: 1.7 !important;
 	color: #ffffff !important;
@@ -188,7 +178,6 @@ h5 {
 	margin-left: 30px;
 }
 .mainversion {
-	font-family: 'Aileron-light', sans-serif !important;
 	font-size: 1.0rem !important;
 	color: #ffffff !important;
 	float: right;
@@ -230,7 +219,6 @@ h5 {
 }
 
 .img-fluid {
-	/* padding: 25px 25px 25px 25px; */
 	padding-left: 5px;
 	padding-right: 5px;
 	max-width: 100%;
@@ -269,10 +257,6 @@ h5 {
 }
 .portfolio-box .portfolio-box-caption .portfolio-box-caption-content {
 	position: absolute;
-	/*
-	transform: translateY(-50%);
-	top: 50%;
-	*/
 	width: 100%;
 	text-align: center;
 }
@@ -284,7 +268,6 @@ h5 {
 }
 .project-name:hover {
 	color: #9adeda;
-	/*text-decoration: underline;*/
 }
 .portfolio-box .portfolio-box-caption .portfolio-box-caption-content .project-category {
 	margin-top: 46px;
@@ -361,11 +344,25 @@ h5 {
 	height: 60px !important;
 }
 
+.side-nav li a:not(.button) {
+	color: #0e4e74;
+}
+.side-nav li a:not(.button):hover {
+	color: #0e4e74;
+}
 .side-nav li.heading {
-	font-size: 1.2rem !important;
+	color: #146fa6;
+	font-weight: normal;
+	text-transform: uppercase;
+	padding: 0.4375rem 0.875rem;
+	font-size: 1.2rem;
 }
 .side-nav li {
-	font-size: 1.2rem !important;
+	font-size: 1.2rem;
+}
+.side-nav a {
+	font-size: 1.2rem;
+	font-weight: lighter;
 }
 
 .pagination {
@@ -388,13 +385,11 @@ div.message {
 	display: block;
 	padding-top: 1px;
 	text-align: left;
-	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
 	font-weight: 400 !important;
 	line-height: 1.8em;
 	padding-left: 14px;
 	margin-left: 0px;
-	text-align: left;
 	cursor: pointer;
 	color: #444444;
 	background-color: #0dcaf0;
@@ -408,7 +403,6 @@ div.message.hidden {
 	margin-top: -1px;
 }
 div.message::before {
-	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
 	font-weight: 400 !important;
 	margin-left: 18px;
@@ -429,7 +423,6 @@ div.message.success {
 	color: #444444;
 }
 div.success::before {
-	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
 	font-weight: 400 !important;
 	margin-left: 18px;
@@ -450,7 +443,6 @@ div.message.error {
 	color: #fff;
 }
 div.message.error:before {
-	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.0rem !important;
 	font-weight: 400 !important;
 	margin-left: 18px;
@@ -471,7 +463,6 @@ div.message.warning {
 	color: #ffffff;
 }
 div.message.warning:before {
-	font-family: 'Aileron', sans-serif !important;
 	font-size: 1.2rem !important;
 	font-weight: 400 !important;
 	margin-left: 18px;
@@ -499,7 +490,6 @@ div.message.warning:before {
 	margin-left: 20px;
 }
 .refresh_section_label {
-	font-family: 'Aileron-light', sans-serif !important;
 	margin-bottom: -1px !important;
 	margin-left: -4px !important;
 	background-color: #07b !important;
@@ -538,10 +528,11 @@ div.message.warning:before {
 	text-align: center;
 	background-color: #0086d3;
 	color: white;
-	font-size: 16px;
 	cursor: pointer;
 	padding: 0;
 	margin: 0;
+	font-size: 1.2rem !important;
+	border-radius: 0px;		
 }
 .dropbtnlang {
 	width: 40px;
@@ -602,28 +593,12 @@ div.message.warning:before {
 	padding: 0;
 	margin: 0;
 }
-.dropbtn {
-	font-family: 'Aileron', sans-serif !important;
-	font-size: 1.2rem !important;
-	border-radius: 0px;		
-}
 /* Show the dropdown menu
  * (use JS to add this class to the .dropdown-content 
  * container when the user clicks on the dropdown button)
  */
 .show {
 	display: block;
-}
-
-.side-nav li.heading {
-	font-family: 'Aileron', sans-serif !important;
-	font-size: 1.2rem !important;
-}
-.side-nav li a:not(.button) {
-	color: #0e4e74;
-}
-.side-nav li a:not(.button):hover {
-	color: #0e4e74;
 }
 
 video {
@@ -641,12 +616,6 @@ a {
 	color: #146fa6;
 }
 
-
-legend {
-	color: #0e4e74;
-	font-size: 1.5em;
-}
-
 .row {
 	max-width: 80rem;
 }
@@ -654,7 +623,6 @@ legend {
 .actions.columns {
 	margin-top: 1rem;
 	border-left: 5px solid #0e4e74;
-	padding-left: 15px;
 	padding: 32px 20px;
 }
 .actions.columns h3 {
@@ -880,15 +848,6 @@ pre {
 }
 .top-bar-section li:not(.has-form) a:not(.button):hover {
 	background-color: #0e4e74;
-	background: #0e4e74;
-}
-
-.side-nav li.heading {
-	color: #146fa6;
-	font-size: 0.875rem;
-	font-weight: normal;
-	text-transform: uppercase;
-	padding: 0.4375rem 0.875rem;
 }
 
 #actions-sidebar {
@@ -1101,8 +1060,6 @@ button {
     -ms-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;
     transition: all 0.3s ease;
-}
-#return-to-bottom {
 }
 #return-to-top {
 	margin-bottom: 7px;
