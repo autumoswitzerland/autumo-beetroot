@@ -111,53 +111,66 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
-	private static final String STR_EMAIL = "email";
-	private static final String STR_PASSWORD = "password";
-	private static final String URL_WEB_HTML_PREFIX = "web/html/";
-	private static final String MIME_TYPE_HTML = "text/html";
-	private static final String LANG_TAG_PREFIX = "{$l.";
+	
+	// Strings
+	private static final String STR_EMAIL			= "email";
+	private static final String STR_PASSWORD		= "password";
+	private static final String STR_DEFAULT			= "default";
+	private static final String URL_WEB_HTML_PREFIX	= "web/html/";
+	private static final String MIME_TYPE_HTML		= "text/html";
 
+	// Files
+	private static final String FILE_HTML_ACTION_INDEX	= "index.html";
+	private static final String FILE_HTML_ACTION_VIEW	= "view.html";
+	private static final String FILE_HTML_ACTION_EDIT	= "edit.html";
+	private static final String FILE_HTML_ACTION_ADD	= "add.html";
+	private static final String FILE_CFG_COLUMNS		= "/columns.cfg";
+	
 	// Precision HTML input types
 	protected static final List<String> PRECISION_INPUT_TYPES = Arrays.asList(STR_EMAIL, STR_PASSWORD, "search", "tel", "text", "url");
 	
 	
-	// link reference patterns 
-	private static final Pattern PATTERN_HREF = Pattern.compile("href=\\\"(?!#.*)(?!\\{.*)");
-	private static final Pattern PATTERN_SRC = Pattern.compile("src=\\\"(?!#.*)(?!\\{.*)");
-	private static final Pattern PATTERN_ACTION = Pattern.compile("action=\\\"(?!#.*)(?!\\{.*)");
-	private static final Pattern PATTERN_LOCATION = Pattern.compile("location='(?!#.*)(?!\\{.*)");
+	// Link reference patterns 
+	private static final Pattern PATTERN_HREF		= Pattern.compile("href=\\\"(?!#.*)(?!\\{.*)");
+	private static final Pattern PATTERN_SRC		= Pattern.compile("src=\\\"(?!#.*)(?!\\{.*)");
+	private static final Pattern PATTERN_ACTION		= Pattern.compile("action=\\\"(?!#.*)(?!\\{.*)");
+	private static final Pattern PATTERN_LOCATION	= Pattern.compile("location='(?!#.*)(?!\\{.*)");
 	
-	// Get text patterns
-	private static final Pattern PATTERN_ID = Pattern.compile("\\{\\$id\\}");
-	private static final Pattern PATTERN_DBID = Pattern.compile("\\{\\$dbid\\}");
-	private static final Pattern PATTERN_DISPLAY_NAME = Pattern.compile("\\{\\$displayName\\}");
-	private static final Pattern PATTERN_CSRF_TOKEN = Pattern.compile("\\{\\$csrfToken\\}");
-	private static final Pattern PATTERN_TITLE = Pattern.compile("\\{\\$title\\}");
-	private static final Pattern PATTERN_USER = Pattern.compile("\\{\\$user\\}");
-	private static final Pattern PATTERN_USERFULL = Pattern.compile("\\{\\$userfull\\}");
-	private static final Pattern PATTERN_LANG = Pattern.compile("\\{\\$lang\\}");
-	private static final Pattern PATTERN_THEME = Pattern.compile("\\{\\$theme\\}");
-	private static final Pattern PATTERN_ANTITHEME = Pattern.compile("\\{\\$antitheme\\}");
+	// Tags
+	private static final String TAG_PREFIX_LANG		= "{$l.";
+	private static final String TAG_IG 				= "{$id}";
+	private static final String TAG_DBID			= "{$dbid}";
+	private static final String TAG_DISPLAY_NAME	= "{$displayName}";
+	private static final String TAG_CSRF_TOKEN		= "{$csrfToken}";
+	private static final String TAG_TITLE			= "{$title}";
+	private static final String TAG_USER			= "{$user}";
+	private static final String TAG_USERFULL		= "{$userfull}";
+	private static final String TAG_LANG			= "{$lang}";
+	private static final String TAG_THEME			= "{$theme}";
+	private static final String TAG_ANTITHEME		= "{$antitheme}";
 	
-	// sub-resource patterns
-	private static final Pattern PATTERN_REDIRECT_INDEX = Pattern.compile("\\{\\$redirectIndex\\}");
-	private static final Pattern PATTERN_SEVERITY = Pattern.compile("\\{\\$severity\\}");
-	private static final Pattern PATTERN_MESSAGE = Pattern.compile("\\{\\$message\\}");
-	private static final Pattern PATTERN_USERINFO = Pattern.compile("\\{\\$userinfo\\}");
-	private static final Pattern PATTERN_USERLINK = Pattern.compile("\\{\\$userlink\\}");
-	private static final Pattern PATTERN_LANG_MENU_ENTRIES = Pattern.compile("\\{\\$lang_menu_entries\\}");
+	// Tags for sub-resource
+	private static final String TAG_REDIRECT_INDEX		= "{$redirectIndex}";
+	private static final String TAG_SEVERITY			= "{$severity}";
+	private static final String TAG_MESSAGE				= "{$message}";
+	private static final String TAG_USERINFO			= "{$userinfo}";
+	private static final String TAG_USERLINK			= "{$userlink}";
+	private static final String TAG_LANG_MENU_ENTRIES	= "{$lang_menu_entries}";
+	private static final String TAG_ADMIN_MENU			= "{$adminmenu}";
+	private static final String TAG_CB_LOGIC			= "{$checkBoxLogic}";
+	private static final String TAG_LOGIN_OR_LOGOUT		= "{$loginorlogout}";
 	
 	// Additional patterns
-	private static final Pattern PATTERN_SEMICOLON = Pattern.compile(";");
-	private static final Pattern PATTERN_COLON = Pattern.compile(":");
-	private static final Pattern PATTERN_RIGHT_CURLY_BRACKET = Pattern.compile("}");
-	private static final Pattern PATTERN_SPACE = Pattern.compile(" ");
+	private static final String CHAR_SEMICOLON				= ";";
+	private static final String CHAR_COLON					= ":";
+	private static final String CHAR_RIGHT_CURLY_BRACKET	= "}";
+	private static final String CHAR_SPACE					= " ";
 	
 	public static final int MSG_TYPE_INFO = 0;
 	public static final int MSG_TYPE_WARN = 1;
 	public static final int MSG_TYPE_ERR = -1;
 	
-	// link reference reverse patterns
+	// Link reference reverse patterns
 	private Pattern pattern_href_rev = null;
 	private Pattern pattern_scr_rev;
 	private Pattern pattern_action_rev;
@@ -168,8 +181,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	protected TreeMap<Integer, String> columns = null;
 	protected Map<String, String> initialValues = null;
-	protected String uniqueFields[] = null;
-	protected List<String> transientFields = new ArrayList<String>();
+	protected String[] uniqueFields = null;
+	protected List<String> transientFields = new ArrayList<>();
 	
 	protected Entity emptyBean = null;
 	
@@ -205,8 +218,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	@SuppressWarnings("unused")
 	private boolean measureDuration = false;
 	
-	private final Map<String, String> vars = new HashMap<String, String>();
-	private final Map<String, String> varsAll = new HashMap<String, String>();
+	private final Map<String, String> vars = new HashMap<>();
+	private final Map<String, String> varsAll = new HashMap<>();
 	
 	
 	/**
@@ -236,7 +249,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		ish = new IfSectionHandler(this);
 		
 		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
-		
 		if (servletName != null && servletName.length() != 0) {
 			insertServletNameInTemplateRefs = true;
 			pattern_href_rev = Pattern.compile("href=\\\"/"+servletName+"http");
@@ -251,33 +263,34 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		// Create an empty bean to access static information generated by PLANT if necessary, e.g. foreign bean classes
 		final Class<?> entityClass = this.getBeanClass();
-		if (entityClass != null)
+		if (entityClass != null) {
 			try {
 				this.emptyBean = Beans.createBean(entityClass);
 			} catch (Exception e) {
 				LOG.error("Couldn't create empty bean, this might be an error!", e);
 			}
+		}
 		
 		// nothing to do!
 		if (this.hasNoColumnsConfig())
 			return;
 		
-		this.columns = new TreeMap<Integer, String>();
-		this.initialValues = new HashMap<String, String>();
+		this.columns = new TreeMap<>();
+		this.initialValues = new HashMap<>();
 		
-		final List<String> fallBackList = new ArrayList<String>();
+		final List<String> fallBackList = new ArrayList<>();
 		
 		Session userSession = SessionManager.getInstance().findOrCreate(session);
 		String res = null;
 		
 		// Special case JSON: overwrite languages, not needed!
 		if (session.getUri().endsWith(Constants.JSON_EXT)) {
-			res = URL_WEB_HTML_PREFIX+entity+"/columns.cfg";
+			res = URL_WEB_HTML_PREFIX + entity + FILE_CFG_COLUMNS;
 		} else {
 			if (userSession == null)
-				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
+				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+FILE_CFG_COLUMNS, Web.normalizeUri(session.getUri()));
 			else
-				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+"/columns.cfg", userSession);
+				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+FILE_CFG_COLUMNS, userSession);
 		}
 		
     	FileCache fc = null;
@@ -291,7 +304,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			else
 				fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + res);
 		} catch (IOException e) {
-			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+			LOG.trace("File '{}' not found on server, looking further within archives...", filePath);
 			try {
 				fc = FileCacheManager.getInstance().findOrCreateByResource("/" + res);
 			} catch (IOException e1) {
@@ -301,12 +314,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		if (tryFurther) {
 			tryFurther = false;
-			LOG.trace("Resource '" + res + "' doesn't exist, trying with default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.trace("Resource '{}' doesn't exist, trying with default language '{}'!", res, LanguageManager.DEFAULT_LANG);
 			if (!session.getUri().endsWith(Constants.JSON_EXT)) {
 				if (userSession == null)
-					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
+					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+FILE_CFG_COLUMNS, Web.normalizeUri(session.getUri()));
 				else
-					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+"/columns.cfg", userSession);
+					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+FILE_CFG_COLUMNS, userSession);
 			}
 			try {
 				if (context == null)
@@ -314,7 +327,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				else
 					fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + res);
 			} catch (IOException e) {
-				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+				LOG.trace("File '{}'not found on server, looking further within archives...", filePath);
 				try {
 					fc = FileCacheManager.getInstance().findOrCreateByResource("/" + res);
 				} catch (IOException e1) {
@@ -324,19 +337,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				
 			if (tryFurther) {
 				tryFurther = false;
-				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
-				res = LanguageManager.getInstance().getResourceWithoutLang(URL_WEB_HTML_PREFIX+entity+"/columns.cfg", Web.normalizeUri(session.getUri()));
+				LOG.trace("Resource '{}' doesn't exist, trying with NO language!", res);
+				res = LanguageManager.getInstance().getResourceWithoutLang(URL_WEB_HTML_PREFIX+entity+FILE_CFG_COLUMNS, Web.normalizeUri(session.getUri()));
 				try {
 					if (context == null)
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 					else
 						fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + res);
 				} catch (IOException e) {
-					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+					LOG.trace("File '{}'not found on server, looking further within archives...", filePath);
 					try {
 						fc = FileCacheManager.getInstance().findOrCreateByResource("/" + res);
 					} catch (IOException e1) {
-						LOG.debug("Resource '"+res+"' doesn't exist, no columns used!");
+						LOG.debug("Resource '{}' doesn't exist, no columns used!", res);
 						return; // !
 					}
 				}			
@@ -351,17 +364,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (templateResource != null && templateResource.length() != 0) {
     		final String htmlAction = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
     		switch (htmlAction) {
-				case "index.html":
+				case FILE_HTML_ACTION_INDEX:
 					action = "index";
 					break;
-				case "view.html":
+				case FILE_HTML_ACTION_VIEW:
 					action = "view";
 					break;
-				case "add.html":
-					action = "add";
-					break;
-				case "edit.html":
+				case FILE_HTML_ACTION_EDIT:
 					action = "edit";
+					break;
+				case FILE_HTML_ACTION_ADD:
+					action = "add";
 					break;
 				default:
 					action = "null";
@@ -384,11 +397,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    
 		    LOOP: while ((line = br.readLine()) != null) {
 		    	
-		    	//line = line.replaceAll("\n", "");
 		    	final String cfgLine = line.trim();
 		    	if (cfgLine.length() != 0 && cfgLine.indexOf("=") != -1) {
 		    		
-		    		String configPair[] = cfgLine.split("=");
+		    		String[] configPair = cfgLine.split("=");
 		    		configPair[0] = configPair[0].trim();
 		    		if (configPair.length > 1)
 		    			configPair[1] = configPair[1].trim();
@@ -404,7 +416,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		if (configPair[0].equals("unique")) {
 		    			if (configPair[1] == null || configPair[1].equals(""))
 			    			continue LOOP;
-		    			configPair[1].replace(" ", "");
+		    			configPair[1] = configPair[1].replace(" ", "");
 		    			uniqueFields = configPair[1].split(",");
 		    			continue LOOP;
 		    		}
@@ -412,7 +424,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		if (configPair[0].equals("transient")) {
 		    			if (configPair[1] == null || configPair[1].equals(""))
 			    			continue LOOP;
-		    			configPair[1].replace(" ", "");
+		    			configPair[1] = configPair[1].replace(" ", "");
 		    			transientFields =  Arrays.asList(configPair[1].split(","));
 		    			continue LOOP;
 		    		}
@@ -421,65 +433,46 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		// This makes sense if one doesn't need to distinguish between
 		    		// list and single records data field names aka GUI column names.
 		    		if (templateResource != null && templateResource.length() != 0) {
-		    			
 			    		final String htmlAction = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
 			    		switch (htmlAction) {
-
 			    			case "index.json":
-			    				
 				    			if (configPair[0].startsWith("list_json.")) {
-				    				
 				    				newCfgLine = configPair[0].substring(10, configPair[0].length()) + "=" + configPair[1];
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
-				    			
-			    			case "index.html":
-			    				
+			    			case FILE_HTML_ACTION_INDEX:
 				    			if (configPair[0].startsWith("list.")) {
-				    				
 				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + configPair[1];
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
-				    			
-			    			case "view.html":
-					    		
+			    			case FILE_HTML_ACTION_VIEW:
 				    			if (configPair[0].startsWith("view.")) {
-				    				
 				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + configPair[1];
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
-				    			
-			    			case "edit.html":
-				    			
+			    			case FILE_HTML_ACTION_EDIT:
 				    			if (configPair[0].startsWith("edit.")) {
-				    				
 				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + configPair[1];
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
-				    			
-			    			case "add.html":
-			    		
+			    			case FILE_HTML_ACTION_ADD:
 				    			if (configPair[0].startsWith("add.")) {
-				    				
 				    				newCfgLine = configPair[0].substring(4, configPair[0].length()) + "=" + configPair[1];
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
-				    		    	
 				    			} else if (configPair[0].startsWith("init.")) { // initial values set in add template :)
-				    				
 				    		    	initialValues.put(configPair[0].substring(5, configPair[0].length()), configPair[1]);
 				    		    	added = true;
 				    			}
 				    			break;
-				    			
 			    			default:
 			    		    	columns.put(Integer.valueOf(++l), cfgLine.trim());
 			    		    	added = true;
@@ -496,12 +489,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    if (uniqueFields == null)
 		    	uniqueFields = new String[] {};
 		    if (transientFields == null)
-		    	transientFields = new ArrayList<String>();
+		    	transientFields = new ArrayList<>();
 		    
 		    // no prefixes have been used -> column config is valid for all handlers! 
 		    if (columns.size() == 0) {
 		    	for (Iterator<String> iterator = fallBackList.iterator(); iterator.hasNext();) {
-					final String newCfgLine = (String) iterator.next();
+					final String newCfgLine = iterator.next();
     		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				}
 		    }
@@ -512,7 +505,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					+ "Create this file and add such a line for every column you want to show:\n"
 					+ "columnName=Name of Column on Web Page", e);
 		} finally {
-			
 			if (br != null) {
 				try {
 					br.close();
@@ -626,11 +618,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public String[] getColumn(int idx) {
 		
 		final String cfgLine = columns.get(Integer.valueOf(idx));
-		final String params[] = cfgLine.split("=");
+		final String[] params = cfgLine.split("=");
 		final String colName = params[0].trim();
 		String guiColName = params[1];
 		// We actually allow HTML here!
-		//guiColName = Web.escapeHtmlReserved(guiColName);
 		return new String[] {colName, guiColName};
 	}
 	
@@ -705,7 +696,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		LOOP: for (int i = 1; i <= columns.size(); i++) {
 			
-			final String col[] = getColumn(i);
+			final String[] col = getColumn(i);
 
 			if (transientFields.contains(col[0]))
 				continue LOOP;
@@ -902,28 +893,19 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @throws Exception exception
 	 */
 	public HandlerResponse uniqueTest(BeetRootHTTPSession session, String preSql, String operation) throws Exception {
-		
 		final Session userSession = session.getUserSession();
-		
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet set = null;
-		
 		try {
-
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			
 			// Unique fields test!
 			if (uniqueFields.length != 0) {
-				
 				String uniqueText = "";
 				boolean foundOneAtLeast = false;
 				final List<String> foundPairs = new ArrayList<String>();
-				
 				for (int i = 0; i < uniqueFields.length; i++) {
-					
 					String stmtStr = preSql;
-				
 					String val = session.getParms().get(uniqueFields[i]);
 					stmtStr += uniqueFields[i] + "='"+val+"'";
 					//NO SEMICOLON
@@ -931,22 +913,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					// we only need the result set for the column meta data
 					stmt.setFetchSize(1);
 					set = stmt.executeQuery(stmtStr);
-					
 					boolean found = set.next();
-					
 					set.close();
 					stmt.close();
-					
 					if (found) {
 						foundOneAtLeast = true;
 						foundPairs.add(uniqueFields[i] + "='"+val+"'");
 					}
 				}
-				
 				if (foundOneAtLeast) {
-					
 					conn.close();
-	
 					int i = 1;
 					for (Iterator<String> iterator = foundPairs.iterator(); iterator.hasNext();) {
 						String fp = (String) iterator.next();
@@ -956,13 +932,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							uniqueText +=  fp+"', ";
 						i++;
 					}
-					
 					// We have at least one with the same values!
-					LOG.info("Found "+getEntity()+" with same unique value(s) " + uniqueText + "! Not "+operation+" the record.");
+					LOG.info("Found "+getEntity()+" with same unique value(s) {}! Not {} the record.", uniqueText, operation);
 					return new HandlerResponse(HandlerResponse.STATE_NOT_OK, LanguageManager.getInstance().translate("base.error.handler.unique", userSession, getEntity(), uniqueText));
 				}
 			}
-		
 		} finally {
 			if (set != null)
 				set.close();
@@ -971,7 +945,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (conn != null)
 				conn.close();
 		}
-		
 		return null; // ok !
 	}
 	
@@ -985,10 +958,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String roles = "";
 		String permissions = "";
 		
-		final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(currentUserId));
+		final List<Model> usersRoles = Model.where(UserRole.class, "user_id = ?", Integer.valueOf(currentUserId));
 		for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
 			final UserRole userRole = (UserRole) iterator.next();
-			final Role role = (Role) Role.read(Role.class, userRole.getRoleId());
+			final Role role = (Role) Model.read(Role.class, userRole.getRoleId());
 			roles += role.getName()+",";
 			permissions += role.getPermissions()+",";
 		}
@@ -1037,24 +1010,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				parseTemplateData(sb, "{$data}");
 				parsePaginator(sb, "{$paginator}", session);
 			}
-			
 		} catch (FileNotFoundException e) {
-			
 			final String err = "Web resource '" + currRessource + "' not found!";
 			LOG.error(err, e);
 			return "NOTFOUND:" + currRessource;
-			
 		} catch (Exception ex) {
-			
 			final String err = "Web resource '" + currRessource + "' parsing error!";
 			LOG.error(err, ex);
 			return "PARERROR:" + currRessource + ":" + ex.getMessage();
-			
 		} finally {
 			if (sc!= null)
 				sc.close();
 		}
-		
 		return sb.toString();			
 	}
 	
@@ -1113,220 +1080,175 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// process templates
 		Scanner sc = null;
 		try {
-			
 			sc = getNewScanner(currRessource);
-
 			LOOP: while (sc.hasNextLine()) {
-				
 				String text = sc.nextLine();
-				
 				// Remove lines?
 				if(ish.continueRemoval(text, userSession, "overall"))
 					continue LOOP;
 				
-				// layout templates and main template
+				
+				// 0. Layout templates and main template
+				
 				if (text.contains("{#head}")) {
-					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/head.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#head}", session, origId);
-					
 				} else if (text.contains("{#header}")) {
-					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/header.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#header}", session, origId);
-
 				} else if (text.contains("{#langmenu}")) {
-					
 					if (this.showMenu(userSession)) {
-						
 						if (LanguageManager.getInstance().getConfiguredLanguages().length > 1) {
-						
 							currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/lang_menu.html", userSession);
 							text = parseAndGetSubResource(text, currRessource, "{#langmenu}", session, origId);
-							
 						} else {
 							text = "";
 						}
-						
 					} else {
 						text = "";
 					}
-
 				} else if (text.contains("{#menu}")) {
-					
 					if (this.showMenu(userSession)) {
-						
 						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/menu.html", userSession);
 						text = parseAndGetSubResource(text, currRessource, "{#menu}", session, origId);
 						
 					} else {
 						text = "";
 					}
-
 				} else if (text.contains("{#message}")) {
-					
 					if (this.hasAnyMessage()) {
 						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/message.html", userSession);
 						text = parseAndGetSubResource(text, currRessource, "{#message}", session, origId);
 					} else {
 						text = "";
 					}
-
 				} else if (text.contains("{#template}")) {
-				
 					try {
-						
 						this.createTemplateContent(userSession, session);
-						
-						if (templateResource.endsWith("index.html")) {
+						if (templateResource.endsWith(FILE_HTML_ACTION_INDEX)) {
 							parseTemplateHead(buffer, "{$head}");
 							parsePaginator(buffer, "{$paginator}", session); // if any, only index!
 						}
 						if (templateResource.endsWith("search.html")) {
 							parseTemplateHead(buffer, "{$head}");
 						}
-						
 						parseTemplateData(buffer, "{$data}");
-						
 						text = text.replace("{#template}", buffer.toString());
-
 						// Provide a link to current logged in user for every template!
-						if (text.contains("{$userlink}")) {
+						if (text.contains(TAG_USERLINK)) {
 							final Integer uid = userSession.getUserId();
 							if (uid != null) {
 								String usid = userSession.getModifyId(uid.intValue(), "users");
 								if (usid == null)
 									userSession.createIdPair(uid, "users");
-								text = PATTERN_USERLINK.matcher(text).replaceFirst(
-										"/"+lang+"/users/view?id=" + userSession.getModifyId(uid, "users"));
+								text = text.replace(TAG_USERLINK, "/"+lang+"/users/view?id=" + userSession.getModifyId(uid, "users")); 
 							} else {
-								text = PATTERN_USERLINK.matcher(text).replaceFirst("#");
+								text = text.replace(TAG_USERLINK, "#");
 							}
 						}
-						
-						if (text.contains("{$csrfToken}")) {
-							
-							if (userSession != null) {
-								
-								final String formCsrfToken = userSession.getFormCsrfToken();
-								
-								if (formCsrfToken != null && formCsrfToken.length() != 0)
-									text = PATTERN_CSRF_TOKEN.matcher(text).replaceAll(formCsrfToken);
-							}
+						if (text.contains(TAG_CSRF_TOKEN) && userSession != null) {
+							final String formCsrfToken = userSession.getFormCsrfToken();
+							if (formCsrfToken != null && formCsrfToken.length() != 0)
+								text = text.replace(TAG_CSRF_TOKEN, formCsrfToken);
 						}
-						
-						if (templateResource.endsWith("view.html") || 
-							templateResource.endsWith("edit.html") || 
-							templateResource.endsWith("add.html")) {
-							
-							// here the id's are written !
-							
+						if (templateResource.endsWith(FILE_HTML_ACTION_VIEW) || 
+							templateResource.endsWith(FILE_HTML_ACTION_EDIT) || 
+							templateResource.endsWith(FILE_HTML_ACTION_ADD)) {
+							// Here, the id's are written !
 							// obfuscate it!
 							String modifyID = userSession.getModifyId(origId, getEntity());
 							if (modifyID == null) {
 								userSession.createIdPair(origId, getEntity());
 							}
-							text = PATTERN_ID.matcher(text).replaceAll("" + modifyID);
-							text = PATTERN_DBID.matcher(text).replaceAll("" + origId);
-
+							text = text.replace(TAG_IG, "" + modifyID);
+							text = text.replace(TAG_DBID, "" + origId);
 							if (displayNameValue != null)
-								text = PATTERN_DISPLAY_NAME.matcher(text).replaceAll(displayNameValue);
+								text = text.replace(TAG_DISPLAY_NAME, displayNameValue);
 							else
-								text = PATTERN_DISPLAY_NAME.matcher(text).replaceAll(""+origId);
+								text = text.replace(TAG_DISPLAY_NAME, "" + origId);
 						}
-						
 						// template specific variables
 						this.render(session);
 						this.renderAll(session);
 						final String res = this.replaceTemplateVariables(text, session);
 						if (res != null && res.length() != 0)
 							text = res;
-						
 						buffer.delete(0, buffer.length()); // buffer consumed!						
-						
 					} catch (Exception e) {
-						
 						final String err = "Error Parsing Template! - Exception:\n"+e.getMessage();
 						LOG.error(err, e);
 						return "PARERROR:" + currRessource + ":" + e.getMessage();
 					}
-					
 				} else if (text.contains("{#footer}")) {
-					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/footer.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#footer}", session, origId);
-					
 				} else if (text.contains("{#script}")) {
-					
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/script.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#script}", session, origId);
-					
 				}
-					
 				
-				// General variables!
+				
+				// 1. General variables!
 				
 				// title
-				if (text.contains("{$title}"))
-					text = PATTERN_TITLE.matcher(text).replaceAll(this.getTitle(userSession));
-
+				if (text.contains(TAG_TITLE))
+					text = text.replace(TAG_TITLE, this.getTitle(userSession));
 				// user
-				if (user != null && text.contains("{$user}")) {
-					text = PATTERN_USER.matcher(text).replaceAll(user);
+				if (user != null && text.contains(TAG_USER)) {
+					text = text.replace(TAG_USER, user);
 				}
-
 				// user full
-				if (userfull != null && text.contains("{$userfull}")) {
-					text = PATTERN_USERFULL.matcher(text).replaceAll(userfull);
+				if (userfull != null && text.contains(TAG_USERFULL)) {
+					text = text.replace(TAG_USERFULL, userfull);
 				}
-				
 				// language
-				if (text.contains("{$lang}")) {
-					text = PATTERN_LANG.matcher(text).replaceAll(lang);
+				if (text.contains(TAG_LANG)) {
+					text = text.replace(TAG_LANG, lang);
 				}				
 				
 				
-				// User settings variables!
+				// 2. User settings variables!
 				
 				// theme
-				if (text.contains("{$theme}")) {
+				if (text.contains(TAG_THEME)) {
 					final String theme = userSession.getUserSetting("theme");
 					if (theme == null)
-						text = PATTERN_THEME.matcher(text).replaceAll("dark");
+						text = text.replace(TAG_THEME, "dark");
 					else
-						text = PATTERN_THEME.matcher(text).replaceAll(theme);
+						text = text.replace(TAG_THEME, theme);
 				}				
-				if (text.contains("{$antitheme}")) {
+				if (text.contains(TAG_ANTITHEME)) {
 					final String theme = userSession.getUserSetting("theme");
 					if (theme == null)
-						text = PATTERN_ANTITHEME.matcher(text).replaceAll("default");
+						text = text.replace(TAG_ANTITHEME, STR_DEFAULT);
 					else
-						if (theme.equals("default"))
-							text = PATTERN_ANTITHEME.matcher(text).replaceAll("dark");
+						if (theme.equals(STR_DEFAULT))
+							text = text.replace(TAG_ANTITHEME, "dark");
 						else
-							text = PATTERN_ANTITHEME.matcher(text).replaceAll("default");
+							text = text.replace(TAG_ANTITHEME, STR_DEFAULT);
 				}
 				
 				
-				// replace further overall variables!
+				// 3. Replace further overall variables!
 				this.renderAll(session);
 				String resRepl = this.replaceVariables(text, session);
 				if (resRepl != null && resRepl.length() > 0)
 					text = resRepl;
 
-				// Replace template language translations if any.
-				// It is important that this is last, possible value 
-				// place-holders should be replaced before translation
-				// takes them into account!
-				// E.g. -> {$l.transvar,{$var1},{$var1}}
+				
+				// 4. Replace template language translations if any.
+				//    It is important that this is last, possible value 
+				//    place-holders should be replaced before translation
+				//    takes them into account!
+				//    E.g. -> {$l.transvar,{$var1},{$var1}}
 				text = this.replaceLanguageVariables(text, session);
 				
 				
-				// Add servlet URL part.
-				// - href="
-				// - src="
-				// - action="
-				// - location='
+				// 5. Add servlet URL part.
+				//    - href="
+				//    - src="
+				//    - action="
+				//    - location='
 				if (insertServletNameInTemplateRefs) {
 					// repeat only the following part:
 					text = PATTERN_HREF.matcher(text).replaceAll("href=\"/"+servletName);
@@ -1347,22 +1269,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 		
 		} catch (FileNotFoundException e) {
-			
 			final String err = "Web resource '" + currRessource + "' not found!";
 			LOG.error(err, e);
 			return "NOTFOUND:" + currRessource;
-			
 		} catch (Exception ex) {
-			
 			final String err = "Web resource '" + currRessource + "' parsing error!";
 			LOG.error(err, ex);
 			return "PARERROR:" + currRessource + ":" + ex.getMessage();
-			
 		} finally {
 			if (sc!= null)
 				sc.close();
 		}
-		
 		return sb.toString();		
 	}
 
@@ -1484,15 +1401,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session, int origId) throws FileNotFoundException {
-		
 		final Session userSession = session.getUserSession();
 		final StringBuilder sb = new StringBuilder();
-		
 		String lang = LanguageManager.getInstance().getLanguage(userSession);
 		String currRessource = LanguageManager.getInstance().getBlockResource(resource, userSession);		
-
 		Scanner sc = getNewScanner(currRessource);
-		
 		LOOP: while (sc.hasNextLine()) {
 			
 			String text = sc.nextLine();
@@ -1502,98 +1415,76 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				continue LOOP;
 
 			switch (type) {
-			
 				case "{#head}":
 					// title ->DONE in overall method
 					break;
-
 				case "{#message}":
-
-					if (text.contains("{$severity}")) {
-						
+					if (text.contains(TAG_SEVERITY)) {
 						if (this.hasSuccessMessage())
-							text = PATTERN_SEVERITY.matcher(text).replaceFirst("success");
+							text = text.replace(TAG_SEVERITY, "success");
 						else if (this.hasWarningMessage())
-							text = PATTERN_SEVERITY.matcher(text).replaceFirst("warning");
+							text = text.replace(TAG_SEVERITY, "warning");
 						else if (this.hasErrorMessage())
-							text = PATTERN_SEVERITY.matcher(text).replaceFirst("error");
+							text = text.replace(TAG_SEVERITY, "error");
 					}
-					
-					if (text.contains("{$message}")) {
+					if (text.contains(TAG_MESSAGE)) {
 						if (this.hasSuccessMessage())
-							text = PATTERN_MESSAGE.matcher(text).replaceFirst(this.successMessage);
+							text = text.replace(TAG_MESSAGE, this.successMessage);
 						else if (this.hasWarningMessage())
-							text = PATTERN_MESSAGE.matcher(text).replaceFirst(this.warningMessage);
+							text = text.replace(TAG_MESSAGE, this.warningMessage);
 						else if (this.hasErrorMessage())
-							text = PATTERN_MESSAGE.matcher(text).replaceFirst(this.errorMessage);
-						
+							text = text.replace(TAG_MESSAGE, this.errorMessage);
 						this.successMessage = null;
 						this.warningMessage = null;
 						this.errorMessage = null;
 					}
-					
 					break;
-					
 				case "{#footer}":
-
 					if (text.contains("{$userinfo}")) {
-						
 						final Integer uid = userSession.getUserId();
 						if (uid != null) {
-							
 							String usid = userSession.getModifyId(uid.intValue(), "users");
 							if (usid == null) {
 								userSession.createIdPair(uid, "users");
 							}
-
 							String user = userSession.getUserFullNameOrUserName();
 							if (user != null && user.indexOf("$") > 0)
 								user = user.replace("$", "\\$");
-							text = PATTERN_USERINFO.matcher(text).replaceFirst(
+							text = text.replace(TAG_USERINFO, 
 									LanguageManager.getInstance().translate("base.name.user", userSession)
 									+ ": <a class=\"hideprint\" href=\"/"+lang+"/users/view?id="
 									+ userSession.getModifyId(uid, "users")+"\" rel=\"nofollow\">" 
 									+ user + "</a> | ");
 						} else {
-							
-							text = PATTERN_USERINFO.matcher(text).replaceFirst(" ");
+							text = text.replace(TAG_USERINFO," ");
 						}
 					}
-					
 					break;
-				
 				case "{#script}":
-					
-					if (text.contains("{$redirectIndex}")) {
-						
+					if (text.contains(TAG_REDIRECT_INDEX)) {
 						//URL rewrite
 						if (redirectedMarker) {
 							if (insertServletNameInTemplateRefs)
-								text = PATTERN_REDIRECT_INDEX.matcher(text).replaceFirst("window.history.pushState({}, document.title, \"/"+servletName+"/"+lang+"/"+getEntity()+"/index\");");
+								text = text.replace(TAG_REDIRECT_INDEX, "window.history.pushState({}, document.title, \"/"+servletName+"/"+lang+"/"+getEntity()+"/index\");");
 							else
-								text = PATTERN_REDIRECT_INDEX.matcher(text).replaceFirst("window.history.pushState({}, document.title, \"/"+lang+"/"+getEntity()+"/index\");");
+								text = text.replace(TAG_REDIRECT_INDEX, "window.history.pushState({}, document.title, \"/"+lang+"/"+getEntity()+"/index\");");
 						} else {
-							text = PATTERN_REDIRECT_INDEX.matcher(text).replaceFirst(" ");
+							text = text.replace(TAG_REDIRECT_INDEX, " ");
 						}
 						redirectedMarker = false;
 					} 
-					
-					if (text.contains("{$checkBoxLogic}")) {
+					if (text.contains(TAG_CB_LOGIC)) {
 						
 						if (checkBoxLogic.length() > 0) {
-							text = text.replace("{$checkBoxLogic}", checkBoxLogic.toString());
+							text = text.replace(TAG_CB_LOGIC, checkBoxLogic.toString());
 						} else {
-							text = text.replace("{$checkBoxLogic}", " ");
+							text = text.replace(TAG_CB_LOGIC, " ");
 						}
 						checkBoxLogic = new StringBuilder();
 					}
-					
 					break;
-					
 				case "{#langmenu}":
-					
-					if (text.contains("{$lang_menu_entries}")) {
-						
+					if (text.contains(TAG_LANG_MENU_ENTRIES)) {
 						// We determine the right route according to the web resource path -> generic!
 						// We do not language re-route with post or put retry post data, this would be a safety issue!
 						String route = "home";
@@ -1616,10 +1507,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 							final String modifyID = userSession.getModifyId(origId, getEntity());
 							route = route + "?id=" + modifyID;
 						}
-						
 						String entries = "";
 						final String langs[] = LanguageManager.getInstance().getConfiguredLanguages();
-						
 						for (int i = 0; i < langs.length; i++) {
 							if (i+1 == langs.length) {
 								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
@@ -1628,57 +1517,38 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 								entries += "<hr class=\"menusep\">\n";
 							}
 						}
-						text = PATTERN_LANG_MENU_ENTRIES.matcher(text).replaceFirst(entries);
+						text = text.replace(TAG_LANG_MENU_ENTRIES, entries);
 					} else {
-						text = PATTERN_LANG_MENU_ENTRIES.matcher(text).replaceFirst(" ");
+						text = text.replace(TAG_LANG_MENU_ENTRIES, " ");
 					}
-					
 					break;
-					
 				case "{#menu}":
-					
 					final List<String> userroles = userSession.getUserRoles();
-
-					if (text.contains("{$adminmenu}")) {
-						
+					if (text.contains(TAG_ADMIN_MENU)) {
 						if (userroles.contains("Administrator")) {
 							String adminMenu = parseAndGetSubResource(text, "web/html/:lang/blocks/adminmenu.html", "{$adminmenu}", session, origId);
-							text = text.replace("{$adminmenu}", adminMenu);
-							//text = PATTERN_ADMIN_MENU.matcher(text).replaceFirst(adminMenu);
+							text = text.replace(TAG_ADMIN_MENU, adminMenu);
 						}
 						else
-							text = text.replace("{$adminmenu}", " ");
-							//text = PATTERN_ADMIN_MENU.matcher(text).replaceFirst(" ");
+							text = text.replace(TAG_ADMIN_MENU, " ");
 					}
-					
 					// Show login or logout?
-					if (text.contains("{$loginorlogout}")) {
+					if (text.contains(TAG_LOGIN_OR_LOGOUT)) {
 						if (userroles.size() > 0)
-							text = text.replace("{$loginorlogout}", "<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
-							//text = PATTERN_LOGIN_OR_LOGOUT.matcher(text).replaceFirst("<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
+							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
 						else
-							text = text.replace("{$loginorlogout}", "<a href=\"/{$lang}/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
-							//text = PATTERN_LOGIN_OR_LOGOUT.matcher(text).replaceFirst("<a href=\"/{$lang}/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
+							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/{$lang}/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
 					}
-					
 					break;
-					
-				
 				case "{#adminmenu}":
 					// we need to to nada, just all liens should be added, that's all!
 					break;
-				
-					
 				default:
 					break;
 			}
-			
 			sb.append(text + "\n");
 		}	
-
 		sc.close();
-		
-		// PATTERN ?
 		return origText.replace(type, sb.toString());
 	}
 
@@ -1742,29 +1612,26 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @throws FileNotFoundException if file is not found
 	 */
 	protected Scanner getNewScanner(String resource) throws FileNotFoundException {
-		
     	String filePath = null;
     	FileCache fc = null;
     	boolean tryFurther = false;
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-		
 		try {
 			if (context == null )
 				fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
 			else
 				fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + resource);
 		} catch (IOException e) {
-			LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+			LOG.trace("File '{}'not found on server, looking further within archives...", filePath);
 			try {
 				fc = FileCacheManager.getInstance().findOrCreateByResource("/" + resource);
 			} catch (IOException e1) {
 				tryFurther = true;
 			}
 		}
-		
 		if (tryFurther) {
 			tryFurther = false;
-			LOG.trace("Resource '"+resource+"' doesn't exist, trying default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.trace("Resource '{}' doesn't exist, trying default language '{}'!", resource, LanguageManager.DEFAULT_LANG);
 			resource = LanguageManager.getInstance().getResourceByLang(this.getResource(), LanguageManager.DEFAULT_LANG);
 			try {
 				if (context == null )
@@ -1772,17 +1639,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				else
 					fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + resource);
 			} catch (IOException e) {
-				LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+				LOG.trace("File '{}'not found on server, looking further within archives...", filePath);
 				try {
 					fc = FileCacheManager.getInstance().findOrCreateByResource("/" + resource);
 				} catch (IOException e1) {
 					tryFurther = true;
 				}
 			}
-			
 			if (tryFurther) {
 				tryFurther = false;
-				LOG.trace("Resource '"+resource+"' doesn't exist, trying NO language!");
+				LOG.trace("Resource '{}' doesn't exist, trying NO language!", resource);
 				resource = LanguageManager.getInstance().getResourceWithoutLang(this.getResource(), LanguageManager.DEFAULT_LANG);
 				try {
 					if (context == null )
@@ -1790,25 +1656,22 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					else
 						fc = FileCacheManager.getInstance().findOrCreate(Web.getRealPath(context) + resource);
 				} catch (IOException e) {
-					LOG.trace("File '" + filePath + "'not found on server, looking further within archives...");
+					LOG.trace("File '{}'not found on server, looking further within archives...", filePath);
 					try {
 						fc = FileCacheManager.getInstance().findOrCreateByResource("/" + resource);
 					} catch (IOException e1) {
-						LOG.error("No resource has been found for '"+filePath+"' after trying to load it differently! "
-								+ "This will lead to an exception and you quite surely missed to add this resource to you app.");
+						LOG.error("No resource has been found for '{}' after trying to load it differently! "
+								+ "This will lead to an exception and you quite surely missed to add this resource to you app.", filePath);
 						tryFurther = false;
 					}
 				}				
 			}			
 		}		
-		
 		try {
-			
 			if (fc.isCached())
 				return new Scanner(fc.getTextData());
 			else 
 				return new Scanner(fc.getData());
-			
 		} catch (IOException e) {
 			throw new FileNotFoundException("File/resource '"+fc.getFullPath()+"' not found! Exception: " + e.getMessage());
 		}				
@@ -1892,29 +1755,24 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		final Session userSession = SessionManager.getInstance().findOrCreate(currentSession);
 		//cookies.set("__SESSION_ID__", cookies.read("__SESSION_ID__"), 1);
 
-		
 		try {
-		
 			// access control
 			if (!this.hasAccess(userSession)) {
 				return serveDefaultRedirectHandler(
-										(BeetRootHTTPSession)session, 
-										LanguageManager.getInstance().translate("base.error.noaccess.msg", userSession), 
-										MSG_TYPE_ERR
-									);
+								(BeetRootHTTPSession)session, 
+								LanguageManager.getInstance().translate("base.error.noaccess.msg", userSession), 
+								MSG_TYPE_ERR
+							);
 			}
 
 			
 			final Method method = session.getMethod();
 			int origId = -1;
-			
 			final String modifyID = session.getParms().get("id");
 			if (modifyID != null && modifyID.length() != 0) {
-				
 				// translate ID again
 				origId = userSession.getOrigId(modifyID, getEntity());
 				if (origId == -1) {
-	
 					// NOTICE someone requested an id, but the form is invalid (session invalidation somehow)
 					// -> we should bring him back to default page or do nothing!
 					final String err = "Security Warning - Couldn't translate the posted record ID while executing '"+getResource()+"! Session might have been invalidated.";
@@ -1923,7 +1781,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					return refresh((BeetRootHTTPSession)session, LanguageManager.getInstance().translate("base.info.session.inv", userSession));
 				}
 			}
-			
 			
 			// Set current DB id of entity, it is -1 for index.html pages or if it is a new entity!
 			this.setCurrentEntityDbId(origId);
@@ -1978,56 +1835,42 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 						// add with id -> save
 						HandlerResponse response = this.saveData((BeetRootHTTPSession) session);
-						
 						if (response == null || (response.getStatus() == HandlerResponse.STATE_OK && response.getType() == HandlerResponse.TYPE_FORM)) { // Ok in this case
-							
 							String m = LanguageManager.getInstance().translate("base.info.saved", userSession, getUpperCaseEntity());
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
-
 						if (response.getStatus() == HandlerResponse.STATE_OK && response.getType() == HandlerResponse.TYPE_FILE_UPLOAD) {
-							
 							String m = response.getMessage();
 							if (m == null)
 								m = LanguageManager.getInstance().translate("base.info.stored0", userSession, getUpperCaseEntity());
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
-						
 						if (response.getStatus() == HandlerResponse.STATE_NOT_OK) {
-
 							Map<String, String> params = session.getParms();
 							params.put("_method", "RETRY");
 							// NOTICE: special case, don't use this method anywhere else, HTTP method isn't changed here!
 							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage(), MSG_TYPE_ERR);
 						}
-
 						
 					// ======== 4. Main HTTP: PUT (update) ==========
 						
 					} else if (putOrPostMethod.equals("PUT")) {  // and password reset
-						
+
 						// edit with id -> update
 						HandlerResponse response = this.updateData((BeetRootHTTPSession)session, origId);
-						
 						if (change)
 							return serveHandler(session, new LogoutHandler(), response);
 						if (reset)
 							return serveHandler(session, new LogoutHandler(), response);
-
 						if (response == null || response.getStatus() == HandlerResponse.STATE_OK) {// Ok in this case
-							
 							String m = LanguageManager.getInstance().translate("base.info.updated", userSession, getUpperCaseEntity());
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
-						
 						if (response.getStatus() == HandlerResponse.STATE_NOT_OK) {
-
 							Map<String, String> params = session.getParms();
 							params.put("_method", "RETRY");
-							
 							return serveHandler((BeetRootHTTPSession)session, getEntity(), this.getClass(), params, response.getMessage(), MSG_TYPE_ERR);
 						}
-
 						
 					// ======== 5. Main HTTP: POST (delete) ========
 						
@@ -2035,22 +1878,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						
 						// delete with id
 						HandlerResponse response = this.deleteData((BeetRootHTTPSession)session, origId);
-
 						if (response == null || response.getStatus() == HandlerResponse.STATE_OK) { // Ok in this case
-							
-							//String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, origId, getUpperCaseEntity());
 							String m = LanguageManager.getInstance().translate("base.info.deleted", userSession, getUpperCaseEntity());
-							
-							// if (measureDuration) this.processTime();
+							// Measure-point
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
 						}
-						
 						if (response.getStatus() == HandlerResponse.STATE_NOT_OK) {
 							return serveRedirectHandler((BeetRootHTTPSession)session, response.getMessage(), MSG_TYPE_ERR);
 						}
 					}
 					
-					// Soooo important !!!
+					// Reset original ID, important!
 					if (!retryCall && !requestCall) // special cases that need the right id in the readData-method!
 						origId = -1;
 				}
@@ -2059,13 +1897,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// ======== B. HTTP Get (read) ========
 			
-			// read data
+			// Read data
 			final HandlerResponse response = this.readData((BeetRootHTTPSession) session, origId);
 			
 			
 			// ======== C. Handler Response Handling ======
 			
-			// change redirect
+			// Change redirect
 			if (session.getUri().endsWith("/users/change") && response != null)
 				return serveHandler(session, new LogoutHandler(), response);
 
@@ -2097,15 +1935,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// Download handling
 			if (response != null && response.getType() == HandlerResponse.TYPE_FILE_DOWNLOAD) {
-				
 				final File file = response.getDownloadFile();
 				final String mime = response.getDownloadFileMimeType();
-				
-				new MimeType(mime);
-				
+				new MimeType(mime); // throws an exception
 				if (!file.exists())
 					throw new FileNotFoundException("File '"+file.getName()+"' doesn't exist (Download)!");
-		        
 		        final Response downloadResponse = Response.newFixedLengthResponse(getStatus(), mime, new FileInputStream(file), file.length());
 		        downloadResponse.addHeader("Content-disposition", "attachment; filename=" +file.getName());
 				return downloadResponse;
@@ -2115,10 +1949,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// ======== D. Get HTML: Parse templates ======
 			
 			String getHtml = getText((BeetRootHTTPSession)session, origId);
-			
 			// Template error !
 			if (getHtml.startsWith("NOTFOUND:")) {
-				
 				String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
 				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, getHtml.split(":")[1]);
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
@@ -2135,7 +1967,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// ======== E. Create final response ==========
 			
-			//if (measureDuration) this.processTime();
+			// Measure point
 			
 			final Response theResponse = Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
 			
@@ -2153,16 +1985,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	        return theResponse;
         
 		} catch (Exception e) {
-		
 			// The framework user might have messed up things!
 			String res = getResource();
 			if (res == null)
 				res = session.getUri();
 			String err1 = this.getTemplateEngineErrorTitle(userSession, res); 
 			String err2 = err1 + "<br><br>" + getTemplateEngineErrorMessage(userSession, res);
-			
 			LOG.error(err1, e);
-			
 			final String custExInfo[] = this.getCustomizedExceptionInformation(userSession);
 			if (custExInfo != null) {
 				if (custExInfo.length == 2) {
@@ -2170,18 +1999,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					err2 = custExInfo[1];
 				} else {
 					LOG.warn("Your customized exception handler information needs 2 arguments: "
-							+"[title][message], but it has '"+custExInfo.length+"'; "
-							+"correct the return value of 'getCustomizedExceptionInformation' in your code!");	
+							+"[title][message], but it has '{}'; correct the return value of "
+							+"'getCustomizedExceptionInformation' in your code!", custExInfo.length);	
 				}
 			}
-			
 			final HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, err1);
 			try {
-				
 				return serveHandler(session, new ErrorHandler(Status.INTERNAL_ERROR, err1, err2), errStat);
-				
 			} catch (Exception excalibur) {
-				
 				// At this point we cannot do anything anymore ... *sniff*
 				LOG.error("TECH-FATAL:"+excalibur.getMessage(), excalibur);
 				excalibur.printStackTrace();
@@ -2301,10 +2126,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		String strs[] = line.split("=", 2);
 		if (strs.length != 2)
 			return new ArrayList<String>();
-		strs[1] = PATTERN_SEMICOLON.matcher(strs[1]).replaceAll("");
-		strs[1] = PATTERN_COLON.matcher(strs[1]).replaceAll("");
-		strs[1] = PATTERN_RIGHT_CURLY_BRACKET.matcher(strs[1]).replaceAll("");
-		strs[1] = PATTERN_SPACE.matcher(strs[1]).replaceAll("");
+		strs[1] = strs[1].replace(CHAR_SEMICOLON, "");
+		strs[1] = strs[1].replace(CHAR_COLON, "");
+		strs[1] = strs[1].replace(CHAR_RIGHT_CURLY_BRACKET, "");
+		strs[1] = strs[1].replace(CHAR_SPACE, "");
 		strs[1] = strs[1].trim().toLowerCase();
 		final String roles[] = strs[1].split(",");
 		return Arrays.asList(roles);
@@ -2328,20 +2153,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			Class<?> handlerClass, 
 			Map<String, String> newParams, 
 			String msg, int messageType) throws Exception {
-
-		Object obj = construct(session, handlerClass, entity, msg);
-		
+		final Object obj = construct(session, handlerClass, entity, msg);
 		if (!(obj instanceof BaseHandler)) {
 			return (Response) obj;
 		}
-        
 		final BaseHandler handler = (BaseHandler) obj;
         handler.initialize(session);
         handler.setMessageType(messageType);
-        
         final UriResource ur = new UriResource(null, handlerClass, entity);
         final UriResponder responder = ((UriResponder) handler);
-        
         final Response response = responder.get(ur, newParams, (org.nanohttpd.protocols.http.IHTTPSession) session);
 		return response;
 	}
@@ -2356,29 +2176,23 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @throws Exception
 	 */
 	private Response serveHandler(IHTTPSession session, BaseHandler handler, HandlerResponse stat) throws Exception {
-		
 		if (stat != null) {
-			
 			switch (stat.getStatus()) {
-			
-			case HandlerResponse.STATE_OK:
-				handler.addSuccessMessage(stat.getMessage());
-				break;
-			case HandlerResponse.STATE_NOT_OK:
-				handler.addErrorMessage(stat.getMessage());
-				break;
-			case HandlerResponse.STATE_WARNING:
-				handler.addWarningMessage(stat.getMessage());
-				break;
-
-			default:
-				break;
+				case HandlerResponse.STATE_OK:
+					handler.addSuccessMessage(stat.getMessage());
+					break;
+				case HandlerResponse.STATE_NOT_OK:
+					handler.addErrorMessage(stat.getMessage());
+					break;
+				case HandlerResponse.STATE_WARNING:
+					handler.addWarningMessage(stat.getMessage());
+					break;
+				default:
+					break;
 			}
 		}
-		
-		// Important !!
+		// Important!
 		handler.initialize((BeetRootHTTPSession)session);
-		
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText((BeetRootHTTPSession)session, -1));
 	}
 
@@ -2394,31 +2208,23 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private Response serveDefaultRedirectHandler(			
 			BeetRootHTTPSession session, 
 			String msg, int messageType) throws Exception {
-		
 		final Session userSession = session.getUserSession();
-		
 		userSession.removeAllIds(); // important, we need to generate new ones!
-		
-		Object obj = construct(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), msg);
-		
+		final Object obj = construct(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), msg);
 		if (!(obj instanceof BaseHandler)) {
 			return (Response) obj;
 		}
-        
 		final BaseHandler handler = (BaseHandler) obj;
         handler.initialize(session);
         handler.setMessageType(messageType);
-		
 		// read index data
         try {
-        	
         	handler.readData(session, -1);
-        	
         } catch (Exception ex) {
         	LOG.error("*** NOTE *** : You might have forgotten to define a default handler and entioty in teh configuration!");
         	throw ex;
         }
-		// lang is re-written per redirect script
+		// Language is re-written per redirect script
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));		
 	}	
 
@@ -2444,23 +2250,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @throws Exception
 	 */
 	private Response serveRedirectHandler(BeetRootHTTPSession session, String msg, int messageType) throws Exception {
-		
 		final Session userSession = session.getUserSession();
-		
 		userSession.removeAllIds(); // important, we need to generate new ones!
-		
 		final String ent = this.getEntity();
-		Object obj = construct(session, getRedirectHandler(), ent, msg, messageType);
-		
+		final Object obj = construct(session, getRedirectHandler(), ent, msg, messageType);
 		if (!(obj instanceof BaseHandler)) {
 			return (Response) obj;
 		}
-        
 		final BaseHandler handler = (BaseHandler) obj;
         handler.initialize(session);
-		
         try {
-
         	// set current page if any
             final String page = (String) userSession.get("page-"+ent);
     		if (page != null) {
@@ -2468,23 +2267,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
     			// consume!
     			userSession.remove("page-"+ent);
     		}
-    		
     		// read index data
         	handler.readData(session, -1);
-        	
         } catch (Exception ex) {
-        	
         	LOG.error("*** NOTE *** : You might have forgotten to overwrite a handler, so beetRoot can choose the right redirect handler for an entity!");
         	LOG.error("    -> This is especially necessary, if you have defined transient colums in 'columns.cfg' !");
-        	
         	throw ex;
         }
-        
 		return Response.newFixedLengthResponse(Status.OK, getMimeType(), handler.getText(session, -1));
 	}
 
 	/**
-	 * Construct a handler with sucess message.
+	 * Construct a handler with success message.
 	 * 
 	 * @param session HTTP session
 	 * @param handlerClass handler class
@@ -2509,16 +2303,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @throws Exception
 	 */
 	private Object construct(BeetRootHTTPSession session, Class<?> handlerClass, String entity, String msg, int messageType) throws Exception {
-		
 		final Session userSession = session.getUserSession();
-		
 		Constructor<?> constructor = null;
         final Constructor<?> constructors[] = handlerClass.getDeclaredConstructors();
-        
 		int ip = 3;
 		if (messageType == MSG_TYPE_INFO)
 			ip = 2;
-		
         for (int i = 0; i < constructors.length; i++) {
 			int pc = constructors[i].getParameterCount();
 			if (pc == ip) {
@@ -2526,41 +2316,28 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				break;
 			}
 		}
-        
         try {
-        	
-            constructor.setAccessible(true);
-            
+            constructor.setAccessible(true); // Yes, we do this
 		} catch (Exception e) {
-			
 			String err = "Handler constructor error! - No implementation found for handler class '"+handlerClass.toString()+"' with "+ip+" parameters.";
 			LOG.error(err, e);
-			
 			String t = "<h1>"+LanguageManager.getInstance().translate("base.err.handler.construct.title", userSession)+"</h1>";
 			String m = "<p>"+LanguageManager.getInstance().translate("base.err.handler.construct.msg", userSession, handlerClass.toString(), ip, e.getMessage())+"</p>";
-										
 			return Response.newFixedLengthResponse(Status.NOT_IMPLEMENTED, "text/html", t+m);
-			
 		}
         BaseHandler handler = null;
         try {
-        	
     		if (messageType == MSG_TYPE_INFO)
     			handler = (BaseHandler) constructor.newInstance(entity, msg);
     		else
     			handler = (BaseHandler) constructor.newInstance(entity, msg, messageType);
-            
 		} catch (Exception e) {
-
 			String err = "Handler error! - No implementation found for handler class '"+handlerClass.toString()+"'!";
 			LOG.error(err, e);
-			
 			String t = "<h1>"+LanguageManager.getInstance().translate("base.err.handler.impl.title", userSession)+"</h1>";
 			String m = "<p>"+LanguageManager.getInstance().translate("base.err.handler.impl.msg", userSession, handlerClass.toString(), e.getMessage())+"</p>";
-			
 			return Response.newFixedLengthResponse(Status.NOT_IMPLEMENTED, "text/html", t+m);
 		}	
-        
         return handler;
 	}
 
@@ -2573,13 +2350,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @return response
 	 */
 	private Response refreshRoute(BeetRootHTTPSession session, String route, String msg) {
-		
 		if (route.startsWith("/"))
 			route = route.substring(1, route.length());
-		
 		String url = route;
 		final Session userSession = session.getUserSession();
-		
 		// Page ?
         final String page = (String) userSession.get("page-"+entity);
 		if (page != null) {
@@ -2587,7 +2361,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// consume!
 			userSession.remove("page-"+entity);
 		}
-
 		// Message?
 		if (msg != null && msg.length() !=0 ) {
 			try {
@@ -2597,11 +2370,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 			url = Web.enrichQuery(url, "sev", "w");
 		}
-		
 		String sn = "/";
 		if (insertServletNameInTemplateRefs)
 			sn = "/" + servletName + "/";
-		
 		final String refreshText = 
 				  "<!DOCTYPE html>\n"
 				+ "<html lang=\"en\">\n"
@@ -2611,7 +2382,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				+ "</head>\n"
 				+ "</html>\n"
 				+ "";
-		
         return Response.newFixedLengthResponse(Status.OK, getMimeType(), refreshText);
 	}
 	
@@ -2916,8 +2686,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// Only when switched on!
 		if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
 			int idx = -1;
-			while ((idx = text.indexOf(LANG_TAG_PREFIX)) != -1) {
-				final int pos1 = idx + LANG_TAG_PREFIX.length();
+			while ((idx = text.indexOf(TAG_PREFIX_LANG)) != -1) {
+				final int pos1 = idx + TAG_PREFIX_LANG.length();
 				final int posC = text.indexOf(",");
 				int pos2 = text.indexOf("}");
 				String totrans = null; 
@@ -2932,7 +2702,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						subValuesArr = subValues.trim().split("\\s*,\\s*");
 					}
 				}
-				
 				String trans = "";
 				if (totrans.length() > 0)
 					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession(), subValuesArr);
@@ -3048,6 +2817,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		throw new IllegalAccessError("This method should never be called in this context!");
 	}
 
+	/**
+	 * Login marker method.
+	 * 
+	 * @param redirectLogin redirected from login?
+	 */
 	protected void loginMarker(boolean redirectLogin) {
 	}
 	
@@ -3092,12 +2866,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		 * @return true if removal should continue, otherwise false
 		 */
 		protected boolean continueRemoval(String text, Session userSession, String layer) {
-			
 			boolean continueRemoval = false;
-
 			// Get states
 			Map<String, Boolean> currStates = ifTagStates.get(layer);
-			
 			// Add initial states if not present for layer
 			if (currStates == null) {
 				currStates = new HashMap<String, Boolean>();
@@ -3106,7 +2877,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				currStates.put("action", Boolean.FALSE);
 				ifTagStates.put(layer, currStates);
 			}
-			
 			// deal with role-specific sections
 			if (text.contains("$endif-role")) {
 				currStates.put("role", Boolean.FALSE);
@@ -3153,7 +2923,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					currStates.put("action", Boolean.TRUE); // start removal
 				continueRemoval = true;
 			}
-				
 			return continueRemoval;
 		}		
 	}

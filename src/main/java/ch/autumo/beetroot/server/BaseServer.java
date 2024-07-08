@@ -73,21 +73,27 @@ import ch.autumo.beetroot.utils.Web;
 public abstract class BaseServer {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
+
 	
 	private static String rootPath = null;
 
 	private BeetRootConfigurationManager configMan = null;
 	
+	/** Modules/Dispatchers. */
 	private Map<String, Dispatcher> dispatchers = new HashMap<>();
 	
+	/** Default or SSL. */
 	protected ServerSocketFactory serverSocketFactory = null;
-	
-    private AdminListener adminListener = null;
+	/** Administration interface listener. */
+	private AdminListener adminListener = null;
+	/** Administration server socket. */
 	private ServerSocket serverSocket = null;
 
+	/** Filer server. */
     private FileServer fileServer = null;
-	protected boolean startFileServer = true;
+	protected boolean startFileServer = false;
 	
+	/** Filer storage interface. */
 	private FileStorage fileStorage = null;
 	
 	private int portAdminServer = -1;
@@ -508,16 +514,17 @@ public abstract class BaseServer {
 				System.err.println(ansiErrServerName + " but you don't start the web-server; this will NOT work!");
 			}
 		}
-		
+
+		// SHA3 communication encryption?
 		if (sha3Com) {
 			LOG.info("Client-Server communication is SHA3-256 encrypted!");
 			if (LOG.isErrorEnabled())
 				System.out.println(ansiServerName + " Client-Server communication is SHA3-256 encrypted!");
 		}
 		
-		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNoNoWarn(Constants.KEY_ADMIN_FILE_SERVER);
+		// Start file server?
+		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER, Constants.NO);
 		if (startFileServer) {
-			
 			// if we start the file server, we have to deliver a file storage
 			// Without a file storage, the file server is not started!
 			final String fileStorageClass = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_FILE_STORAGE);
@@ -528,7 +535,6 @@ public abstract class BaseServer {
 					final Constructor<?> constructor = clazz.getDeclaredConstructor();
 		            constructor.setAccessible(true);
 		            fileStorage = (FileStorage) constructor.newInstance();
-		            
 				} catch (Exception e) {
 					LOG.error("File server is not started, because configured file storage couldn't be created!", e);
 					System.out.println(ansiErrServerName + " File server is not started, because configured file storage couldn't be created!");
@@ -541,7 +547,6 @@ public abstract class BaseServer {
 				startFileServer = true;
 				fileStorage = null;
 			}
-			
             if (startFileServer) { // if it is still a GO...
 				// File listener and server thread
 				fileServer = new FileServer(this, fileStorage);
@@ -578,44 +583,32 @@ public abstract class BaseServer {
 	 * Stop server and web server if configured.
 	 */
 	protected void stopServer() {
-		
 		this.beforeStop();
-
 		if (startFileServer) {
-			
 			LOG.info("Stopping internal file server...");
 			if (LOG.isErrorEnabled())
 				System.out.println(ansiServerName + " Stopping internal file server...");
-			
 			fileServer.stop();
-			
 			LOG.info("Internal file server stopped.");
 			if (LOG.isErrorEnabled())
 				System.out.println(ansiServerName + " Internal file server stopped.");
 		}
-		
 		if (startWebServer) {
-			
 			LOG.info("Stopping internal web server...");
 			if (LOG.isErrorEnabled())
 				System.out.println(ansiServerName + " Stopping internal web server...");
-
 			webServer.stop();
-			
 			LOG.info("Internal web server stopped.");
 			if (LOG.isErrorEnabled())
 				System.out.println(ansiServerName + " Internal web server stopped.");
 		}
-
-		// release database resources
+		// Release database resources
 		try {
 			BeetRootDatabaseManager.getInstance().release();
 		} catch (Exception e) {
 			LOG.error("Couldn't release database manager!", e);
 		}
-		
 		this.afterStop();
-		
 		LOG.info(name + " server stopped.");
 		if (LOG.isErrorEnabled())
 			System.out.println(ansiServerName + " Server stopped.");
@@ -673,25 +666,17 @@ public abstract class BaseServer {
 		return new Thread("ShutDownHook") {
 			@Override
 			public void run() {
-				
 				if (!BaseServer.this.serverStop) {
-					
 					hookShutdown = true;
-					
 					LOG.info("[CTRL-C] signal received! Shutting down...");
 					if (LOG.isErrorEnabled()) {
 						System.out.println("");
 						System.out.println(BaseServer.ansiServerName + " " + Colors.darkYellow("[CTRL-C]") + " signal received! Shutting down...");
 					}
-					
 					BaseServer.this.serverStop = true;
-					
-					//Communicator.safeClose(in);
 					Communicator.safeClose(serverSocket);
-					
 					// shutdown server
 					stopServer();
-					
 					//alternative: sendStopServer();
 				}
 			}
@@ -764,15 +749,15 @@ public abstract class BaseServer {
 		// --- 1. Internal commands without components/modules
 		if (command.getDispatcherId().equals(ServerCommand.DISPATCHER_ID_INTERNAL)) {
 			
-			// shutdown
+			// Shutdown
 			if (command.getCommand().equals(Communicator.CMD_STOP)) {
 				return new StopAnswer();
 			}
-			// health request
+			// Health request
 			if (command.getCommand().equals(Communicator.CMD_HEALTH)) {
 				return new HealthAnswer();
 			}
-			// file request (for download)
+			// File request (for download)
 			if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
 				
 				if (startFileServer) {
@@ -822,9 +807,8 @@ public abstract class BaseServer {
 					return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
 				}			
 			}
-			// file receive request (for upload)
+			// File receive request (for upload)
 			if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
-				
 				if (startFileServer) {
 					String user = null;
 					if (command.getObject() != null)
@@ -842,7 +826,7 @@ public abstract class BaseServer {
 					return new ClientAnswer(command.getEntity(), "FILE", command.getId());
 				}
 			}
-			// file delete
+			// File delete
 			if (command.getCommand().equals(Communicator.CMD_FILE_DELETE)) {
 				
 				boolean success = false;
@@ -867,7 +851,7 @@ public abstract class BaseServer {
 				else
 					return new ClientAnswer("Delete file failed for file ID '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
 			}
-		// --- 2. module/component dispatchers
+		// --- 2. Module/component dispatchers
 		} else { 
 			
 			final String did = command.getDispatcherId();
@@ -922,19 +906,14 @@ public abstract class BaseServer {
 	 * @return overall state, true if good
 	 */
 	protected boolean printHealthStatus(boolean hasNoIssues) {
-		
 		// If the call made it here, the admin-port is listening!
 		boolean isAdminPortListening = true;
 		hasNoIssues = hasNoIssues && isAdminPortListening;
-
 		boolean isFileDownloadPortListening = false;
 		boolean isFileUploadPortListening = false;
 		boolean isWebServerPortListening = false;
-
 		if (startFileServer) {
-
 			ClientAnswer answer = null;
-			
 			// File server (Download)
 			final PingDownloadRequest pingDownloadRequest = new PingDownloadRequest();
 			try {
@@ -948,7 +927,6 @@ public abstract class BaseServer {
 			} catch (Exception e) {
 				isFileDownloadPortListening = false;
 			}
-			
 			// File server (Upload)
 			PingUploadRequest pingUploadRequest = null;
 			try {
@@ -962,7 +940,6 @@ public abstract class BaseServer {
 			} catch (Exception e) {
 				isFileUploadPortListening = false;
 			}
-			
 		} else {
 			isFileDownloadPortListening = true;
 			isFileUploadPortListening = true;
@@ -977,9 +954,8 @@ public abstract class BaseServer {
 		} else {
 			isWebServerPortListening = true;
 		}
+
 		hasNoIssues = hasNoIssues && isWebServerPortListening;
-		
-		
 		if (hasNoIssues)
 			LOG.info("Server is running and healthy.");
 		else
@@ -991,12 +967,10 @@ public abstract class BaseServer {
 			LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): ERROR; Port not listening!");
 		
 		if (startFileServer) {
-			
 			if (isFileDownloadPortListening)
 				LOG.info("* File-Server [Download] (Port: " + fileServer.portFileServer + "): Started");
 			else
 				LOG.info("* File-Server [Download] (Port: " + fileServer.portFileServer + "): ERROR; Port not listening!");
-			
 			if (isFileUploadPortListening)
 				LOG.info("* File-Server [Upload]   (Port: " + fileServer.portFileReceiver + "): Started");
 			else
@@ -1013,26 +987,20 @@ public abstract class BaseServer {
 		// No output coloring here, because we don't want to risk if unparsed ASCII coloring
 		// messes up the logging of a probe, e.g. Windows service manager logs.
 		if (LOG.isErrorEnabled()) {
-			
 			System.out.println("");
-			
 			if (hasNoIssues)
 				System.out.println(ansiServerName + " " + Colors.green("Server is running and healthy!"));
 			else
 				System.out.println(ansiErrServerName + " " + Colors.red("Server has issues, see below!"));
-			
 			if (isAdminPortListening)
 				System.out.println(ansiServerName + " * Admin-Interface (Port: " + this.portAdminServer + "): Started");
 			else
 				System.out.println(ansiErrServerName + " * Admin-Interface (Port: " + this.portAdminServer + "): "+Colors.red("ERROR")+"; Port not listening!");
-				
 			if (startFileServer) {
-				
 				if (isFileDownloadPortListening)
 					System.out.println(ansiServerName + " * File-Server [Download] (Port: " + fileServer.portFileServer + "): Started");
 				else
 					System.out.println(ansiErrServerName + " * File-Server [Download] (Port: " + fileServer.portFileServer + "): "+Colors.red("ERROR")+"; Port not listening!");
-				
 				if (isFileUploadPortListening)
 					System.out.println(ansiServerName + " * File-Server [Upload]   (Port: " + fileServer.portFileReceiver + "): Started");
 				else
@@ -1045,7 +1013,6 @@ public abstract class BaseServer {
 					System.out.println(ansiErrServerName + " * Web-Server (Port: " + this.portWebServer + "): "+Colors.red("ERROR")+"; Port not listening!");
 			}
 		}
-		
 		return hasNoIssues;
 	}
 	
@@ -1062,16 +1029,13 @@ public abstract class BaseServer {
 		 * @param listenerPort listener port
 		 */
 		public AdminListener(int listenerPort) {
-			
 			this.listenerPort = listenerPort;
-			
 			// Communication is encrypted through the command message (cmd),
 			// by SSL sockets (ssl) or it is not (none) 
 			try {
 				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
 					serverSocket.setSoTimeout(serverTimeout * 1000);
-					
 			} catch (IOException e) {
 				LOG.error("Admin server listener cannot be created on port '" + this.listenerPort + "'!", e);
 				System.err.println(BaseServer.ansiErrServerName + " Admin server listener cannot be created on port '" + this.listenerPort + "'!");
@@ -1081,15 +1045,12 @@ public abstract class BaseServer {
 		
 		@Override
 		public void run() {
-			
+			// Server main loop
 			while (!BaseServer.this.serverStop) {
-				
 				Socket clientSocket = null;
 				try {
-					
 					// it waits for a connection
 					clientSocket = serverSocket.accept();
-					
 					String addr = null;
 					if (clientSocket.getInetAddress() != null)
 						addr = clientSocket.getInetAddress().toString();
@@ -1103,12 +1064,9 @@ public abstract class BaseServer {
 							threadForClient.setName(BaseServer.this.name + "-Client("+addr+")");
 						threadForClient.start();
 					}
-					
 		        } catch (IOException e) {
-		        	
 		        	if (!BaseServer.this.serverStop)
 		        		LOG.error("Admin server connection listener failed! We recommend to restart the server!", e);
-		        	
 		        } finally {
 		        	if (!BaseServer.this.serverStop && serverSocket != null && serverSocket.isClosed()) {
 	        			try {
@@ -1121,11 +1079,9 @@ public abstract class BaseServer {
 	        		}
 	            }				
             } 
-		
 			if (!hookShutdown) {
 				// loop has been broken by STOP command.
 				Communicator.safeClose(serverSocket);
-				
 				// shutdown server
 				stopServer();
 			}
@@ -1151,17 +1107,13 @@ public abstract class BaseServer {
 		
 		@Override
 		public void run() {
-			
 			ServerCommand command = null;
 			try {
-			
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-
 				// server command from client received
 				command = Communicator.readCommand(in);
 	        } 
 	        catch (UtilsException e) {
-	        	
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match or different encrypt modes");
 				LOG.error("     have been defined within client/server-configuration, or the server's");
@@ -1189,51 +1141,43 @@ public abstract class BaseServer {
 			
 			// execute command
 			final ClientAnswer answer = BaseServer.this.processServerCommand(command);
-			
+
 			// Health status request?
 			if (answer instanceof HealthAnswer) {
 				LOG.info("[HEALTH] signal received, printing server's health state to console.");
-
 				// print info
 				BaseServer.this.printHealthStatus(true);
-				
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket); //
 				return;
 			}
 			
-			// shutdown received?
+			// Shutdown received?
 			if (answer instanceof StopAnswer) {
 				LOG.info("[STOP] signal received! Shutting down...");
 				if (LOG.isErrorEnabled()) {
 					System.out.println("");
 					System.out.println(BaseServer.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
 				}
-				
 				// only escape of this loop
 				BaseServer.this.serverStop = true;
-				
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket); //
 				Communicator.safeClose(serverSocket);
-	        	
 				return;
 			}
 			
 			// We have to answer -> get output-stream to client
 			DataOutputStream out = null;
 			try {
-
 				 out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
 				 Communicator.writeAnswer(answer, out);
-			
 			} catch (IOException e) {
 				LOG.error("Admin server client response failed! We recommend to restart the server!", e);
 				System.err.println(BaseServer.ansiErrServerName + " Admin server client response failed! We recommend to restart the server!");
 	        } finally {
 	        	Communicator.safeClose(out);
 			}
-			
         	Communicator.safeClose(in);
         	Communicator.safeClose(clientSocket);
 		}
@@ -1243,12 +1187,13 @@ public abstract class BaseServer {
 	 * Help class for shell script.
 	 */
 	protected static final class Help {
+		private static final String BEETROOT_PREFIX = "beetroot.";
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
 		private static final String TITLE = Colors.darkCyan("beetRoot Server");
 		private static final String JAVA  = Colors.green("java");
-		private static final String USAGE = Colors.darkYellow("beetroot."+SHELL_EXT+" start|stop|health");
-		private static final String USAGE0 = Colors.darkYellow("beetroot."+SHELL_EXT+" -help");
-		private static final String USAGE1 = Colors.darkYellow("beetroot."+SHELL_EXT+" -h");
+		private static final String USAGE = Colors.darkYellow(BEETROOT_PREFIX+SHELL_EXT+" start|stop|health");
+		private static final String USAGE0 = Colors.darkYellow(BEETROOT_PREFIX+SHELL_EXT+" -help");
+		private static final String USAGE1 = Colors.darkYellow(BEETROOT_PREFIX+SHELL_EXT+" -h");
 		public static final String TEXT =
 				"" 																						+ OS.LINE_SEPARATOR +
 				"" 																						+ OS.LINE_SEPARATOR +

@@ -96,7 +96,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     private boolean insertServletNameInTemplateRefs = false;
     private String servletName = null;
     
-    private Map<String, String> parsedCss = new ConcurrentHashMap<String, String>();
+    private Map<String, String> parsedCss = new ConcurrentHashMap<>();
     
     private String tmpFilePrefix = "beetrootweb-";
 	
@@ -395,7 +395,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				return this.serveAtLast((BeetRootHTTPSession)session); // All good!
 			}
 			else {
-				LOG.warn("JSON API (URI: '"+uriWithoutServlet+"'): Access with wrong JSON API Key!");
+				LOG.warn("JSON API (URI: '{}'): Access with wrong JSON API Key!", uriWithoutServlet);
 				String t = LanguageManager.getInstance().translate("base.err.srv.io.title", LanguageManager.DEFAULT_LANG);
 				String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", LanguageManager.DEFAULT_LANG, "Disperse, nothing to see here!");
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
@@ -409,7 +409,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    try {
 	    	LanguageManager.getInstance();
 	    } catch (Exception e) {
-	    	//String langs = BeetRootConfigurationManager.getInstance().getString("web_languages");
 			LOG.warn("No default translation file 'lang_default.properties' or 'tmpl_lang_default.properties' (if 'web_translations switched' on) found! That is not desirable!");
 			String t = "Language configuration error";
 			String m = "No default translation file found! That is not desirable! This Message is NOT translated!";
@@ -486,7 +485,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         			filePath = Web.getRealPath(context) + dir + uriWithoutServlet;
 					fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 				} catch (IOException e) {
-					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
+					LOG.info("File '{}'not found on server, looking further within archives...", filePath);
 					try {
 						filePath = "/" + dir + uriWithoutServlet;
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
@@ -504,7 +503,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		        	filePath =  BeetRootConfigurationManager.getInstance().getRootPath() + dir + uriWithoutServlet;
 	        		fc = FileCacheManager.getInstance().findOrCreate(filePath, isSpecialCss);
 		        } catch (IOException e) {
-					LOG.info("File '" + filePath + "'not found on server, looking further within archives...");
+					LOG.info("File '{}'not found on server, looking further within archives...", filePath);
 					try {
 						filePath = "/" + dir + uriWithoutServlet;
 						fc = FileCacheManager.getInstance().findOrCreateByResource(filePath);
@@ -522,26 +521,18 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			
 	    	// this consults cached 'META-INF/mime.types' !
 	        final String mimeType = Constants.MIME_TYPES_MAP.getContentType(uriWithoutServlet);
-	        //LOG.trace("MIME: "+mimeType);
 
 	        
-	        // decide what to do with different mime types and requests
+	        // Decide what to do with different mime types and requests
 			try {
-				//final String ext = uri.substring(uri.lastIndexOf("."), uri.length());
-				
 				// archives
 				if (MIME.isMimeTypeArchive(mimeType)) {
-					
 					return fc.createResponse();
-					
 				// binaries
 				} else if (MIME.isMimeTypeOctet(mimeType)) {
-					
 					return fc.createResponse();
-					
 				// text
 				} else {
-	
 					// Special case: URL-parsed CSS within servlet context
 					if (insertServletNameInTemplateRefs && isSpecialCss) {
 						// NOTICE: we need to add the servlet-name to "url('" too for specific css!
@@ -550,7 +541,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							 cache = isResource ? 
 									FileCacheManager.getInstance().findOrCreateByResource(filePath) : 
 										FileCacheManager.getInstance().findOrCreate(filePath);
-			        
 						if (!parsedCss.containsKey(filePath)) {
 							// special CSS is cached, no further checks necessary with a 
 							// certainty of 99.99% (first files, max. cache isn't reached at all)
@@ -562,21 +552,16 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						} else {
 							css = parsedCss.get(filePath);
 						}
-							
 						return Response.newFixedLengthResponse(Status.OK, "text/css", css);
 					}
-
 					// Parse password strength javas-cript file for translations
 					if (requestedFile.equals("password-strength.js")) {
 						final String js = PwsParser.parseAll(fc.getTextData(), userSession);
 						return Response.newFixedLengthResponse(Status.OK, "application/javascript", js);
 					}
-					
 					// Everything else: Text data !
 					if (MIME.isMimeTypeText(mimeType))
 						return fc.createResponse();
-	
-					
 					// If we come here, a mime type has been requested that is not yet implemented
 					final String err = "Mime type for web resource '" + filePath + "' not implemented yet!";
 					LOG.warn(err);
@@ -584,7 +569,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					String m = LanguageManager.getInstance().translate("base.err.resource.mime.msg", userSession, filePath);
 					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 		        }	
-				
 	        } catch (IOException e) {
 				final String err = "Couldn't parse css for pre-url replacements Resource Not found! - Web resource '" + filePath + "'.";
 				LOG.error(err, e);
@@ -601,30 +585,23 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    
 	    if (Method.PUT.equals(method) || Method.POST.equals(method)) {
 	        try {
-	        	
 	        	if (context != null) {
 	        		session.parseBodyForServlet(files, request);
 	        	}
 	        	else {
 	        		session.parseBody(files); // parameter key and temporary path value!
 	        	}
-	        	
 	            userSession.addFiles(files);
-	            
 	        } catch (IOException ioe) {
-	        	
 				final String err = "Server Internal Error - I/O Exception: " + ioe.getMessage();
 				LOG.error(err, ioe);
-				
 				String t = LanguageManager.getInstance().translate("base.err.srv.io.title", userSession);
 				String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", userSession, ioe.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 				
 	        } catch (ResponseException re) {
-
 				final String err = "Server Internal Error - Response Exception (Status: "+re.getStatus().getDescription()+"): " + re.getMessage();
 				LOG.error(err, re);
-				
 				String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
 				String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
@@ -638,16 +615,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		// Within the ifaceX server, we have to take care of user session timeouts
 		// In servlet containers this is done by the container
 		if (context == null && userSession.isOlderThanSessionTimeout() ) {
-			
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
-			
 			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userSession));
-			
 			userSession.deleteAllParameters();
 			userSession.destroy(session.getCookies());
-			
 			return end;
 		}
 		
@@ -657,17 +630,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 	    // logout
 		if (uriWithoutServlet.endsWith("/users/logout")) {
-			
 			loggedIn = false;
-			
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
-			
 			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userSession));
-			
 			userSession.deleteAllParameters();
 			userSession.destroyDelete(session.getCookies());
-			
 			return end;
 		}
 		
@@ -675,54 +643,38 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    // Settings
 		final String sessionUser = userSession.getUserName();
         if (sessionUser != null && !userSession.isTwoFaLoginOk()) {
-        	
-			//LOG.debug("Logged in (Session), User: " + sessionUser);
-
     		loggedIn = true;
-    		
     		if (uriWithoutServlet.endsWith("/users/login")) {
 	            return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity());
     		}
-    		
 		    try {
 				DB.loadUserSettings(userSession);
 			} catch (SQLException e) {
 				LOG.error("Couldn't load user settings!", e);
 			}
         }
-
         
         // Still not logged in...
         if (!loggedIn) {
-
     		final String twoFaCode = session.getParms().get("code");
-    		
         	// 2FA step login: 2nd Step !
         	if (userSession.isTwoFaLoginOk() && twoFaCode != null && twoFaCode.length() != 0) {
-        		
         		if (userSession.getInternalTOTPCode().equals(twoFaCode)) {
-        		
 		            loggedIn = true;
         			userSession.resetTwoFaLogin();
         			userSession.clearInternalTOTPCode();
-		            
 		            // Finish all necessary steps and give response
 		            return postLogin(session, userSession, userSession.getUserId().intValue(), userSession.getUserName());
-		            
         		} else {
-        			
         			userSession.clearUserData();
-        			
 					String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
 					return serverResponse(session, LoginHandler.class, "Login", m);
         		}
-        		
         	}        	
         	// login from login page?
         	else if (postParamUsername != null && postParamUsername.length() != 0) {
-        	
-        		String postParamPass = session.getParms().get("password");
                 int dbId = -1;
+        		String postParamPass = session.getParms().get("password");
                 String dbPass = null;
                 String dbRole = null;
         		String dbRoles = "";
@@ -732,19 +684,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
                 String dbEmail = null;
                 String dbSecKey = null;
                 boolean dbTwoFa = false;
-                
             	if (postParamPass != null && postParamPass.length() != 0) {
-            		
             		Connection conn = null;
             		Statement stmt = null;
             		ResultSet rs = null;
 					try {
-						
 						conn = BeetRootDatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
 						//NO SEMICOLON
 	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname, email, secretkey, two_fa from users where username='"+postParamUsername+"'");
-	            		
 	            		if (rs.next()) {
 	            			dbId = rs.getInt("id");
 	            			dbPass = rs.getString("password");
@@ -755,7 +703,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            			dbSecKey = rs.getString("secretkey");
 	            			dbTwoFa = rs.getBoolean("two_fa");
 	            		}
-
 	            		// Roles
 	        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(dbId));
 	        			if (usersRoles == null)
@@ -765,7 +712,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	        				final Role role = (Role) userRole.getAssociatedReference(Role.class);
 	        				dbRoles += role.getName() + ",";
 	        				dbPermissions += role.getPermissions()+",";
-	        				
 	        			}
 	        			if (usersRoles.size() > 0) {
 	        				dbRoles = dbRoles.substring(0, dbRoles.length() - 1);
@@ -774,18 +720,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	        			}
 	        			dbRoles = dbRoles.toLowerCase();
 	        			dbPermissions = dbPermissions.toLowerCase();
-	            		
 					} catch (SQLException e) {
-						
 						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
 						LOG.error(err, e);
-
             			userSession.clearUserData();
-						
 						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
 						String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
 						return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
-						
 					} finally {
 						try {
 							if (rs != null)
@@ -809,9 +750,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						} catch (UtilsException e) {
 							final String err = "Server Internal Error - Exception: " + e.getMessage();
 							LOG.error(err, e);
-
 	            			userSession.clearUserData();
-							
 							String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userSession);
 							String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userSession, e.getMessage());
 							return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
@@ -823,7 +762,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					
 					// 1. GO !
             		if (loginSuccess) { 
-            			
             			// Store user data to session
             			userSession.setUserData(
             					dbId, 
@@ -836,24 +774,18 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             					dbEmail, 
             					dbSecKey, 
             					dbTwoFa);
-            			
             			userSession.createIdPair(dbId, "users");
-
 					    try {
 	            			dbUserLang = BeetRootDatabaseManager.getInstance().getLanguage(dbId);
 	            	    	userSession.setUserLang(dbUserLang);
 						} catch (Exception e) {
 							LOG.error("Couldn't load user language from DB!", e);
 						}
-					    
-					    
 					    // 2FA enabled?: 1st Step!
 					    if (dbTwoFa) {
-					    	
 			        		final String genCode = TwoFA.create6DigitTOTPCode(userSession.getUserSecretKey());
 			        		userSession.setInternalTOTPCode(genCode);
 					    	userSession.setTwoFaLogin(); 
-					    	
 					    	// Email 2FA code?
 					    	String codeEmailOn = null;
 							try {
@@ -865,15 +797,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 								String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
 								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 							}
-							
 							if (codeEmailOn != null && codeEmailOn.equalsIgnoreCase(Constants.ON)) {
-								
-								final Map<String, String> variables = new HashMap<String, String>();
+								final Map<String, String> variables = new HashMap<>();
 								variables.put("title", LanguageManager.getInstance().translate("base.mail.code.title", userSession));
 								variables.put("subtitle", LanguageManager.getInstance().translate("base.mail.code.subtitle", userSession));
 								variables.put("code", genCode);
 								variables.put("message", LanguageManager.getInstance().translate("base.mail.code.msg", userSession));
-								
 								try {
 									// Mail it!
 									MailerFactory.getInstance().mail(new String[] {dbEmail}, LanguageManager.getInstance().translate("base.mail.code.title", userSession), variables, "code", session);	
@@ -890,17 +819,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							return serverResponse(session, OtpHandler.class, "2FA Code");
 					    }
             			
-					    
+
+					    // LOGGED IN!
 			            loggedIn = true;
 			            
 			            // Finish all necessary steps and give response
 			            return postLogin(session, userSession, dbId, postParamUsername);
 			            
             		} else {
-            			
             			userSession.clearUserData();
-            			
-						//LOG.debug("Wrong login with user User: " + postParamUsername);
 						// serve login page!
 						String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
 						return serverResponse(session, LoginHandler.class, "Login", m);
@@ -911,96 +838,72 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		// Nope, no login after all.
 		if (!loggedIn) {
-			
 			userSession.clearUserData();
-			
 			if (uriWithoutServlet.endsWith("/users/reset") || uriWithoutServlet.endsWith("/users/change")) {
-				
-	            return this.serveAtLast((BeetRootHTTPSession)session);
-				
+	            return this.serveAtLast(session);
 			} else {
-				
 				// serve login page!
 				return serverResponse(session, LoginHandler.class);
 			}
-			
 		} else { // start parsing app, logged in !
-			
 		    // use CSRF tokens ?
 		    if (BeetRootConfigurationManager.getInstance().useCsrf()) {
 		    	try {
 			    	if (!csrf(session, userSession)) {
-			    		
 						String t = LanguageManager.getInstance().translate("base.err.csrf.inv.title", userSession);
 						String m = LanguageManager.getInstance().translate("base.err.csrf.inv.msg", userSession);
 						return serverResponse(session, ErrorHandler.class, Status.BAD_REQUEST, t, m);
 			    	}
 				} catch (UtilsException e) {
-					
 					String t = LanguageManager.getInstance().translate("base.err.csrf.gen.title", userSession);
 					String m = LanguageManager.getInstance().translate("base.err.csrf.gen.msg", userSession, e.getMessage());
 					return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);							
 				}
-		    	
 		    }
-			
-			// Finally, must be a route for html templates -> GO!
-            return this.serveAtLast((BeetRootHTTPSession)session);
+			// Finally, must be a route for HTML templates -> GO!
+            return this.serveAtLast(session);
 		}
 	}
 
 	private Response postLogin(BeetRootHTTPSession session, Session userSession, int userId, String username) {
-		
 	    try {
 			DB.loadUserSettings(userSession);
 		} catch (SQLException e) {
 			LOG.error("Couldn't load user settings from DB!", e);
 		}
-        
         try {
-        	
 			BeetRootDatabaseManager.getInstance().resetToken(userId);
-			
 		} catch (Exception e1) {
 			final String err = "Couldn't reset last token for user '"+username+"' after login!";
 			LOG.warn(err, e1);
 		}
-        
 	    // use CSRF tokens ?
 	    if (BeetRootConfigurationManager.getInstance().useCsrf()) {
 	    	try {
 				if (!csrf(session, userSession)) {
-					
 					String t = LanguageManager.getInstance().translate("base.err.csrf.inv.title", userSession);
 					String m = LanguageManager.getInstance().translate("base.err.csrf.inv.msg", userSession);
 					return serverResponse(session, ErrorHandler.class, Status.BAD_REQUEST, t, m);
 				}
 			} catch (UtilsException e) {
-				
 				String t = LanguageManager.getInstance().translate("base.err.csrf.gen.title", userSession);
 				String m = LanguageManager.getInstance().translate("base.err.csrf.gen.msg", userSession, e.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);							
 			}
 	    }
-        
-		//LOG.debug("Logged in (Form), User: " + postParamUsername);
 		String m = LanguageManager.getInstance().translate("base.info.welcome.msg", userSession, userSession.getUserFullNameOrUserName());
 		return serverResponse(session, getDefaultHandlerClass(), getDefaultHandlerEntity(), m);		
 	}
 	
 	private boolean csrf(IHTTPSession session, Session userSession) throws UtilsException {
-		
 		// only check relevant POST methods!
 		final String method = session.getParms().get("_method");
-		
 		if (method == null || method.length() == 0) {
-			
 			// make a new CSRF token
 		    final String formCsrfToken = Security.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
 		    userSession.setFormCsrfToken(formCsrfToken);
 			return true;
 		}
-		
 		if (method != null && method.length() != 0) {
 			if (!method.equals("POST")) {
 				// make a new CSRF token
@@ -1009,21 +912,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				return true;
 			}
 		}
-		
 		// CSRF POST method
-		
 		final String lastCsrfToken = session.getParms().get("_csrfToken");
 		final String storedFormCsrfToken = userSession.getFormCsrfToken();
-		if (storedFormCsrfToken != null && storedFormCsrfToken.length() != 0) {
-			if (!lastCsrfToken.equals(storedFormCsrfToken)) {
-				return false;
-			}
+		if (storedFormCsrfToken != null && storedFormCsrfToken.length() != 0 && !lastCsrfToken.equals(storedFormCsrfToken)) {
+			return false;
 		}
-
 		// make a new CSRF token
 	    final String formCsrfToken = Security.generateCSRFToken(SecureApplicationHolder.getInstance().getSecApp());
 	    userSession.setFormCsrfToken(formCsrfToken);
-	    
 	    return true;
 	}
 	
@@ -1050,9 +947,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			BeetRootHTTPSession session, 
 			Class<?> handlerClass, 
 			Object... initParameter) {
-		
-		Session userSession = SessionManager.getInstance().findOrCreate(session);
-		
+		final Session userSession = SessionManager.getInstance().findOrCreate(session);
 		Constructor<?> constructor = null;
         final Constructor<?> constructors[] = handlerClass.getDeclaredConstructors();
 		int ip = initParameter.length;
@@ -1063,46 +958,32 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				break;
 			}
 		}
-        
         try {
-        	
             constructor.setAccessible(true);
-            
 		} catch (Exception e) {
-			
 			String err = "Handler constructor error! - No implementation found for handler class '"+handlerClass.toString()+"' with "+ip+" parameters.";
 			LOG.error(err, e);
-			
 			String t = "<h1>"+LanguageManager.getInstance().translate("base.err.handler.construct.title", userSession)+"</h1>";
 			String m = "<p>"+LanguageManager.getInstance().translate("base.err.handler.construct.msg", userSession, handlerClass.toString(), ip, e.getMessage())+"</p>";
-										
 			return Response.newFixedLengthResponse(Status.NOT_IMPLEMENTED, "text/html", t+m);
 		}
         BaseHandler handler = null;
         try {
-        	
             handler = (BaseHandler) constructor.newInstance(initParameter);
-            
 		} catch (Exception e) {
-
 			String err = "Handler error! - No implementation found for handler class '"+handlerClass.toString()+"'!";
 			LOG.error(err, e);
-			
 			String t = "<h1>"+LanguageManager.getInstance().translate("base.err.handler.impl.title", userSession)+"</h1>";
 			String m = "<p>"+LanguageManager.getInstance().translate("base.err.handler.impl.msg", userSession, handlerClass.toString(), e.getMessage())+"</p>";
-			
 			return Response.newFixedLengthResponse(Status.NOT_IMPLEMENTED, "text/html", t+m);
 		}
-
         // initialize !
         handler.initialize(session);
-        
         UriResource ur = null;
         if (initParameter.length > 0)
         	ur = new UriResource(null, handlerClass, initParameter[0]);
         else
         	ur = new UriResource(null, handlerClass);
-        
 		return ((UriResponder) handler).get(ur, session.getParms(), session);
 	}
 	
@@ -1113,7 +994,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * @return default handler class
 	 */
 	public Class<?> getDefaultHandlerClass() {
-
 		String handler;
 		try {
 			handler = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_HANDLER);
@@ -1131,7 +1011,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * @return default handler entity
 	 */
 	public String getDefaultHandlerEntity() {
-		
 		String entity;
 		try {
 			entity = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WEB_DEFAULT_ENTITY);
@@ -1174,28 +1053,23 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * Add mappings respectively set web routes. 
 	 */
 	public void addMappings() {
-		
 		Router router = null; 
 		final String webRouter = BeetRootConfigurationManager.getInstance().getString("web_router");
 		try {
 			final Class<?> clz = Class.forName(webRouter);
 			router = (Router) clz.getDeclaredConstructor().newInstance();
-			
 		} catch (Exception e) {
 	    	LOG.error("No router found! Your web app will definitely NOT work!", e);
 			return;
 		}
-		
 		super.setNotImplementedHandler(NotImplementedHandler.class);
 		super.setNotFoundHandler(Error404Handler.class);
-		
 		/** Default Routes */
 		final List<Route> defRoutes = router.getDefaultRoutes();
 		for (Iterator<Route> iterator = defRoutes.iterator(); iterator.hasNext();) {
 			final Route route = iterator.next();
 			addRoute(route.getRoute(), route.getPriority(), getDefaultHandlerClass(), getDefaultHandlerEntity());
 		}
-
 		/** Routes */
 		final List<Route> routes = router.getRoutes();
 		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
