@@ -34,9 +34,9 @@ DROP SEQUENCE properties_seq;
 DROP INDEX idx_role_id;
 DROP INDEX idx_user_id;
 
+DROP TABLE users_roles CASCADE CONSTRAINTS;
 DROP TABLE roles;
 DROP TABLE users;
-DROP TABLE users_roles CASCADE CONSTRAINTS;
 DROP TABLE tasks;
 DROP TABLE properties;
 
@@ -193,7 +193,7 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, created, modified) VALUES
 (tasks_seq.NEXTVAL, 'NONE', 'Task 5', '/path/task5.config', '*', '*', '*', 'feb,jun,sep', '*', '0', '0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- basic settings
+-- SETTINGS
 INSERT INTO properties (id, name, value) values
 (properties_seq.NEXTVAL,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
 INSERT INTO properties (id, name, value) values

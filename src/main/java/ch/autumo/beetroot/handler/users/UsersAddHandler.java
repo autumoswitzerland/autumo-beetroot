@@ -51,9 +51,9 @@ public class UsersAddHandler extends DefaultAddHandler {
 		
 		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 		if (jsPwValidator) {
-			final RuleResult rr = PasswordHelper.isValid(pass);
+			final RuleResult rr = PasswordHelper.isValid(pass, session.getUserSession());
 			if (!rr.isValid())
-				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr, session.getUserSession()));
 		}
 		
 		return super.saveData(session);
@@ -67,7 +67,7 @@ public class UsersAddHandler extends DefaultAddHandler {
 	@Override
 	public Map<String, Object> getAddMandatoryFields() {
 		
-		final Map<String, Object> mand = new HashMap<String, Object>();
+		final Map<String, Object> mand = new HashMap<>();
 		
 		mand.put("created",  "NOW()");
 		mand.put("modified", "NOW()");

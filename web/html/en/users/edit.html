@@ -28,13 +28,7 @@
 			<fieldset>
 				<legend>Edit User</legend>
 				{$data}
-				<!-- 
-					If you want to use your own role assignments with database roles or an ACL, 
-					e.g. with multiple roles/groups, overwrite the method 'extractCustomSingleInputDiv()' 
-					in your user edit-handler or add your new role management here!
-				 -->
 			</fieldset>
-			
 			<a href="/{$lang}/users/index" class="button right">Cancel</a>
 			<button type="submit">Save</button>
 			{$if-role=Administrator:}

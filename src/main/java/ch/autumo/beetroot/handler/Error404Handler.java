@@ -17,6 +17,9 @@
  */
 package ch.autumo.beetroot.handler;
 
+import org.nanohttpd.protocols.http.response.IStatus;
+import org.nanohttpd.protocols.http.response.Status;
+
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 
@@ -36,7 +39,7 @@ public class Error404Handler extends BaseHandler {
 	@Override
 	public void render(BeetRootHTTPSession session) {
 		setVar("title", "The requested page doesn't exist. (ERROR 404)");
-		setVar("{$message}", " ");
+		setVar("message", " ");
 	}
 
 	@Override
@@ -47,6 +50,11 @@ public class Error404Handler extends BaseHandler {
 	@Override
 	public boolean showMenu(Session userSession) {
 		return userSession.getUserRoles().size() > 0;
+	}
+
+	@Override
+	public IStatus getStatus() {
+		return Status.NOT_FOUND;
 	}
 	
 }

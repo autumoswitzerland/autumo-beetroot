@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
+ * Copyright (c) 2024 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  * 
  */
+
 
 
 
@@ -91,10 +92,6 @@ p {
     color: #0093E6 !important;
 }
 
-#actions-sidebar {
-    background-color: #111111;
-}
-
 ul.pagination li.active a {
     color: #444444;
 }
@@ -138,12 +135,24 @@ ul.pagination li a {
 	background-color: #1D1D1D !important;
 }
 
+#actions-sidebar {
+    background-color: #111111;
+}
 .side-nav li.heading {
-    color: #0093E6;
+    color: #0093E6 !important;
 }
 .side-nav li a:not(.button) {
     color: #07b;
 }
+.side-nav li div label {
+	background-color: #111111 !important;
+	color: #07b;
+}
+.side-nav li div input {
+    border: 1px solid #333333 !important;
+	background-color: #222222 !important;
+}
+
 a {
     color: #0093E6;
     text-decoration: none;

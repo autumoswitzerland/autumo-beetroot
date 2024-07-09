@@ -127,7 +127,7 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, created, modified) VALUES
 (5, 'NONE', 'Task 5', '/path/task5.config', '*', '*', '*', 'feb,jun,sep', '*', '0', '0', NOW(), NOW(), NOW());
 
--- basic settings
+-- SETTINGS
 INSERT INTO properties (id, name, value) values
 (1,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
 INSERT INTO properties (id, name, value) values

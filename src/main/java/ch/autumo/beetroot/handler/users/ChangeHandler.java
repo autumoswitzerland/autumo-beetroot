@@ -174,9 +174,9 @@ public class ChangeHandler extends BaseHandler {
 		
 		final boolean jsPwValidator = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WEB_PASSWORD_VALIDATOR);
 		if (jsPwValidator) {
-			final RuleResult rr = PasswordHelper.isValid(pass);
+			final RuleResult rr = PasswordHelper.isValid(pass, session.getUserSession());
 			if (!rr.isValid())
-				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr));
+				return new HandlerResponse(HandlerResponse.STATE_NOT_OK, PasswordHelper.getHTMLMessages(rr, session.getUserSession()));
 		}
 		
 		try {

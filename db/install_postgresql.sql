@@ -100,6 +100,7 @@ CREATE TABLE properties (
 );
 
 
+
 --
 -- Initial data
 --
@@ -148,7 +149,7 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, created, modified) VALUES
 (nextval('tasks_seq'), 'NONE', 'Task 5', '/path/task5.config', '*', '*', '*', 'feb,jun,sep', '*', '0', '0', NOW(), NOW(), NOW());
 
--- basic settings
+-- SETTINGS
 INSERT INTO properties (id, name, value) values
 (nextval('properties_seq'),'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
 INSERT INTO properties (id, name, value) values

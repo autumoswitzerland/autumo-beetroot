@@ -125,6 +125,7 @@ ul.pagination li {
 label {
 	font-size: 1.2em;
 	font-weight: normal;
+	color: #0e4e74;
 }
 
 input {
@@ -183,13 +184,14 @@ input[type="checkbox"]:hover {
 legend {
 	font-size: 1.8rem !important;
 	font-weight: 100 !important;
+	color: #0e4e74;
 }
 
 h1 {
-	margin-top: -2px !important;
+	margin-top: 13px !important;
 	font-size: 2.0rem !important;
 	font-weight: 100 !important;
-	line-height: 2.0 !important;
+	line-height: 1.0 !important;
 }
 h1 a {
 	font-weight: 100 !important;
@@ -418,6 +420,15 @@ h5 {
 	font-size: 1.2rem;
 	font-weight: lighter;
 }
+.side-nav li div {
+	margin-left: 14px;
+	margin-right: 10px;
+	font-size: 1.0rem;
+	font-weight: 100;
+}
+.side-nav li div label {
+	font-weight: 100;
+}
 
 div.message {
 	display: block;
@@ -547,6 +558,9 @@ div.message.warning:before {
 /**
  * Dropdown menu.
  */
+.dropdown-content {
+	right: 0px;
+} 
 .dropdown_main {
 	width: 100px;
 	position: relative;
@@ -1042,6 +1056,15 @@ button {
 .hidden {
     display: none;
 }
+.twofabtn {
+	background-color: #cc9900;
+	margin-right: 20px;
+}
+.twofabtn:hover {
+	color: #ffffff!important;
+	background-color: #ffcc00;
+}
+
 
 /**
  * Terminal styles.
@@ -1206,12 +1229,18 @@ button {
 	margin-bottom: -99999px;
 	padding-bottom: 99999px;
 }
+
+.ui-tooltip {
+	background-color: #cccccc;
+}
+
 @media (max-width:640px) {
 	#actions-sidebar {
 		padding-bottom: 2rem;
 		margin-bottom: 0;
 	}
 }
+
 
 /**
  * Animations.

@@ -19,7 +19,8 @@
 
 
 /**
- * Customized design, language additions,
+ * Customized design,
+ * language additions,
  * Overrides.
  */
 
@@ -75,20 +76,7 @@ footer {
 	padding-bottom: 0;
 	margin-bottom: 0;
 }
-.dropdown-content {
-	right: 0px;
-}
-.ui-tooltip {
-	background-color: #cccccc;
-}
-.twofabtn {
-	background-color: #cc9900;
-	margin-right: 20px;
-}
-.twofabtn:hover {
-	color: #ffffff!important;
-	background-color: #ffcc00;
-}
+
 @media (max-width:550px) {
 	.maintitle {
 		display: none;

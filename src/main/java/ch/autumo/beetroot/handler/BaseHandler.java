@@ -1961,7 +1961,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
 				String m = LanguageManager.getInstance().translate("base.err.template.parsing.msg", userSession, getHtml.split(":")[1]);
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
-				return serveHandler(session, new ErrorHandler(Status.NOT_FOUND, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
+				return serveHandler(session, new ErrorHandler(Status.BAD_REQUEST, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
 			}
 
 			
@@ -2221,7 +2221,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
         try {
         	handler.readData(session, -1);
         } catch (Exception ex) {
-        	LOG.error("*** NOTE *** : You might have forgotten to define a default handler and entioty in teh configuration!");
+        	LOG.error("*** NOTE *** : You might have forgotten to define a default handler and entioty in the configuration!");
         	throw ex;
         }
 		// Language is re-written per redirect script

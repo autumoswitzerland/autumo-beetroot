@@ -28,20 +28,13 @@
 			<fieldset>
 				<legend>Benutzer editieren</legend>
 				{$data}
-				<!--
-					Wenn Sie Ihre eigenen Rollenzuweisungen mit Datenbankrollen oder einer ACL 
-					verwenden wollen, z.B. mit mehreren Rollen/Gruppen, überschreiben Sie die Methode 
-					'extractCustomSingleInputDiv()' ihres User Edit-Handlers oder fügen Sie Ihre 
-					neue Rollenverwaltung hier hinzu! 
-				 -->
 			</fieldset>
-			
 			<a href="/{$lang}/users/index" class="button right">Abbrechen</a>
 			<button type="submit">Speichern</button>
 			{$if-role=Administrator:}
 			<a  href="#"
  				onclick="if (confirm('Sind Sie sicher, dass Sie einen neuen QR-Code generieren wollen ?')) { window.location='/{$lang}/users/newqrcode?id={$id}'; } event.preventDefault();" 
-				title="Neuer QR Code generieren; Sie m&uuml;ssen diesen im Google Authenticator neu ein-scannen."
+				title="Neuer QR Code generieren; Sie müssen diesen im Google Authenticator neu ein-scannen."
 				class="button right twofabtn">Neuer 2FA QR Code</a>
 			{$endif-role;}
 			<br><br><br>
