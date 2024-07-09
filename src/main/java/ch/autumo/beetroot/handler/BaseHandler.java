@@ -1511,9 +1511,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						final String langs[] = LanguageManager.getInstance().getConfiguredLanguages();
 						for (int i = 0; i < langs.length; i++) {
 							if (i+1 == langs.length) {
-								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".png\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
 							} else {
-								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".gif\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".png\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
 								entries += "<hr class=\"menusep\">\n";
 							}
 						}
@@ -2778,7 +2778,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public abstract String getResource();
 
 	/**
-	 * Add proper logic for checkboxes.
+	 * Add proper logic for check-boxes.
 	 * 
 	 * @param session HTTP session
 	 * @param columnName column / input name
@@ -2845,6 +2845,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 */
 	protected final class IfSectionHandler {
 
+		private static final String ROLE = "role";
+		private static final String NOT_ROLE = "!role";
+		private static final String ENTITY = "entity";
+		private static final String NOT_ENTITY = "!entity";
+		private static final String ACTION = "action";
+		private static final String NOT_ACTION = "!action";
+		
 		private Map<String, Map<String, Boolean>> ifTagStates = new HashMap<String, Map<String, Boolean>>();
 		private BaseHandler handler = null;
 		
@@ -2862,7 +2869,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		 * 
 		 * @param text current line
 		 * @param userSession user session
-		 * @param layer 'overall', 'template' or 'subresource'
+		 * @param layer 'overall', 'template' or 'sub-resource'
 		 * @return true if removal should continue, otherwise false
 		 */
 		protected boolean continueRemoval(String text, Session userSession, String layer) {
@@ -2872,17 +2879,22 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			// Add initial states if not present for layer
 			if (currStates == null) {
 				currStates = new HashMap<String, Boolean>();
-				currStates.put("role", Boolean.FALSE);
-				currStates.put("entity", Boolean.FALSE);
-				currStates.put("action", Boolean.FALSE);
+				currStates.put(ROLE, Boolean.FALSE);
+				currStates.put(NOT_ROLE, Boolean.FALSE);
+				currStates.put(ENTITY, Boolean.FALSE);
+				currStates.put(NOT_ENTITY, Boolean.FALSE);
+				currStates.put(ACTION, Boolean.FALSE);
+				currStates.put(NOT_ACTION, Boolean.FALSE);
 				ifTagStates.put(layer, currStates);
 			}
+			
+			
 			// deal with role-specific sections
 			if (text.contains("$endif-role")) {
-				currStates.put("role", Boolean.FALSE);
+				currStates.put(ROLE, Boolean.FALSE);
 				continueRemoval = true;
 			}
-			if (currStates.get("role").booleanValue())
+			if (currStates.get(ROLE).booleanValue())
 				continueRemoval = true;
 			if (text.contains("$if-role")) {
 				final List<String> roles = userSession.getUserRoles();
@@ -2894,35 +2906,86 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					roleAvailable = roles.contains(tempRole);
 				}
 				if (!roleAvailable)
-					currStates.put("role", Boolean.TRUE); // start removal
+					currStates.put(ROLE, Boolean.TRUE); // start removal
 				continueRemoval = true;
 			}
+			
+			if (text.contains("$endif-!role")) {
+				currStates.put(NOT_ROLE, Boolean.FALSE);
+				continueRemoval = true;
+			}
+			if (currStates.get(NOT_ROLE).booleanValue())
+				continueRemoval = true;
+			if (text.contains("$if-!role")) {
+				final List<String> roles = userSession.getUserRoles();
+				final List<String> tempRoles = handler.getIfValuesFromTemplate(text);
+				boolean roleAvailable = false;
+				final Iterator<String> iterator = tempRoles.iterator();
+				while (!roleAvailable && iterator.hasNext()) {
+					final String tempRole = iterator.next();
+					roleAvailable = roles.contains(tempRole);
+				}
+				if (roleAvailable)
+					currStates.put(NOT_ROLE, Boolean.TRUE); // start removal
+				continueRemoval = true;
+			}
+			
+			
 			// deal with entity-specific sections
 			if (text.contains("$endif-entity")) {
-				currStates.put("entity", Boolean.FALSE);
+				currStates.put(ENTITY, Boolean.FALSE);
 				continueRemoval = true;
 			}
-			if (currStates.get("entity").booleanValue())
+			if (currStates.get(ENTITY).booleanValue())
 				continueRemoval = true;
 			if (text.contains("$if-entity")) {
 				final List<String> entities = handler.getIfValuesFromTemplate(text);
 				if (!entities.contains(entity))
-					currStates.put("entity", Boolean.TRUE); // start removal
+					currStates.put(ENTITY, Boolean.TRUE); // start removal
 				continueRemoval = true;
 			}
+			
+			if (text.contains("$endif-!entity")) {
+				currStates.put(NOT_ENTITY, Boolean.FALSE);
+				continueRemoval = true;
+			}
+			if (currStates.get(NOT_ENTITY).booleanValue())
+				continueRemoval = true;
+			if (text.contains("$if-!entity")) {
+				final List<String> entities = handler.getIfValuesFromTemplate(text);
+				if (!entities.contains(entity))
+					currStates.put(NOT_ENTITY, Boolean.TRUE); // start removal
+				continueRemoval = true;
+			}
+			
+			
 			// deal with action-specific sections
 			if (text.contains("$endif-action")) {
-				currStates.put("action", Boolean.FALSE);
+				currStates.put(ACTION, Boolean.FALSE);
 				continueRemoval = true;
 			}
-			if (currStates.get("action").booleanValue())
+			if (currStates.get(ACTION).booleanValue())
 				continueRemoval = true;
 			if (text.contains("$if-action")) {
 				final List<String> actions = handler.getIfValuesFromTemplate(text);
 				if (!actions.contains(action))
-					currStates.put("action", Boolean.TRUE); // start removal
+					currStates.put(ACTION, Boolean.TRUE); // start removal
 				continueRemoval = true;
 			}
+			
+			if (text.contains("$endif-!action")) {
+				currStates.put(NOT_ACTION, Boolean.FALSE);
+				continueRemoval = true;
+			}
+			if (currStates.get(NOT_ACTION).booleanValue())
+				continueRemoval = true;
+			if (text.contains("$if-!action")) {
+				final List<String> actions = handler.getIfValuesFromTemplate(text);
+				if (actions.contains(action))
+					currStates.put(NOT_ACTION, Boolean.TRUE); // start removal
+				continueRemoval = true;
+			}
+			
 			return continueRemoval;
 		}		
 	}

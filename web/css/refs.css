@@ -32,19 +32,15 @@ body {
 	background-repeat: repeat;
 	background-color: #666666;
 }
- 
+
 /**
  * Images for language selection entries.
  */
 .lang_select_de {
-	background-image: url('/img/lang/de.gif');
-	background-repeat: no-repeat;
-	background-position: top;
+	background-image: url('/img/lang/de.png');
 }
 .lang_select_en {
-	background-image: url('/img/lang/en.gif');
-	background-repeat: no-repeat;
-	background-position: top;
+	background-image: url('/img/lang/en.png');
 }
 
 /**

@@ -23,8 +23,8 @@ CREATE TABLE users (
     lang VARCHAR(5) not NULL default 'en',
     two_fa BOOLEAN default false NOT NULL,
     secretkey VARCHAR(32) default '',
-    created DATETIME DEFAULT NOW(),
-    modified DATETIME DEFAULT NOW(),
+    created TIMESTAMP(3) DEFAULT NOW(),
+    modified TIMESTAMP(3) DEFAULT NOW(),
     unique(username),
     unique(email)
 );
@@ -34,15 +34,15 @@ CREATE TABLE roles (
     name VARCHAR(255) not NULL,
     description VARCHAR(1024) default '',
     permissions VARCHAR(1024) default '',
-    created DATETIME DEFAULT NOW(),
-    modified DATETIME DEFAULT NOW(),
+    created TIMESTAMP(3) DEFAULT NOW(),
+    modified TIMESTAMP(3) DEFAULT NOW(),
     unique(name)
 );
 
 CREATE TABLE users_roles (
     user_id INT UNSIGNED NOT NULL,
     role_id INT UNSIGNED NOT NULL,
-    created DATETIME DEFAULT NOW(),
+    created TIMESTAMP(3) DEFAULT NOW(),
     PRIMARY KEY (user_id, role_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
@@ -62,9 +62,9 @@ CREATE TABLE tasks (
     dayofweek VARCHAR(128) not NULL,
     active BOOLEAN default true NOT NULL,
     laststatus BOOLEAN default true NOT NULL,
-    lastexecuted DATETIME DEFAULT NULL,
-    created DATETIME DEFAULT NOW(),
-    modified DATETIME DEFAULT NOW(),
+    lastexecuted TIMESTAMP(3) DEFAULT NULL,
+    created TIMESTAMP(3) DEFAULT NOW(),
+    modified TIMESTAMP(3) DEFAULT NOW(),
     unique(name)
 );
 
@@ -72,8 +72,8 @@ CREATE TABLE properties (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   	name VARCHAR(255) not NULL,
   	value VARCHAR(2000) NULL,
-    created DATETIME DEFAULT NOW(),
-    modified DATETIME DEFAULT NOW(),
+    created TIMESTAMP(3) DEFAULT NOW(),
+    modified TIMESTAMP(3) DEFAULT NOW(),
     unique(name)
 );
 

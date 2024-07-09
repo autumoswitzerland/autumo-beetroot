@@ -53,7 +53,7 @@ form {
 .footerline {
 	margin-bottom: 0px;
 	padding-top: 10px;
-	padding-bottom: 10px;
+	padding-bottom: 8px;
 	padding-right: 20px;
 	font-size: 1.0rem !important;
 	font-weight: 300 !important;
@@ -69,6 +69,7 @@ form {
 	color: #aaeeff;
 }
 .footerlogo {
+	margin-top: -3px;
 	height: 50px;
 }
 
@@ -130,6 +131,54 @@ input {
 	font-size: 1.2em !important;
 	font-weight: 100;
 }
+input[type=color], 
+input[type=date],
+input[type=datetime-local], 
+input[type=datetime],
+input[type=email], 
+input[type=month],
+input[type=number], 
+input[type=password],
+input[type=search], 
+input[type=tel],
+input[type=text], 
+input[type=time],
+input[type=url], 
+input[type=week],
+select,
+textarea {
+	border-radius: 8px;
+}
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  font-size: 2rem;
+  padding: 0.1rem;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+  border-radius: 8px;
+  background-color: #fff;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: 30px;
+  height: 30px;
+  clip-path: polygon(41% 52%, 26% 35%, 10% 51%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 91% 33%, 78% 18%);  
+  transform: scale(0);
+  background-color: green;
+}
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+input[type="checkbox"]:hover {
+  color: black;
+}
+::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
 
 legend {
 	font-size: 1.8rem !important;
@@ -137,9 +186,13 @@ legend {
 }
 
 h1 {
+	margin-top: -2px !important;
 	font-size: 2.0rem !important;
 	font-weight: 100 !important;
 	line-height: 2.0 !important;
+}
+h1 a {
+	font-weight: 100 !important;
 }
 h3 {
 	font-size: 2.0rem !important;
@@ -178,6 +231,7 @@ h5 {
 	margin-left: 30px;
 }
 .mainversion {
+	font-weight: lighter !important;
 	font-size: 1.0rem !important;
 	color: #ffffff !important;
 	float: right;
@@ -270,9 +324,9 @@ h5 {
 	color: #9adeda;
 }
 .portfolio-box .portfolio-box-caption .portfolio-box-caption-content .project-category {
-	margin-top: 46px;
+	margin-top: 56px;
 	font-size: 20px;
-	font-weight: 400;
+	font-weight: 180;
 	text-transform: none;
 	line-height: 20px;
 }
@@ -363,22 +417,6 @@ h5 {
 .side-nav a {
 	font-size: 1.2rem;
 	font-weight: lighter;
-}
-
-.pagination {
-	padding-top: 20px;
-	text-align: right;
-	line-height: 1.2rem;
-}
-.prev {
-	border: 1px solid #bbbbbb;
-	border-radius: 8px;
-	background-color: #dddddd !important;
-}
-.next {
-	border: 1px solid #bbbbbb;
-	border-radius: 8px;
-	background-color: #dddddd !important;
 }
 
 div.message {
@@ -482,18 +520,28 @@ div.message.warning:before {
 /**
  * Refresh elements.
  */
+ #cb_log_refresh {
+ 	background-color: #0e4e74 !important;
+ 	height: 34px;
+ 	width: 34px;
+ 	margin-top:-3px;
+	border: 1px solid #0E4E77 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1); 	
+ }
 .refresh_section {
-	width: 200px;
+	display: flex;
+	width: 280px;
 	float: left;
 	height: 40px;
 	margin-top: 8px;
 	margin-left: 20px;
 }
 .refresh_section_label {
-	margin-bottom: -1px !important;
-	margin-left: -4px !important;
+	margin-top: 9px !important;
+	margin-left: 0px !important;
 	background-color: #07b !important;
 	color: white;
+	font-weight: lighter;
 }
 
 /**
@@ -551,19 +599,24 @@ div.message.warning:before {
 	margin-top: -8px;
 	background-color: #3498DB;
 }
+.dropbtnimg {
+	margin-top: 14px !important;
+	background-repeat: no-repeat;
+	background-position: top;
+}
 .dropbtnimg:hover, .dropbtnimg:focus {
 	height: 58px;
-	top: 0px;
+	top: -13px;
 	background-color: #3498DB;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 #langmenu {
 	width: 40px;
-	margin-top: 15px;
+	margin-top: 0px;
 }
 #langmenu:hover, #langmenu:focus {
-	margin-top: 1px;
+	margin-top: 0px;
 }
 #imglangmenu {
 	margin-left: 10px;
@@ -584,6 +637,8 @@ div.message.warning:before {
 	padding: 12px 16px;
 	text-decoration: none;
 	display: block;
+	font-weight: lighter;
+	font-size: 1.2rem;
 }
 /* Change color of dropdown links on hover */
 .dropdown-content a:hover {
@@ -620,6 +675,9 @@ a {
 	max-width: 80rem;
 }
 
+.actions {
+    font-weight: 500; 
+}
 .actions.columns {
 	margin-top: 1rem;
 	border-left: 5px solid #0e4e74;
@@ -657,6 +715,7 @@ a {
 }
 
 ul.pagination li a {
+	font-weight: lighter !important;
 	color: rgba(0, 0, 0, 0.54);
 }
 ul.pagination li.active a {
@@ -668,7 +727,6 @@ ul.pagination li.active a {
 ul.pagination .disabled:hover a {
 	background: none;
 }
-
 .paginator {
 	text-align: center;
 }
@@ -677,8 +735,24 @@ ul.pagination .disabled:hover a {
 	display: inline-block;
 }
 .paginator p {
+	font-weight: lighter;
 	text-align: right;
 	color: rgba(0, 0, 0, 0.54);
+}
+.pagination {
+	padding-top: 20px;
+	text-align: right;
+	line-height: 1.2rem;
+}
+.prev {
+	border: 1px solid #bbbbbb;
+	border-radius: 8px;
+	background-color: #dddddd !important;
+}
+.next {
+	border: 1px solid #bbbbbb;
+	border-radius: 8px;
+	background-color: #dddddd !important;
 }
 .asc:after {
 	content: " \2193";
@@ -861,6 +935,7 @@ pre {
 	table-layout: fixed;
 }
 table {
+	font-weight: 300;
 	background: #f8f8f8; /** light-theme background */
 	margin-bottom: 1.25rem;
 	border: none;
