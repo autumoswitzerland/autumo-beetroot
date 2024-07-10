@@ -95,6 +95,9 @@ p {
 ul.pagination li.active a {
     color: #444444;
 }
+ul.pagination li a:hover {
+	color: #0093E6 !important;
+}
 ul.pagination li  {
     color: #444444;
 }

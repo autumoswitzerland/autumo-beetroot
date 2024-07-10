@@ -31,7 +31,7 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.handler.BaseHandler;
+import ch.autumo.beetroot.handler.NoConfigHandler;
 import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.modules.log.LogFactory;
@@ -41,7 +41,7 @@ import ch.autumo.beetroot.utils.Web;
 /**
  * Log extended handler.
  */
-public class LogHandler extends BaseHandler {
+public class LogHandler extends NoConfigHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LogHandler.class);
 
@@ -183,7 +183,7 @@ public class LogHandler extends BaseHandler {
         // Example custom logic for %im
         String message = event.getMessage().getFormattedMessage();
         // Apply your custom formatting logic here
-        return "Custom IM: " + message; // Example formatting
+        return message;
     }
 
     private String replaceAnsiWithHtml(String input) {

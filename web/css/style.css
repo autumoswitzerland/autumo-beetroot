@@ -1,6 +1,6 @@
 /**
- * 
- * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
+ *
+ * Copyright (c) 2024 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 
@@ -132,19 +132,19 @@ input {
 	font-size: 1.2em !important;
 	font-weight: 100;
 }
-input[type=color], 
+input[type=color],
 input[type=date],
-input[type=datetime-local], 
+input[type=datetime-local],
 input[type=datetime],
-input[type=email], 
+input[type=email],
 input[type=month],
-input[type=number], 
+input[type=number],
 input[type=password],
-input[type=search], 
+input[type=search],
 input[type=tel],
-input[type=text], 
+input[type=text],
 input[type=time],
-input[type=url], 
+input[type=url],
 input[type=week],
 select,
 textarea {
@@ -167,7 +167,7 @@ input[type="checkbox"]::before {
   content: "";
   width: 30px;
   height: 30px;
-  clip-path: polygon(41% 52%, 26% 35%, 10% 51%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 91% 33%, 78% 18%);  
+  clip-path: polygon(41% 52%, 26% 35%, 10% 51%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 37% 88%, 91% 33%, 78% 18%);
   transform: scale(0);
   background-color: green;
 }
@@ -184,7 +184,7 @@ input[type="checkbox"]:hover {
 legend {
 	font-size: 1.8rem !important;
 	font-weight: 100 !important;
-	color: #0e4e74;
+	color: #146fa6;
 }
 
 h1 {
@@ -218,7 +218,7 @@ h5 {
 	padding-top: 8px;
 	font-size: 1.1rem !important;
 	line-height: 1.1 !important;
-	color: #0093E6 !important;	
+	color: #0093E6 !important;
 }
 
 .maintitle {
@@ -404,7 +404,7 @@ h5 {
 	color: #0e4e74;
 }
 .side-nav li a:not(.button):hover {
-	color: #0e4e74;
+	color: #146fa6;
 }
 .side-nav li.heading {
 	color: #146fa6;
@@ -421,6 +421,7 @@ h5 {
 	font-weight: lighter;
 }
 .side-nav li div {
+	margin-top: 36px;
 	margin-left: 14px;
 	margin-right: 10px;
 	font-size: 1.0rem;
@@ -428,6 +429,7 @@ h5 {
 }
 .side-nav li div label {
 	font-weight: 100;
+	color: #0e4e74;
 }
 
 div.message {
@@ -537,7 +539,7 @@ div.message.warning:before {
  	width: 34px;
  	margin-top:-3px;
 	border: 1px solid #0E4E77 !important;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1); 	
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
  }
 .refresh_section {
 	display: flex;
@@ -560,7 +562,7 @@ div.message.warning:before {
  */
 .dropdown-content {
 	right: 0px;
-} 
+}
 .dropdown_main {
 	width: 100px;
 	position: relative;
@@ -594,7 +596,7 @@ div.message.warning:before {
 	padding: 0;
 	margin: 0;
 	font-size: 1.2rem !important;
-	border-radius: 0px;		
+	border-radius: 0px;
 }
 .dropbtnlang {
 	width: 40px;
@@ -663,7 +665,7 @@ div.message.warning:before {
 	margin: 0;
 }
 /* Show the dropdown menu
- * (use JS to add this class to the .dropdown-content 
+ * (use JS to add this class to the .dropdown-content
  * container when the user clicks on the dropdown button)
  */
 .show {
@@ -679,10 +681,10 @@ video {
 }
 
 a:hover {
-	color: #0e4e74;
+	color: #146fa6;
 }
 a {
-	color: #146fa6;
+	color: #0e4e74;
 }
 
 .row {
@@ -690,7 +692,7 @@ a {
 }
 
 .actions {
-    font-weight: 500; 
+    font-weight: 500;
 }
 .actions.columns {
 	margin-top: 1rem;
@@ -731,6 +733,9 @@ a {
 ul.pagination li a {
 	font-weight: lighter !important;
 	color: rgba(0, 0, 0, 0.54);
+}
+ul.pagination li a:hover {
+	color: #2DC7FE;
 }
 ul.pagination li.active a {
 	background-color: #666666;
@@ -963,7 +968,7 @@ table thead tr th {
 	font-weight: normal;
 }
 table tr {
-	border-bottom: 1px solid #ebebec;
+	border-bottom: 1px solid #cbcbcc;
 }
 table thead tr {
 	border-bottom: 1px solid #146fa6;
@@ -1057,12 +1062,12 @@ button {
     display: none;
 }
 .twofabtn {
-	background-color: #cc9900;
+	background-color: #cc9900!important;
 	margin-right: 20px;
 }
 .twofabtn:hover {
 	color: #ffffff!important;
-	background-color: #ffcc00;
+	background-color: #ffcc00!important;
 }
 
 
@@ -1078,7 +1083,7 @@ button {
     background-color: #333333;
     -moz-border-radius: 0px;
 	-webkit-border-radius: 8px 8px 0px 0px;
-	border-radius: 8px 8px 0px 0px; 
+	border-radius: 8px 8px 0px 0px;
 }
 #termdot {
     background-color: #07b;
@@ -1111,7 +1116,7 @@ button {
     background-color: #111111;
     -moz-border-radius: 0px;
 	-webkit-border-radius: 0px 0px 8px 8px;
-	border-radius: 0px 0px 8px 8px; 
+	border-radius: 0px 0px 8px 8px;
     white-space: pre-wrap; word-wrap: break-word;
     padding: 8px 8px 4px 8px;
 }
@@ -1128,11 +1133,11 @@ button {
  */
 .arrcont {
 	clear: both;
-	position: relative;	
+	position: relative;
     display: inline-flex;
     float: left;
-	margin-left: -88px;	
-	margin-top: 44px;	
+	margin-left: -88px;
+	margin-top: 44px;
 }
 #return-to-bottom i, return-to-top i {
     color: #fff;
@@ -1188,8 +1193,8 @@ button {
     width: 2px;
     float: left;
     left: 0%;
-	margin-top: -38px;	
-	margin-left: -73px;	
+	margin-top: -38px;
+	margin-left: -73px;
     border-left: 2px dashed #333333;
 }
 
