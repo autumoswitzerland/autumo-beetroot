@@ -225,7 +225,7 @@ public class ChangeHandler extends BaseHandler {
 		if (jsPwValidator)
 			setVar("passElem", "<div id=\"password\" data-lang=\""+session.getUserSession().getUserLang()+"\"></div>");
 		else
-			setVar("{$passElem}", "<input type=\"password\" name=\"password\" id=\"password\">");
+			setVar("passElem", "<input type=\"password\" name=\"password\" id=\"password\">");
 	}
 
 	@Override
