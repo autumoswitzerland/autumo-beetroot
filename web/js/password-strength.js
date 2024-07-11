@@ -23,7 +23,8 @@
             strengthMeterClass: 'strength_meter',
             toggleButtonClass: 'button_strength',
             showPasswordText: '{$pw.show}',
-            hidePasswordText: '{$pw.hide}'
+            hidePasswordText: '{$pw.hide}',
+			//pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#+`~\-_=\'@$!.,;:”^\(\)\[\]\|\{\}\\\/%*<>?&])[^\s]{8,}$'
         },
 
         _create: function () {
@@ -36,20 +37,20 @@
             //Note. Instead of this you can use templating. I did not want to have addition dependencies.
             this.element.addClass(options.strengthWrapperClass);
             this.element.append('<input type="password" value="'+val+'" name="password" class="' + options.inputClass + '">');
-            this.element.append('<input type="text" value="'+val+'" name="password" class="' + options.inputClass + '" style="display:none">');
+            this.element.append('<input type="text" value="'+val+'" name="password" class="' + options.inputClass + '" style="display:none" >');
             this.element.append('<a href="" class="' + options.toggleButtonClass + '">' + options.showPasswordText + '</a>');
             this.element.append('<div class="' + options.strengthMeterClass + '"><div><p></p></div></div>');
             this.element.append(
-               '<div class="pswd_info" style="display: none;"> \
-                <h3 class="pw_info">{$pw.info}</h3> \
-                <ul> \
-                  <li data-criterion="length" class="valid">8-24 {$pw.chars}</li> \
-                  <li data-criterion="capital" class="valid">{$pw.capital}</li> \
-                  <li data-criterion="number" class="valid">{$pw.number}</li> \
-                  <li data-criterion="special" class="valid">{$pw.special}</li> \
-                  <li data-criterion="letter" class="valid">{$pw.letter}</li> \
-                </ul> \
-                </div>');
+               '<div class="pswd_info" style="display: none;">'
+                +'<h3 class="pw_info">{$pw.info}</h3>'
+                +'<ul>'
+                  +'<li data-criterion="length" class="valid">8-24 {$pw.chars}</li>'
+                  +'<li data-criterion="capital" class="valid">{$pw.capital}</li>'
+                  +'<li data-criterion="number" class="valid">{$pw.number}</li>'
+                  +'<li data-criterion="special" class="valid">{$pw.special}</li>'
+                  +'<li data-criterion="letter" class="valid">{$pw.letter}</li>'
+                +'</ul>'
+                +'</div>');
 
             //this object contain all main inner elements which will be used in strength meter.
             this.content = {};

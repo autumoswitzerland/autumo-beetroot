@@ -48,6 +48,7 @@ CREATE TABLE users (
     lastname VARCHAR2(50) DEFAULT '',
     password VARCHAR2(1024) not NULL,
     email VARCHAR2(256) not NULL,
+    phone VARCHAR2(15) DEFAULT '',
     lasttoken varchar2(256) DEFAULT 'NONE' not NULL,
     settings varchar2(1024) DEFAULT '',
     role VARCHAR2(20) DEFAULT 'Operator' not NULL,
@@ -152,17 +153,15 @@ END;
 
 -- USERS
 -- NOTE: Passwords can be encrypted in database; see 'beetroot.cfg'
--- initial password is 'beetroot' for admin
+-- initial password is 'beetroot'
 -- By default, the extended roles are used (own role table), the role
 -- attribute in the user is obsolete!
-INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'admin', 'beetroot', 'beetroot@autumo.ch', 'NONE', 'theme=dark', ' ', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- initial password is 'beetroot' for operator
-INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'operator', 'beetroot', 'beetroot-op@autumo.ch', 'NONE', 'theme=default', ' ', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
--- initial password is 'beetroot' for controller
-INSERT INTO users (id, username, password, email, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', 'NONE', 'theme=default', ' ', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
+(users_seq.NEXTVAL, 'admin', 'beetroot', 'beetroot@autumo.ch', '', 'NONE', 'theme=dark', ' ', 'en', '0', 'LD6I2VCIXJOVKBEF6CAID5UWHWA32SQL', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
+(users_seq.NEXTVAL, 'operator', 'beetroot', 'beetroot-op@autumo.ch', '', 'NONE', 'theme=default', ' ', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
+(users_seq.NEXTVAL, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', ' ', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ROLES
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES
@@ -197,7 +196,9 @@ INSERT INTO tasks (id, guid, name, path, minute, hour, dayofmonth, monthofyear, 
 INSERT INTO properties (id, name, value) values
 (properties_seq.NEXTVAL,'web.json.api.key', 'abcedfabcedfabcedfabcedfabcedfab');
 INSERT INTO properties (id, name, value) values
-(properties_seq.NEXTVAL,'security.2fa.code.email', 'No');
+(properties_seq.NEXTVAL,'security.2fa.code.email', 'Off');
+INSERT INTO properties (id, name, value) values
+(properties_seq.NEXTVAL,'security.2fa.code.sms', 'Off');
 INSERT INTO properties (id, name, value) values
 (properties_seq.NEXTVAL,'log.size', '100');
 INSERT INTO properties (id, name, value) values

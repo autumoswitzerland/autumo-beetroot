@@ -61,9 +61,11 @@ public class BeetRootConfigurationManager {
 	private String fullConfigBasePath = null;
 	
 	private Properties generalProps = null;
+	private Properties htmlInputMap = null;
 	private boolean translateTemplates = false;
 	private boolean extendedRoles = true;
 	private boolean csrf = true;
+	
 	
 	static {
     	
@@ -230,27 +232,50 @@ public class BeetRootConfigurationManager {
 				fullConfigBasePath = file;
 		}
 		
+		FileInputStream fis = null;
 		try {
-			
+			fis = new FileInputStream(file);
 			if (f.exists())
-				generalProps.load(new FileInputStream(file));
+				generalProps.load(fis);
 			else
 				generalProps.load(BeetRootConfigurationManager.class.getResourceAsStream(file));
 			
 		} catch (IOException e) {
-			
 			LOG.error("Couldn't read general server configuration '" + file + "' !", e);
 			throw new Exception("Couldn't read general server configuration '" + file + "' !");
+		} finally {
+			if (fis != null)
+				fis.close();
 		}
 		
+		
 		// load some main props separately
+		
 		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
 		if (this.csrf)
 	    	LOG.info("CSRF activated!");
+		
 		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
+		
 		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
+		
 		if (this.translateTemplates)
 	    	LOG.info("Web templates are translated.");
+		
+		final String htmlMap = getString(Constants.KEY_WEB_INPUT_MAP);
+		final File mapFile = new File(htmlMap);
+		if (htmlMap != null && htmlMap.length() != 0 && mapFile.exists()) {
+			this.htmlInputMap = new Properties();
+			fis = new FileInputStream(mapFile);
+			try {
+				this.htmlInputMap.load(fis);
+			} catch (IOException e) {
+				LOG.error("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !", e);
+				throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
+			} finally {
+				fis.close();
+			}
+		}
 		
 		isInitialized = true;
 	}
@@ -283,12 +308,12 @@ public class BeetRootConfigurationManager {
                 p.load(fis);
                 fis.close();
             } catch (IOException ex) {
-    			LOG.error("Couldn't read general desktop configuration '" + path + "' !", ex);
+    			LOG.error("Couldn't read general desktop configuration '{}' !", path, ex);
     			throw new Exception("Couldn't read general desktop configuration '" + path + "' !");
             }
             this.generalProps = p;
         } else {
-			LOG.error("Couldn't read general desktop configuration '" + path + "', file doesn't exist !");
+			LOG.error("Couldn't read general desktop configuration '{}', file doesn't exist !", path);
 			throw new Exception("Couldn't read general desktop configuration '" + path + "', file doesn't exist !");
         }
         
@@ -297,6 +322,41 @@ public class BeetRootConfigurationManager {
         
 		// At last
 		isInitialized = true;
+	}
+
+	/**
+	 * Get HTML input map type.
+	 * 
+	 * @return HTML input map type or null
+	 */
+	public String getHtmlInputMapType(String name) {
+		if (htmlInputMap != null) {
+			final Object val = htmlInputMap.get(name);
+			if (val != null) {
+				final String parts[] = val.toString().trim().split (",", 2);
+				return parts[0].trim();
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get HTML input map pattern.
+	 * 
+	 * @return HTML input map pattern or null
+	 */
+	public String getHtmlInputMapPattern(String name) {
+		if (htmlInputMap != null) {
+			final Object val = htmlInputMap.get(name);
+			if (val != null) {
+				final String parts[] = val.toString().trim().split (",", 2);
+				if (parts.length > 1)
+					return parts[1].trim();
+				else
+					return null;
+			}
+		}
+		return null;
 	}
 	
 	/**

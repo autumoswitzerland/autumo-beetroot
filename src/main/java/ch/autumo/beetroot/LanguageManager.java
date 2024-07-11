@@ -279,6 +279,26 @@ public class LanguageManager {
 
 	/**
 	 * Translate method for the template engine and for
+	 * users of this framework. It HTML escapes special
+	 * characters and 'Umlaute' fully.
+	 * 
+	 * Useful for mails.
+	 * 
+	 * General language files are place in the directory:
+	 * 'web/lang'; e.g. 'lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
+	 * @param userSession the user session
+	 * @param arguments the arguments to replace in the text with variables
+	 * @return translated text
+	 */
+	public String translateFullEscape(String key, Session userSession, Object... arguments) {
+		final String lang = userSession.getUserLang();
+		return this.translate(key, lang, true, arguments);
+	}
+	
+	/**
+	 * Translate method for the template engine and for
 	 * users of this framework.
 	 * 
 	 * General language files are place in the directory:
@@ -290,6 +310,10 @@ public class LanguageManager {
 	 * @return translated text
 	 */
 	public String translate(String key, String lang, Object... arguments) {
+		return this.translate(key, lang, false, arguments);
+	}
+	
+	private String translate(String key, String lang, boolean fullEscape, Object... arguments) {
 		final Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(LANG_GRP_APP);
 		ResourceBundle bundle = langBundles.get(lang);
 		String text = null;
@@ -305,7 +329,11 @@ public class LanguageManager {
 				return null;
 			}
 		}
-		return Web.escapeHtmlReserved2(MessageFormat.format(text, arguments));
+		
+		if (fullEscape)
+			return Web.escapeHtml(MessageFormat.format(text, arguments));
+		else
+			return Web.escapeHtmlReserved2(MessageFormat.format(text, arguments));
 	}
 	
 	/**

@@ -104,6 +104,18 @@ public class User extends Model {
     }
 
     @Unique
+    @Column (name = "phone")
+    private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    @Unique
     @Column (name = "username")
     private String username;
 
@@ -137,7 +149,7 @@ public class User extends Model {
 		this.secretkey = secretkey;		
 	}
     
-    @Column (name = "twoFa")
+    @Column (name = "two_fa")
     private boolean twoFa;
     
     public boolean getTwoFa() {

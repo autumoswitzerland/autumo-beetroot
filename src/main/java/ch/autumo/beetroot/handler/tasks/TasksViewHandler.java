@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
-import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Time;
@@ -49,15 +48,15 @@ public class TasksViewHandler extends DefaultViewHandler {
 			case "dayofweek"	: return "<td>" + DB.getValue(set, columnName) + "</td>";
 			
 			case "active"		: return set.getBoolean(columnName) ? 
-									"<td>" + LanguageManager.getInstance().translate("base.switch.yes", session.getUserSession()) + "</td>" : 
-									"<td>" + LanguageManager.getInstance().translate("base.switch.no", session.getUserSession()) + "</td>";
+									"<td class=\"yesStatus\"></td>" : 
+									"<td class=\"noStatus\"></td>";
 					
 			case "laststatus"	: return set.getBoolean(columnName) ? "<td class=\"greenStatus\"></td>" : "<td class=\"redStatus\"></td>";
 			case "lastexecuted"	: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			case "created"		: return "<td>" +Time.getGUIDate(set.getTimestamp(columnName))+ "</td>";
 			case "modified"		: return set.getTimestamp(columnName) == null ? "<td></td>" : "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			
-			default				: return "<td>"+set.getObject(columnName)+"</td>";
+			default				: return "<td>"+DB.getValue(set, columnName)+"</td>";
 		}
 	}
 	

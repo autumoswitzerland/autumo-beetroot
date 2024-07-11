@@ -284,6 +284,11 @@ public class Constants {
 	 */
 	public static final String KEY_WEB_MAX_REF_REC = "web_max_ref_records";
 
+	/**
+	 * Input map foe additional DB column - HTML input field mapping.
+	 */
+	public static final String KEY_WEB_INPUT_MAP = "web_input_map";
+	
 	
 	// SQL specific
 	//------------------------------------------------------------------------------

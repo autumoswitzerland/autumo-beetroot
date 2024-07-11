@@ -52,19 +52,20 @@ public class UsersViewHandler extends DefaultViewHandler {
 	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
 		final User user = (User) entity;
 		switch (columnName) {
-			case "username"		: userName = set.getString(columnName); 
+			case "username"		: userName = DB.getValue(set, columnName); 
 								  return "<td>"+userName+"</td>";
 			case "email"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "phone"		: return "<td>" + DB.getValue(set, columnName) + "</td>";
 			case "role"			: String r = DB.getValue(set, columnName);
 									return "<td>" + LanguageManager.getInstance().translateOrDefVal("role."+r, r, session.getUserSession()) + "</td>";
 			case "two_fa"		: return set.getBoolean(columnName) ? 
-									"<td>" + LanguageManager.getInstance().translate("base.switch.yes", session.getUserSession()) + "</td>" : 
-									"<td>" + LanguageManager.getInstance().translate("base.switch.no", session.getUserSession()) + "</td>";
+									"<td class=\"yesStatus\"></td>" : 
+									"<td class=\"noStatus\"></td>";
 			case "created"		: return "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			case "modified"		: return "<td>"+Time.getGUIDate(set.getTimestamp(columnName))+"</td>";
 			// transient field 'code'
 			case "code"			: return "<td>"+this.get2FAQRImage(session, user)+"</td>";
-			default				: return "<td>"+set.getObject(columnName)+"</td>";
+			default				: return "<td>"+DB.getValue(set, columnName)+"</td>";
 		}
 	}
 

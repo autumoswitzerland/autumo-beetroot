@@ -69,6 +69,7 @@ import ch.autumo.beetroot.server.BaseServer;
 import ch.autumo.beetroot.server.communication.Communicator;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
+import ch.autumo.beetroot.sms.MessengerFactory;
 import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.MIME;
 import ch.autumo.beetroot.utils.OS;
@@ -675,6 +676,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
                 String dbFirstName = null;
                 String dbLastName = null;
                 String dbEmail = null;
+                String dbPhone = null;
                 String dbSecKey = null;
                 boolean dbTwoFa = false;
             	if (postParamPass != null && postParamPass.length() != 0) {
@@ -685,7 +687,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						conn = BeetRootDatabaseManager.getInstance().getConnection();
 	            		stmt = conn.createStatement();
 						//NO SEMICOLON
-	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname, email, secretkey, two_fa from users where username='"+postParamUsername+"'");
+	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname, email, phone, secretkey, two_fa from users where username='"+postParamUsername+"'");
 	            		if (rs.next()) {
 	            			dbId = rs.getInt("id");
 	            			dbPass = rs.getString("password");
@@ -693,6 +695,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            			dbFirstName = rs.getString("firstname");
 	            			dbLastName = rs.getString("lastname");
 	            			dbEmail = rs.getString("email");
+	            			dbPhone = rs.getString("phone");
 	            			dbSecKey = rs.getString("secretkey");
 	            			dbTwoFa = rs.getBoolean("two_fa");
 	            		}
@@ -776,13 +779,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						}
 					    // 2FA enabled?: 1st Step!
 					    if (dbTwoFa) {
+					    	
 			        		final String genCode = TwoFA.create6DigitTOTPCode(userSession.getUserSecretKey());
 			        		userSession.setInternalTOTPCode(genCode);
 					    	userSession.setTwoFaLogin(); 
+					    	
 					    	// Email 2FA code?
-					    	String codeEmailOn = null;
+					    	boolean codeEmailOn = false;
 							try {
-								codeEmailOn = BeetRootDatabaseManager.getInstance().getProperty("security.2fa.code.email");
+								codeEmailOn = BeetRootDatabaseManager.getInstance().onOrOff("security.2fa.code.email");
 							} catch (Exception e) {
 								final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
 								LOG.error(err, e);
@@ -790,15 +795,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 								String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
 								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 							}
-							if (codeEmailOn != null && codeEmailOn.equalsIgnoreCase(Constants.ON)) {
+							if (codeEmailOn) {
 								final Map<String, String> variables = new HashMap<>();
-								variables.put("title", LanguageManager.getInstance().translate("base.mail.code.title", userSession));
-								variables.put("subtitle", LanguageManager.getInstance().translate("base.mail.code.subtitle", userSession));
+								variables.put("title", LanguageManager.getInstance().translateFullEscape("base.mail.code.title", userSession));
+								variables.put("subtitle", LanguageManager.getInstance().translateFullEscape("base.mail.code.subtitle", userSession));
 								variables.put("code", genCode);
-								variables.put("message", LanguageManager.getInstance().translate("base.mail.code.msg", userSession));
+								variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.code.msg", userSession));
 								try {
 									// Mail it!
-									MailerFactory.getInstance().mail(new String[] {dbEmail}, LanguageManager.getInstance().translate("base.mail.code.title", userSession), variables, "code", session);	
+									MailerFactory.getInstance().mail(new String[] {dbEmail}, LanguageManager.getInstance().translateFullEscape("base.mail.code.title", userSession), variables, "code", session);	
 						        } catch (Exception me) {
 									final String err = "Server Internal Error - Mail Exception: " + me.getMessage();
 									LOG.error(err, me);
@@ -807,6 +812,32 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 									return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 						        }
 							}
+							
+					    	// SMS 2FA code?
+					    	boolean codeSmSOn = false;
+							try {
+								codeSmSOn = BeetRootDatabaseManager.getInstance().onOrOff("security.2fa.code.sms");
+							} catch (Exception e) {
+								final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
+								LOG.error(err, e);
+								String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
+								String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
+								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+							}
+							if (codeSmSOn) {
+								final String info = LanguageManager.getInstance().translate("base.sms.code.info", userSession);
+								final String note = LanguageManager.getInstance().translate("base.sms.code.note", userSession);
+								try {
+									// SMS it!
+									MessengerFactory.getInstance().sms(dbPhone, info + ": " + genCode + "(" + note + ")");
+						        } catch (Exception me) {
+									final String err = "Server Internal Error - SMS Exception: " + me.getMessage();
+									LOG.error(err, me);
+									String t = LanguageManager.getInstance().translate("base.err.srv.sms.title", userSession);
+									String m = LanguageManager.getInstance().translate("base.err.srv.sms.msg", userSession, me.getMessage());
+									return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+						        }
+							}							
 
 							// Go to OTP handler
 							return serverResponse(session, OtpHandler.class, "2FA Code");

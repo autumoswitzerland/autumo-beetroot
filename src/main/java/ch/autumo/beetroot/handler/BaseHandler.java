@@ -181,7 +181,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	protected TreeMap<Integer, String> columns = null;
 	protected Map<String, String> initialValues = null;
-	protected String[] uniqueFields = null;
+	protected String uniqueFields[] = null;
 	protected List<String> transientFields = new ArrayList<>();
 	
 	protected Entity emptyBean = null;
@@ -400,7 +400,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    	final String cfgLine = line.trim();
 		    	if (cfgLine.length() != 0 && cfgLine.indexOf("=") != -1) {
 		    		
-		    		String[] configPair = cfgLine.split("=");
+		    		String configPair[] = cfgLine.split("=");
 		    		configPair[0] = configPair[0].trim();
 		    		if (configPair.length > 1)
 		    			configPair[1] = configPair[1].trim();
@@ -618,7 +618,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	public String[] getColumn(int idx) {
 		
 		final String cfgLine = columns.get(Integer.valueOf(idx));
-		final String[] params = cfgLine.split("=");
+		final String params[] = cfgLine.split("=");
 		final String colName = params[0].trim();
 		String guiColName = params[1];
 		// We actually allow HTML here!

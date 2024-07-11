@@ -292,6 +292,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 		
 		String inputType = null;
 		String divType = null;
+		String pattern = null;
 		
 		// If we have a reference table
 		Class<?> entityClass = null;
@@ -308,6 +309,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			divType = Web.getHtmlDivType(rsmd, idx, columnName);
 			if (inputType == "checkbox")
 				isCheck = true;
+			pattern = Web.getHtmlInputPattern(idx, columnName);
 		}
 		
 		
@@ -420,11 +422,14 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			// d. Other standard input types 
 			} else {
 				
-				//val = Utils.escapeHtml(val);
+				// Pattern?
+				String patternAttr = "";
+				if (pattern != null)
+					patternAttr = "pattern=\""+pattern+"\"";
 				
 				if (nullable == ResultSetMetaData.columnNoNulls) {
 					
-					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\"\n";
+					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" required=\"required\" "+patternAttr+"\n";
 					result += "    data-validity-message=\"This field cannot be left empty\" oninvalid=\"this.setCustomValidity(''); if (!this.value) this.setCustomValidity(this.dataset.validityMessage)\"\n";
 					result += "    oninput=\"this.setCustomValidity('')\"\n";
 					if (super.isPrecisionInputType(inputType))
@@ -432,7 +437,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 					else
 						result += "    id=\""+columnName+"\" value=\""+val+"\">\n";
 				} else {
-					result += "<input type=\""+inputType+"\" name=\""+columnName+"\"\n";
+					result += "<input type=\""+inputType+"\" name=\""+columnName+"\" "+patternAttr+"\n";
 					if (super.isPrecisionInputType(inputType))
 						result += "    id=\""+columnName+"\" value=\""+val+"\" maxlength=\""+precision+"\">\n";
 					else

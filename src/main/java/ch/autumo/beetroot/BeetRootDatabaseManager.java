@@ -451,6 +451,19 @@ public class BeetRootDatabaseManager {
 		}
 		return amount;		
 	}
+
+	/**
+	 * Get property On/Off value from database (table 'properties').
+	 * If the value isn't found, false is returned.
+	 * 
+	 * @param name On/Off switch name
+	 * @return true (On) or false (Off, null or any other value not "on" or "On")
+	 * @throws SQLException SQL exception
+	 */
+	public boolean onOrOff(String name) throws SQLException {
+		final String val = this.getProperty(name);
+		return val != null && val.trim().equalsIgnoreCase("on");
+	}
 	
 	/**
 	 * Get property value from database (table 'properties').

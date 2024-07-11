@@ -82,6 +82,18 @@ body {
 	background-size: 16px;
 	background-position: 0px 0px;
 }
+.yesStatus {
+	background-image: url('/img/status/yes.png');
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 0.5625rem 0.625rem;
+}
+.noStatus {
+	background: url('/img/status/no.png');
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 0.5625rem 0.625rem;
+}
 
 /**
  * Fonts.

@@ -54,6 +54,14 @@ import ch.autumo.beetroot.Constants;
  */
 public class Web {
 	
+	private static final String REGEX_INPUT_PATTERN_PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#+`~\\-_='@$!.,;:\u201D^\\(\\)\\[\\]\\|\\{\\}\\\\\\/%*<>?&])[^\\s]{8,}$";
+	private static final String REGEX_INPUT_PATTERN_EMAIL = "[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}$";
+	private static final String REGEX_INPUT_PATTERN_PHONE = "^(\\+?\\d{1,4})?\\d{10,14}$";
+
+	
+	private Web() {
+	}
+	
     /**
      * HTML escape (reserved characters only) value. 
      * 
@@ -73,7 +81,7 @@ public class Web {
     
     /**
      * HTML escape value, simple tags like &lt;br&gt;
-     * are allowed. 
+     * are allowed. Used for mails too!
      * 
      * @param input value to escape
      * @return escaped value
@@ -88,11 +96,10 @@ public class Web {
     }
     
     /**
-     * HTML escape value. Includes "Umlaute".
+     * Full HTML escape value. Includes "Umlaute".
      * 
      * @param value to escape
      * @return value escaped value
-     * @deprecated
      */
     public static String escapeHtml(String value) {
     	return StringEscapeUtils.escapeHtml4(value);
@@ -206,7 +213,7 @@ public class Web {
 		outputSettings.prettyPrint(prettyPrint);
 		jsoupDoc.outputSettings(outputSettings);
 		
-		if (replacements!= null && replacements.size() > 0) {
+		if (replacements!= null && replacements.isEmpty()) {
 			for (Iterator<SimpleEntry<String, String>> iterator = replacements.iterator(); iterator.hasNext();) {
 				
 				final SimpleEntry<String, String> simpleEntry = iterator.next();
@@ -225,7 +232,7 @@ public class Web {
 		jsoupDoc.select("br").before("\\n");
 		jsoupDoc.select("p").before("\\n");
 		
-		String out = jsoupDoc.html().replaceAll("\\\\n", "\n");
+		String out = jsoupDoc.html().replace("\\n", "\n");
 		String strWithNewLines = null;
 		if (addTags != null && addTags.length > 0)
 			strWithNewLines = Jsoup.clean(out, "", Safelist.basic().addTags(addTags), outputSettings);
@@ -249,44 +256,38 @@ public class Web {
 		int sqlType = rsmd.getColumnType(idx);
 		int prec = rsmd.getPrecision(idx);
 		
+		final String name = columnName.toLowerCase();
+		
 		String divType = "text";
 		if (DB.isSqlTextType(sqlType))
 			divType = "text";
-		if (DB.isSqlNumberType(sqlType))
+		else if (DB.isSqlNumberType(sqlType))
 			divType = "number";
-		
-		if (sqlType == Types.TIMESTAMP)
+		else if (sqlType == Types.TIMESTAMP)
 			divType = "datetime-local"; //HTML 5
-		if (sqlType == Types.DATE)
+		else if (sqlType == Types.DATE)
 			divType = "date";
-		if (sqlType == Types.TIME)
+		else if (sqlType == Types.TIME)
 			divType = "time";
+		else if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) // oracle special case
+			divType = "checkbox";
+		else if (DB.isSqlBooelanType(sqlType))
+			divType = "checkbox";
 		
-		if (columnName.toLowerCase().equals("password"))
+		// Overwrite if matching
+		if (name.equals("password"))
 			divType = "password";
-		if (columnName.equals("email"))
+		else if (name.equals("email"))
 			divType = "email";
+		else if (name.equals("phone") || name.equals("phonenumber") || name.equals("tel") || name.equals("telephone"))
+			divType = "tel";
 
-		if (DB.isSqlBooelanType(sqlType)) {
-			divType = "checkbox";
-		}		
-		
-		// oracle special case
-		if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) {
-			divType = "checkbox";
-		}
+		// User mappings if any, overwrite if matching
+		final String userMapping = BeetRootConfigurationManager.getInstance().getHtmlInputMapType(name);
+		if (userMapping != null)
+			divType = BeetRootConfigurationManager.getInstance().getHtmlInputMapType(name);
 		
 		return divType;
-		
-		// Unused list:
-		/*
-		input[type="month"]
-		input[type="week"]
-		input[type="search"]
-		input[type="tel"]
-		input[type="url"]
-		input[type="color"]
-		*/
 	}
 	
 	/**
@@ -300,74 +301,71 @@ public class Web {
 	 */
 	public static String getHtmlInputType(ResultSetMetaData rsmd, int idx, String columnName) throws SQLException {
 		
-		// NOTICE split into more types possibly, but override this method 
-		// and customize what is necessary is the way... THIS IS THE WAY!
-		// But this is already sufficient for most cases
-		
 		int sqlType = rsmd.getColumnType(idx);
 		int prec = rsmd.getPrecision(idx);
+		
+		final String name = columnName.toLowerCase();
 		
 		String inputType = "text";
 		if (DB.isSqlTextType(sqlType))
 			inputType = "text";
-		if (DB.isSqlNumberType(sqlType))
+		else if (DB.isSqlNumberType(sqlType))
 			inputType = "number";
-		
-		if (sqlType == Types.TIMESTAMP)
+		else if (sqlType == Types.TIMESTAMP)
 			inputType = "datetime-local"; //HTML 5
-		if (sqlType == Types.DATE)
+		else if (sqlType == Types.DATE)
 			inputType = "date";
-		if (sqlType == Types.TIME)
+		else if (sqlType == Types.TIME)
 			inputType = "time";
+		else if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) // oracle special case
+			inputType = "checkbox";
+		else if (DB.isSqlBooelanType(sqlType))
+			inputType = "checkbox";
 		
-		if (columnName.toLowerCase().equals("password"))
+		// Overwrite if matching
+		if (name.equals("password"))
 			inputType = "password";
-		if (columnName.equals("email"))
+		else if (name.equals("email"))
 			inputType = "email";
+		else if (name.equals("phone") || name.equals("phonenumber") || name.equals("tel") || name.equals("telephone"))
+			inputType = "tel";
 		
-		if (DB.isSqlBooelanType(sqlType)) {
-			inputType = "checkbox";
-		}
-		
-		// oracle special case
-		if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) {
-			inputType = "checkbox";
-		}
+		// User mappings if any, overwrite if matching
+		final String userMapping = BeetRootConfigurationManager.getInstance().getHtmlInputMapType(name);
+		if (userMapping != null)
+			inputType = userMapping;
 		
 		return inputType;
-		
-		// Full list:
-		/*
-		<input type="text">
-		<input type="date">
-		<input type="time">
-		<input type="datetime-local">
-		<input type="email">
-		<input type="number">
-		<input type="password">
-		<input type="checkbox">
-		
-		<input type="radio">
-		<input type="range">
-		
-		<input type="tel">
-		<input type="url">
-		<input type="search">
-		
-		<input type="file">
-		<input type="color">
-		<input type="image">
-		
-		<input type="month">
-		<input type="reset">
-		<input type="week">
-		
-		<input type="hidden">
-		<input type="submit">
-		<input type="button">
-		 */
 	}
 
+	/**
+	 * Determine HTML input field pattern based on column name.
+	 * 
+	 * @param idx db column index
+	 * @param columnName db column name
+	 * @return pattern
+	 * @throws SQLException SQL exception
+	 */
+	public static String getHtmlInputPattern(int idx, String columnName) throws SQLException {
+		
+		final String name = columnName.toLowerCase();
+		String pattern = null;
+		
+		if (name.equals("password"))
+			pattern = REGEX_INPUT_PATTERN_PASSWORD;
+		else if (name.equals("email"))
+			pattern = REGEX_INPUT_PATTERN_EMAIL;
+		else if (name.equals("phone") || name.equals("phonenumber") || name.equals("tel") || name.equals("telephone"))
+			pattern = REGEX_INPUT_PATTERN_PHONE;
+		
+		// User mappings if any, overwrite if matching
+		final String userMapping = BeetRootConfigurationManager.getInstance().getHtmlInputMapType(name);
+		if (userMapping != null)
+			pattern = BeetRootConfigurationManager.getInstance().getHtmlInputMapPattern(name);
+		
+		return pattern;
+	}
+	
 	/**
 	 * Ping a web-site.
 	 * 
@@ -401,7 +399,8 @@ public class Web {
         } catch (Exception e) {
             return false;
         } finally {
-        	connection.disconnect();
+        	if (connection != null)
+        		connection.disconnect();
 		}
 	}
 	

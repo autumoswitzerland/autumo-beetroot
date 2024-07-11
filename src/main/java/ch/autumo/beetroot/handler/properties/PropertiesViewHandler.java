@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 
 //import ch.autumo.beetroot.Utils;
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
@@ -35,7 +36,14 @@ public class PropertiesViewHandler extends DefaultViewHandler {
 			case "name": return "<td>" + DB.getValue(set, columnName) + "</td>";
 			case "modified": return "<td>" + DB.getValue(set, columnName) + "</td>";
 			case "id": return "<td>" + DB.getValue(set, columnName) + "</td>";
-			case "value": return "<td>" + DB.getValue(set, columnName) + "</td>";
+			case "value":
+				final String val = DB.getValue(set, columnName);
+				if (val != null && val.trim().equalsIgnoreCase(Constants.ON))
+					return "<td class=\"yesStatus\"></td>";
+				else if (val != null && val.trim().equalsIgnoreCase(Constants.OFF))
+					return "<td class=\"noStatus\"></td>";
+				else
+					return "<td>" + val + "</td>";
 			default: return "<td>"+ DB.getValue(set, columnName) +"</td>";
 		}
 	}

@@ -44,7 +44,7 @@ public class RolesIndexHandler extends DefaultIndexHandler {
 			case "description": return "<td>" + DB.getValue(set, columnName) + "</td>";
 			case "modified": return "<td>" + DB.getValue(set, columnName) + "</td>";
 			case "id": return "<td>" + DB.getValue(set, columnName) + "</td>";
-			default: return "<td>" + set.getObject(columnName) + "</td>";
+			default: return "<td>" + DB.getValue(set, columnName) + "</td>";
 		}
 	}
 

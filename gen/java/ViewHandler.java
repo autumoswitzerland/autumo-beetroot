@@ -30,7 +30,7 @@ public class ##Entitynameplural##ViewHandler extends DefaultViewHandler {
 			// The class 'DB' provides some helper methods for this.
 			// PS: Customize style for <td> if necessary.
 ##columns##
-			default: return "<td>" + set.getObject(columnName) + "</td>";
+			default: return "<td>" + DB.getValue(set, columnName) + "</td>";
 		}
 	}
 

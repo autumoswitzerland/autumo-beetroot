@@ -264,20 +264,25 @@ h5 {
 	display: block;
 }
 .tile-menu-row {
-	display: table-row;
+	display: inline-flex;
 	border: 0;
+	padding-bottom: 24px;
 }
 .menuEntry {
 	padding: 25px 25px 25px 25px;
 	max-width: 512px;
 	max-height: 512px;
-	display: table-cell;
+	min-width: 80px;
+	min-height: 80px;
+	display: inline-block;
+	float: left;
 }
 
 .img-fluid {
 	padding-left: 5px;
 	padding-right: 5px;
 	max-width: 100%;
+	min-width: 40px;
 	height: auto;
 }
 .portfolio-box {
@@ -1243,6 +1248,11 @@ button {
 	#actions-sidebar {
 		padding-bottom: 2rem;
 		margin-bottom: 0;
+	}
+}
+@media (max-width:1080px) {
+	.portfolio-box-caption {
+		visibility: hidden;
 	}
 }
 
