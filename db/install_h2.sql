@@ -10,6 +10,9 @@
 
 
 
+-- H2 version 1.4.200
+
+
 CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) not NULL,

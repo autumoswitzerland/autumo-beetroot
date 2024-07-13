@@ -338,7 +338,7 @@ public class DefaultEditHandler extends BaseHandler {
 				
 				// Custom fields/divs, e.g. for custom user roles
 				final String extra = this.extractCustomSingleInputDiv(session, val, rsmd, columnName, guiColName, idx);
-				if (extra != null && extra.length() != 0) {
+				if (extra != null && extra.length() > 0) {
 					result += extra; 
 					result += "</div>\n";
 					return result;
@@ -424,6 +424,14 @@ public class DefaultEditHandler extends BaseHandler {
 	 * in this case the 'div' is more likely consisting of 2 role assignment boxes instead of a simple input-'div'
 	 * or use it for any custom 'div'. The 'div' is guaranteed to be inserted in the column-order as defined in the
 	 * 'columns.cfg'.
+	 * <br><br>
+	 * The return value of this method is essential:<br>
+	 * <ul>
+	 * <li>Returns the data (including an empty character string): The HTML data is inserted into the template and further 
+	 * parsing of the columns for the HTML input elements is completed.</li>
+	 * <li>If 'null' is returned, the search for matching input elements for the current columns is continued, even if it is a 
+	 * transient column! Transient columns should be parsed in this method!</li>
+	 * </ul>
 	 *   
 	 * @param session HTTP session
 	 * @param val repost data (only available in retry case)
@@ -431,7 +439,7 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param idx SQL result set column index
-	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
+	 * @return html data extract &lt;div&gt;...&lt;/div&gt;, empty string or null
 	 * @throws Exception exception
 	 */
 	public String extractCustomSingleInputDiv(BeetRootHTTPSession session, String val, ResultSetMetaData rsmd,

@@ -200,11 +200,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# copy libs
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
-	rm autumo-beetRoot-$VERSION/lib/jakarta.mail-api*.jar
-	
+	rm autumo-beetRoot-$VERSION/lib/jakarta.mail-*.jar
+	rm autumo-beetRoot-$VERSION/lib/jakarta.activation-2.0.1.jar
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail-api*.jar
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail-*.jar
+	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.activation-2.0.1.jar
 	# Servlet API not needed in web-containers!
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet-api*.jar
 	
@@ -362,9 +363,10 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml
-	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar)
+	
+	#(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar)
 	rm -f autumo-beetRoot-web-$VERSION/logging.xml
-	rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
+	#rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
 	# no AUTO_SERVER=TRUE switch
 	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Change back mailing implementation

@@ -54,6 +54,9 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 			return response;
 		}
 		
+		if (!session.getUserSession().getUserRoles().contains("Administrator"))
+			return null; // We are done here! Non-Admins are not allowed to update roles!
+		
 		// This is done very detailed here. To write less code, you
 		// could delete all users-roles-associations and only save
 		// the associated relations in a global TX.
@@ -151,11 +154,25 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 					unassociatedRoles.remove(role);
 				}
 			}
-			
-			final StringBuilder snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
-			super.parseAssociatedEntities(snippet, associatedRoles, session);
-			super.parseUnassociatedEntities(snippet, unassociatedRoles, session);
-			return snippet.toString();
+
+			// Only admins are allowed to update roles!
+			if (session.getUserSession().getUserRoles().contains("Administrator")) {
+				final StringBuilder snippet = super.readSnippetResource("web/html/:lang/users/snippets/roles.html", session.getUserSession());
+				super.parseAssociatedEntities(snippet, associatedRoles, session);
+				super.parseUnassociatedEntities(snippet, unassociatedRoles, session);
+				return snippet.toString();
+			} else {
+				String roles = "";
+				for (Iterator<Model> iterator = associatedRoles.iterator(); iterator.hasNext();) {
+					final Role role = (Role) iterator.next();
+					roles += role.getName() + ", ";
+				}
+				if (roles.endsWith(", "))
+					roles = roles.substring(0, roles.length() - 2);
+				if (roles.length() == 0)
+					roles = "-";
+				return roles;
+			}
 		}
 		
 		return "";
@@ -163,6 +180,12 @@ public class ExtUsersEditHandler extends UsersEditHandler {
 
 	@Override
 	public void render(BeetRootHTTPSession session) {
+		
+		// Only admins are allowed to update roles!
+		if (!session.getUserSession().getUserRoles().contains("Administrator")) {
+			return;
+		}
+		
 		if (super.isRetryCall(session)) {
 			final String assignedIds = session.getParms().get("assignedIds");
 			setVar("assignedIds", assignedIds);

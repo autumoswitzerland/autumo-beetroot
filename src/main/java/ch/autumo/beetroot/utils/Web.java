@@ -261,6 +261,8 @@ public class Web {
 		String divType = "text";
 		if (DB.isSqlTextType(sqlType))
 			divType = "text";
+		else if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) // oracle special case
+			divType = "checkbox";
 		else if (DB.isSqlNumberType(sqlType))
 			divType = "number";
 		else if (sqlType == Types.TIMESTAMP)
@@ -269,8 +271,6 @@ public class Web {
 			divType = "date";
 		else if (sqlType == Types.TIME)
 			divType = "time";
-		else if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) // oracle special case
-			divType = "checkbox";
 		else if (DB.isSqlBooelanType(sqlType))
 			divType = "checkbox";
 		
@@ -309,6 +309,8 @@ public class Web {
 		String inputType = "text";
 		if (DB.isSqlTextType(sqlType))
 			inputType = "text";
+		else if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) // oracle special case
+			inputType = "checkbox";
 		else if (DB.isSqlNumberType(sqlType))
 			inputType = "number";
 		else if (sqlType == Types.TIMESTAMP)
@@ -317,8 +319,6 @@ public class Web {
 			inputType = "date";
 		else if (sqlType == Types.TIME)
 			inputType = "time";
-		else if (BeetRootDatabaseManager.getInstance().isOracleDb() && DB.isSqlNumberType(sqlType) && prec == 1) // oracle special case
-			inputType = "checkbox";
 		else if (DB.isSqlBooelanType(sqlType))
 			inputType = "checkbox";
 		
