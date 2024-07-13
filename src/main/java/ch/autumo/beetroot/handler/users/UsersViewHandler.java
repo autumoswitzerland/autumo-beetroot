@@ -80,29 +80,28 @@ public class UsersViewHandler extends DefaultViewHandler {
 		return User.class;
 	}
 	
+	/**
+	 * Return the while image tag for the 2FA QR code image
+	 * 
+	 * @param session HTTP session
+	 * @param user user
+	 * @return HTML image tag
+	 */
 	protected String get2FAQRImage(BeetRootHTTPSession session, User user) {
-		
 		// QR code for Google Authenticator 2FA
 		String absPath = null;
 		String tempFileName = null;
 		String barCode = null;
-		
 		try {
-
 			// Generate bar code from user shown, not logged in !!!!
 			barCode = TwoFA.getGoogleAuthenticatorBarCode(user.getSecretkey(), user.getEmail());
 			absPath = TwoFA.createQRCode(barCode, Constants.QR_IMG_SIZE, Constants.QR_IMG_SIZE);
 			tempFileName = absPath.substring(absPath.lastIndexOf(Helper.FILE_SEPARATOR) + 1, absPath.length());
-			
 			final String title = LanguageManager.getInstance().translate("base.2fa.title.text", SessionManager.getInstance().findOrCreate(session));			
-			
 			return "<img src=\"/tmp/"+tempFileName+"\" title=\""+title+"\">";
-			
 		} catch (UtilsException e) {
-			
 			LOG.error("Couldn't serve QR code for user '"+userName+"'!", e);
 		}
-		
 		return "notfound.png";
 	}
 

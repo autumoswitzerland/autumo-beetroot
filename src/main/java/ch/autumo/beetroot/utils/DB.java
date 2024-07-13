@@ -41,7 +41,7 @@ import ch.autumo.beetroot.Session;
 
 
 /**
- * DB helper methods.
+ * DB methods helper and access.
  */
 public class DB {
 
@@ -449,7 +449,7 @@ public class DB {
 	 * Select a records of type entityClass (entity class).
 	 * 
 	 * @param entityClass class
-	 * @param condition condition for where clause, e.g. 'age &gt;= ?'
+	 * @param condition condition for where clause, e.g. 'age &gt;= ? AND gender = ?'
 	 * @param values values for the condition
 	 * @return entity beans
 	 * @throws Exception exception
@@ -462,7 +462,7 @@ public class DB {
 	 * Select a records of type entityClass (entity class).
 	 * 
 	 * @param entityClass class
-	 * @param condition condition for where clause, e.g. 'age &gt;= ?'
+	 * @param condition condition for where clause, e.g. 'age &gt;= ? AND gender = ?'
 	 * @param values values for the condition
 	 * @param amount max. amount of records to be loaded
 	 * @return entity beans
@@ -476,7 +476,7 @@ public class DB {
 	 * Select a records of type entityClass (entity class).
 	 * 
 	 * @param entityClass entity class
-	 * @param condition condition for where clause, e.g. 'age &gt;= ?'
+	 * @param condition condition for where clause, e.g. 'age &gt;= ? AND gender = ?'
 	 * @param values values for the condition
 	 * @param amount max. amount of records to be loaded
 	 * @param sortType sort entries by ID or by values, 
@@ -534,14 +534,52 @@ public class DB {
 	}
 
 	/**
+	 * Select a records of type entityClass (entity class).
+	 * Respect the database dialect used for the underlying database.
+	 * 
+	 * @param entityClass entity class; must match the table in the query
+	 * @param fullQuery the full SQL query with query place-holders
+	 * @param values values for the query
+	 * @return entity beans
+	 * @throws SQLException SQL exception
+	 */
+	public static List<Model> query(Class<?> entityClass, String fullQuery, Object values[]) throws SQLException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet set = null;
+		final List<Model> entities = new ArrayList<Model>();
+		try {
+			conn = BeetRootDatabaseManager.getInstance().getConnection();
+			stmt = conn.prepareStatement(fullQuery);
+			for (int i = 0; i < values.length; i++) {
+				stmt.setObject(i+1, values[i]);
+			}
+			set = stmt.executeQuery();
+			while(set.next()) {
+				final Model curr = Beans.createBean(entityClass, set);
+				curr.setStored(true);
+				entities.add(curr);
+			}
+		} finally {
+			if (set != null)
+				set.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();    	
+		}
+		return entities;
+	}
+	
+	/**
 	 * Delete a many-to-many-relation record.
 	 * 
 	 * @param model model
 	 * @param foreignDbKeys DB foreign keys as given by the keys within
 	 * 			the return value of the model method {@link Model#getForeignReferences()}
-	 * @throws Exception
+	 * @throws SQLException SQL exception
 	 */
-	public static void delete(Model model, Set<String> foreignDbKeys) throws Exception {
+	public static void delete(Model model, Set<String> foreignDbKeys) throws SQLException {
 		String clause = "";
 		for (Iterator<String> iterator = foreignDbKeys.iterator(); iterator.hasNext();) {
 			final String fk = iterator.next();
@@ -570,9 +608,9 @@ public class DB {
 	 * Delete a record.
 	 * 
 	 * @param model model
-	 * @throws Exception exception
+	 * @throws SQLException SQL exception
 	 */
-	public static void delete(Model model) throws Exception {
+	public static void delete(Model model) throws SQLException {
 		DB.delete(Beans.classToTable(model.modelClass()), model.getId());
 	}
 
@@ -580,9 +618,9 @@ public class DB {
 	 * Delete a record.
 	 * 
 	 * @param entity entity
-	 * @throws Exception exception
+	 * @throws SQLException SQL exception
 	 */
-	public static void delete(Entity entity) throws Exception {
+	public static void delete(Entity entity) throws SQLException {
 		DB.delete(Beans.classToTable(entity.getClass()), entity.getId());
 	}
 	
@@ -591,9 +629,9 @@ public class DB {
 	 * 
 	 * @param entityClass entity class
 	 * @param id if
-	 * @throws Exception exception
+	 * @throws SQLException SQL exception
 	 */
-	public static void delete(Class<?> entityClass, int id) throws Exception {
+	public static void delete(Class<?> entityClass, int id) throws SQLException {
 		DB.delete(Beans.classToTable(entityClass), id);
 	}
 	
@@ -602,9 +640,9 @@ public class DB {
 	 * 
 	 * @param entity entity table name
 	 * @param id if
-	 * @throws Exception exception
+	 * @throws SQLException SQL exception
 	 */
-	public static void delete(String entity, int id) throws Exception {
+	public static void delete(String entity, int id) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -627,8 +665,9 @@ public class DB {
 	 * @param entity entity
 	 * @param columns columns; "a,b,c".
 	 * @param values values; "'1','2','3'".
+	 * @throws SQLException SQL exception
 	 */
-	public static void update(Entity entity, String columns, String values) {
+	public static void update(Entity entity, String columns, String values) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
 		String updateClause = ""; 
@@ -648,8 +687,9 @@ public class DB {
 			stmt = conn.createStatement();
 			final String stmtStr = "UPDATE "+tabelName+" SET " + updateClause + " WHERE id=" + entity.getId();
 			stmt.executeUpdate(stmtStr);
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			LOG.error("Couldn't update entity!", e);
+			throw e;
 		} finally {
 			try {
 				if (stmt != null)
@@ -667,9 +707,10 @@ public class DB {
 	 * @param entity entity
 	 * @param columns columns; "a,b,c".
 	 * @param values values; "'1','2','3'".
-	 * @return generated id
+	 * @return generated id id of newly inserted entity
+	 * @throws SQLException SQL exception
 	 */
-	public static Integer insert(Entity entity, String columns, String values) {
+	public static Integer insert(Entity entity, String columns, String values) throws SQLException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		PreparedStatement stmt2 = null;
@@ -706,7 +747,7 @@ public class DB {
 			}
 		} catch (SQLException e) {
 			LOG.error("Couldn't save entity!", e);
-			return Integer.valueOf(-1);
+			throw e;
 		} finally {
 			try {
 				if (keySet != null)
@@ -829,8 +870,9 @@ public class DB {
 	 * 
 	 * @param entity entity
 	 * @param model model
+	 * @throws SQLException SQL exception
 	 */
-	public static void updateModel(Entity entity, Map<String, Map<String, DBField>> model) {
+	public static void updateModel(Entity entity, Map<String, Map<String, DBField>> model) throws SQLException {
 		final String tableName = Beans.classToTable(entity.getClass());
 		if (!model.containsKey(tableName)) {
 			final Map<String, DBField> databaseFields = new HashMap<String, DBField>();
@@ -843,6 +885,7 @@ public class DB {
 				}
 			} catch (SQLException e) {
 				LOG.error("Couldn't update static database model!", e);
+				throw e;
 			}
 			model.put(tableName, databaseFields);
 		}

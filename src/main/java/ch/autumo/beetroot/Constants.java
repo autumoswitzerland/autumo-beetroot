@@ -201,11 +201,6 @@ public class Constants {
 	//------------------------------------------------------------------------------
 	
 	/**
-	 * Prefix for temporary files.
-	 */
-	public static final String KEY_WS_TMP_FILE_PREFIX = "ws_tmp_file_prefix";
-	
-	/**
 	 * Web app name.
 	 */
 	public static final String KEY_WS_APP_NAME = "ws_app_name";

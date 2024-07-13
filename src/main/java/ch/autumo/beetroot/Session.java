@@ -230,6 +230,14 @@ public class Session implements Serializable {
 	}
 
 	/**
+	 * Get session ID.
+	 * @return session ID
+	 */
+	public String getSessionId() {
+		return sessionID;
+	}
+	
+	/**
 	 * Set user settings map.
 	 * @param settingsMap user settings map
 	 */

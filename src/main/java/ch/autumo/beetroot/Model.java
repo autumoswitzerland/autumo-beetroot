@@ -221,17 +221,14 @@ public abstract class Model implements Entity {
 	public Integer save() {
 		
 		String stmtParts[] = null;
-		
+		Integer saveId = -1;
 		try {
 			stmtParts = this.getStatementParts(true);
+			saveId = DB.insert(this, stmtParts[0], stmtParts[1]);
 		} catch (Exception e) {
 			LOG.error("Entity not saved!", e);
 			return Integer.valueOf(ID_INVALID);
 		}
-		
-		final Integer saveId = DB.insert(this, stmtParts[0], stmtParts[1]);
-		if (saveId == ID_INVALID)
-			return saveId;
 		
 		this.setId(saveId.intValue());
 		this.isStored = true;
@@ -273,11 +270,11 @@ public abstract class Model implements Entity {
 		String stmtParts[] = null;
 		try {
 			stmtParts = this.getStatementParts(false);
+			DB.update(this, stmtParts[0], stmtParts[1]);
 		} catch (Exception e) {
 			LOG.error("Entity not updated!", e);
 			Integer.valueOf(-1);
 		}
-		DB.update(this, stmtParts[0], stmtParts[1]);
 		this.isStored = true;
 	}
 	
@@ -647,7 +644,7 @@ public abstract class Model implements Entity {
 	
 	/**
 	 * List all entities of the given entity bean with specific condition,
-	 * e.g. 'age &gt;= ?'.
+	 * e.g. 'age &gt;= ?, gender = ?'.
 	 * 
 	 * @param entity entity bean class
 	 * @param condition SQL condition

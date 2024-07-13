@@ -120,14 +120,9 @@ public class TwoFA {
 		
 		File png = null;
 		String absPath = null;
-		
-		String prefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
-		if (prefix == null || prefix.length() == 0)
-			prefix = "beetrootweb-";
-		
 		try {
 			
-			png = File.createTempFile(prefix, ".png", new File(OS.getTemporaryDirectory()));
+			png = File.createTempFile("2FA-", ".png", new File(OS.getTemporaryDirectory()));
 			png.deleteOnExit();
 	        absPath = png.getAbsolutePath();
 			final FileOutputStream out = new FileOutputStream(png);

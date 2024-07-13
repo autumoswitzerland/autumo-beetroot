@@ -1123,6 +1123,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						text = "";
 					}
 				} else if (text.contains("{#template}")) {
+					currRessource = LanguageManager.getInstance().getBlockResource(this.getResource(), userSession);
 					try {
 						this.createTemplateContent(userSession, session);
 						if (templateResource.endsWith(FILE_HTML_ACTION_INDEX)) {
@@ -1556,7 +1557,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		buffer.append(line + "\n");
 	}
 
-	private void createTemplateContent(Session userSession, BeetRootHTTPSession session) {
+	private void createTemplateContent(Session userSession, BeetRootHTTPSession session) throws Exception {
 		Scanner sc = null;
 		try {
 			sc = getNewScanner(userSession);
@@ -1666,7 +1667,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					}
 				}				
 			}			
-		}		
+		}
+		
+		if (fc == null) {
+			throw new FileNotFoundException("File/resource '"+resource+"' not found!");
+		}
+		
 		try {
 			if (fc.isCached())
 				return new Scanner(fc.getTextData());

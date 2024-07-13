@@ -84,6 +84,12 @@ import ch.autumo.beetroot.utils.Web;
 public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootService {
 	
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootWebServer.class.getName());
+
+	/**
+	 * Virtual relative path for temporary stored files to 
+	 * server (e.g. generated images such as the 2FA QR code.
+	 */ 
+    public static final String VIRTUAL_TMP_PATH = "tmp/";
 	
 	private Class<?> defaultHandlerClass = TasksIndexHandler.class;
 	private String defaultHandlerEntity = "tasks";
@@ -98,8 +104,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     private String servletName = null;
     
     private Map<String, String> parsedCss = new ConcurrentHashMap<>();
-    
-    private String tmpFilePrefix = "beetrootweb-";
 	
     private String apiKeyName = null;
     private String webApiKey = null;    
@@ -153,10 +157,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
 			if (servletName != null && servletName.length() != 0)
 				insertServletNameInTemplateRefs = true; 
-			
-			tmpFilePrefix = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_TMP_FILE_PREFIX);
-			if (tmpFilePrefix == null || tmpFilePrefix.length() == 0)
-				tmpFilePrefix = "beetrootweb-";
 			
 			// routes
 			this.addMappings();
@@ -439,7 +439,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			final String requestedFile = uriWithoutServlet.substring(uriWithoutServlet.lastIndexOf("/") + 1, uriWithoutServlet.length()).toLowerCase();
 			
 			// temporary file?
-			if (uriWithoutServlet.startsWith("tmp/" + tmpFilePrefix)) {
+			if (uriWithoutServlet.startsWith("tmp/")) {
 				
 				final String tmpDir = OS.getTemporaryDirectory();
 				
