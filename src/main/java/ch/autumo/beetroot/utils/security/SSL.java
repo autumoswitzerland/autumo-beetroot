@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.security;
 
 import java.io.File;
 import java.io.FileInputStream;

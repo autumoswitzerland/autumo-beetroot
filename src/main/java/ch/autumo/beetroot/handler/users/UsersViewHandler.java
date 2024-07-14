@@ -29,11 +29,11 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
-import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Helper;
-import ch.autumo.beetroot.utils.Time;
-import ch.autumo.beetroot.utils.TwoFA;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.web.TwoFA;
 
 /**
  * Users view handler.

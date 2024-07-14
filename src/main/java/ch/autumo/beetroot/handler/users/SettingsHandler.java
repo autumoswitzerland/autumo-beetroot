@@ -21,7 +21,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.handler.NoContentAndConfigHandler;
-import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.database.DB;
 
 /**
  * Settings handler.

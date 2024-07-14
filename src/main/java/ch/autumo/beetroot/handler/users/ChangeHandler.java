@@ -35,8 +35,8 @@ import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.Security;
-import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.security.Security;
 
 /**
  * Default login handler.

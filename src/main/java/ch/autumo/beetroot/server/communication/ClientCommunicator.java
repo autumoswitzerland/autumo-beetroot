@@ -48,7 +48,7 @@ import ch.autumo.beetroot.server.message.StopAnswer;
 import ch.autumo.beetroot.transport.DefaultSocketFactory;
 import ch.autumo.beetroot.transport.SecureSocketFactory;
 import ch.autumo.beetroot.transport.SocketFactory;
-import ch.autumo.beetroot.utils.SSL;
+import ch.autumo.beetroot.utils.security.SSL;
 
 
 /**

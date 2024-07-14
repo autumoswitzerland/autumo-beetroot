@@ -34,12 +34,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.autumo.beetroot.annotations.Column;
 import ch.autumo.beetroot.plant.Plant;
-import ch.autumo.beetroot.utils.BeanField;
-import ch.autumo.beetroot.utils.Beans;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.Security;
-import ch.autumo.beetroot.utils.Time;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.bean.BeanField;
+import ch.autumo.beetroot.utils.bean.Beans;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.security.Security;
 
 
 /**

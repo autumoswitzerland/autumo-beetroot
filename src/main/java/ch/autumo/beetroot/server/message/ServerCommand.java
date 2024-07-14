@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Security;
+import ch.autumo.beetroot.utils.security.Security;
 
 /**
  * Secure server command.

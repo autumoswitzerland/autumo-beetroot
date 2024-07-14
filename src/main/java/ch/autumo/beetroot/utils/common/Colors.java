@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.common;
 
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;

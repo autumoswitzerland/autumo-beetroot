@@ -60,12 +60,12 @@ import ch.autumo.beetroot.server.modules.FileStorage;
 import ch.autumo.beetroot.transport.DefaultServerSocketFactory;
 import ch.autumo.beetroot.transport.SecureServerSocketFactory;
 import ch.autumo.beetroot.transport.ServerSocketFactory;
-import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Helper;
-import ch.autumo.beetroot.utils.OS;
-import ch.autumo.beetroot.utils.SSL;
 import ch.autumo.beetroot.utils.UtilsException;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.common.Colors;
+import ch.autumo.beetroot.utils.security.SSL;
+import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.web.Web;
 
 /**
  * Base server.

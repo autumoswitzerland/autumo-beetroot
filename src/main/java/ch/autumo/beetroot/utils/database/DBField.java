@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

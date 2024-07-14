@@ -22,7 +22,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.crud.EventHandler;
-import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.database.DB;
 
 /**
  * Default delete handler.

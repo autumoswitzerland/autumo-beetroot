@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.common;
 
 import java.util.List;
 

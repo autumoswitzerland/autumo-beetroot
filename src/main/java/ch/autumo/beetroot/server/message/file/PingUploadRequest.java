@@ -19,7 +19,7 @@ package ch.autumo.beetroot.server.message.file;
 
 import java.io.IOException;
 
-import ch.autumo.beetroot.utils.OS;
+import ch.autumo.beetroot.utils.systen.OS;
 
 /**
  * Ping upload request.

@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -47,6 +47,9 @@ import org.jsoup.select.Elements;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.security.SSL;
 
 
 /**

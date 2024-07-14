@@ -29,8 +29,8 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
-import ch.autumo.beetroot.utils.BeanProcessor;
-import ch.autumo.beetroot.utils.Beans;
+import ch.autumo.beetroot.utils.bean.BeanProcessor;
+import ch.autumo.beetroot.utils.bean.Beans;
 
 /**
  * Default JSON-REST handler for listing entities.

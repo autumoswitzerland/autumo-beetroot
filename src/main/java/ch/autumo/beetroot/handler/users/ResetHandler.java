@@ -35,8 +35,8 @@ import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.mailing.MailerFactory;
-import ch.autumo.beetroot.utils.GUIDGenerator;
-import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.systen.GUIDGenerator;
 
 /**
  * Default login handler.

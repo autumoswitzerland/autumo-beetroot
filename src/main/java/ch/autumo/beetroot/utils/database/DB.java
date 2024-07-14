@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,6 +38,8 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.Session;
+import ch.autumo.beetroot.utils.bean.Beans;
+import ch.autumo.beetroot.utils.web.Web;
 
 
 /**

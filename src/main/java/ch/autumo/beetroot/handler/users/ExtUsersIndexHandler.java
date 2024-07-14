@@ -27,8 +27,8 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.database.DB;
 
 /**
  * Users edit handler for extended roles. 

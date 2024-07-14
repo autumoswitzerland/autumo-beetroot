@@ -21,8 +21,8 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.TwoFA;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.web.TwoFA;
 
 /**
  * New QR Code handler.

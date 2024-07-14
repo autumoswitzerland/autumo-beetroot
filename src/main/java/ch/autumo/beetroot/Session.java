@@ -28,8 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
 
-import ch.autumo.beetroot.utils.GUIDGenerator;
-import ch.autumo.beetroot.utils.LowerCaseList;
+import ch.autumo.beetroot.utils.common.LowerCaseList;
+import ch.autumo.beetroot.utils.systen.GUIDGenerator;
 
 /**
  * User session.

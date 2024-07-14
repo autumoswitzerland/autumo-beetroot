@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.security;
 
 import java.lang.reflect.Constructor;
 import java.security.MessageDigest;
@@ -37,6 +37,8 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.security.password.PasswordHashProvider;
+import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.systen.GUIDGenerator;
 
 
 /**

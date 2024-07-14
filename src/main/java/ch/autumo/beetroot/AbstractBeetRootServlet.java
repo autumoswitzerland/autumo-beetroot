@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.utils.UtilsException;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.web.Web;
 
 
 /**

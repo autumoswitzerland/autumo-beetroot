@@ -36,10 +36,10 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.DBField;
 import ch.autumo.beetroot.utils.Helper;
-import ch.autumo.beetroot.utils.OS;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.database.DBField;
+import ch.autumo.beetroot.utils.systen.OS;
 
 /**
  * Database manager.

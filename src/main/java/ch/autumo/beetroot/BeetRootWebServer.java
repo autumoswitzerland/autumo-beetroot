@@ -70,13 +70,13 @@ import ch.autumo.beetroot.server.communication.Communicator;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
 import ch.autumo.beetroot.sms.MessengerFactory;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.MIME;
-import ch.autumo.beetroot.utils.OS;
-import ch.autumo.beetroot.utils.Security;
-import ch.autumo.beetroot.utils.TwoFA;
 import ch.autumo.beetroot.utils.UtilsException;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.common.MIME;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.security.Security;
+import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.web.TwoFA;
+import ch.autumo.beetroot.utils.web.Web;
 
 /**
  * autumo ifaceX web server and template engine.

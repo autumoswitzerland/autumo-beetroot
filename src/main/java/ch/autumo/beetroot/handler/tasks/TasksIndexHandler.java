@@ -23,8 +23,8 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.Time;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.database.DB;
 
 /**
  * Tasks index handler.

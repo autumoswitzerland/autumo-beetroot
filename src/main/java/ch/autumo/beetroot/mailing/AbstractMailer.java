@@ -40,7 +40,7 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.web.Web;
 
 /**
  * Abstract mailer class.

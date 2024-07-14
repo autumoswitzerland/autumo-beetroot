@@ -35,7 +35,7 @@ import ch.autumo.beetroot.handler.NoConfigHandler;
 import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.modules.log.LogFactory;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.web.Web;
 
 
 /**

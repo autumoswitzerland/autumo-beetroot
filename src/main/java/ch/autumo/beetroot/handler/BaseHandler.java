@@ -71,11 +71,11 @@ import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
-import ch.autumo.beetroot.utils.Beans;
-import ch.autumo.beetroot.utils.DB;
-import ch.autumo.beetroot.utils.Security;
-import ch.autumo.beetroot.utils.Time;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.bean.Beans;
+import ch.autumo.beetroot.utils.common.Time;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.security.Security;
+import ch.autumo.beetroot.utils.web.Web;
 import jakarta.activation.MimeType;
 
 

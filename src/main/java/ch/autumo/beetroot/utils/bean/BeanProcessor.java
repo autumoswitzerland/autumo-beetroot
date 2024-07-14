@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.bean;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.Entity;
+import ch.autumo.beetroot.utils.database.DB;
 
 /**
  * This bean processor operates with bean fields that hold information of

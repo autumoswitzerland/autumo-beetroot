@@ -25,7 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.autumo.beetroot.models.ModelTest;
-import ch.autumo.beetroot.utils.DBField;
+import ch.autumo.beetroot.utils.database.DBField;
 
 
 /**

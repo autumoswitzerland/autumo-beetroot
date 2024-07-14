@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.Model;
-import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.database.DB;
 
 
 /**

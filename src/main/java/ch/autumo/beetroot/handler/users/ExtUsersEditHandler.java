@@ -29,7 +29,7 @@ import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
-import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.database.DB;
 
 
 /**

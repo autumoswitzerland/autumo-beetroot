@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.web;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +34,8 @@ import com.google.zxing.common.BitMatrix;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.systen.OS;
 import de.taimos.totp.TOTP;
 
 /**

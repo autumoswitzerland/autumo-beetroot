@@ -22,7 +22,7 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Security;
+import ch.autumo.beetroot.utils.security.Security;
 
 /**
  * Client answer.

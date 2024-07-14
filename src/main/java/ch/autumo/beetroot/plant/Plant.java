@@ -40,9 +40,9 @@ import com.diogonunes.jcolor.Attribute;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.Constants;
-import ch.autumo.beetroot.utils.Colors;
 import ch.autumo.beetroot.utils.Helper;
-import ch.autumo.beetroot.utils.OS;
+import ch.autumo.beetroot.utils.common.Colors;
+import ch.autumo.beetroot.utils.systen.OS;
 
 /**
  * PLANT - beetRoot CRUD Generator.

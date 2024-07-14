@@ -39,8 +39,8 @@ import org.w3c.dom.Document;
 
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.utils.Helper;
-import ch.autumo.beetroot.utils.OS;
-import ch.autumo.beetroot.utils.Security;
+import ch.autumo.beetroot.utils.security.Security;
+import ch.autumo.beetroot.utils.systen.OS;
 
 
 /**
@@ -612,19 +612,39 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Get comma-separated values, e.g. 'a,b,c'.
+	 * If the configuration is messed up an empty
+	 * array is returned. No warning if key is missing.
+	 * 
+	 * @param key key
+	 * @return values
+	 */
+	public String[] getSepValuesNoWarn(String key) {
+		String v1 = generalProps.getProperty(key);
+		if (v1 == null || v1.length() == 0) {
+			return new String[0];
+		}
+		String v2[] = v1.split(",");
+		String res[] = new String[v2.length];
+		for (int j = 0; j < v2.length; j++) {
+			res[j] = v2[j].trim();
+		}
+		return res;
+	}
+	
+	/**
+	 * Get comma-separated values, e.g. 'a,b,c'.
+	 * If no values are found an empty array
+	 * is returned.
+	 * 
 	 * @param key key
 	 * @return values
 	 */
 	public String[] getSepValues(String key) {
-		
 		String v1 = generalProps.getProperty(key);
-		
 		if (v1 == null || v1.length() == 0) {
-			
-			LOG.warn("There are no separated values (or fields configured) for key '" + key + "' !");
+			LOG.warn("There are no separated values (or fields configured) for key '{}'!", key);
 			return new String[0];
 		}
-		
 		String v2[] = v1.split(",");
 		String res[] = new String[v2.length];
 		for (int j = 0; j < v2.length; j++) {

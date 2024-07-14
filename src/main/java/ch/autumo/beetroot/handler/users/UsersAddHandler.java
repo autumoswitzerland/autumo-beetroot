@@ -29,7 +29,7 @@ import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultAddHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
-import ch.autumo.beetroot.utils.TwoFA;
+import ch.autumo.beetroot.utils.web.TwoFA;
 
 /**
  * Users add handler. 

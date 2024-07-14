@@ -22,10 +22,9 @@ import org.apache.commons.lang3.SystemUtils;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
-import ch.autumo.beetroot.utils.Colors;
-import ch.autumo.beetroot.utils.Security;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
+import ch.autumo.beetroot.utils.common.Colors;
 
 /**
  * Encoder for passwords.

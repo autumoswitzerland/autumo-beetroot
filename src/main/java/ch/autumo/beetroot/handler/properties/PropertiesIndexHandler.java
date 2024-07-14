@@ -11,7 +11,7 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.handler.DefaultIndexHandler;
-import ch.autumo.beetroot.utils.DB;
+import ch.autumo.beetroot.utils.database.DB;
 
 /**
  * Properties index handler.

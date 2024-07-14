@@ -28,10 +28,10 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.utils.Beans;
-import ch.autumo.beetroot.utils.DB;
 import ch.autumo.beetroot.utils.Helper;
-import ch.autumo.beetroot.utils.Web;
+import ch.autumo.beetroot.utils.bean.Beans;
+import ch.autumo.beetroot.utils.database.DB;
+import ch.autumo.beetroot.utils.web.Web;
 
 /**
  * Default handler for 'web/html/&lt;entity&gt;/view.html' templates.

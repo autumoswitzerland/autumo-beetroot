@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils;
+package ch.autumo.beetroot.utils.bean;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
