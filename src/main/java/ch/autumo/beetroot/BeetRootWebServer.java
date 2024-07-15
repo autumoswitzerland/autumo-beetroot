@@ -130,7 +130,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	public BeetRootWebServer(int port) throws Exception {
 
 		super(port);
-
+		
+		// Log H2 features if any
+		if (BeetRootDatabaseManager.getInstance().isH2Db()) {
+			final String h2Features = BeetRootDatabaseManager.getInstance().getH2Url().getFeatures();
+			LOG.info("H2 features: '{}'.", h2Features);
+		}
+		
 		apiKeyName = BeetRootConfigurationManager.getInstance().getString("web_api_key_name"); // may be used or not
 		
 		// Server commands tunneled over HTTP/HTTPS?

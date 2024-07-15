@@ -53,7 +53,7 @@ public final class H2Url {
 	/** CASE_INSENSITIVE_IDENTIFIERS feature default value. */
 	public final static String DEF_VAL_CASE = "TRUE";
 	/** KEYWORDS feature default value. */
-	public final static String DEF_VAL_NON_KEYWORDS = "SECOND,MINUTE,HOUR,DAY,WEEK,MONTH,YEAR";
+	public final static String DEF_VAL_NON_KEYWORDS = "SECOND,MINUTE,HOUR,DAY,WEEK,MONTH,YEAR,VALUE";
 
 	private Map<String, String> defaultFeatures = new HashMap<>();
 	
@@ -97,7 +97,7 @@ public final class H2Url {
 		}
 		
 		// Undocumented configuration, if available it overwrites the default keyword values for NON_KEYWORDS
-		final String nonKeywords[] = BeetRootConfigurationManager.getInstance().getSepValues("db_url_h2_non_keywords");
+		final String nonKeywords[] = BeetRootConfigurationManager.getInstance().getSepValuesNoWarn("db_url_h2_non_keywords");
 		final int len = nonKeywords.length;
 		if (len > 0) {
 			String s = "";
