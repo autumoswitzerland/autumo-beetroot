@@ -18,10 +18,12 @@
 package ch.autumo.beetroot.utils.database;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -764,6 +766,25 @@ public class DB {
 			}
 		}
 		return Integer.valueOf(savedId);
+	}
+	
+	/**
+	 * Get time-stamp.
+	 * 
+	 * @param date date
+	 * @return time-stamp.
+	 */
+	public static Timestamp timestamp(Date date) {
+		return new Timestamp(date.getTime());		
+	}
+	
+	/**
+	 * Now time-stamp.
+	 * 
+	 * @return time-stamp.
+	 */
+	public static Timestamp now() {
+		return new Timestamp(System.currentTimeMillis());		
 	}
 	
 	/**

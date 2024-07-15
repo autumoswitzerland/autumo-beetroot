@@ -30,9 +30,9 @@ public class H2UrlTest {
 
 	@Test
 	public void test() throws Exception {
-		System.out.println(" 1:" + new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=SECOND,MINUTE,DAY,MONTH,YEAR").getUrl());
-		System.out.println(" 2:" + new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test;DATABASE_TO_LOWER=TRUE").getUrl());
-		System.out.println(" 3:" + new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test").getUrl());
+		new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=SECOND,MINUTE,DAY,MONTH,YEAR").getUrl();
+		new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test;DATABASE_TO_LOWER=TRUE").getUrl();
+		new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test").getUrl();
 	}
 
 }

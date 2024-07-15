@@ -99,7 +99,7 @@ public class BeetRootConfigurationManager {
 	 *  
 	 * @return true if so, otherwise false
 	 */
-	public boolean isInitialized() {
+	public static boolean isInitialized() {
 		return isInitialized;
 	}
 	

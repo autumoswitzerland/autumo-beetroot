@@ -99,12 +99,15 @@ public class BeanField {
 	
 	@Override
 	public String toString() {
+		return super.toString();
+		/*
 		try {
 			return this.serialize(this);
 		} catch (JsonProcessingException e) {
 			LOG.error("Couldn't serialize (JSON) DB field!", e);
 			return super.toString();
 		}
+		*/
 	}
 
 	/**

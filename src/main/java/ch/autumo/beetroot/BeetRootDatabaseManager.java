@@ -39,6 +39,7 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.database.DB;
 import ch.autumo.beetroot.utils.database.DBField;
+import ch.autumo.beetroot.utils.database.H2Url;
 import ch.autumo.beetroot.utils.systen.OS;
 
 /**
@@ -76,6 +77,8 @@ public class BeetRootDatabaseManager {
 	private boolean isPostgreDb = false;
 	private boolean isPostgreNGDb = false;
 	private boolean isUnsupported = false;
+	
+	private H2Url h2Url = null;
 
 	
 	private BeetRootDatabaseManager() {
@@ -191,6 +194,8 @@ public class BeetRootDatabaseManager {
 		if (isH2Db) {
 			dataSourceClassName = "org.h2.jdbcx.JdbcDataSource";
 			dataSourceDriverClassName = "org.h2.Driver";
+			h2Url = new H2Url(url);
+			url = h2Url.getUrl();
 		}
 		if (isMysqlDb) {
 			dataSourceClassName = null;
@@ -365,6 +370,10 @@ public class BeetRootDatabaseManager {
 			} catch (Exception e) {
 			}
 		}
+	}
+
+	public H2Url getH2Url() {
+		return h2Url;
 	}
 	
 	public boolean isH2Db() {

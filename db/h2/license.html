@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
-Copyright 2004-2019 H2 Group. Multiple-Licensed under the MPL 2.0,
+Copyright 2004-2023 H2 Group. Multiple-Licensed under the MPL 2.0,
 and the EPL 1.0 (https://h2database.com/html/license.html).
 Initial Developer: H2 Group
 -->
@@ -10,24 +10,125 @@ Initial Developer: H2 Group
 <title>
 License
 </title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" />
+<!-- [search] { -->
+<script type="text/javascript" src="navigation.js"></script>
+</head><body onload="highlight()" onscroll="scroll()">
 
+<table class="nav" onmousemove="return mouseMove(event)"><tr class="nav"><td class="nav" valign="top">
+<div id = "searchMenu" style="width: 180px; overflow: hidden;">
+<div class="menu" style="white-space:nowrap;">
+<img src="images/h2-logo-2.png"
+    alt="H2 database logo"
+    onclick="document.location='main.html'"
+    width="136" height="74"/>
+&nbsp;&nbsp;<span id = "goTop" onclick="window.scrollTo(0,0)" style="color: #fff; position:fixed; font-size: 20px; cursor: pointer;">&#x25b2;</span>
+</div>
 
+<form action="submit" onsubmit="return goFirst();">
+<table width="100%" class="search">
+    <tr class="search">
+        <td class="search" colspan="2">
+<!-- translate
+<a href="https://translate.google.com/translate?u=https%3A%2F%2Fh2database.com"
+    onclick="javascript:startTranslate();return false;">Translate</a>
+<div id = "translate" style="display:none"><div id = "google_translate_element"></div></div>
+translate -->
+        </td>
+    </tr>
+    <tr class="search">
+        <td class="search" colspan="2">
+        <b><label for="search">Search:</label></b>
+        </td>
+    </tr>
+    <tr class="search">
+        <td class="search" colspan="2">
+            <input id = "search" name="search" type="text" size="16" maxlength="100" onkeyup="listWords(this.value, '')" /><br />
+            <input type="reset" id = "clear" style="display:none;" value="Clear" onclick="listWords('', '');" />
+        </td>
+    </tr>
+    <tr class="search" style="display:none;" >
+        <td class="search" style="width: 1%; vertical-align: middle;">
+            <input id = "highlight" type="checkbox" checked="checked" onclick="highlightCurrent(this.checked, search.value)" />
+        </td>
+        <td class="search" style="width: 99%; padding: 0px; vertical-align: middle;">
+            <label for="highlight">Highlight keyword(s)</label>
+        </td>
+    </tr>
+    <tr class="search">
+        <td class="search" colspan="2">
+            <table id = "result" style="border: 0px;">
+                <tr style="display:none"><td></td></tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</form>
+<div class="menu">
+<b><a href="main.html">Home</a></b><br />
+<a href="download.html">Download</a><br />
+<a href="cheatSheet.html">Cheat Sheet</a><br />
+<br />
+<b>Documentation</b><br />
+<a href="quickstart.html">Quickstart</a><br />
+<a href="installation.html">Installation</a><br />
+<a href="tutorial.html">Tutorial</a><br />
+<a href="features.html">Features</a><br />
+<a href="security.html">Security</a><br />
+<a href="performance.html">Performance</a><br />
+<a href="advanced.html">Advanced</a><br />
+<br />
+<b>Reference</b><br />
+<a href="commands.html">Commands</a><br />
+<a href="functions.html">Functions</a><br />
+&#8226;&nbsp;<a href="functions-aggregate.html">Aggregate</a>
+&#8226;&nbsp;<a href="functions-window.html">Window</a>
+<br /><br />
+<a href="datatypes.html">Data Types</a><br />
+<a href="grammar.html">SQL Grammar</a><br />
+<a href="systemtables.html">System Tables</a><br />
+<a href="../javadoc/index.html">Javadoc</a><br />
+<a href="https://github.com/h2database/h2database/releases/download/version-2.2.224/h2.pdf">PDF (2 MB)</a><br />
+<br />
+<b>Support</b><br />
+<a href="faq.html">FAQ</a><br />
+<a href="sourceError.html">Error Analyzer</a><br />
+<a href="https://groups.google.com/g/h2-database">Google Group</a><br />
+<br />
+<b>Appendix</b><br />
+<a href="history.html">History</a><br />
+<a href="license.html">License</a><br />
+<a href="build.html">Build</a><br />
+<a href="links.html">Links</a><br />
+<a href="mvstore.html">MVStore</a><br />
+<a href="architecture.html">Architecture</a><br />
+<a href="migration-to-v2.html">Migration to 2.0</a><br />
+<br />
+
+</div>
+</div>
+</td>
+
+<td class="nav" style="cursor: e-resize;" onmousedown="return mouseDown(event)" onmouseup="return mouseUp(event)">&nbsp;</td>
+<td class="nav"><div class="content">
+
+<!-- } -->
 
 <h1>License</h1>
 
 <a href="#summary">
-    Summary and License FAQ</a><br>
+    Summary and License FAQ</a><br />
 <a href="#mpl2">
-    Mozilla Public License Version 2.0</a><br>
+    Mozilla Public License Version 2.0</a><br />
 <a href="#eclipse_license">
-    Eclipse Public License - Version 1.0</a><br>
+    Eclipse Public License - Version 1.0</a><br />
 <a href="#eccn">
-    Export Control Classification Number (ECCN)</a><br>
+    Export Control Classification Number (ECCN)</a><br />
 
 <h2 id="summary">Summary and License FAQ</h2>
 <p>
-H2 is dual licensed and available under the MPL 2.0 (<a href="http://www.mozilla.org/MPL/2.0">Mozilla Public License Version 2.0</a>)
-or under the EPL 1.0  (<a href="http://opensource.org/licenses/eclipse-1.0.php">Eclipse Public License</a>).
+H2 is dual licensed and available under the MPL 2.0 (<a href="https://www.mozilla.org/MPL/2.0">Mozilla Public License Version 2.0</a>)
+or under the EPL 1.0  (<a href="https://opensource.org/licenses/eclipse-1.0.php">Eclipse Public License</a>).
 There is a license FAQ for both the MPL and the EPL.
 </p>
 <ul>
@@ -43,7 +144,7 @@ There is a license FAQ for both the MPL and the EPL.
 However, nobody is allowed to rename H2, modify it a little, and sell it as a database engine without telling the customers it is in fact H2.
 This happened to HSQLDB: a company called 'bungisoft' copied HSQLDB, renamed it to 'RedBase', and tried to sell it,
 hiding the fact that it was in fact just HSQLDB. It seems 'bungisoft' does not exist any more, but you can use the
-<a href="http://www.archive.org">Wayback Machine</a> and visit old web pages of <code>http://www.bungisoft.com</code>.
+<a href="https://archive.org/">Wayback Machine</a> and visit old web pages of <code>http://www.bungisoft.com</code>.
 </p><p>
 About porting the source code to another language (for example C# or C++): converted source code (even if done manually) stays under the same
 copyright and license as the original code. The copyright of the ported source code does not (automatically) go to the person who ported the code.
@@ -154,7 +255,7 @@ https://h2database.com/html/license.html
 <pre>
 This Source Code Form is subject to the terms of the Mozilla
 Public License, v. 2.0. If a copy of the MPL was not distributed
-with this file, you can obtain one at http://mozilla.org/MPL/2.0
+with this file, you can obtain one at https://mozilla.org/MPL/2.0
 </pre>
 <p>If it is not possible or desirable to put the notice in a particular file, then You may include the notice in a location (such as a LICENSE file in a relevant directory) where a recipient would be likely to look for such a notice.</p>
 <p>You may add additional accurate notices of copyright ownership.</p>
@@ -391,9 +492,9 @@ to a jury trial in any resulting litigation.
 
 <h2 id="eccn">Export Control Classification Number (ECCN)</h2>
 <p>
-As far as we know, the <a href="http://www.bis.doc.gov/licensing/exportingbasics.htm">U.S. Export Control Classification Number (ECCN)</a> for this software is <code>5D002</code>.
+As far as we know, the <a href="https://www.bis.doc.gov/licensing/exportingbasics.htm">U.S. Export Control Classification Number (ECCN)</a> for this software is <code>5D002</code>.
 However, for legal reasons, we can make no warranty that this information is correct.
-For details, see also the <a href="http://www.apache.org/licenses/exports/">Apache Software Foundation Export Classifications page</a>.
+For details, see also the <a href="https://www.apache.org/licenses/exports/">Apache Software Foundation Export Classifications page</a>.
 </p>
 
 <!-- [close] { -->

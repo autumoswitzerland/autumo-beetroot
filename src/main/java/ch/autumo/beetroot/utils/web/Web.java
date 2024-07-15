@@ -83,22 +83,6 @@ public class Web {
     }
     
     /**
-     * HTML escape value, simple tags like &lt;br&gt;
-     * are allowed. Used for mails too!
-     * 
-     * @param input value to escape
-     * @return escaped value
-     */
-    public static String escapeHtmlReserved2(String input) {
-        if (Strings.isBlank(input)) {
-            return input;
-        }
-        return input.replace("&", "&amp;")
-                    .replace("\"", "&quot;")
-                    .replace("'", "&apos;");
-    }
-    
-    /**
      * Full HTML escape value. Includes "Umlaute".
      * 
      * @param value to escape

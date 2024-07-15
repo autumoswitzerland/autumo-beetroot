@@ -1,21 +1,40 @@
-2024-07-14 00:03:06 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLFeatureNotSupportedException: Dieses Feature wird nicht unterstützt: "getFunctions"
-Feature not supported: "getFunctions" [50100-200]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:507)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:429)
-	at org.h2.message.DbException.get(DbException.java:205)
-	at org.h2.message.DbException.get(DbException.java:181)
-	at org.h2.message.DbException.getUnsupportedException(DbException.java:269)
-	at org.h2.message.TraceObject.unsupported(TraceObject.java:398)
-	at org.h2.jdbc.JdbcDatabaseMetaData.getFunctions(JdbcDatabaseMetaData.java:3273)
-	at net.sourceforge.squirrel_sql.fw.sql.databasemetadata.ProcedureAndFunctionMetaData._getFunctionInfos(ProcedureAndFunctionMetaData.java:109)
-	at net.sourceforge.squirrel_sql.fw.sql.databasemetadata.ProcedureAndFunctionMetaData.getFunctionInfos(ProcedureAndFunctionMetaData.java:95)
-	at net.sourceforge.squirrel_sql.fw.sql.databasemetadata.SQLDatabaseMetaData.getProcedures(SQLDatabaseMetaData.java:740)
-	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.privateLoadStoredProcedures(SchemaInfo.java:577)
-	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.loadStoredProcedures(SchemaInfo.java:416)
-	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo._loadAllObjects(SchemaInfo.java:354)
-	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.privateLoadAll(SchemaInfo.java:284)
-	at net.sourceforge.squirrel_sql.client.session.schemainfo.SchemaInfo.initialLoad(SchemaInfo.java:182)
-	at net.sourceforge.squirrel_sql.client.session.Session$1.run(Session.java:255)
-	at net.sourceforge.squirrel_sql.fw.util.TaskExecuter.run(TaskExecuter.java:82)
-	at java.base/java.lang.Thread.run(Thread.java:833)
+2024-07-14 20:57:27.436758+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-14 20:57:49.061146+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT id, name, minute[*], hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, modified FROM tasks"; erwartet "("
+Syntax error in SQL statement "SELECT id, name, minute[*], hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, modified FROM tasks"; expected "("; SQL statement:
+SELECT id, name, minute, hour, dayofmonth, monthofyear, dayofweek, active, laststatus, lastexecuted, modified FROM tasks [42001-224]
+2024-07-14 20:59:47.574681+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-14 22:18:29.771983+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-14 22:19:50.253062+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-14 22:21:24.874499+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-14 22:24:51.615068+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-15 00:46:23.198197+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-15 00:55:51.782557+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]
+2024-07-15 00:59:38.336602+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT [*]value FROM properties WHERE name='log.size'"; erwartet "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"
+Syntax error in SQL statement "SELECT [*]value FROM properties WHERE name='log.size'"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM properties WHERE name='log.size' [42001-224]

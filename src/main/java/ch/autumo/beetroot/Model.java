@@ -84,7 +84,7 @@ public abstract class Model implements Entity {
 	/** Encode password properties when storing in DB? */
 	private static boolean dbPwEnc = false;
 	static {
-		if (BeetRootConfigurationManager.getInstance().isInitialized())
+		if (BeetRootConfigurationManager.isInitialized())
 			dbPwEnc = BeetRootConfigurationManager.getInstance().getYesOrNo("db_pw_encoded");
 	}
 	
@@ -402,12 +402,15 @@ public abstract class Model implements Entity {
 
 	@Override
 	public String toString() {
+		return super.toString();
+		/*
 		try {
 			return this.serialize(this);
 		} catch (JsonProcessingException e) {
 			LOG.error("Couldn't serialize (JSON) bean!", e);
 			return super.toString();
 		}
+		*/
 	}
 
 	@Override

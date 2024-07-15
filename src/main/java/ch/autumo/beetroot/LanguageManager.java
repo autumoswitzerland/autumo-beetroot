@@ -333,7 +333,7 @@ public class LanguageManager {
 		if (fullEscape)
 			return Web.escapeHtml(MessageFormat.format(text, arguments));
 		else
-			return Web.escapeHtmlReserved2(MessageFormat.format(text, arguments));
+			return MessageFormat.format(text, arguments);
 	}
 	
 	/**
@@ -387,7 +387,7 @@ public class LanguageManager {
 				text = defaultValue;
 			}
 		}
-		return Web.escapeHtmlReserved2(MessageFormat.format(text, arguments));
+		return MessageFormat.format(text, arguments);
 	}
 	
 	/**

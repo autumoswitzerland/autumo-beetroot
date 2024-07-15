@@ -153,7 +153,7 @@ public abstract class BaseServer {
 		// Must !
 		try {
 			// A sub-classed server might already have been initializing the configuration manager
-			if (!configMan.isInitialized())
+			if (!BeetRootConfigurationManager.isInitialized())
 				configMan.initialize();
 		} catch (Exception e) {
 			System.err.println("Configuration initialization failed !");
@@ -268,12 +268,24 @@ public abstract class BaseServer {
 
 
 		//------------------------------------------------------------------------------
+		
+		// Log H2 features if any
+		if (BeetRootDatabaseManager.getInstance().isH2Db()) {
+			final String h2Features = BeetRootDatabaseManager.getInstance().getH2Url().getFeatures();
+			LOG.info("H2 features: '{}'.", h2Features);
+			if (!LOG.isInfoEnabled())
+				System.out.println(ansiServerName + "H2 features: '"+h2Features+"'.");
+		}
+		
+		
+		//------------------------------------------------------------------------------
 
 		// read some undocumented settings if available
 		serverTimeout = configMan.getIntNoWarn("server_timeout"); // in seconds !
 		
+		
 		//------------------------------------------------------------------------------
-
+		
 		// SSL sockets?
 		final String mode = configMan.getString(Constants.KEY_ADMIN_COM_ENC);
 		if (mode != null && mode.equalsIgnoreCase("ssl"))

@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.utils.UtilsException;
 
@@ -29,27 +32,33 @@ import ch.autumo.beetroot.utils.UtilsException;
  */
 public final class H2Url {
 
+	protected static final Logger LOG = LoggerFactory.getLogger(H2Url.class.getName());
+	
 	/** The H2 URL separator separates the URL from the features. */
 	public static final String URL_SEPARATOR = ";";
-	
-	/** MODE feature with default value. */
-	public static final Map.Entry<String, String> FEAT_MODE = Map.entry("MODE", "MySQL");
-	/** FEAT_DATABASE_TO_LOWER feature with default value. */
-	public static final Map.Entry<String, String> FEAT_DATABASE_TO_LOWER = Map.entry("DATABASE_TO_LOWER", "TRUE");
-	/** FEAT_CASE_INSENSITIVE_IDENTIFIERS feature with default value. */
-	public static final Map.Entry<String, String> FEAT_CASE_INSENSITIVE_IDENTIFIERS = Map.entry("FEAT_CASE_INSENSITIVE_IDENTIFIERS", "TRUE");
-	/** NON_KEYWORDS feature with default value. */
-	public static final Map.Entry<String, String> NON_KEYWORDS = Map.entry("NON_KEYWORDS", "SECOND,MINUTE,DAY,MONTH,YEAR");
 
-	private static Map<String, String> defaultFeatures = new HashMap<>();
-	static {
-		defaultFeatures.put(FEAT_MODE.getKey(), FEAT_MODE.getValue());
-		defaultFeatures.put(FEAT_DATABASE_TO_LOWER.getKey(), FEAT_DATABASE_TO_LOWER.getValue());
-		defaultFeatures.put(FEAT_CASE_INSENSITIVE_IDENTIFIERS.getKey(), FEAT_CASE_INSENSITIVE_IDENTIFIERS.getValue());
-		defaultFeatures.put(NON_KEYWORDS.getKey(), NON_KEYWORDS.getValue());
-	}
+	/** MODE feature. */
+	public final static String FEAT_MODE = "MODE";
+	/** DATABASE_TO_LOWER feature. */
+	public final static String FEAT_DATABASE_TO_LOWER = "DATABASE_TO_LOWER";
+	/** CASE_INSENSITIVE_IDENTIFIERS feature. */
+	public final static String FEAT_CASE_INSENSITIVE_IDENTIFIERS = "CASE_INSENSITIVE_IDENTIFIERS";
+	/** NON_KEYWORDS feature. */
+	public final static String FEAT_NON_KEYWORDS = "NON_KEYWORDS";
+
+	/** MODE feature default value. */
+	public final static String DEF_VAL_MODE = "MySQL";
+	/** DATABASE_TO_LOWER feature default value. */
+	public final static String DEF_VAL_DB2LOWER = "TRUE";
+	/** CASE_INSENSITIVE_IDENTIFIERS feature default value. */
+	public final static String DEF_VAL_CASE = "TRUE";
+	/** KEYWORDS feature default value. */
+	public final static String DEF_VAL_NON_KEYWORDS = "SECOND,MINUTE,HOUR,DAY,WEEK,MONTH,YEAR";
+
+	private Map<String, String> defaultFeatures = new HashMap<>();
 	
 	private String originalUrl = null;
+	private String features = null;
 	private String urlNoFeatures = null;
 	private String url = null;
 	
@@ -62,6 +71,10 @@ public final class H2Url {
 	 */
 	public H2Url(String originalUrl) throws UtilsException {
 		this.originalUrl= originalUrl;
+		defaultFeatures.put(FEAT_MODE, DEF_VAL_MODE);
+		defaultFeatures.put(FEAT_DATABASE_TO_LOWER, DEF_VAL_DB2LOWER);
+		defaultFeatures.put(FEAT_CASE_INSENSITIVE_IDENTIFIERS, DEF_VAL_CASE);
+		defaultFeatures.put(FEAT_NON_KEYWORDS, DEF_VAL_NON_KEYWORDS);
 		this.enrichUrl();
 	}
 	
@@ -94,18 +107,29 @@ public final class H2Url {
 				else
 					s += nonKeywords[i] + ",";
 			}
-			defaultFeatures.put(NON_KEYWORDS.getKey(), s);
+			defaultFeatures.put(FEAT_NON_KEYWORDS, s);
 		}
 		
 		// Create new URL
+		final StringBuilder newFeatures = new StringBuilder();
 		final StringBuilder newUrl = new StringBuilder();
+		int i = 0;
 		newUrl.append(urlNoFeatures);
 		for (Map.Entry<String, String> entry : defaultFeatures.entrySet()) {
+			if (i > 0)
+				newFeatures.append(URL_SEPARATOR);
 			newUrl.append(URL_SEPARATOR);
-			newUrl.append(entry.getKey() + "=" + entry.getValue());
+			final String v = entry.getValue();
+			if (v.length() > 0) {
+				final String part = entry.getKey() + "=" + v;
+				newFeatures.append(part);
+				newUrl.append(part);
+			}
+			i++;
 		}
 		
 		this.url = newUrl.toString();
+		this.features = newFeatures.toString();
 	}
 	
 	/**
@@ -118,6 +142,15 @@ public final class H2Url {
 	}
 
 	/**
+	 * Get features only.
+	 * 
+	 * @return features only
+	 */
+	public String getFeatures() {
+		return this.features;
+	}
+	
+	/**
 	 * Get H2 URL without any features.
 	 * 
 	 * @return new H2 URL without features
@@ -125,5 +158,5 @@ public final class H2Url {
 	public String getUrlNoFeatures() {
 		return this.urlNoFeatures;
 	}
-	
+
 }
