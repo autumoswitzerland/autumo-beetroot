@@ -178,7 +178,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	}
 
 	/**
-	 * Initialize modules, etc.
+	 * Initialize additional modules, etc.
 	 * 
 	 * @param isWithinServlet is within servlet?
 	 * @param fullConfigBasePath full path where configuration files are located
