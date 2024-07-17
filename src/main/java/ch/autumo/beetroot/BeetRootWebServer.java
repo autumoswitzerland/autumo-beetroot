@@ -321,7 +321,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		final String uri = Web.normalizeUri(session.getUri());
 
 		
-		// Servlet magic :)
+		// URI reduction for internal resources
 		String uriWithoutServlet = uri;
 		if (insertServletNameInTemplateRefs && uri.startsWith(servletName+"/")) {
 			uriWithoutServlet = uri.replaceFirst(servletName+"/", "");

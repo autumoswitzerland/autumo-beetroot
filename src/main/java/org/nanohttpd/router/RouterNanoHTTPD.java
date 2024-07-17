@@ -59,8 +59,8 @@ import org.nanohttpd.protocols.http.response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 
 /**
@@ -69,12 +69,12 @@ import ch.autumo.beetroot.LanguageManager;
  */
 public class RouterNanoHTTPD extends NanoHTTPD {
 
-	/** patched: autumo-beetroot */
 	/**
-     * logger to log to.
+	 * Patched: autumo-beetroot.
+     * beetroot logger.
      */
-    //private static final Logger LOG = Logger.getLogger(RouterNanoHTTPD.class.getName());
 	protected static final Logger LOG = LoggerFactory.getLogger(RouterNanoHTTPD.class.getName());
+    //private static final Logger LOG = Logger.getLogger(RouterNanoHTTPD.class.getName());
 
     public interface UriResponder {
 
@@ -279,7 +279,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
     public static class IndexHandler extends DefaultHandler {
 
         public String getText() {
-            return "<html><body><h2>Hello world!</h3></body></html>";
+            return "<html><body><h2>Hello world!</h2></body></html>";
         }
 
         @Override
@@ -297,7 +297,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
     public static class NotImplementedHandler extends DefaultHandler {
 
         public String getText() {
-            return "<html><body><h2>The uri is mapped in the router, but no handler is specified. <br> Status: Not implemented!</h3></body></html>";
+            return "<html><body><h2>The uri is mapped in the router, but no handler is specified. <br> Status: Not implemented!</h2></body></html>";
         }
 
         @Override
@@ -345,7 +345,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
         private final List<String> uriParams = new ArrayList<String>();
 
-        /** patched: autumo-beetroot */
+        /** Patched: autumo-beetroot. */
         private boolean hasLang = false;
         
         public UriResource(String uri, int priority, Class<?> handler, Object... initParameter) {
@@ -357,8 +357,11 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             this.handler = handler;
             this.initParameter = initParameter;
             if (uri != null) {
-                // Note: autumo, MG: patched for beetroot.
-            	// determine if there are languages or not 
+            	
+                /**
+                 * Patched for autumo-beetroot.
+                 * Determine if there are languages or not.
+                 */
             	if (uri.startsWith("/:lang/")) {
             		hasLang = true;
             		uri = uri.replace("/:lang/", "/");
@@ -396,7 +399,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
                 try {
 
                 	
-                    /* MG: patched */
+                    /* Patched: autumo-beetroot */
             		Constructor<?> constructor = null;
                     final Constructor<?> constructors[] = handler.getDeclaredConstructors();
             		int ip = initParameter.length;
@@ -501,12 +504,11 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             this.priority = priority;
         }
 
-        /** patched: autumo-beetroot */        
         /**
          * Has this URI an language in it or not?
          * Unused atm.
          * 
-         * Note: autumo, MG: patched for beetRoot.
+         * Patched: autumo-beetroot.
          * 
          * @return true if this URI has a language route, otherwise false
          */
@@ -618,19 +620,25 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
         private IRoutePrioritizer routePrioritizer;
 
-        /** patched: autumo-beetroot */
-        // We need a flag for pre-urls - Note: autumo, MG: patched for beetRoot.
+        /**
+         * Is servlet names present?
+         * 
+         * Patched: autumo-beetroot.
+         */
         private boolean insertServletNameInTemplateRefs = false;
         
-        /** patched: autumo-beetroot */
-        // We need a holder for pre-urls/servlet names - Note: autumo, MG: patched for beetRoot.
+        /**
+         * Holder for servlet names.
+         * 
+         * Patched: autumo-beetroot.
+         */
         private String servletName = null;
         
         
         public UriRouter() {
             this.routePrioritizer = new DefaultRoutePrioritizer();
             
-            /** patched: autumo-beetroot */
+            /** Patched: autumo-beetroot. */
     		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
     		if (servletName != null && servletName.length() != 0)
     			insertServletNameInTemplateRefs = true; 
@@ -648,13 +656,14 @@ public class RouterNanoHTTPD extends NanoHTTPD {
          */
         public Response process(IHTTPSession session) {
         	
-        	/** patched: autumo-beetroot */
-        	// Not very elegant, but hey it works well!
-        	// Remove lang for standard nano route matching
-        	// Decision what language tempalte should be chosen
-        	// is done by beetroot elsewhere.
-        	// Note: autumo, MG: patched for beetroot.
-    		// + servlet magic :)
+        	/**
+        	 * Patched: autumo-beetroot.
+        	 * 
+        	 * Remove language for standard nano route matching.
+        	 * Decision what language template should be chosen
+        	 * is done by beetroot later.
+        	 * Also reduce URI for internal resources.
+        	 */
         	String uri = session.getUri();
     		if (insertServletNameInTemplateRefs && uri.startsWith("/"+servletName)) {
     			uri = uri.replaceFirst("/"+servletName, "");
@@ -677,7 +686,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         /**
          * Add route.
          * 
-         * patched: autumo-beetroot
+         * Patched: autumo-beetroot.
          * 
          * @param url URL
          * @param priority priority
@@ -706,7 +715,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
     }
 
-    /** patched: autumo-beetroot */
+    /** Patched: autumo-beetroot. */
     protected UriRouter router;
 
     public RouterNanoHTTPD(int port) {
@@ -720,7 +729,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
     }
 
     /**
-     * default routings, they are over writable.
+     * Default routings, they are over writable.
      * 
      * <pre>
      * router.setNotFoundHandler(GeneralHandler.class);
