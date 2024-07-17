@@ -13,6 +13,8 @@
 -- H2 version 2.2.224 - MySQL mode
 
 
+SET IGNORECASE='TRUE';
+
 CREATE TABLE users (
     "id" INT AUTO_INCREMENT PRIMARY KEY,
     "username" VARCHAR(50) not NULL,
