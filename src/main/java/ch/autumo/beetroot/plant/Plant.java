@@ -409,7 +409,7 @@ public class Plant {
 		System.out.println("- New generation has overwriten possible previous generated sources!");
 		System.out.println("");
 		System.out.println(Colors.darkYellow("TODO's")+":");
-		System.out.println("- Add the routes above to your router!");
+		System.out.println("- Add the routes above to your configuration 'cfg/routing.xml'!");
 		System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
 		System.out.println("  default value in the add handler that are not present in the GUI!");
 		System.out.println("- Remove unwanted GUI fields from 'columns.cfg' for the views 'view', 'add'");

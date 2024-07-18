@@ -120,6 +120,9 @@ public class OS {
 		if (dir == null)
 			dir = System.getProperty("java.io.tmpdir");
 		
+		// Re-set temp-dir; this is a security resolution for nano-httpd CVE-2022-21230
+		System.setProperty("java.io.tmpdir", dir);
+		
 		if (!dir.endsWith(FILE_SEPARATOR))
 			dir += FILE_SEPARATOR;
 		

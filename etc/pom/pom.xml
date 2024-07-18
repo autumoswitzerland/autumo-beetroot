@@ -4,18 +4,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	
-	<name>autumo-beetroot</name>
-	<groupId>ch.autumo.beetroot</groupId>
-	<artifactId>autumo-beetroot</artifactId>
-	<version>3.0.0</version>
+	<name>yourproject</name>
+	<groupId>com.yourgroup.id</groupId>
+	<artifactId>your-artifact</artifactId>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
-
-	<scm>
-		<connection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</connection>
-		<developerConnection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</developerConnection>
-		<url>https://github.com/autumoswitzerland/autumo-beetroot</url>
-		<tag>master</tag>
-	</scm>
 	
 	<repositories>
 		<repository>
@@ -199,6 +192,13 @@
 
 	<dependencies>
 				
+		<dependency>
+		    <groupId>ch.autumo.beetroot</groupId>
+		    <artifactId>autumo-beetroot</artifactId>
+		    <version>3.0.0</version>
+		    <scope>provided</scope>
+		</dependency>
+				
 		<!-- CVE-2022-21230: Resolved when setting 'ws_tmp_dir' in beetRoot configuration -->
 		<dependency>
 		    <groupId>org.nanohttpd</groupId>
@@ -354,7 +354,6 @@
 		    <scope>provided</scope>
 		</dependency>
 
-		<!-- Not distributed in the builds -->
 		<dependency>
 		    <groupId>com.sun.activation</groupId>
 		    <artifactId>jakarta.activation</artifactId>
@@ -362,7 +361,6 @@
 		    <scope>provided</scope>
 		</dependency>
 
-		<!-- Not distributed in the builds -->
 		<dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>jakarta.mail</artifactId>

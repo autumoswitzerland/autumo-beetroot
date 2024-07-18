@@ -200,6 +200,11 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# copy libs
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
+	mkdir -p autumo-beetRoot-$VERSION/lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION
+	# Copy autumo-beetroot to local repo
+	cp ../lib/autumo-beetroot-$VERSION.jar autumo-beetRoot-$VERSION/lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION/
+	# Copy local repo for dev (not yet public maven libs)
+	cp -R ../lib/repo autumo-beetRoot-$VERSION/lib/
 	rm autumo-beetRoot-$VERSION/lib/jakarta.mail-*.jar
 	rm autumo-beetRoot-$VERSION/lib/jakarta.activation-2.0.1.jar
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
@@ -285,10 +290,17 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 # --------- Copy infos
 
+	mkdir autumo-beetRoot-$VERSION/doc
+	mkdir autumo-beetRoot-$VERSION/doc/migration
+
+	cp ../doc/*.md autumo-beetRoot-$VERSION/doc
+	cp ../doc/migration/*.md autumo-beetRoot-$VERSION/doc/migration/*.md
+
 	cp ../README.md autumo-beetRoot-$VERSION/
 	cp ../LICENSE.md autumo-beetRoot-$VERSION/
 	cp ../THIRDPARTYLICENSES.html autumo-beetRoot-$VERSION/
-	cp ../pom.xml autumo-beetRoot-$VERSION/
+	# Copy dev pom.xml
+	cp ../etc/pom/pom.xml autumo-beetRoot-$VERSION/
 
 	cp ../README.md autumo-beetRoot-web-$VERSION/
 	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/
