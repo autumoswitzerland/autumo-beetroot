@@ -43,6 +43,7 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootWebServer;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.server.action.Download;
 import ch.autumo.beetroot.server.action.Upload;
@@ -238,6 +239,22 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
+		// configure logging
+		String logCfgFile = System.getProperty("log4j2.configurationFile");
+		// check if it has been overwritten with the 'log4j.configuration' parameter
+		if (logCfgFile == null)
+			logCfgFile = configMan.getString("ws_log_cfg");
+		
+		this.initializeLogging(logCfgFile);
+		
+		//------------------------------------------------------------------------------
+		
+		LOG.info("Server starting...");
+		if (!LOG.isInfoEnabled())
+			System.out.println(ansiServerName + " Server starting...");
+
+		//------------------------------------------------------------------------------
+		
 		// DB manager initialization if not yet done!
 		try {
 			
@@ -254,18 +271,12 @@ public abstract class BaseServer {
 			System.err.println(ansiErrServerName + " Couldn't create DB manager!");
 			Helper.fatalExit();
 		}
-		
+
 		
 		//------------------------------------------------------------------------------
-		
-		// configure logging
-		String logCfgFile = System.getProperty("log4j2.configurationFile");
-		// check if it has been overwritten with the 'log4j.configuration' parameter
-		if (logCfgFile == null)
-			logCfgFile = configMan.getString("ws_log_cfg");
-		
-		this.initializeLogging(logCfgFile);
 
+		// Initialize the log event appender
+		LogEventAppender.initializeAppender();
 		
 		//------------------------------------------------------------------------------
 
@@ -393,13 +404,12 @@ public abstract class BaseServer {
 		
 		final boolean start = this.beforeStart();
 		// start pre-condition ok? 
-		if (!start)
+		if (!start) {
+			LOG.warn("Server stopped by before-start hook!");
+			if (!LOG.isWarnEnabled())
+				System.out.println(ansiServerName + " Server stopped by before-start hook!");
 			return;
-		
-		LOG.info("Server starting...");
-		
-		if (!LOG.isInfoEnabled())
-			System.out.println(ansiServerName + " Server starting...");
+		}
 
 		// Server dispatcher initialization
 		this.initializeDispatchers();
@@ -677,9 +687,9 @@ public abstract class BaseServer {
 	            final Dispatcher d = (Dispatcher) constructor.newInstance();
 	            // add dispatcher that handles server commands of distributed components/modules
 	            dispatchers.put(d.getId(), d);
-	            LOG.info("- Modules: Dispatcher '"+currDisp+"' added.");
+	            LOG.info("Module: Dispatcher '"+currDisp+"' added.");
 	            if (!LOG.isInfoEnabled())
-		            System.out.println("- Modules: Dispatcher '"+currDisp+"' added.");
+		            System.out.println("Module: Dispatcher '"+currDisp+"' added.");
 			} catch (Exception ex) {
 				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
 				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");

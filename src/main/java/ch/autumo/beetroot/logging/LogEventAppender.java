@@ -17,6 +17,7 @@
  */
 package ch.autumo.beetroot.logging;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,51 +46,11 @@ public class LogEventAppender extends AbstractAppender {
 	/** Default log size . */
 	public static int DEFAULT_LOG_SIZE = 100;
 	
-	private static int size;
-	static {
-		String sSize;
-		try {
-			sSize = BeetRootDatabaseManager.getInstance().getProperty("log.size");
-			if (sSize != null) {
-				try {
-					size = Integer.valueOf(sSize).intValue();
-				} catch (Exception e) {
-					size = DEFAULT_LOG_SIZE;
-				}
-			} else {
-				size = DEFAULT_LOG_SIZE;
-			}	
-		} catch (Exception e) {
-			size = DEFAULT_LOG_SIZE;
-		}
-		
-		// Install CRUD update listener for settings
-		EventHandler.getInstance().addUpdateListener(Property.class, new UpdateListener() {
-			@Override
-			public boolean beforeUpdate(Model bean) {
-				return false;
-			}
-			@Override
-			public void afterUpdate(Model bean) {
-				final Property prop = (Property) bean;
-				if (prop.getName().equals("log.size")) {
-					int val = size;
-					try {
-						val = Integer.valueOf(prop.getValue()).intValue();	
-					} catch (Exception e) {
-					}
-					if (val != size) {
-						size = val;
-						logEvents.setMaxSize(size);
-						logEvents.resize();
-					}
-				}
-			}
-		});
-	}
-	
-    private static final LogEventList<LogEvent> logEvents = new LogEventList<>(size);
+	private static int size = DEFAULT_LOG_SIZE;
+	private static LogEventList<LogEvent> logEvents = new LogEventList<>(size);
 
+	private static boolean isInitialized = false;
+	
     
     /**
      * Log event appender.
@@ -119,5 +80,62 @@ public class LogEventAppender extends AbstractAppender {
     public static List<LogEvent> getLogEvents() {
         return Collections.unmodifiableList(logEvents);
     }
-    
+
+    /**
+     * Initialize the appender.
+     * This call must be made!
+     */
+	public static void initializeAppender() {
+		
+		if (isInitialized)
+			return;
+		
+		String sSize;
+		try {
+			sSize = BeetRootDatabaseManager.getInstance().getProperty("log.size");
+			if (sSize != null) {
+				try {
+					size = Integer.valueOf(sSize).intValue();
+				} catch (Exception e) {
+					size = DEFAULT_LOG_SIZE;
+				}
+			} else {
+				size = DEFAULT_LOG_SIZE;
+			}	
+		} catch (Exception e) {
+			size = DEFAULT_LOG_SIZE;
+		}
+
+		// Recreate and re-fill
+		final LogEvent tempEvents[] = logEvents.toArray(new LogEvent[logEvents.size()]);
+		logEvents = new LogEventList<>(size);
+		logEvents.addAll(Arrays.asList(tempEvents));
+		
+		// Install CRUD update listener for settings
+		EventHandler.getInstance().addUpdateListener(Property.class, new UpdateListener() {
+			@Override
+			public boolean beforeUpdate(Model bean) {
+				return false;
+			}
+			@Override
+			public void afterUpdate(Model bean) {
+				final Property prop = (Property) bean;
+				if (prop.getName().equals("log.size")) {
+					int val = size;
+					try {
+						val = Integer.valueOf(prop.getValue()).intValue();	
+					} catch (Exception e) {
+					}
+					if (val != size) {
+						size = val;
+						logEvents.setMaxSize(size);
+						logEvents.resize();
+					}
+				}
+			}
+		});
+		
+		isInitialized = true;
+	} 
+	
 }
