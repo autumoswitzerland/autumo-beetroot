@@ -9,15 +9,6 @@
 #------------------------------------------------------------------------------
 
 
-pushd() {
-  command pushd "$@" > /dev/null
-}
-popd() {
-  command popd > /dev/null
-}
-
-pushd `pwd`
-
 #
 # ROOT path
 #
@@ -55,4 +46,5 @@ java \
 	-Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2,TLSv1.3 \
 	-cp "${CLASSPATH}" ch.autumo.beetroot.server.BeetRootServer $*
 
-popd
+
+cd "$(dirname "$0")/bin"
