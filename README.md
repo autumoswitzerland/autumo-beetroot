@@ -72,8 +72,8 @@ and can be extended with your own (distributed) modules.
 
 Use the quickstart guide below, then go to http://localhost:8778 and log in:
 <ul>
-<li>**Default user**: admin</li>
-<li>**Default password**: beetroot</li>
+<li><strong>Default user</strong>: admin</li>
+<li><strong>Default password</strong>: beetroot</li>
 </ul>
 <br />
 
