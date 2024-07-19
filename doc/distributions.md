@@ -11,4 +11,4 @@ Distributions are available here: [Releases](https://github.com/autumoswitzerlan
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+<a href="../README.md#Documentation">[Main Page]</a>
