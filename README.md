@@ -65,7 +65,7 @@ and can be extended with your own (distributed) modules.
 
 [![autumo beetRoot 3.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)][video-url]
 <p style="text-align: center;"><strong>
-[autumo beetRoot 3.x - Quickstart Video][video-url]
+[autumo beetRoot 3.x - Quickstart Video]([video-url])
 </strong></p>
 
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
