@@ -27,5 +27,10 @@ ch.autumo.beetroot.server.modules.log
 ch.autumo.beetroot.sms
 ch.autumo.beetroot.transport
 ch.autumo.beetroot.utils
+ch.autumo.beetroot.utils.bean
+ch.autumo.beetroot.utils.common
+ch.autumo.beetroot.utils.database
 ch.autumo.beetroot.utils.security
+ch.autumo.beetroot.utils.systen
+ch.autumo.beetroot.utils.web
 org.nanohttpd.router

@@ -689,7 +689,7 @@ public abstract class BaseServer {
 	            dispatchers.put(d.getId(), d);
 	            LOG.info("Module: Dispatcher '"+currDisp+"' added.");
 	            if (!LOG.isInfoEnabled())
-		            System.out.println("Module: Dispatcher '"+currDisp+"' added.");
+		            System.out.println(ansiServerName + " Module: Dispatcher '"+currDisp+"' added.");
 			} catch (Exception ex) {
 				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
 				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");
