@@ -64,9 +64,13 @@ as well as HTTP/HTTPS tunneling, provides an interface for downloading and uploa
 and can be extended with your own (distributed) modules.
 
 [![autumo beetRoot 3.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.png)][video-url]
-<p style="text-align: center;"><strong>
-<a href="https://youtu.be/X2_FVYiMnIE">autumo beetRoot 3.x - Quickstart Video</a>
-</strong></p>
+<p style="text-align: center;">
+	<strong>
+		<a href="https://youtu.be/X2_FVYiMnIE">autumo beetRoot 3.x - Quickstart Video</a>
+	</strong>
+</p>
+<br />
+
 
 ![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-console.png)
 
