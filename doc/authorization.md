@@ -60,7 +60,7 @@ Visibility with authorization tags in HTML templates (roles, entities and action
 3. Positive entity authorization:
 
 	```
-	{$if-entity=task:}
+	{$if-entity=tasks:}
 	...
 	{$endif-entity;}
 	```
@@ -68,7 +68,7 @@ Visibility with authorization tags in HTML templates (roles, entities and action
 	or more than one entity:
 	
 	```
-	{$if-entity=task,property:}
+	{$if-entity=tasks,properties:}
 	...
 	{$endif-entity;}
 	```
@@ -89,39 +89,7 @@ Visibility with authorization tags in HTML templates (roles, entities and action
 	{$endif-!entity;}
 	```
 
-5. Positive entity authorization:
-
-	```
-	{$if-entity=task:}
-	...
-	{$endif-entity;}
-	```
-
-	or more than one entity:
-	
-	```
-	{$if-entity=task,property:}
-	...
-	{$endif-entity;}
-	```
-
-6. Negative entity authorization:
-
-	```
-	{$if-!entity=products:}
-	...
-	{$endif-!entity;}
-	```
-
-	or more than one entity:
-	
-	```
-	{$if-!entity=products,variants:}
-	...
-	{$endif-!entity;}
-	```
-
-7. Positive action authorization:
+5. Positive action authorization:
 
 	```
 	{$if-action=edit:}
@@ -137,7 +105,7 @@ Visibility with authorization tags in HTML templates (roles, entities and action
 	{$endif-action;}
 	```
 
-8. Negative action authorization:
+6. Negative action authorization:
 
 	```
 	{$if-!action=index:}
