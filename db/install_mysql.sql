@@ -10,7 +10,7 @@
 
 
 
--- This here works fine with MySQL and MariaAB.
+-- This here works fine with MySQL and MariaDB.
 
 -- create database
 
