@@ -19,6 +19,8 @@ package ch.autumo.beetroot.handler;
 
 import java.io.File;
 
+import org.nanohttpd.protocols.http.response.Response;
+
 /**
  * Handler response.
  */
@@ -41,40 +43,77 @@ public class HandlerResponse {
 	private Object object = null;
 	private File downloadFile = null;
 	private String downloadFileMimeType = null;
+	
+	private Response httpResponse = null;
 
 	private int type = TYPE_FORM;
 	private int id = -1;
 
 	private int savedId = -1;
 	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
+	/**
+	 * Handler with as status.
+	 * 
+	 * @param status status
+	 */
 	public HandlerResponse(int status) {
 		this.status = status;
 	}
 
+	/**
+	 * Handler with a pre-created HTTP response.
+	 * 
+	 * @param status status
+	 * @param httpResponse HTTP response
+	 */
+	public HandlerResponse(int status, Response httpResponse) {
+		this.status = status;
+		this.httpResponse = httpResponse;
+	}
+	
+	/**
+	 * Handler with status and a DB ID of a just created record.
+	 * 
+	 * @param status status
+	 * @param savedId save ID
+	 */
 	public HandlerResponse(int status, int savedId) {
 		this.status = status;
 		this.savedId = savedId;
 	}
 	
+	/**
+	 * Handler with status and a message to show.
+	 * 
+	 * @param status status 
+	 * @param message message
+	 */
 	public HandlerResponse(int status, String message) {
 		this.status = status;
 		this.message = message;
 	}
 	
+	/**
+	 * Handler with status, title and a message to show.
+	 * 
+	 * @param status status 
+	 * @param title title
+	 * @param message message
+	 */
 	public HandlerResponse(int status, String title, String message) {
 		this.status = status;
 		this.title = title;
 		this.message = message;
 	}
 	
+	/**
+	 * Handler with status, title, message and an exception to show.
+	 * 
+	 * @param status status 
+	 * @param title title
+	 * @param message message
+	 * @param exception exception
+	 */
 	public HandlerResponse(int status, String title, String message, Exception exception) {
 		this.status = status;
 		this.title = title;
@@ -82,6 +121,15 @@ public class HandlerResponse {
 		this.exception = exception;
 	}
 	
+	/**
+	 * Handler with status, title, message and an exception to show and an additional object.
+	 * 
+	 * @param status status 
+	 * @param title title
+	 * @param message message
+	 * @param exception exception
+	 * @param object object
+	 */
 	public HandlerResponse(int status, String title, String message, Exception exception, Object object) {
 		super();
 		this.status = status;
@@ -91,12 +139,24 @@ public class HandlerResponse {
 		this.object = object;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	public int getStatus() {
 		return status;
 	}
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public Response getHttpResponse() {
+		return httpResponse;
 	}
 
 	public String getTitle() {

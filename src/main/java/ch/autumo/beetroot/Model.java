@@ -639,10 +639,43 @@ public abstract class Model implements Entity {
 	 * @param entity entity bean class
 	 * @param condition SQL condition
 	 * @param value value for the condition with one argument
+	 * @param amount max records to return
+	 * @return entities
+	 */
+	public static List<Model> where(Class<?> entity, String condition, Object value, int amount) {
+		return Model.where(entity, condition, new Object[] {value}, amount);
+	}
+	
+	/**
+	 * List all entities of the given entity bean with specific condition,
+	 * e.g. 'age &gt;= ?'.
+	 * 
+	 * @param entity entity bean class
+	 * @param condition SQL condition
+	 * @param value value for the condition with one argument
 	 * @return entities
 	 */
 	public static List<Model> where(Class<?> entity, String condition, Object value) {
 		return Model.where(entity, condition, new Object[] {value});
+	}
+
+	/**
+	 * List all entities of the given entity bean with specific condition,
+	 * e.g. 'age &gt;= ?, gender = ?'.
+	 * 
+	 * @param entity entity bean class
+	 * @param condition SQL condition
+	 * @param values values for the condition
+	 * @param amount max records to return
+	 * @return entities
+	 */
+	public static List<Model> where(Class<?> entity, String condition, Object values[], int amount) {
+		try {
+			return DB.selectRecords(entity, condition, values, amount);
+		} catch (Exception e) {
+			LOG.error("Couldn't execute where clause '"+condition+"' with bean class '"+entity.getName()+"'!", e);
+			return null;
+		}		
 	}
 	
 	/**

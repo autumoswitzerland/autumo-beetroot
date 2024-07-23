@@ -183,6 +183,7 @@ cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta
 - [PLANT: The CRUD Generator](doc/plant.md)
 - [Default HTML Templates](doc/templates.md)
 - [Routing](doc/routing.md)
+- [Handlers](doc/handlers.md)
 - [User, Roles &amp; Authorization](doc/authorization.md)
 - [CRUD Hooks](doc/hooks.md)
 - [Referential integrity](doc/references.md)
