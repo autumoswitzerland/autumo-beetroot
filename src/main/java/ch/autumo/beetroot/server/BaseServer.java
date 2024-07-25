@@ -249,9 +249,16 @@ public abstract class BaseServer {
 		
 		//------------------------------------------------------------------------------
 		
-		LOG.info("Server starting...");
-		if (!LOG.isInfoEnabled())
-			System.out.println(ansiServerName + " Server starting...");
+		// Some infos
+		if (operation.equalsIgnoreCase("start")) {
+			LOG.info("Server starting...");
+			if (!LOG.isInfoEnabled())
+				System.out.println(ansiServerName + " Server starting...");
+		} else if (operation.equalsIgnoreCase("stop")) {
+			LOG.info("Server stopping...");
+			if (!LOG.isInfoEnabled())
+				System.out.println(ansiServerName + " Server stopping...");
+		}
 
 		//------------------------------------------------------------------------------
 		
@@ -343,6 +350,10 @@ public abstract class BaseServer {
 		} else if (operation.equalsIgnoreCase("stop")) {
 			
 			this.sendServerCommand(Communicator.CMD_STOP);
+			
+			LOG.info("STOP command sent.");
+			if (!LOG.isInfoEnabled())
+				System.out.println(ansiServerName + " STOP command sent.");
 			
 		} else {
 			// custom operation called, what to do?
