@@ -156,7 +156,7 @@ public abstract class AbstractMessage {
 	 * @return value
 	 */
 	public int getMessageIntValue(String key) {
-		return Integer.valueOf(this.getMessageValue(key)).intValue();
+		return Integer.parseInt(this.getMessageValue(key));
 	}
 	
 	/**
