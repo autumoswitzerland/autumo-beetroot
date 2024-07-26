@@ -383,8 +383,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				dbApiKey = BeetRootDatabaseManager.getInstance().getProperty("web.json.api.key");
 			} catch (Exception e) {
 				LOG.warn("Couldn't read property from DB!", e);
-				String t = LanguageManager.getInstance().translate("base.err.srv.db.title", LanguageManager.DEFAULT_LANG);
-				String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", LanguageManager.DEFAULT_LANG, e.getMessage());
+				final String t = LanguageManager.getInstance().translate("base.err.srv.db.title", LanguageManager.DEFAULT_LANG);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", LanguageManager.DEFAULT_LANG, e.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 			}
 			
@@ -396,8 +396,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			}
 			else {
 				LOG.warn("JSON API (URI: '{}'): Access with wrong JSON API Key!", uriWithoutServlet);
-				String t = LanguageManager.getInstance().translate("base.err.srv.io.title", LanguageManager.DEFAULT_LANG);
-				String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", LanguageManager.DEFAULT_LANG, "Disperse, nothing to see here!");
+				final String t = LanguageManager.getInstance().translate("base.err.srv.io.title", LanguageManager.DEFAULT_LANG);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", LanguageManager.DEFAULT_LANG, "Disperse, nothing to see here!");
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 			}
 		}
@@ -410,8 +410,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    	LanguageManager.getInstance();
 	    } catch (Exception e) {
 			LOG.warn("No default translation file 'lang_default.properties' or 'tmpl_lang_default.properties' (if 'web_translations switched' on) found! That is not desirable!");
-			String t = "Language configuration error";
-			String m = "No default translation file found! That is not desirable! This Message is NOT translated!";
+			final String t = "Language configuration error";
+			final String m = "No default translation file found! That is not desirable! This Message is NOT translated!";
 			return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 		}
 	    
@@ -457,8 +457,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				} catch (FileNotFoundException e) {
 					final String err = "Couldn't serve temporary file '" + fullTmpPath + "'!";
 					LOG.error(err, e);
-					String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-					String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
+					final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+					final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
 					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 				}
 			}
@@ -493,8 +493,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					} catch (IOException e1) {
 						final String err = "Resource not found on server looking up with resource path '" + filePath + "'!";
 						LOG.error(err, e);
-						String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
+						final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+						final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 				}
@@ -511,8 +511,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					} catch (IOException e1) {
 						final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
 						LOG.error(err, e);
-						String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
+						final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+						final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 		        }
@@ -565,15 +565,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					// If we come here, a mime type has been requested that is not yet implemented
 					final String err = "Mime type for web resource '" + filePath + "' not implemented yet!";
 					LOG.warn(err);
-					String t = LanguageManager.getInstance().translate("base.err.resource.mime.title", userSession);
-					String m = LanguageManager.getInstance().translate("base.err.resource.mime.msg", userSession, filePath);
+					final String t = LanguageManager.getInstance().translate("base.err.resource.mime.title", userSession);
+					final String m = LanguageManager.getInstance().translate("base.err.resource.mime.msg", userSession, filePath);
 					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 		        }	
 	        } catch (IOException e) {
 				final String err = "Couldn't parse css for pre-url replacements Resource Not found! - Web resource '" + filePath + "'.";
 				LOG.error(err, e);
-				String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, filePath);
+				final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
+				final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, filePath);
 				return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 	        }
 		}
@@ -595,15 +595,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	        } catch (IOException ioe) {
 				final String err = "Server Internal Error - I/O Exception: " + ioe.getMessage();
 				LOG.error(err, ioe);
-				String t = LanguageManager.getInstance().translate("base.err.srv.io.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", userSession, ioe.getMessage());
+				final String t = LanguageManager.getInstance().translate("base.err.srv.io.title", userSession);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", userSession, ioe.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 				
 	        } catch (ResponseException re) {
 				final String err = "Server Internal Error - Response Exception (Status: "+re.getStatus().getDescription()+"): " + re.getMessage();
 				LOG.error(err, re);
-				String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
-				String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());
+				final String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 	        }
 	    }
@@ -797,8 +797,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							} catch (Exception e) {
 								final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
 								LOG.error(err, e);
-								String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
-								String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
+								final String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
+								final String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
 								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 							}
 							if (codeEmailOn) {
@@ -813,8 +813,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						        } catch (Exception me) {
 									final String err = "Server Internal Error - Mail Exception: " + me.getMessage();
 									LOG.error(err, me);
-									String t = LanguageManager.getInstance().translate("base.err.srv.mail.title", userSession);
-									String m = LanguageManager.getInstance().translate("base.err.srv.mail.msg", userSession, me.getMessage());
+									final String t = LanguageManager.getInstance().translate("base.err.srv.mail.title", userSession);
+									final String m = LanguageManager.getInstance().translate("base.err.srv.mail.msg", userSession, me.getMessage());
 									return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 						        }
 							}
