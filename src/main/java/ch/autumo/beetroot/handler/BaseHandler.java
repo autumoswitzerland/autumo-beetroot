@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.IStatus;
@@ -1970,44 +1971,46 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 			
 			
-			// ======== D. Get HTML: Parse templates ======
+			// ======== D. We can have an error response here; so show it and don't proceed with parsing ======
+			if (response!= null && response.getStatus() == HandlerResponse.STATE_NOT_OK) {
+				final String t = response.getTitle() + ": ";
+				final String m = response.getMessage();
+				String e = null;
+				final Exception ex = response.getException();
+				if (ex != null) 
+					e = ExceptionUtils.getStackTrace(ex);
+				String text = t + m;
+				if (e != null)
+					text = text + "<br><pre style=\"box-shadow: none; border:0; font-size: 14px;\">"+e+"</pre>";
+				return serveHandler(session, new ErrorHandler(Status.NOT_FOUND, LanguageManager.getInstance().translate("base.err.template.title", userSession), text), response);
+			}
 			
-			String getHtml = getText((BeetRootHTTPSession)session, origId);
+			
+			// ======== E. Get HTML: Parse templates ======
+			
+			final String getHtml = getText((BeetRootHTTPSession)session, origId);
+			
 			// Template error !
 			if (getHtml.startsWith("NOTFOUND:")) {
-				String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
-				String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, getHtml.split(":")[1]);
+				final String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
+				final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, getHtml.split(":")[1]);
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
 				return serveHandler(session, new ErrorHandler(Status.NOT_FOUND, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
 			}
 			else if (getHtml.startsWith("PARERROR:")) {
 				
-				String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
-				String m = LanguageManager.getInstance().translate("base.err.template.parsing.msg", userSession, getHtml.split(":")[1]);
+				final String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
+				final String m = LanguageManager.getInstance().translate("base.err.template.parsing.msg", userSession, getHtml.split(":")[1]);
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
 				return serveHandler(session, new ErrorHandler(Status.BAD_REQUEST, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
 			}
 
 			
-			// ======== E. Create final response ==========
+			// ======== F. Create final response ==========
 			
-			// Measure point
-			
-			final Response theResponse = Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
-			
-			/**
-			// CORS, e.g. Tomcat CORS https://medium.com/@tarang.chikhalia/how-to-enable-cors-origin-in-apache-tomcat-e0042eae5017
-			if (session.getUri().endsWith(Constants.JSON_EXT)) {
-				theResponse.addHeader("Access-Control-Allow-Origin", "*");
-				theResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-				theResponse.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-				theResponse.addHeader("Access-Control-Allow-Credentials", "true");
-				theResponse.addHeader("Access-Control-Max-Age", "3600");				
-			}
-			*/
-			
-	        return theResponse;
-        
+	        return Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
+
+	        
 		} catch (Exception e) {
 			// The framework user might have messed up things!
 			String res = getResource();
