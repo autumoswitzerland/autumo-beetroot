@@ -118,11 +118,9 @@ public class DefaultViewHandler extends BaseHandler {
 					htmlData += "<tr><th>"+displayName+"</th><td>" + valLink + "</td></tr>\n";
 					
 				} else {
-					
 					String td = extractSingleTableData(session, set, col[0], dbIdx, entity) + "</tr>\n";
-					if (td.indexOf("null") != -1)
-						td = td.replace("null", "");
-					
+					if (td.equalsIgnoreCase("<td>null</td>"))
+						td = "<td></td>";
 					htmlData += "<tr><th>"+col[1]+"</th>" + td;		
 				}
 			}		

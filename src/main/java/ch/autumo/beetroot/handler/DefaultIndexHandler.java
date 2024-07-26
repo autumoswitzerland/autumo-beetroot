@@ -273,11 +273,9 @@ public class DefaultIndexHandler extends BaseHandler {
 						htmlData += "<td>" + valLink + "</td>";
 						
 					} else {
-						
 						String td = extractSingleTableData(session, set, col[0], dbIdx, entity) + "\n";
-						if (td.indexOf("null") != -1)
-							td = td.replace("null", "");
-						
+						if (td.equalsIgnoreCase("<td>null</td>"))
+							td = "<td></td>";
 						htmlData += td;
 					}
 				}
