@@ -1992,17 +1992,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// Template error !
 			if (getHtml.startsWith("NOTFOUND:")) {
-				final String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
+				final String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession);
 				final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, getHtml.split(":")[1]);
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
-				return serveHandler(session, new ErrorHandler(Status.NOT_FOUND, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
+				return serveHandler(session, new ErrorHandler(Status.NOT_FOUND, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+"<br>"+m), errStat);
 			}
 			else if (getHtml.startsWith("PARERROR:")) {
 				
-				final String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession)+"<br><br>";
+				final String t = LanguageManager.getInstance().translate("base.err.template.parsing.title", userSession);
 				final String m = LanguageManager.getInstance().translate("base.err.template.parsing.msg", userSession, getHtml.split(":")[1]);
 				HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, t);
-				return serveHandler(session, new ErrorHandler(Status.BAD_REQUEST, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+m), errStat);
+				return serveHandler(session, new ErrorHandler(Status.BAD_REQUEST, LanguageManager.getInstance().translate("base.err.template.title", userSession), t+"<br>"+m), errStat);
 			}
 
 			
