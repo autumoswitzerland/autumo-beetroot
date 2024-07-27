@@ -263,17 +263,19 @@ public class BeetRootConfigurationManager {
 	    	LOG.info("Web templates are translated.");
 		
 		final String htmlMap = getString(Constants.KEY_WEB_INPUT_MAP);
-		final File mapFile = new File(htmlMap);
-		if (htmlMap != null && htmlMap.length() != 0 && mapFile.exists()) {
-			this.htmlInputMap = new Properties();
-			fis = new FileInputStream(mapFile);
-			try {
-				this.htmlInputMap.load(fis);
-			} catch (IOException e) {
-				LOG.error("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !", e);
-				throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
-			} finally {
-				fis.close();
+		if (htmlMap != null && htmlMap.length() != 0) {
+			final File mapFile = new File(htmlMap);
+			if (mapFile.exists()) {
+				this.htmlInputMap = new Properties();
+				fis = new FileInputStream(mapFile);
+				try {
+					this.htmlInputMap.load(fis);
+				} catch (IOException e) {
+					LOG.error("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !", e);
+					throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
+				} finally {
+					fis.close();
+				}
 			}
 		}
 		
