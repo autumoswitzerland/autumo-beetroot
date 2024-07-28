@@ -1,7 +1,7 @@
 # User, Roles &amp; Authorization
 <div id="top"></div>
 
-With release 3.0.0 beetRoot uses a simple user-role authorization which can be applied to templates and handlers. Furthermore, you can apply visibility to HTML template fragments
+With release => 3.0.0 beetRoot uses a simple user-role authorization which can be applied to templates and handlers. Furthermore, you can apply visibility to HTML template fragments
 by using additionally actions (template type `index`, `view`, `add`, `edit`) and entities.
 
 **Note**: Roles are translated in the web masks if a language translation exists for these roles. The translations for roles in your translation files `web/lang/lang_*.properties` must begin  with `role.*`, e.g. `role.administrator`.
