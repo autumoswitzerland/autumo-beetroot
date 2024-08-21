@@ -54,7 +54,7 @@ public class SessionManager {
 	
 	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 	
-	/** Web container session id name / name of the session cookie, some java web containers use 'JSESSIONID' */
+	/** Web container session id name / name of the session cookie, some java web containers use 'JSESSIONID'. */
 	private static String webContainerSessionIdName = DEFAULT_TOKEN_COOKIE_NAME;
 	/** How many days until the user cookie expires. */
 	private static int userSessionExpirationDays = DEFAULT_USER_SESSION_EXPIRATION;
@@ -65,11 +65,17 @@ public class SessionManager {
 	
 	
 	/**
+	 * Private constructor.
+	 */
+	private SessionManager() {
+	}
+	
+	/**
 	 * Access session manager.
 	 * 
 	 * @return session manager
 	 */
-	public static SessionManager getInstance() {
+	public static synchronized SessionManager getInstance() {
 
 		if (instance == null) {
         	
@@ -92,9 +98,6 @@ public class SessionManager {
 
         return instance;
     }
-	
-	private SessionManager() {		
-	}
 	
 	/**
 	 * Generate a new session token ID.

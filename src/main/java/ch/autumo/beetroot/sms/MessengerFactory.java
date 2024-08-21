@@ -27,6 +27,12 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 public class MessengerFactory {
 
 	private static Messenger messenger;
+
+	/**
+	 * Private constructor.
+	 */
+	private MessengerFactory() {
+	}
 	
 	/**
 	 * Get configured SMS messenger implementation.
@@ -34,7 +40,7 @@ public class MessengerFactory {
 	 * @return SMS messenger
 	 * @throws Exception exception
 	 */
-	public static Messenger getInstance() throws Exception {
+	public static synchronized Messenger getInstance() throws Exception {
 		
 		if (messenger == null) {
 			

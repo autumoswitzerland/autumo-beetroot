@@ -72,14 +72,20 @@ public class LanguageManager {
 	private static LanguageManager instance = null;	
 	
 	private static String langs[] = null;
+
 	
+	/**
+	 * Private constructor.
+	 */
+	private LanguageManager() {
+	}
 	
 	/**
 	 * Access language manager.
 	 * 
 	 * @return DB manager
 	 */
-	public static LanguageManager getInstance() {
+	public static synchronized LanguageManager getInstance() {
 		
         if (instance == null) {
         	
@@ -190,9 +196,6 @@ public class LanguageManager {
         }
         return instance;
     }
-
-	private LanguageManager() {
-	}
 
 	/**
 	 * Translate method for the template engine.

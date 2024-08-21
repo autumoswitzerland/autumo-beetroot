@@ -35,6 +35,9 @@ public class SecureApplicationHolder {
 	
 	private static String secKey = null; 
 	
+	/**
+	 * Constructor.
+	 */
 	private SecureApplicationHolder() {
 		
 		secKey = BeetRootConfigurationManager.getInstance().getString(Constants.SEC_KEY_SEED);
@@ -48,7 +51,7 @@ public class SecureApplicationHolder {
 	 * 
 	 * @return secure application holder
 	 */
-	public static SecureApplicationHolder getInstance() {
+	public static synchronized SecureApplicationHolder getInstance() {
 		
 		if (holder == null) {
 			holder = new SecureApplicationHolder();

@@ -40,6 +40,12 @@ public class TwilioCaller implements Caller {
 	private String authToken = null;
 	private String phoneNumber = null;
 	
+	/**
+	 * Private constructor.
+	 */
+	private TwilioCaller() {
+	}
+	
 	@Override
 	public void init() throws Exception {
 		

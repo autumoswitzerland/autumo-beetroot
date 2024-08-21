@@ -78,6 +78,9 @@ public class BeetRootConfigurationManager {
     		rootPath += Helper.FILE_SEPARATOR;
     }
 	
+	/**
+	 * Private constructor.
+	 */
 	private BeetRootConfigurationManager() {
 	}
 	
@@ -86,7 +89,7 @@ public class BeetRootConfigurationManager {
 	 * 
 	 * @return manager
 	 */
-	public static BeetRootConfigurationManager getInstance() {
+	public static synchronized BeetRootConfigurationManager getInstance() {
 		
 		if (manager == null) {
 			manager = new BeetRootConfigurationManager();

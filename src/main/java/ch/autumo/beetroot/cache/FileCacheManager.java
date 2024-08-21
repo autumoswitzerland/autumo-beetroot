@@ -55,23 +55,28 @@ public class FileCacheManager {
 	}
 	public static final long MAX_CACHE_SIZE; 
 	
-	private static FileCacheManager instance = null;	
+	private static FileCacheManager instance = null;
 	
 	private Map<String, FileCache> cacheMap = new ConcurrentHashMap<String, FileCache>();
 	
 	private long size = 0;
 	
+
+	/**
+	 * Private constructor.
+	 */
+	private FileCacheManager() {
+	}
 	
 	/**
 	 * File cache manager.
 	 * 
 	 * @return file manager
 	 */
-	public static FileCacheManager getInstance() {
-        if (instance == null)
-        	instance = new FileCacheManager();
- 
-        return instance;
+	public static synchronized FileCacheManager getInstance() {
+		if (instance == null)
+			instance = new FileCacheManager();
+		return instance;
     }
 
 	/**
@@ -92,15 +97,10 @@ public class FileCacheManager {
 	 * @return true, is there is space, otherwise false
 	 */
 	public synchronized boolean hasSpace(long oldValueInBytes, long newValueInBytes) {
-
 		long csize = this.size; 
 		csize -= oldValueInBytes;
 		csize += newValueInBytes;
-		
-		if (csize > MAX_CACHE_SIZE)
-			return false;
-		else
-			return true;
+		return csize < MAX_CACHE_SIZE;
 	}
 	
 	/**

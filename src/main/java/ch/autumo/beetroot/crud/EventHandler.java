@@ -33,7 +33,7 @@ import ch.autumo.beetroot.utils.database.DB;
 /**
  * CRUD event handler.
  * 
- * Dont't add CRUD handlers as listeners; this wouldn't be a good idea!
+ * Don't add CRUD handlers as listeners; this wouldn't be a good idea!
  */
 public class EventHandler {
 
@@ -46,6 +46,9 @@ public class EventHandler {
 	private final Map<Class<?>, List<DeleteListener>> deleteListeners = new HashMap<Class<?>, List<DeleteListener>>();
 	
 
+	/**
+	 * Private constructor.
+	 */
 	private EventHandler() {
 	}
 	
@@ -54,7 +57,7 @@ public class EventHandler {
 	 * 
 	 * @return event handler
 	 */
-	public static EventHandler getInstance() {
+	public static synchronized EventHandler getInstance() {
 		if (handler == null) {
 			handler = new EventHandler();
 		}

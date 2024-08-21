@@ -23,11 +23,17 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 
 
 /**
- * Calller Messenger factory.
+ * Caller Messenger factory.
  */
 public class CallerFactory {
 
 	private static Caller caller;
+	
+	/**
+	 * Private constructor.
+	 */
+	private CallerFactory() {
+	}
 	
 	/**
 	 * Get configured caller implementation.
@@ -35,7 +41,7 @@ public class CallerFactory {
 	 * @return caller
 	 * @throws Exception exception
 	 */
-	public static Caller getInstance() throws Exception {
+	public static synchronized Caller getInstance() throws Exception {
 		
 		if (caller == null) {
 			

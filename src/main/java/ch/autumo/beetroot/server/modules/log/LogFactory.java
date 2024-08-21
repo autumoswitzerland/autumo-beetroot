@@ -27,11 +27,17 @@ public class LogFactory {
 	private static Log log;
 
 	/**
+	 * Private constructor.
+	 */
+	private LogFactory() {
+	}
+	
+	/**
 	 * Get log (local or remote).
 	 * @return info
 	 * @throws Exception
 	 */
-	public static Log getInstance() throws Exception {
+	public static synchronized Log getInstance() throws Exception {
 		
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		if (log == null) {

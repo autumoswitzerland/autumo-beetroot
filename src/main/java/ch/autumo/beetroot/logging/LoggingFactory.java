@@ -29,6 +29,12 @@ public class LoggingFactory {
 	private static Logging logging;
 	
 	/**
+	 * Private constructor.
+	 */
+	private LoggingFactory() {
+	}
+	
+	/**
 	 * Get logging implementation class.
 	 * 
 	 * @return logging implementation

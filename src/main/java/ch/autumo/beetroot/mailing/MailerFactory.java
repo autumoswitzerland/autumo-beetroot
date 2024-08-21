@@ -27,12 +27,18 @@ public class MailerFactory {
 	private static Mailer mailer;
 	
 	/**
+	 * Private constructor.
+	 */
+	private MailerFactory() {
+	}
+	
+	/**
 	 * Get mailer (jakarta or javax).
 	 * 
 	 * @return mailer
 	 * @throws Exception exception
 	 */
-	public static Mailer getInstance() throws Exception {
+	public static synchronized Mailer getInstance() throws Exception {
 		
 		if (mailer == null) {
 			final String impl = BeetRootConfigurationManager.getInstance().getString("mail_implementation");

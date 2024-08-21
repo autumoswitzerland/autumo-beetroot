@@ -81,6 +81,9 @@ public class BeetRootDatabaseManager {
 	private H2Url h2Url = null;
 
 	
+	/**
+	 * Private constructor.
+	 */
 	private BeetRootDatabaseManager() {
 	}
 	
@@ -89,7 +92,7 @@ public class BeetRootDatabaseManager {
 	 * 
 	 * @return DB manager
 	 */
-	public static BeetRootDatabaseManager getInstance() {
+	public static synchronized BeetRootDatabaseManager getInstance() {
         if (instance == null)
         	instance = new BeetRootDatabaseManager();
  
