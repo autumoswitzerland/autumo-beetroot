@@ -16,7 +16,7 @@ The following standard transformation of the entity names takes place in the gen
 We therefore recommend that you use English names for your database entities, even if you can of course adapt the names in the generated HTMLs and this is even necessary 
 if you copy the copy the templates for other languages.
 
-![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-plant.png)
+![beetRoot Console](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-plant.webp)
 
 It generates the following sources:
 
