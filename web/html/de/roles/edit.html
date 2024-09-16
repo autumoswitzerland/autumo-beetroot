@@ -6,10 +6,10 @@
 				method="post" action="/{$lang}/roles/delete?id={$id}">
 				<input type="hidden" name="_method" value="POST">
 				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
-			</form> <a href="/{$lang}/roles/delete?id={$id}" class="side-nav-item"
-			data-confirm-message="Are you sure you want to delete # {$dbid}??"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_roles_delete_{$id}.submit(); } event.preventDefault();">Delete
-				Role</a>
+			</form>
+			<a href="/{$lang}/roles/delete?id={$id}" class="dialogLink side-nav-item"
+				data-confirm-message="Wollen Sie '{$displayName}' wirklich löschen?"
+				data-form-name="post_roles_delete_{$id}">Rolle löschen</a>
 		</li>
 		<li><a href="/{$lang}/roles" class="side-nav-item">List Roles</a></li>
 	</ul>

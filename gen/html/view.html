@@ -8,10 +8,10 @@
 				method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
 				<input type="hidden" name="_method" value="POST">
 				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
-			</form> <a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="side-nav-item"
-			data-confirm-message="Are you sure you want to delete # {$dbid}?"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_##entitynameplural##_delete_{$id}.submit(); } event.preventDefault();">Delete
-				##Entityname##</a>
+			</form>
+			<a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="dialogLink side-nav-item"
+				data-confirm-message="Are you sure you want to delete '{$displayName}'?"
+				data-form-name="post_##entitynameplural##_delete_{$id}">Delete ##Entityname##</a>
 		</li>
 		<li><a href="/{$lang}/##entitynameplural##" class="side-nav-item">List ##Entitynameplural##</a>
 		</li>

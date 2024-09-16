@@ -385,9 +385,9 @@ public class DefaultIndexHandler extends BaseHandler {
 				htmlData += "<input type=\"hidden\" name=\"_csrfToken\" value=\""+formCsrfToken+"\">\n";
 			}
 			htmlData += "</form>\n";
-			htmlData += "<a href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
+			htmlData += "<a class=\"dialogLink\" href=\"/"+lang+"/"+getEntity()+"/delete?id="+modifyID+"\" data-confirm-message=\""
 							+ LanguageManager.getInstance().translate("base.operation.delete.ask", userSession, this.getDeleteName(entityObj)) 
-							+ "\" onclick=\"if (confirm(this.dataset.confirmMessage)) { document.post_"+getEntity()+"_delete_"+modifyID+".submit(); } event.preventDefault();\">"
+							+ "\" data-form-name=\"post_"+getEntity()+"_delete_"+modifyID+"\">"
 							+ LanguageManager.getInstance().translate("base.name.delete", userSession)+"</a>\n";
 		}
 		

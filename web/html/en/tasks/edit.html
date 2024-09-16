@@ -6,10 +6,10 @@
 				method="post" action="/{$lang}/tasks/delete?id={$id}">
 				<input type="hidden" name="_method" value="POST">
 				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
-			</form> <a href="/{$lang}/tasks/delete?id={$id}" class="side-nav-item"
-			data-confirm-message="Are you sure you want to delete # {$dbid}??"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_tasks_delete_{$id}.submit(); } event.preventDefault();">Delete
-				Task</a>
+			</form>
+			<a href="/{$lang}/tasks/delete?id={$id}" class="dialogLink side-nav-item"
+				data-confirm-message="Are you sure you want to delete '{$displayName}'?"
+				data-form-name="post_tasks_delete_{$id}">Delete Task</a>
 		</li>
 		<li><a href="/{$lang}/tasks" class="side-nav-item">List Tasks</a></li>
 	</ul>

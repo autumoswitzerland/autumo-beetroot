@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+{#head}
+
+</head>
+
+<body>
+
+{#header}
+
+    <nav class="top-bar expanded hideprint" data-topbar ondblclick="showHeader();">
+    
+        <ul class="title-area large-2 medium-4 columns">
+            <li class="name">
+                <h1><a href="">{$title}</a></h1>
+            </li>
+        </ul>
+    
+{#langmenu}
+
+{#menu}
+
+        <div class="top-bar-section dropdown_theme">
+        	{$if-!action=add,edit}
+		    <a href="/{$lang}/users/settings?theme={$antitheme}" title="Theme: {$antitheme}"><img src="/img/theme-{$antitheme}.png" alt="{$antitheme}"></a>
+        	{$endif-!action}
+		</div>
+
+    </nav>
+    
+{#message}
+    
+	<div class="container clearfix">
+
+{#template}
+
+    </div>
+
+{#footer}    
+
+	<div id="dialog" class="modal">
+	    <div class="modal-content">
+			<span class="modal-close" onclick="closeModal()">&times;</span>
+	        <p id="modal-message"></p>
+			<div class="modal-buttons">
+		        <button class="modal-button modal-ok">OK</button>
+		        <button class="modal-button modal-cancel">Abbrechen</button>
+			</div>
+	    </div>
+	</div>
+
+{#script}    
+	
+</body>
+
+</html>

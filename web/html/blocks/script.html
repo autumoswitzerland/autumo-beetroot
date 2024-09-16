@@ -1,5 +1,6 @@
 	<!-- Some basics. -->
 	<script>
+		
 		$(document).ready(function() {
 			// Header
 			var headerShow = localStorage.getItem("header.visibility");
@@ -31,4 +32,62 @@
 			document.getElementById('header').style.display = "flex";
 			localStorage.setItem("header.visibility", "true");
 		}
-	</script>    
+		
+		function initModalDialog() {
+				
+			const modal = document.getElementById('dialog');
+			    if (!modal) return;		
+				
+		    const okBtn = document.querySelector('.modal-ok');
+		    const cancelBtn = document.querySelector('.modal-cancel');
+		    const modalMessage = document.getElementById('modal-message');
+			let currentFormName = '';
+			let href = '';
+			
+			function showModal(link) {
+			    const confirmMessage = link.dataset.confirmMessage;
+			    currentFormName = link.dataset.formName;
+				href = link.href;
+			    modalMessage.textContent = confirmMessage;
+			    modal.style.display = 'block';
+				document.addEventListener('keydown', handleKeyDown);
+			}
+			function closeModal() {
+			    modal.style.display = 'none';
+			    document.removeEventListener('keydown', handleKeyDown); // Remove listener on modal close
+			}			
+			function handleKeyDown(event) {
+			    if (event.key === 'Escape') {
+			        closeModal();
+			    } else if (event.key === 'Enter') {
+					event.preventDefault();
+			        okBtn.click();
+			    }
+			}			
+			document.querySelectorAll('.dialogLink').forEach(link => {
+			    link.addEventListener('click', function(event) {
+			        event.preventDefault();
+			        showModal(this);
+			    });
+			});
+			okBtn.addEventListener('click', function() {
+			    closeModal();
+			    if (currentFormName) {
+			        document.forms[currentFormName].submit();
+			    } else {
+					window.location=href;
+				}
+			});
+			cancelBtn.addEventListener('click', function() {
+			    closeModal();
+			});	
+		    window.onclick = function(event) {
+		        if (event.target === modal) {
+		            closeModal();
+		        }
+		    };
+			document.querySelector('.modal-close').addEventListener('click', closeModal);
+		}
+		initModalDialog();
+				
+	</script>  

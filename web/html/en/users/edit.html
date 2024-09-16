@@ -7,10 +7,10 @@
 				method="post" action="/{$lang}/users/delete?id={$id}">
 				<input type="hidden" name="_method" value="POST">
 				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
-			</form> <a href="/{$lang}/users/delete?id={$id}" class="side-nav-item"
-			data-confirm-message="Are you sure you want to delete # {$dbid}??"
-			onclick="if (confirm(this.dataset.confirmMessage)) { document.post_users_delete_{$id}.submit(); } event.preventDefault();">Delete
-				User</a>
+			</form>
+			<a href="/{$lang}/users/delete?id={$id}" class="dialogLink side-nav-item"
+				data-confirm-message="Are you sure you want to delete '{$displayName}'?"
+				data-form-name="post_users_delete_{$id}">Delete User</a>
 		</li>
 		{$endif-role;}
 		<li><a href="/{$lang}/users" class="side-nav-item">List Users</a></li>
@@ -32,10 +32,9 @@
 			<a href="/{$lang}/users/index" class="button right">Cancel</a>
 			<button type="submit">Save</button>
 			{$if-role=Administrator:}
-			<a  href="#"
-				onclick="if (confirm('Are you sure you want create a new QR code ?')) { window.location='/{$lang}/users/newqrcode?id={$id}'; } event.preventDefault();" 
-				title="Generate a new QR code; you have to re-scan the new code with the Google Authenticator"
-				class="button right twofabtn">New 2FA QR code</a>
+			<a href="/{$lang}/users/newqrcode?id={$id}" class="dialogLink button right twofabtn"
+				title="Generate a new QR code; you have to re-scan the new code with the Google Authenticator" 
+				data-confirm-message="Are you sure you want create a new QR code ?">New 2FA QR code</a>
 			{$endif-role;}
 			<br><br><br>
 		</form>

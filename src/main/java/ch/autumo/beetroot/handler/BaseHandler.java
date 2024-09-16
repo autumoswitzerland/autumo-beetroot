@@ -2726,13 +2726,14 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			int idx = -1;
 			while ((idx = text.indexOf(TAG_PREFIX_LANG)) != -1) {
 				final int pos1 = idx + TAG_PREFIX_LANG.length();
-				final int posC = text.indexOf(",");
-				int pos2 = text.indexOf("}");
+				final int posC = text.indexOf(",", idx + TAG_PREFIX_LANG.length());
+				int pos2 = text.indexOf("}", idx + TAG_PREFIX_LANG.length());
 				String totrans = null; 
 				String subValues = null; 
 				String subValuesArr[] = null; 
-				if (posC == -1)
+				if (posC == -1) {
 					totrans = text.substring(pos1, pos2); // no values to replace
+				}
 				else {
 					totrans = text.substring(pos1, posC);
 					subValues = text.substring(posC + 1, pos2);
