@@ -1466,7 +1466,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					}
 					break;
 				case "{#footer}":
-					if (text.contains("{$userinfo}")) {
+					if (text.contains(TAG_USERINFO)) {
 						final Integer uid = userSession.getUserId();
 						if (uid != null) {
 							String usid = userSession.getModifyId(uid.intValue(), "users");

@@ -74,7 +74,7 @@ function prepareGetInTouch() {
 }
 
 /**
- * Prepare all getintouch-links (obfuscated email).
+ * Prepare all telintouch-links (obfuscated phone numbers).
  * ROT-18 with map 'abcdefghijklmnopqrstuvwxyz0123456789'.
  *
  * Example <a href="/telintouch/+41786665544">Phone</a>
