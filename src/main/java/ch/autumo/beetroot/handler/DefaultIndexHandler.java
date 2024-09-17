@@ -32,6 +32,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.utils.Helper;
@@ -406,8 +407,14 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * @param entityObj entity
 	 * @return id/name of delete object
 	 */
-	public String getDeleteName(Entity entityObj) {
-		return "" + entityObj.getId();
+	public String getDeleteName(Entity entityObj)  {
+		String val = null;
+		if (entityObj instanceof Model) {
+			val = ((Model) entityObj).getDisplayValue();
+		} else {
+			val = "" + entityObj.getId();
+		}
+		return val;
 	}
 	
 	/**

@@ -27,6 +27,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.bean.Beans;
@@ -39,7 +40,6 @@ import ch.autumo.beetroot.utils.web.Web;
 public class DefaultViewHandler extends BaseHandler {
 	
 	private Map<String, Class<?>> refs = null;
-	private String displayField = null;
 	
 	public DefaultViewHandler(String entity) {
 		super(entity);
@@ -66,8 +66,13 @@ public class DefaultViewHandler extends BaseHandler {
 			set = stmt.executeQuery(stmtStr);
 			set.next(); // one record !
 			
-			final Entity entity = Beans.createBean(getBeanClass(), set);
-			displayField = Beans.getDisplayField(entity);
+			final Model entity = Beans.createBean(getBeanClass(), set);
+			
+			if (entity.getDisplayValue() != null) {
+				super.registerDisplayField(entity.getDisplayValue());
+			} else {
+				super.registerDisplayField(""+id);
+			}			
 			
 			this.prepare(session, entity);
 			
@@ -86,13 +91,6 @@ public class DefaultViewHandler extends BaseHandler {
 					val = "";
 				else
 					val = o.toString();
-				
-				if (this.displayField != null && col[0].equalsIgnoreCase(this.displayField)) {
-					if (val == null || val.length() == 0)
-						super.registerDisplayField(""+id);
-					else
-						super.registerDisplayField(val);
-				}
 				
 				// If we have a reference table
 				Class<?> entityClass = null;

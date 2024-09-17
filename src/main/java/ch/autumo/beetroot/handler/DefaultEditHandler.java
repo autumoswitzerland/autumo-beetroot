@@ -28,6 +28,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
+import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.crud.EventHandler;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.bean.Beans;
@@ -107,7 +108,13 @@ public class DefaultEditHandler extends BaseHandler {
 	
 			set.next(); // one record !
 			
-			final Entity entity = Beans.createBean(getBeanClass(), set);
+			final Model entity = Beans.createBean(getBeanClass(), set);
+			if (entity.getDisplayValue() != null) {
+				super.registerDisplayField(entity.getDisplayValue());
+			} else {
+				super.registerDisplayField(""+id);
+			}	
+			
 			this.prepare(session, entity);
 			
 			LOOP: for (int i = 1; i <= columns().size(); i++) {
