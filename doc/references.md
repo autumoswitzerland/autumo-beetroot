@@ -2,9 +2,8 @@
 
 ## One-To-Many
 
-[PLANT](plant.md) generates the entities so that you don't have to do anything else; whenever you show an entity in an `index`, `edit` or `add` view, the entities with a
-reference to another entity a selection box to assign the reference. beetRoot handles everything with one-to-mayn references - NULL code is required. The only important 
-note here is to follow the naming conventions of beetRoot:
+[PLANT](plant.md) generates the entities so that you don't have to do anything else; whenever you show an entity in an `index`, `edit` or `add` view, the assignable entities 
+are shown within a selection box for the assignment. beetRoot handles everything with one-to-many references - no code is required. The only important note here is to follow the naming conventions of beetRoot:
 
 - The table that refers to `products` has the integer field `product_id`.
 
@@ -24,7 +23,7 @@ the `extractCustomSingleInputDiv` method of the edit and add handlers to handle 
 - [ExtUsersEditHandler](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/handler/users/ExtUsersEditHandler.java)
 
 The methods already contain the correct IDs to handle the relationships. When you create a relationship table in the database, it only needs the
-reference key, no ID is needed for this table, of course you can add more columns if they are needed for some reason. E.g. user-role table:
+reference key, no ID is needed for this table, of course you can add more columns if they are needed for some other reason. E.g. user-role table:
 
 ```SQL
 CREATE TABLE users_roles (
