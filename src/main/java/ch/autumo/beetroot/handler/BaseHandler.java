@@ -137,6 +137,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final Pattern PATTERN_ACTION		= Pattern.compile("action=\\\"(?!#.*)(?!\\{.*)");
 	private static final Pattern PATTERN_LOCATION	= Pattern.compile("location='(?!#.*)(?!\\{.*)");
 	
+	// Pattern for script resources
+	private static final Pattern PATTERN_SCRIPT	= Pattern.compile("\\{#script.*\\}");
+	
 	// Tags
 	private static final String TAG_PREFIX_LANG		= "{$l.";
 	private static final String TAG_IG 				= "{$id}";
@@ -1197,9 +1200,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				} else if (text.contains("{#footer}")) {
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/footer.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#footer}", session, origId);
-				} else if (text.contains("{#script}")) {
-					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/script.html", userSession);
-					text = parseAndGetSubResource(text, currRessource, "{#script}", session, origId);
+				} else if (text.contains("{#dialog}")) {
+					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/dialog.html", userSession);
+					text = parseAndGetSubResource(text, currRessource, "{#dialog}", session, origId);
+				} else if (text.contains("{#script")) { // {#scriptXXX}
+					final Matcher matcher = PATTERN_SCRIPT.matcher(text);
+					if (matcher.find()) {
+						final String scriptTag = matcher.group();
+						final String fileName = scriptTag.substring(2, scriptTag.length() - 1);
+						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/" + fileName + ".html", userSession);
+						text = parseAndGetSubResource(text, currRessource, scriptTag, session, origId);
+					}
 				}
 				
 				

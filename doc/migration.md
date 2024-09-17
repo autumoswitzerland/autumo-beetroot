@@ -8,15 +8,21 @@ In general, you should always save your changes/customizations in the following 
 - `gen/` : In case you adjusted the templates used by PLANT
 - `db/h2/db/` : Your H2 DB, if you use H2 and this location
 
-## Release 3.0.1
+## Release 3.1.0
 
-- Update JAR libraries
-- Update `gen/` directory
-- Update `web/html/` directory
-- Update `web/lang/` directory
+Release 3.1.0 is a minor release.
+
+See [Migration Guide 3.1.0](migration/3_1_0.md).
 
 ## Release 3.0.0
 
 Release 3.0.0 is a major release and many changes have been made. Migrating from 2.x.x requires some effort.
 
 See [Migration Guide 3.0.0](migration/3_0_0.md).
+
+## Release 3.0.1
+
+- Update JAR libraries
+- Update `gen/` directory
+- Update `web/html/` directory
+- Update `web/lang/` directory
