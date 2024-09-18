@@ -180,6 +180,10 @@ h5 {
 	color: #A2EEFF !important;
 }
 
+.refresh_section_label {
+	background-color: #07b !important;
+}
+
 .content h4.errMsg {
     color: #0093E6 !important;
     padding-bottom: 0.5rem !important;

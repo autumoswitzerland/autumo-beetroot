@@ -1,6 +1,13 @@
-	<!--  Script: customized timer & dotted line between scrollers -->
+	<!--  Script: customized timer & dotted line between scrollers. -->
 	<script>
 		$(document).ready(function() {
+			
+			// Tooltips		
+			$(function() {
+			    $(document).tooltip();
+			});		
+			// Year string		
+			prepareYear();
 			
 			// Refresh log
 			var refreshState = localStorage.getItem("log.refresh");
@@ -63,13 +70,6 @@
 				timer.stop();
 			}
 		}
-		
-		// Tooltips		
-		$(function() {
-		    $(document).tooltip();
-		});		
-		// Year string		
-		prepareYear();
 		
 	</script>
 	
