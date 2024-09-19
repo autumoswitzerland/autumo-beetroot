@@ -229,7 +229,7 @@ public class ChangeHandler extends BaseHandler {
 
 	@Override
 	public Class<?> getRedirectHandler() {
-		return LoginHandler.class;
+		return super.getHandlerClass("LoginHandler");
 	}
 	
 	@Override
@@ -244,6 +244,11 @@ public class ChangeHandler extends BaseHandler {
 
 	@Override
 	public boolean showMenu(Session userSession) {
+		return false;
+	}
+
+	@Override
+	public boolean showLangMenu(Session userSession) {
 		return false;
 	}
 	

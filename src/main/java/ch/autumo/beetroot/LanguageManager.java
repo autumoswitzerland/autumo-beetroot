@@ -37,6 +37,7 @@ import org.nanohttpd.protocols.http.IHTTPSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.utils.web.Web;
 
 
@@ -271,7 +272,7 @@ public class LanguageManager {
 		}
 		return Web.escapeHtmlReserved(MessageFormat.format(text, ((Object[]) values) ));
 	}
-
+	
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework.
@@ -574,11 +575,31 @@ public class LanguageManager {
 	}
 
 	/**
+	 * Retrieve language when user is not or possibly not logged in.
+	 * 
+	 * @param beetRoot HTTP session
+	 * @return found language
+	 */
+	public String retrieveLanguage(BeetRootHTTPSession session) {
+		final Session userSession = session.getUserSession();
+	    String lang = LanguageManager.getInstance().parseLang(Web.normalizeUri(session.getUri()));
+		if (lang == null) {
+			// From HTTP header!
+			lang = LanguageManager.getInstance().getLanguageFromHttpSession(session);
+		}
+	    User user = userSession.getUser();
+	    if (user != null)  {
+	    	lang = user.getLang();
+	    }
+		return lang;		
+	}
+	
+	/**
 	 * Get language from the header of the HTTP session and use it
 	 * if available in beetRoot, otherwise return default language.
 	 * 
 	 * @param beetRoot HTTP session
-	 * @return available language
+	 * @return found language
 	 */
 	public String getLanguageFromHttpSession(BeetRootHTTPSession session) {
 		String lang = null;

@@ -69,9 +69,9 @@ import ch.autumo.beetroot.Session;
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.roles.Role;
-import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
+import ch.autumo.beetroot.routing.Route;
 import ch.autumo.beetroot.utils.bean.Beans;
 import ch.autumo.beetroot.utils.common.Time;
 import ch.autumo.beetroot.utils.database.DB;
@@ -112,6 +112,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(BaseHandler.class.getName());
 
+	
+	// The routes (without default routes)
+	private static List<Route> routes = null;
 	
 	// Strings
 	private static final String STR_EMAIL			= "email";
@@ -530,6 +533,33 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 			}
 		}	
+	}
+	
+	/**
+	 * Routes registration method.
+	 * 
+	 * @param routes all routes except default routes
+	 */
+	public static void registerRoutes(List<Route> routes) {
+		BaseHandler.routes = routes;
+	}
+
+	/**
+	 * Get a handler class by handler name.
+	 * 
+	 * @param handlerName handler name
+	 * @return handler class or null if not found
+	 */
+	public final Class<?> getHandlerClass(String handlerName) {
+		Class<?> clz = null;
+		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
+			final Route route = iterator.next();
+			clz = route.getHandler();
+			if (clz.getName().endsWith(handlerName))
+				return clz;
+		}
+		LOG.error("No router for handler name '{}' found!", handlerName);
+		return null;
 	}
 	
 	/**
@@ -1083,16 +1113,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 	    // Language
 		final Session userSession = session.getUserSession();
-	    String lang = LanguageManager.getInstance().parseLang(Web.normalizeUri(session.getUri()));
-		if (lang == null) {
-			// From HTTP header!
-			lang = LanguageManager.getInstance().getLanguageFromHttpSession(session);
-		}
-
-	    User user = userSession.getUser();
-	    if (user != null)  {
-	    	lang = user.getLang();
-	    }
+	    final User user = userSession.getUser();
+	    final String lang = LanguageManager.getInstance().retrieveLanguage(session);
 		userSession.setUserLang(lang);
 		
 		
@@ -1128,9 +1150,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/header.html", userSession);
 					text = parseAndGetSubResource(text, currRessource, "{#header}", session, origId);
 				} else if (text.contains("{#langmenu}")) {
-					if (this.showMenu(userSession)) {
+					if (this.showLangMenu(userSession)) {
 						if (LanguageManager.getInstance().getConfiguredLanguages().length > 1) {
-							currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/lang_menu.html", userSession);
+							currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/menu_lang.html", userSession);
 							text = parseAndGetSubResource(text, currRessource, "{#langmenu}", session, origId);
 						} else {
 							text = "";
@@ -1142,7 +1164,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (this.showMenu(userSession)) {
 						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/menu.html", userSession);
 						text = parseAndGetSubResource(text, currRessource, "{#menu}", session, origId);
-						
+					} else {
+						text = "";
+					}
+				} else if (text.contains("{#thememenu}")) {
+					if (user != null) {
+						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/menu_theme.html", userSession);
+						text = parseAndGetSubResource(text, currRessource, "{#thememenu}", session, origId);
 					} else {
 						text = "";
 					}
@@ -1904,9 +1932,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						// edit with id -> update
 						HandlerResponse response = this.updateData((BeetRootHTTPSession)session, origId);
 						if (change)
-							return serveHandler(session, new LogoutHandler(), response);
+							return serveHandler(session, this.getHandlerClass("LogoutHandler"), response);
 						if (reset)
-							return serveHandler(session, new LogoutHandler(), response);
+							return serveHandler(session, this.getHandlerClass("LogoutHandler"), response);
 						if (response == null || response.getStatus() == HandlerResponse.STATE_OK) {// Ok in this case
 							String m = LanguageManager.getInstance().translate("base.info.updated", userSession, getUpperCaseEntity());
 							return serveRedirectHandler((BeetRootHTTPSession)session, m);
@@ -1950,7 +1978,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			
 			// Change redirect
 			if (session.getUri().endsWith("/users/change") && response != null)
-				return serveHandler(session, new LogoutHandler(), response);
+				return serveHandler(session, this.getHandlerClass("LogoutHandler"), response);
 			
 			// For possible special cases allow no content response, but route somewhere specific
 			final String route = this.isNoContentResponseButRoute(userSession);
@@ -2233,7 +2261,21 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * Used for login and logout handler.
 	 * 
 	 * @param session HTTP session
-	 * @param handler login or logout handler
+	 * @param handlerClass handler class
+	 * @param stat status
+	 * @return response
+	 * @throws Exception
+	 */
+	private Response serveHandler(IHTTPSession session, Class<?> handlerClass, HandlerResponse stat) throws Exception {
+		final BaseHandler handler = (BaseHandler) handlerClass.getDeclaredConstructor().newInstance();
+		return this.serveHandler(session, handler, stat);
+	}
+	
+	/**
+	 * Used for login and logout handler.
+	 * 
+	 * @param session HTTP session
+	 * @param handler handler
 	 * @param stat status
 	 * @return response
 	 * @throws Exception
@@ -2794,6 +2836,18 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @return true if a menu should be shown
 	 */
 	public boolean showMenu(Session userSession) {
+		return true;
+	}
+
+	/**
+	 * Show language menu?
+	 * 
+	 * @param userSession user session, possible even
+	 * a temporary session from a not logged in user
+	 * 
+	 * @return true if language menu should be shown
+	 */
+	public boolean showLangMenu(Session userSession) {
 		return true;
 	}
 	

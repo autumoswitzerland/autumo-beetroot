@@ -30,6 +30,7 @@
 	    <Route path="/:lang/users/change" handler="ChangeHandler" name="change" />
 	    <Route path="/:lang/users/settings" handler="SettingsHandler" name="settings" />
 	    <Route path="/:lang/users/newqrcode" handler="NewQRCodeHandler" name="users" />
+	    <Route path="/:lang/users/otp" handler="OtpHandler" name="users" />
 	</Package>
 		
    	<!-- Roles  -->

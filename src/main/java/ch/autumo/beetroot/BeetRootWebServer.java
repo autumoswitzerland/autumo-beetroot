@@ -57,9 +57,6 @@ import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.ErrorHandler;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
-import ch.autumo.beetroot.handler.users.LoginHandler;
-import ch.autumo.beetroot.handler.users.LogoutHandler;
-import ch.autumo.beetroot.handler.users.OtpHandler;
 import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
 import ch.autumo.beetroot.mailing.MailerFactory;
@@ -111,8 +108,14 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     
     // A reference to the base server; only outside servlet context! 
     private BaseServer baseServer = null;
-    
-    
+
+    // The router
+	private Router beetRootrouter = null;
+	
+	// The routes (without default routes)
+	private List<Route> routes = null;
+	
+	
     /**
      * Server.
      * 
@@ -165,8 +168,21 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			if (servletName != null && servletName.length() != 0)
 				insertServletNameInTemplateRefs = true; 
 			
-			// routes
+			// Create the router
+			final String webRouter = BeetRootConfigurationManager.getInstance().getString("web_router");
+			try {
+				final Class<?> clz = Class.forName(webRouter);
+				beetRootrouter = (Router) clz.getDeclaredConstructor().newInstance();
+			} catch (Exception e) {
+		    	LOG.error("No router found! Your web app will definitely NOT work!", e);
+				throw e;
+			}
+			
+			// Add routes and mappings
 			this.addMappings();
+			
+			// Make configured routes available to all handlers 
+			BaseHandler.registerRoutes(this.routes);
 			
 			// init any other modules
 			this.initModules(BeetRootConfigurationManager.getInstance().runsWithinServletContext(), BeetRootConfigurationManager.getInstance().getFullConfigBasePath());
@@ -327,7 +343,6 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		if (insertServletNameInTemplateRefs && uri.startsWith(servletName+"/")) {
 			uriWithoutServlet = uri.replaceFirst(servletName+"/", "");
 		}
-		
 		
 		// JSON server command without login, but with API key - only outside servlet context,
 		// we do not send server commands to web containers, the only serve pages or or less;
@@ -569,7 +584,10 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					}
 					// Parse password strength javas-cript file for translations
 					if (requestedFile.equals("password-strength.js")) {
-						final String js = PwsParser.parseAll(fc.getTextData(), userSession);
+						String l = session.getParms().get("lang");
+						if (l == null)
+							l = userSession.getUserLang();
+						final String js = PwsParser.parseAll(fc.getTextData(), l);
 						return Response.newFixedLengthResponse(Status.OK, "application/javascript", js);
 					}
 					// Everything else: Text data !
@@ -631,7 +649,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
-			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userSession));
+			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userSession));
 			userSession.deleteAllParameters();
 			userSession.destroy(session.getCookies());
 			return end;
@@ -646,7 +664,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
-			final Response end = serverResponse(session, LogoutHandler.class, "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userSession));
+			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userSession));
 			userSession.deleteAllParameters();
 			userSession.destroyDelete(session.getCookies());
 			return end;
@@ -681,7 +699,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         		} else {
         			userSession.clearUserData();
 					String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
-					return serverResponse(session, LoginHandler.class, "Login", m);
+					return serverResponse(session, this.getHandlerClass("LoginHandler"), "Login", m);
         		}
         	}        	
         	// login from login page?
@@ -831,7 +849,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							}							
 
 							// Go to OTP handler
-							return serverResponse(session, OtpHandler.class, "2FA Code");
+							return serverResponse(session, this.getHandlerClass("OtpHandler"), "2FA Code");
 					    }
             			
 
@@ -845,7 +863,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             			userSession.clearUserData();
 						// serve login page!
 						String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
-						return serverResponse(session, LoginHandler.class, "Login", m);
+						return serverResponse(session, this.getHandlerClass("LoginHandler"), "Login", m);
             		}
             	}
         	}
@@ -858,7 +876,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            return this.serveAtLast(session);
 			} else {
 				// serve login page!
-				return serverResponse(session, LoginHandler.class);
+				return serverResponse(session, this.getHandlerClass("LoginHandler"));
 			}
 		} else { // start parsing app, logged in !
 		    // use CSRF tokens ?
@@ -1003,6 +1021,23 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	}
 	
 	/**
+	 * Get a handler class by handler name.
+	 * @param handlerName handler name
+	 * @return handler class or null if not found
+	 */
+	public final Class<?> getHandlerClass(String handlerName) {
+		Class<?> clz = null;
+		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
+			final Route route = iterator.next();
+			clz = route.getHandler();
+			if (clz.getName().endsWith(handlerName))
+				return clz;
+		}
+		LOG.error("No router for handler name '{}' found!", handlerName);
+		return null;
+	}
+	
+	/**
 	 * Get default handler class. 
 	 * Overwrite for customization.
 	 * 
@@ -1067,26 +1102,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	/**
 	 * Add mappings respectively set web routes. 
 	 */
-	public void addMappings() {
-		Router router = null; 
-		final String webRouter = BeetRootConfigurationManager.getInstance().getString("web_router");
-		try {
-			final Class<?> clz = Class.forName(webRouter);
-			router = (Router) clz.getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
-	    	LOG.error("No router found! Your web app will definitely NOT work!", e);
-			return;
-		}
+	public final void addMappings() {
 		super.setNotImplementedHandler(NotImplementedHandler.class);
 		super.setNotFoundHandler(Error404Handler.class);
 		/** Default Routes */
-		final List<Route> defRoutes = router.getDefaultRoutes();
+		final List<Route> defRoutes = beetRootrouter.getDefaultRoutes();
 		for (Iterator<Route> iterator = defRoutes.iterator(); iterator.hasNext();) {
 			final Route route = iterator.next();
 			addRoute(route.getRoute(), route.getPriority(), getDefaultHandlerClass(), getDefaultHandlerEntity());
 		}
 		/** Routes */
-		final List<Route> routes = router.getRoutes();
+		routes = beetRootrouter.getRoutes();
 		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
 			final Route route = iterator.next();
 			addRoute(route.getRoute(), route.getPriority(), route.getHandler(), route.getInitParameter());
@@ -1111,18 +1137,18 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		 * Replace all variables.
 		 * 
 		 * @param script java-script file contents
-		 * @param userSession user session
+		 * @param lang language
 		 * @return replaced java-script contents
 		 */
-		public static String parseAll(String script, Session userSession) {
-			script = script.replace(PW_INFO, LanguageManager.getInstance().translate("pw.info", userSession));
-			script = script.replace(PW_HIDE, LanguageManager.getInstance().translate("pw.hide", userSession));
-			script = script.replace(PW_SHOW, LanguageManager.getInstance().translate("pw.show", userSession));
-			script = script.replace(PW_CHARS, LanguageManager.getInstance().translate("pw.chars", userSession));
-			script = script.replace(PW_CAPITAL, LanguageManager.getInstance().translate("pw.capital", userSession));
-			script = script.replace(PW_NUMBER, LanguageManager.getInstance().translate("pw.number", userSession));
-			script = script.replace(PW_SPECIAL, LanguageManager.getInstance().translate("pw.special", userSession));
-			script = script.replace(PW_LETTER, LanguageManager.getInstance().translate("pw.letter", userSession));
+		public static String parseAll(String script, String lang) {
+			script = script.replace(PW_INFO, LanguageManager.getInstance().translate("pw.info", lang));
+			script = script.replace(PW_HIDE, LanguageManager.getInstance().translate("pw.hide", lang));
+			script = script.replace(PW_SHOW, LanguageManager.getInstance().translate("pw.show", lang));
+			script = script.replace(PW_CHARS, LanguageManager.getInstance().translate("pw.chars", lang));
+			script = script.replace(PW_CAPITAL, LanguageManager.getInstance().translate("pw.capital", lang));
+			script = script.replace(PW_NUMBER, LanguageManager.getInstance().translate("pw.number", lang));
+			script = script.replace(PW_SPECIAL, LanguageManager.getInstance().translate("pw.special", lang));
+			script = script.replace(PW_LETTER, LanguageManager.getInstance().translate("pw.letter", lang));
 			return script;
 		}
 	}

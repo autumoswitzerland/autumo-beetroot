@@ -1024,6 +1024,7 @@ fieldset {
 fieldset legend {
     background: #f8f8f8; /** light-theme background */
 	border-bottom: 2px solid #146fa6;
+	padding-bottom: 8px;
 	width: 100%;
 	line-height: 2.5rem;
 	font-weight: 300;

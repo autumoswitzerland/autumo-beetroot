@@ -54,5 +54,10 @@ public class OtpHandler extends BaseHandler {
 	public boolean showMenu(Session userSession) {
 		return false;
 	}
+
+	@Override
+	public boolean showLangMenu(Session userSession) {
+		return false;
+	}
 	
 }

@@ -112,7 +112,7 @@ public class ResetHandler extends BaseHandler {
 		String baseUrlPort = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
 		String link = null;
 		
-		String lang = userSession.getUserLang();
+	    final String lang = LanguageManager.getInstance().retrieveLanguage(session);
 		
 		if (baseUrlPort != null) {
 			if (super.insertServletNameInTemplateRefs)
@@ -142,7 +142,7 @@ public class ResetHandler extends BaseHandler {
 	
 	@Override
 	public Class<?> getRedirectHandler() {
-		return LogoutHandler.class;
+		return super.getHandlerClass("LogoutHandler");
 	}
 	
 	@Override

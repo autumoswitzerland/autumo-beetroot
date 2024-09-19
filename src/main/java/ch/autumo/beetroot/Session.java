@@ -207,6 +207,7 @@ public class Session implements Serializable {
 	 * Delete all parameters in this session
 	 */
 	public void deleteAllParameters() {
+		this.user = null;
 		data.clear();
 	}
 
