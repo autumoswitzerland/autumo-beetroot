@@ -79,7 +79,7 @@ public class BeetRootDatabaseManager {
 	private boolean isUnsupported = false;
 	
 	private H2Url h2Url = null;
-
+	
 	
 	/**
 	 * Private constructor.
@@ -476,6 +476,26 @@ public class BeetRootDatabaseManager {
 		final String val = this.getProperty(name);
 		return val != null && val.trim().equalsIgnoreCase("on");
 	}
+
+	/**
+	 * Get property value from database (table 'properties').
+	 * If the value isn't found or an exception occurs, the 
+	 * default value is returned.
+	 * 
+	 * @param name name/key
+	 * @param defValue default value
+	 * @return value for name/key
+	 */
+	public String getProperty(String name, String defValue) {
+		String val;
+		try {
+			val = this.getProperty(name);
+		} catch (SQLException e) {
+			LOG.error("Couldn't load property '{}' from database!", name , e);
+			return defValue;
+		}
+		return val != null ? val : defValue;
+	}
 	
 	/**
 	 * Get property value from database (table 'properties').
@@ -511,11 +531,11 @@ public class BeetRootDatabaseManager {
 	
 	/**
 	 * Get language for user.
-	 * @param dbId user id
+	 * @param userId user id
 	 * @return language
 	 * @throws Exception exception
 	 */
-	public String getLanguage(int dbId) throws Exception {
+	public String getLanguage(int userId) throws Exception {
 		String lang = null;
 		Connection conn = null;
 		Statement stmt = null;
@@ -524,7 +544,7 @@ public class BeetRootDatabaseManager {
 			conn = instance.getConnection();
 			// Now save edited data !
 			stmt = conn.createStatement();
-			final String stmtStr = "SELECT lang FROM users WHERE id=" + dbId;
+			final String stmtStr = "SELECT lang FROM users WHERE id=" + userId;
 			set = stmt.executeQuery(stmtStr);
 			if (set.next())
 				lang = set.getString("lang");

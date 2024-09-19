@@ -60,6 +60,7 @@ import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
 import ch.autumo.beetroot.handler.users.LoginHandler;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
 import ch.autumo.beetroot.handler.users.OtpHandler;
+import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
 import ch.autumo.beetroot.mailing.MailerFactory;
 import ch.autumo.beetroot.routing.Route;
@@ -79,7 +80,7 @@ import ch.autumo.beetroot.utils.web.TwoFA;
 import ch.autumo.beetroot.utils.web.Web;
 
 /**
- * autumo ifaceX web server and template engine.
+ * The beetRoot Web Server and Template Engine.
  */
 public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootService {
 	
@@ -407,7 +408,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 	    // first try...
 	    try {
-	    	LanguageManager.getInstance();
+	    	if (!LanguageManager.isInitialized())
+	    		LanguageManager.getInstance();
 	    } catch (Exception e) {
 			LOG.warn("No default translation file 'lang_default.properties' or 'tmpl_lang_default.properties' (if 'web_translations switched' on) found! That is not desirable!");
 			final String t = "Language configuration error";
@@ -416,21 +418,32 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 	    
 	    // Language
+	    User user = userSession.getUser();
 	    String userLang = LanguageManager.getInstance().parseLang(uri);
-	    String dbUserLang = LanguageManager.getInstance().getLanguageFromDb(userSession);
-	    if (userLang != null && userLang.length() != 0) {
-	    	
-	    	// user request another lang, update it in the db!
-	    	if (!userLang.equals(dbUserLang))
-	    		LanguageManager.getInstance().updateLanguage(userLang, userSession);
-	    	
-	    	userSession.setUserLang(userLang);
-	    	
+		if (userLang == null && user == null) {
+			// From HTTP header!
+			userLang = LanguageManager.getInstance().getLanguageFromHttpSession(session);
+		}
+	    
+	    String dbUserLang = null;
+	    if (user != null) {
+	    	dbUserLang = user.getLang();
 	    } else {
-	    	
-	    	userSession.setUserLang(dbUserLang);
+	    	dbUserLang = null; // we don't know what the preference of the user is, because he is not logged in yet
 	    }
 	    
+	    if (userLang != null && userLang.length() != 0) {
+	    	if (dbUserLang != null && !userLang.equals(dbUserLang)) {
+		    	// user request another language, update it in the DB!
+	    		LanguageManager.getInstance().updateLanguage(userLang, userSession);
+	    	}
+	    	userSession.setUserLang(userLang);
+	    } else {
+	    	if (dbUserLang == null)
+	    		userSession.setUserLang(LanguageManager.DEFAULT_LANG);
+	    	else
+	    		userSession.setUserLang(dbUserLang);
+	    }
 	    
 	    // Are we running in a servlet context?
     	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
@@ -612,7 +625,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		final String postParamUsername = session.getParms().get("username");
 	    	    
 		
-		// Within the ifaceX server, we have to take care of user session timeouts
+		// Within the web server, we have to take care of user session timeouts
 		// In servlet containers this is done by the container
 		if (context == null && userSession.isOlderThanSessionTimeout() ) {
 			loggedIn = false;
@@ -673,40 +686,25 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         	}        	
         	// login from login page?
         	else if (postParamUsername != null && postParamUsername.length() != 0) {
-                int dbId = -1;
+        		
         		String postParamPass = session.getParms().get("password");
-                String dbPass = null;
-                String dbRole = null;
         		String dbRoles = "";
         		String dbPermissions = "";
-                String dbFirstName = null;
-                String dbLastName = null;
-                String dbEmail = null;
-                String dbPhone = null;
-                String dbSecKey = null;
+        		
                 boolean dbTwoFa = false;
             	if (postParamPass != null && postParamPass.length() != 0) {
             		Connection conn = null;
             		Statement stmt = null;
             		ResultSet rs = null;
 					try {
-						conn = BeetRootDatabaseManager.getInstance().getConnection();
-	            		stmt = conn.createStatement();
-						//NO SEMICOLON
-	            		rs = stmt.executeQuery("select id, password, role, firstname, lastname, email, phone, secretkey, two_fa from users where username='"+postParamUsername+"'");
-	            		if (rs.next()) {
-	            			dbId = rs.getInt("id");
-	            			dbPass = rs.getString("password");
-	            			dbRole = rs.getString("role");
-	            			dbFirstName = rs.getString("firstname");
-	            			dbLastName = rs.getString("lastname");
-	            			dbEmail = rs.getString("email");
-	            			dbPhone = rs.getString("phone");
-	            			dbSecKey = rs.getString("secretkey");
-	            			dbTwoFa = rs.getBoolean("two_fa");
-	            		}
+						
+						// Get user from DB
+	            		user = (User) Model.findFirst(User.class, "username = ?", postParamUsername);
+	            		if (user != null)
+	            			dbTwoFa = user.getTwoFa();
+	            		
 	            		// Roles
-	        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(dbId));
+	        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(user.getId()));
 	        			if (usersRoles == null)
 	        				throw new SQLException("no roles data!");
 	        			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
@@ -745,44 +743,31 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 					// 0. LOGIN
 					boolean loginSuccess = false;
-					if (dbPwEnc) {
-						// A) Hashed password check
-						try {
-							loginSuccess = Security.verifyPw(postParamPass, dbPass);
-						} catch (UtilsException e) {
-							final String err = "Server Internal Error - Exception: " + e.getMessage();
-							LOG.error(err, e);
-	            			userSession.clearUserData();
-							String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userSession);
-							String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userSession, e.getMessage());
-							return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+					if (user != null) {
+						if (dbPwEnc) {
+							// A) Hashed password check
+							try {
+								loginSuccess = Security.verifyPw(postParamPass, user.getPassword());
+							} catch (UtilsException e) {
+								final String err = "Server Internal Error - Exception: " + e.getMessage();
+								LOG.error(err, e);
+		            			userSession.clearUserData();
+								String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userSession);
+								String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userSession, e.getMessage());
+								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+							}
+						} else {
+							// B) Clear password check
+							loginSuccess = postParamPass.equals(user.getPassword());
 						}
-					} else {
-						// B) Clear password check
-						loginSuccess = postParamPass.equals(dbPass);
 					}
 					
 					// 1. GO !
             		if (loginSuccess) { 
             			// Store user data to session
-            			userSession.setUserData(
-            					dbId, 
-            					postParamUsername, 
-            					dbRole, 
-            					dbRoles, 
-            					dbPermissions, 
-            					dbFirstName, 
-            					dbLastName, 
-            					dbEmail, 
-            					dbSecKey, 
-            					dbTwoFa);
-            			userSession.createIdPair(dbId, "users");
-					    try {
-	            			dbUserLang = BeetRootDatabaseManager.getInstance().getLanguage(dbId);
-	            	    	userSession.setUserLang(dbUserLang);
-						} catch (Exception e) {
-							LOG.error("Couldn't load user language from DB!", e);
-						}
+            			userSession.setUserData(user, dbRoles, dbPermissions);
+            			userSession.createIdPair(user.getId(), "users");
+
 					    // 2FA enabled?: 1st Step!
 					    if (dbTwoFa) {
 					    	
@@ -809,7 +794,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 								variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.code.msg", userSession));
 								try {
 									// Mail it!
-									MailerFactory.getInstance().mail(new String[] {dbEmail}, LanguageManager.getInstance().translateFullEscape("base.mail.code.title", userSession), variables, "code", session);	
+									MailerFactory.getInstance().mail(new String[] {user.getEmail()}, LanguageManager.getInstance().translateFullEscape("base.mail.code.title", userSession), variables, "code", session);	
 						        } catch (Exception me) {
 									final String err = "Server Internal Error - Mail Exception: " + me.getMessage();
 									LOG.error(err, me);
@@ -835,7 +820,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 								final String note = LanguageManager.getInstance().translate("base.sms.code.note", userSession);
 								try {
 									// SMS it!
-									MessengerFactory.getInstance().sms(dbPhone, info + ": " + genCode + "(" + note + ")");
+									MessengerFactory.getInstance().sms(user.getPhone(), info + ": " + genCode + "(" + note + ")");
 						        } catch (Exception me) {
 									final String err = "Server Internal Error - SMS Exception: " + me.getMessage();
 									LOG.error(err, me);
@@ -854,7 +839,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			            loggedIn = true;
 			            
 			            // Finish all necessary steps and give response
-			            return postLogin(session, userSession, dbId, postParamUsername);
+			            return postLogin(session, userSession, user.getId(), postParamUsername);
 			            
             		} else {
             			userSession.clearUserData();
@@ -977,7 +962,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			BeetRootHTTPSession session, 
 			Class<?> handlerClass, 
 			Object... initParameter) {
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
+		final Session userSession = session.getUserSession();
 		Constructor<?> constructor = null;
         final Constructor<?> constructors[] = handlerClass.getDeclaredConstructors();
 		int ip = initParameter.length;

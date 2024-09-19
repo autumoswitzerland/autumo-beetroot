@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 
+import org.nanohttpd.protocols.http.IHTTPSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,14 @@ public class LanguageManager {
 	 * Private constructor.
 	 */
 	private LanguageManager() {
+	}
+	
+	/**
+	 * Is the language manager initialized? 
+	 * @return true if so
+	 */
+	public static boolean isInitialized() {
+		return instance != null;
 	}
 	
 	/**
@@ -563,6 +572,32 @@ public class LanguageManager {
 	public String[] getConfiguredLanguages() {
 		return langs;
 	}
+
+	/**
+	 * Get language from the header of the HTTP session and use it
+	 * if available in beetRoot, otherwise return default language.
+	 * 
+	 * @param beetRoot HTTP session
+	 * @return available language
+	 */
+	public String getLanguageFromHttpSession(BeetRootHTTPSession session) {
+		String lang = null;
+		String headerLang = ((IHTTPSession) session).getHeaders().get("accept-language");
+		if (headerLang != null && headerLang.length() > 1)
+			headerLang = headerLang.substring(0, 2);
+		else
+			return LanguageManager.DEFAULT_LANG;
+		
+		final String langs[] = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
+		for (int i = 0; i < langs.length; i++) {
+			if (headerLang.equals(langs[i]))
+				lang = headerLang;
+		}
+		if (lang == null)
+			return LanguageManager.DEFAULT_LANG;
+		
+		return lang;
+	}
 	
 	/**
 	 * Get language. First from session, then DB, 
@@ -589,7 +624,7 @@ public class LanguageManager {
 	public String getLanguageFromDb(Session userSession) {
 		String lang = null;
 		//from db
-		Integer uid = (Integer) userSession.get("userid");
+		Integer uid = (Integer) userSession.getUserId();
 		
 		if (uid != null) {
 			try {
@@ -609,7 +644,7 @@ public class LanguageManager {
 	 * @param userSession user session
 	 */
 	public void updateLanguage(String newLanguage, Session userSession) {
-		Integer uid = (Integer) userSession.get("userid");
+		Integer uid = (Integer) userSession.getUserId();
 		if (uid != null) {
 		
 			try {

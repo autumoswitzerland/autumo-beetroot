@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
 
+import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.utils.common.LowerCaseList;
 import ch.autumo.beetroot.utils.systen.GUIDGenerator;
 
@@ -50,13 +51,15 @@ public class Session implements Serializable {
 	private final Date created;
 	private long sessionRefreshTime;
 	
+	private User user = null;
+	
+	
 	/**
 	 * New session with given session id '__SESSION_ID__' or what is configured.
 	 * 
 	 * @param sessionID session id
 	 */
 	public Session(String sessionID) {
-		
 		this.sessionID = sessionID;
 		this.sessionRefreshTime = System.currentTimeMillis();
 		this.created = new Date(this.sessionRefreshTime);
@@ -164,59 +167,37 @@ public class Session implements Serializable {
 	 * Use user or or user roles depending if you use the simple role 
 	 * management or the full User-Role ACL. 
 	 * 
-	 * @param id user DB id
-	 * @param name user name
-	 * @param role user role
+	 * @param user user
 	 * @param roles user roles (comma-separated roles)
 	 * @param permissions user permissions (comma-separated permissions)
-	 * @param firstname first name
-	 * @param lastname last name
-	 * @param email email
-	 * @param secretKey secret key
-	 * @param twoFa 2FA?
 	 */
-	public void setUserData(
-			int id, 
-			String name, 
-			String role, 
-			String roles, 
-			String permissions, 
-			String firstname, 
-			String lastname, 
-			String email, 
-			String secretKey, 
-			boolean twoFa) {
-		
-		this.set("userid", Integer.valueOf(id));
-		this.set("username", name);
-		this.set("userrole", role);
+	public void setUserData(User user, String roles, String permissions) {
+		this.user = user;
 		this.set("userroles", roles);
 		this.set("userpermissions", permissions);
 		
-		if (firstname != null && firstname.length() != 0)
-			this.set("firstname", firstname);
-		if (lastname != null && lastname.length() != 0)
-			this.set("lastname", lastname);
-
-		this.set("email", email);
-		this.set("secretkey", secretKey);
-		this.set("two_fa", twoFa ? "1" : "0");
-	}
+		if (user.getFirstname() != null && user.getFirstname().length() != 0)
+			this.set("firstname", user.getFirstname());
+		if (user.getLastname() != null && user.getLastname().length() != 0)
+			this.set("lastname", user.getLastname());
+		
+		this.set("two_fa", user.getTwoFa() ? "1" : "0");
+	} 	
 	
 	/**
 	 * Clear all user data within session.
 	 */
 	public void clearUserData() {
-		this.remove("userid");
-		this.remove("username");
-		this.remove("userrole");
+		
+		this.user = null;
+
 		this.remove("userroles");
 		this.remove("userpermissions");
 		this.remove("firstname");
 		this.remove("lastname");
-		this.remove("email");
-		this.remove("secretkey");
 		this.remove("two_fa");
+		
+		this.remove("userlang");
 		
 		this.remove("two_fa_login");
 		this.remove("_2facode");
@@ -260,10 +241,8 @@ public class Session implements Serializable {
 	 * @return user setting
 	 */
 	public String getUserSetting(String key) {
-		
 		if (this.settingsMap == null)
 			return null;
-		
 		return this.settingsMap.get(key);
 	}
 	
@@ -286,11 +265,13 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Get user DB id
+	 * Get user DB id.
 	 * @return user DB id
 	 */
 	public Integer getUserId() {
-		return (Integer) this.get("userid");
+		if (user != null)
+			return user.getId();
+		return null;
 	}
 	
 	/**
@@ -344,13 +325,23 @@ public class Session implements Serializable {
 	public boolean hasUserPermission(String perm) {
 		return this.getUserPermissions().contains(perm.toLowerCase());
 	}
+
+	/**
+	 * Get user.
+	 * @return user or null
+	 */
+	public User getUser() {
+		return user;
+	}
 	
 	/**
 	 * Get user name.
 	 * @return user name
 	 */
 	public String getUserName() {
-		return (String) this.get("username");
+		if (user != null)
+			return user.getUsername();
+		return null;
 	}
 
 	/**
@@ -358,7 +349,9 @@ public class Session implements Serializable {
 	 * @return user email
 	 */
 	public String getUserEmail() {
-		return (String) this.get("email");
+		if (user != null)
+			return user.getEmail();
+		return null;
 	}
 
 	/**
@@ -366,7 +359,9 @@ public class Session implements Serializable {
 	 * @return user secret key
 	 */
 	public String getUserSecretKey() {
-		return (String) this.get("secretkey");
+		if (user != null)
+			return user.getSecretkey();
+		return null;
 	}
 	
 	/**
@@ -378,20 +373,25 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Get user language
+	 * Get user language.
 	 * @return user language
 	 */
 	public String getUserLang() {
-		return (String) this.get("userlang");
+		if (user != null)
+			return user.getLang();
+		else
+			return (String) this.get("userlang");
 	}
 
 	/**
-	 * Set user language
-	 * 
+	 * Set user language.
 	 * @param lang user language (ISO code 2 length)
 	 */
 	public void setUserLang(String lang) {
-		this.set("userlang", lang);
+		if (user != null)
+			user.setLang(lang);
+		else
+			this.set("userlang", lang);
 	}
 	
 	/**
@@ -406,11 +406,9 @@ public class Session implements Serializable {
 	 * @return true is so
 	 */
 	public boolean isTwoFaLoginOk() {
-		
 		final Object ok = this.get("two_fa_login");
 		if (ok == null)
 			return false;
-		
 		return Boolean.valueOf(ok.toString());
 	}
 	
@@ -480,7 +478,6 @@ public class Session implements Serializable {
 	 * @return CSRF token
 	 */
 	public String getFormCsrfToken() {
-		
 		return (String) data.get("_csrfToken");
 	}
 
@@ -490,7 +487,6 @@ public class Session implements Serializable {
 	 * @param token CSRF token
 	 */
 	public void setFormCsrfToken(String token){
-		
 		data.put("_csrfToken", token);
 	}
 
@@ -548,7 +544,6 @@ public class Session implements Serializable {
 	 * @return value
 	 */
 	public Serializable get(String key) {
-		
 		return data.get(key);
 	}
 
@@ -558,7 +553,6 @@ public class Session implements Serializable {
 	 * @param value value
 	 */
 	public void set(String key, Serializable value){
-		
 		data.put(key, value);
 	}
 
@@ -567,7 +561,6 @@ public class Session implements Serializable {
 	 * @param key key
 	 */
 	public void remove(String key){
-		
 		data.remove(key);
 	}
 	

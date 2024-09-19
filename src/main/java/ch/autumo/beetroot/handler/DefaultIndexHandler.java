@@ -34,7 +34,6 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.bean.BeanProcessor;
 import ch.autumo.beetroot.utils.bean.Beans;
@@ -125,8 +124,8 @@ public class DefaultIndexHandler extends BaseHandler {
 	@Override
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		
-		final Session userSession = SessionManager.getInstance().findOrCreate(session);
-		String lang = LanguageManager.getInstance().getLanguage(userSession);
+		final Session userSession = session.getUserSession();
+		final String lang = userSession.getUserLang();
 		
 		// delete IDs from user session
 		userSession.removeAllIds();
@@ -531,9 +530,9 @@ public class DefaultIndexHandler extends BaseHandler {
 	@Override
 	public String getPaginator(BeetRootHTTPSession session) {
 		
-		final Session userSession = session.getUserSession();
 		final LanguageManager lm = LanguageManager.getInstance();
-		String lang = lm.getLanguage(userSession);
+		final Session userSession = session.getUserSession();
+		final String lang = userSession.getUserLang();
 		
 		String options = "";
 		

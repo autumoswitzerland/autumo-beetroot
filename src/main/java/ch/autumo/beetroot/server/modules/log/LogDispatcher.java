@@ -29,7 +29,7 @@ import ch.autumo.beetroot.server.modules.Dispatcher;
  * Log Extended Dispatcher.
  * 
  * Add the following server configuration parameter:
- *   dispatcher_probe=ch.autumo.ifacex.system.LogDispatcher
+ *   dispatcher_probe=ch.autumo.beetroot.server.modules.log.LogDispatcher
  */
 public class LogDispatcher implements Dispatcher {
 

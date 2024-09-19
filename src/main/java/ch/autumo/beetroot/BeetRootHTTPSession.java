@@ -193,7 +193,7 @@ public class BeetRootHTTPSession extends HTTPSession {
         	
             LOG.error("Response exception occured!", re);
 
-            final Session userSession = SessionManager.getInstance().findOrCreate(this);
+            final Session userSession = this.getUserSession();
             
             final String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
             final String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());

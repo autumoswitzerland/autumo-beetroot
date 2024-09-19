@@ -49,7 +49,7 @@ public class DefaultViewHandler extends BaseHandler {
 	public HandlerResponse readData(BeetRootHTTPSession session, int id) throws Exception {
 		
 		final Session userSession = session.getUserSession();
-		final String lang = LanguageManager.getInstance().getLanguage(userSession);
+		final String lang = userSession.getUserLang();
 		
 		Connection conn = null;
 		Statement stmt = null;

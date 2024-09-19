@@ -80,7 +80,7 @@ public class User extends Model {
         this.modified = modified;
     }
 
-    @Column (name = "modified")
+    @Column (name = "lang")
     private String lang;
 
     public String getLang() {

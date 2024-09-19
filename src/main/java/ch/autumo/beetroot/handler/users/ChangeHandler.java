@@ -32,7 +32,6 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.HandlerResponse;
 import ch.autumo.beetroot.utils.common.Time;
@@ -160,7 +159,7 @@ public class ChangeHandler extends BaseHandler {
 			
 			LOG.debug("Reset token found, user id: "+userid);
 			
-			final Session s = SessionManager.getInstance().findOrCreate(session);
+			final Session s = session.getUserSession();
 			s.set("resetid", Integer.valueOf(userid));
 		}
 		

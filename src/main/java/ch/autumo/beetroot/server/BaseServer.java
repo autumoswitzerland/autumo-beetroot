@@ -1244,7 +1244,7 @@ public abstract class BaseServer {
     			"         -cp \"<classpath>\" ch.autumo.beetroot.server.BeetRootServer <command>"		+ OS.LINE_SEPARATOR +
     			"" 																						+ OS.LINE_SEPARATOR +
     			"" 																						+ OS.LINE_SEPARATOR +
-    			"      <root-path>      :  Root directory where ifaceX is installed." 					+ OS.LINE_SEPARATOR +
+    			"      <root-path>      :  Root directory where beetRoot is installed." 				+ OS.LINE_SEPARATOR +
     			"                          Defined in run-script (Variable ROOT)."						+ OS.LINE_SEPARATOR +
     			"" 																						+ OS.LINE_SEPARATOR +
     			"      <classpath>      :  The Java classpath."								 			+ OS.LINE_SEPARATOR +

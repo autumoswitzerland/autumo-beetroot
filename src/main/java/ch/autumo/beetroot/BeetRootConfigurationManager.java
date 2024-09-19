@@ -587,11 +587,11 @@ public class BeetRootConfigurationManager {
 	}	
 	
 	/**
-	 * Decode encrypted value, if it is encrypted by ifacex standards!
+	 * Decode encrypted value, if it is encrypted by beetRoot standards!
 	 * See 'encoder.sh'.
 	 * 
 	 * @param key key
-	 * @param app ifacex secure application
+	 * @param app secure application
 	 * @return encrypted value
 	 * @throws Exception exception
 	 */

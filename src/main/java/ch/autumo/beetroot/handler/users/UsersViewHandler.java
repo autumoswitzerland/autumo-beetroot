@@ -27,7 +27,6 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.handler.DefaultViewHandler;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
@@ -97,7 +96,7 @@ public class UsersViewHandler extends DefaultViewHandler {
 			barCode = TwoFA.getGoogleAuthenticatorBarCode(user.getSecretkey(), user.getEmail());
 			absPath = TwoFA.createQRCode(barCode, Constants.QR_IMG_SIZE, Constants.QR_IMG_SIZE);
 			tempFileName = absPath.substring(absPath.lastIndexOf(Helper.FILE_SEPARATOR) + 1, absPath.length());
-			final String title = LanguageManager.getInstance().translate("base.2fa.title.text", SessionManager.getInstance().findOrCreate(session));			
+			final String title = LanguageManager.getInstance().translate("base.2fa.title.text", session.getUserSession());			
 			return "<img src=\"/tmp/"+tempFileName+"\" title=\""+title+"\">";
 		} catch (UtilsException e) {
 			LOG.error("Couldn't serve QR code for user '"+userName+"'!", e);

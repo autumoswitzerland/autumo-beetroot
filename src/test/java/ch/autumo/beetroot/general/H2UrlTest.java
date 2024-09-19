@@ -11,6 +11,8 @@ import ch.autumo.beetroot.utils.database.H2Url;
 
 public class H2UrlTest {
 
+	//protected static final Logger LOG = LoggerFactory.getLogger(H2UrlTest.class.getName());
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		BeetRootConfigurationManager.getInstance().initialize("cfg/beetroot_test.cfg");
@@ -35,4 +37,11 @@ public class H2UrlTest {
 		new H2Url("jdbc:h2:/Users/Mike/Downloads/test/test").getUrl();
 	}
 
+	/**
+	@Test
+	public void testLog() throws Exception {
+		LOG.error("Couldn't load property '{}' from database!", "var" , new Exception("Test ex!"));
+	}
+	*/
+	
 }

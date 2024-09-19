@@ -66,11 +66,11 @@ import ch.autumo.beetroot.Entity;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Model;
 import ch.autumo.beetroot.Session;
-import ch.autumo.beetroot.SessionManager;
 import ch.autumo.beetroot.cache.FileCache;
 import ch.autumo.beetroot.cache.FileCacheManager;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.users.LogoutHandler;
+import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.handler.usersroles.UserRole;
 import ch.autumo.beetroot.utils.bean.Beans;
 import ch.autumo.beetroot.utils.common.Time;
@@ -325,7 +325,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		final List<String> fallBackList = new ArrayList<>();
 		
-		Session userSession = SessionManager.getInstance().findOrCreate(session);
+		Session userSession = session.getUserSession();
 		String res = null;
 		
 		// Special case JSON: overwrite languages, not needed!
@@ -1080,11 +1080,25 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				this.addWarningMessage(msg);
 		}
 
+		
+	    // Language
 		final Session userSession = session.getUserSession();
-		String lang = LanguageManager.getInstance().getLanguage(userSession);
-		String user = userSession.getUserName();
-		if (user != null && user.indexOf("$") > 0)
-			user = user.replace("$", "\\$");
+	    String lang = LanguageManager.getInstance().parseLang(Web.normalizeUri(session.getUri()));
+		if (lang == null) {
+			// From HTTP header!
+			lang = LanguageManager.getInstance().getLanguageFromHttpSession(session);
+		}
+
+	    User user = userSession.getUser();
+	    if (user != null)  {
+	    	lang = user.getLang();
+	    }
+		userSession.setUserLang(lang);
+		
+		
+		String userName = userSession.getUserName();
+		if (userName != null && userName.indexOf("$") > 0)
+			userName = userName.replace("$", "\\$");
 		String userfull = userSession.getUserFullNameOrUserName();
 		if (userfull != null && userfull.indexOf("$") > 0)
 			userfull = userfull.replace("$", "\\$");
@@ -1221,7 +1235,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					text = text.replace(TAG_TITLE, this.getTitle(userSession));
 				// user
 				if (user != null && text.contains(TAG_USER)) {
-					text = text.replace(TAG_USER, user);
+					text = text.replace(TAG_USER, userName);
 				}
 				// user full
 				if (userfull != null && text.contains(TAG_USERFULL)) {
@@ -1429,7 +1443,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session, int origId) throws FileNotFoundException {
 		final Session userSession = session.getUserSession();
 		final StringBuilder sb = new StringBuilder();
-		String lang = LanguageManager.getInstance().getLanguage(userSession);
+		String lang = userSession.getUserLang(); 
 		String currRessource = LanguageManager.getInstance().getBlockResource(resource, userSession);		
 		Scanner sc = getNewScanner(currRessource);
 		LOOP: while (sc.hasNextLine()) {
@@ -1783,7 +1797,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		// a new session is created after socket timeout or because of something else (?), that's how it is! 
 		// After that, the obfuscated modify IDs are invalid! We could logout or do some magic.
-		final Session userSession = SessionManager.getInstance().findOrCreate(currentSession);
+		final Session userSession = currentSession.getUserSession();
 		//cookies.set("__SESSION_ID__", cookies.read("__SESSION_ID__"), 1);
 
 		try {
@@ -2878,8 +2892,8 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	@SuppressWarnings("unused")
 	private void processTime() {
 		// stop stop-watch and measure
-		final long ifaceXEnd = System.currentTimeMillis();
-		final long duration = ifaceXEnd - baseHandlerStart;
+		final long handlerEnd = System.currentTimeMillis();
+		final long duration = handlerEnd - baseHandlerStart;
 		final String durStr = "BEETROOT handler process time: " + Time.getReadableDuration(duration, TimeUnit.HOURS);
 		LOG.info(durStr);
 	}
