@@ -1,5 +1,4 @@
 /**
- * 
  * Copyright (c) 2024 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -126,6 +125,9 @@ ul.pagination li a {
 #servicecontent {
     background-color: hsla(0, 0%, 15%, 0.6);
 }
+#service-sidebar {
+    background: #111;
+}
 
 .prev {
     border: 1px solid #aaaaaa;
@@ -212,5 +214,9 @@ h5 {
 }
 
 .footerline {
-	color: #0E4E77 !important;	
+	background-color: #111111;
+	color: #0E4E77 !important;
+	border-top: 1px solid #000000;	
+	border-bottom: 1px solid #000000;	
 }
+
