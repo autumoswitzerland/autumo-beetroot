@@ -215,17 +215,6 @@ public abstract class Model implements Entity {
 			}
 		}
 		
-		try {
-			mName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1, fieldName.length());
-			method = modelClass().getDeclaredMethod(mName);
-			if (method != null) { // good!
-				final Object oVal = method.invoke(this);
-				val = oVal.toString();
-			}
-		} catch (Exception e) {
-			LOG.error("Couldn't get property '"+fieldName+"' from bean class '"+modelClass().getName()+"'!", e);
-			// no value
-		}
 		return val;
 	}
 	
