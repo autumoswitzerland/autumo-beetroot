@@ -138,6 +138,7 @@ a.login {
 }
 .login-info-box p {
 	font-size: 1.4rem;
+	font-weight: lighter;
 	margin-bottom: 10px;
 }
 .login-info-box a {
