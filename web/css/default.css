@@ -92,3 +92,63 @@ footer {
 		display: none;
 	}
 }
+
+legend.login {
+	color: #ffefbe;
+	border-bottom: 2px solid #ac9f81;
+}
+label.login {
+	color: #cccccc;
+	margin-bottom: 4px;
+}
+a.login {
+	color: #07b;
+}
+.login-container legend{
+	background-color: transparent !important;
+}
+.login-container label{
+	background-color: transparent !important;
+}
+.login-container input{
+	opacity: 0.7;
+}
+.login-container-2 {
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+.login-creds {
+	padding-top: 78px;
+	padding-bottom: 78px;
+}
+.login-infos {
+	padding-top: 110px;
+	padding-left: 24px;
+	padding-bottom: 78px;
+}
+.login-info-box {
+	text-align: center;
+	padding: 24px 12px 24px 12px;
+	margin-right: 20px;
+	border: 0px solid #444444;
+	border-radius: 12px;
+	font-weight: lighter;
+	height: 100%;
+}
+.login-info-box p {
+	font-size: 1.4rem;
+	margin-bottom: 10px;
+}
+.login-info-box a {
+	color: #ffaf65;
+}
+.login-info-box a:hover, a:focus {
+	color: #ffffff !important;
+}
+.login-info-box img {
+	margin-top: 12px;
+	width: 224px;
+	filter: hue-rotate(80deg) saturate(1) contrast(1);
+	opacity: 0.5;
+}

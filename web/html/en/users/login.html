@@ -1,34 +1,50 @@
-<nav class="large-2 medium-4 columns" id="actions-sidebar"></nav>
 
-<div class="users form large-10 medium-8 columns content">
+<div class="users form large-12 medium-12 columns content login-container">
 
-	<form method="POST">
-
-		<fieldset>
-
-			<legend>Please enter your username and password</legend>
-
-			<div class="input text">
-				<label for="username">Username</label>
-				<input type="text" name="username" id="username">
+	<div class="login-container-2">
+		
+		<div class="column large-6 login-creds">
+			
+			<form method="POST">
+		
+				<fieldset>
+		
+					<legend class="login">Please enter your username and password</legend>
+		
+					<div class="input text">
+						<label class="login" for="username">Username</label>
+						<input type="text" name="username" id="username">
+					</div>
+					<div class="input password">
+						<label class="login" for="lgpassword1">Password</label>
+						<div class="strength_wrapper">
+							<input type="password" name="password" id="lgpassword1" class="strength_input" style="display: block;" oninput="syncPw('lgpassword1');">
+							<input type="text" name="password" id="lgpassword2" class="strength_input" style="display: none;" oninput="syncPw('lgpassword2');">
+							<a href="#" class="button_strength" id="lgpwshow" onclick="togglePw('Hide password', 'Show Password'); event.preventDefault();" >Show Password</a>
+						</div>
+					</div>
+		
+					<br><a class="login" href="/{$lang}/users/reset">Reset Password...</a><br>
+					<br>
+		
+				</fieldset>
+		
+				<button type="submit">Login</button>
+		
+			</form>
+		
+		</div>
+		
+		<div class="column large-6 login-infos">
+			<div class="login-info-box">
+				<p><a href="https://github.com/autumoswitzerland/autumo-beetroot">GitHub</a></p>
+				<p><a href="https://beetroot.autumo.ch">Website</a></p>
+				<p><a href="https://www.youtube.com/watch?v=X2_FVYiMnIE">Quickstart Guide</a></p>
+				<p><a href="https://products.autumo.ch">autumo enterprise products</a></p>
+				<img alt="ifaceX" src="/img/beetroot.png" />
 			</div>
-			<div class="input password">
-				<label for="lgpassword1">Password</label>
-				<div class="strength_wrapper">
-					<input type="password" name="password" id="lgpassword1" class="strength_input" style="display: block;" oninput="syncPw('lgpassword1');">
-					<input type="text" name="password" id="lgpassword2" class="strength_input" style="display: none;" oninput="syncPw('lgpassword2');">
-					<a href="#" class="button_strength" id="lgpwshow" onclick="togglePw('Hide password', 'Show Password'); event.preventDefault();" >Show Password</a>
-				</div>
-			</div>
-
-			<br> <a href="/{$lang}/users/reset">Reset Password...</a> <br>
-			<br>
-
-		</fieldset>
-
-		<button type="submit">Login</button>
-		<br><br><br>
-
-	</form>
+		</div>
+		
+	</div>
 
 </div>
