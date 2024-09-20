@@ -439,6 +439,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    // another language
 	    User user = userSession.getUser();
 	    String userLang = LanguageManager.getInstance().parseLang(uri);
+	    
 		if (userLang == null && user == null) {
 			// From HTTP header!
 			userLang = LanguageManager.getInstance().getLanguageFromHttpSession(session);
@@ -456,6 +457,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    } else {
 	    	dbUserLang = null; // we don't know what the preference of the user is, because he is not logged in yet
 	    }
+
 	    if (userLang != null && userLang.length() != 0) {
 	    	if (dbUserLang != null && !userLang.equals(dbUserLang)) {
 		    	// User request another language, update it in the DB!
@@ -728,8 +730,12 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						
 						// Get user from DB
 	            		user = (User) Model.findFirst(User.class, "username = ?", postParamUsername);
-	            		if (user != null)
+	            		if (user != null) {
+	            			if (user.getLang() == null) { // still can be null here!
+	            				user.setLang(userLang);
+	            			}
 	            			dbTwoFa = user.getTwoFa();
+	            		}
 	            		
 	            		// Roles
 	        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(user.getId()));

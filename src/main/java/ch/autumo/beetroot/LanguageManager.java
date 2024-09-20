@@ -338,7 +338,7 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.info("No app translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
+	    	LOG.info("No app translation for key '{}' found for language '{}'! trying with default language '{}'.", key, lang, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
