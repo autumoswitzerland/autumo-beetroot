@@ -421,6 +421,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 	    final Session userSession = SessionManager.getInstance().findOrCreate(session);
 
+	    
 	    // first try...
 	    try {
 	    	if (!LanguageManager.isInitialized())
@@ -431,25 +432,33 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			final String m = "No default translation file found! That is not desirable! This Message is NOT translated!";
 			return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 		}
+
 	    
-	    // Language
+	    // Language; don't use LanguageManager.retrieveLanguage here,
+	    // we need to cover the special case if the user requests
+	    // another language
 	    User user = userSession.getUser();
 	    String userLang = LanguageManager.getInstance().parseLang(uri);
 		if (userLang == null && user == null) {
 			// From HTTP header!
 			userLang = LanguageManager.getInstance().getLanguageFromHttpSession(session);
 		}
-	    
 	    String dbUserLang = null;
 	    if (user != null) {
 	    	dbUserLang = user.getLang();
+	    	// Special/initial case: We have a DB user, but no language, 
+	    	// so initially set the detected language for him!
+	    	if (dbUserLang == null) {
+		    	LanguageManager.getInstance().updateLanguage(userLang, userSession);
+		    	user.setLang(userLang);
+		    	dbUserLang = userLang;
+	    	}
 	    } else {
 	    	dbUserLang = null; // we don't know what the preference of the user is, because he is not logged in yet
 	    }
-	    
 	    if (userLang != null && userLang.length() != 0) {
 	    	if (dbUserLang != null && !userLang.equals(dbUserLang)) {
-		    	// user request another language, update it in the DB!
+		    	// User request another language, update it in the DB!
 	    		LanguageManager.getInstance().updateLanguage(userLang, userSession);
 	    	}
 	    	userSession.setUserLang(userLang);
@@ -459,6 +468,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    	else
 	    		userSession.setUserLang(dbUserLang);
 	    }
+	    
 	    
 	    // Are we running in a servlet context?
     	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();

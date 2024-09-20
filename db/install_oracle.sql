@@ -43,16 +43,16 @@ DROP TABLE properties;
 
 CREATE TABLE users (
     id NUMBER(10) CHECK (id > 0) PRIMARY KEY,
-    username VARCHAR2(50) not NULL,
+    username VARCHAR2(50) NOT NULL,
     firstname VARCHAR2(50) DEFAULT '',
     lastname VARCHAR2(50) DEFAULT '',
-    password VARCHAR2(1024) not NULL,
-    email VARCHAR2(256) not NULL,
+    password VARCHAR2(1024) NOT NULL,
+    email VARCHAR2(256) NOT NULL,
     phone VARCHAR2(15) DEFAULT '',
-    lasttoken varchar2(256) DEFAULT 'NONE' not NULL,
+    lasttoken varchar2(256) DEFAULT 'NONE' NOT NULL,
     settings varchar2(1024) DEFAULT '',
-    role VARCHAR2(20) DEFAULT 'Operator' not NULL,
-    lang VARCHAR2(5) DEFAULT 'en' not NULL,
+    role VARCHAR2(20) DEFAULT 'Operator' NOT NULL,
+    lang VARCHAR2(5) DEFAULT NULL,
     two_fa NUMBER(1) DEFAULT 0 NOT NULL,
     secretkey VARCHAR2(32) DEFAULT '',
     created TIMESTAMP(0) DEFAULT SYSTIMESTAMP,
@@ -73,8 +73,8 @@ END;
 CREATE TABLE roles (
     id NUMBER(10) CHECK (id > 0) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    description VARCHAR(1024) default '',
-    permissions VARCHAR(1024) default '',
+    description VARCHAR(1024) DEFAULT '',
+    permissions VARCHAR(1024) DEFAULT '',
     created TIMESTAMP(0) DEFAULT SYSTIMESTAMP,
     modified TIMESTAMP(0) DEFAULT NULL,
     unique(name)
@@ -102,13 +102,13 @@ CREATE INDEX idx_role_id on users_roles (role_id);
 CREATE TABLE tasks (
     id NUMBER(10) CHECK (id > 0) PRIMARY KEY,
     guid VARCHAR2(48) DEFAULT NULL,
-    name VARCHAR2(50) not NULL,
-    path VARCHAR2(255) not NULL,
-    minute VARCHAR2(64) not NULL,
-    hour VARCHAR2(64) not NULL,
-    dayofmonth VARCHAR2(64) not NULL,
-    monthofyear VARCHAR2(64) not NULL,
-    dayofweek VARCHAR2(64) not NULL,
+    name VARCHAR2(50) NOT NULL,
+    path VARCHAR2(255) NOT NULL,
+    minute VARCHAR2(64) NOT NULL,
+    hour VARCHAR2(64) NOT NULL,
+    dayofmonth VARCHAR2(64) NOT NULL,
+    monthofyear VARCHAR2(64) NOT NULL,
+    dayofweek VARCHAR2(64) NOT NULL,
     active NUMBER(1) DEFAULT 1 NOT NULL,
     laststatus NUMBER(1) DEFAULT 1 NOT NULL,
     lastexecuted TIMESTAMP(0) DEFAULT NULL,
@@ -128,7 +128,7 @@ END;
 
 CREATE TABLE properties (
     id NUMBER(10) CHECK (id > 0) PRIMARY KEY,
-  	name VARCHAR2(256) not NULL,
+  	name VARCHAR2(256) NOT NULL,
   	value VARCHAR2(2000) NULL,
     created TIMESTAMP(0) DEFAULT SYSTIMESTAMP,
     modified TIMESTAMP(0) DEFAULT SYSTIMESTAMP,
@@ -161,7 +161,7 @@ INSERT INTO users (id, username, password, email, phone, lasttoken, settings, ro
 INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
 (users_seq.NEXTVAL, 'operator', 'beetroot', 'beetroot-op@autumo.ch', '', 'NONE', 'theme=default', ' ', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(users_seq.NEXTVAL, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', ' ', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(users_seq.NEXTVAL, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', ' ', null, '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ROLES
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES

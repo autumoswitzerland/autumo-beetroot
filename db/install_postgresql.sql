@@ -32,18 +32,18 @@ DROP SEQUENCE IF EXISTS properties_seq;
 CREATE SEQUENCE users_seq;
 CREATE TABLE users (
     id INT CHECK (id > 0) DEFAULT NEXTVAL ('users_seq') PRIMARY KEY,
-    username VARCHAR(50) not NULL,
+    username VARCHAR(50) NOT NULL,
     firstname VARCHAR(50) DEFAULT '',
     lastname VARCHAR(50) DEFAULT '',
-    password VARCHAR(1024) not NULL,
-    email VARCHAR(256) not NULL,
-    phone VARCHAR(15) not NULL,
-    lasttoken varchar(256) not NULL DEFAULT 'NONE',
+    password VARCHAR(1024) NOT NULL,
+    email VARCHAR(256) NOT NULL,
+    phone VARCHAR(15) DEFAULT '',
+    lasttoken varchar(256) NOT NULL DEFAULT 'NONE',
     settings varchar(1024) DEFAULT '',
-    role VARCHAR(20) not NULL DEFAULT 'Operator',
-    lang VARCHAR(5) not NULL DEFAULT 'en',
-    two_fa BOOLEAN default false NOT NULL,
-    secretkey VARCHAR(32) default '',
+    role VARCHAR(20) NOT NULL DEFAULT 'Operator',
+    lang VARCHAR(5) DEFAULT NULL,
+    two_fa BOOLEAN DEFAULT false NOT NULL,
+    secretkey VARCHAR(32) DEFAULT '',
     created TIMESTAMP(0) DEFAULT NOW(),
     modified TIMESTAMP(0) DEFAULT NULL,
     unique(username),
@@ -54,8 +54,8 @@ CREATE SEQUENCE roles_seq;
 CREATE TABLE roles (
     id INT CHECK (id > 0) DEFAULT NEXTVAL ('roles_seq') PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    description VARCHAR(1024) default '',
-    permissions VARCHAR(1024) default '',
+    description VARCHAR(1024) DEFAULT '',
+    permissions VARCHAR(1024) DEFAULT '',
     created TIMESTAMP(0) DEFAULT NOW(),
     modified TIMESTAMP(0) DEFAULT NULL,
     unique(name)
@@ -74,14 +74,14 @@ CREATE SEQUENCE tasks_seq;
 CREATE TABLE tasks (
     id INT CHECK (id > 0) DEFAULT NEXTVAL ('tasks_seq') PRIMARY KEY,
     guid VARCHAR(48) DEFAULT NULL,
-    name VARCHAR(50) not NULL,
-    path VARCHAR(255) not NULL,
-    runmode VARCHAR(16) not NULL DEFAULT 'Serial',
-    minute VARCHAR(64) not NULL,
-    hour VARCHAR(64) not NULL,
-    dayofmonth VARCHAR(64) not NULL,
-    monthofyear VARCHAR(64) not NULL,
-    dayofweek VARCHAR(64) not NULL,
+    name VARCHAR(50) NOT NULL,
+    path VARCHAR(255) NOT NULL,
+    runmode VARCHAR(16) NOT NULL DEFAULT 'Serial',
+    minute VARCHAR(64) NOT NULL,
+    hour VARCHAR(64) NOT NULL,
+    dayofmonth VARCHAR(64) NOT NULL,
+    monthofyear VARCHAR(64) NOT NULL,
+    dayofweek VARCHAR(64) NOT NULL,
     active BOOLEAN DEFAULT true NOT NULL,
     laststatus BOOLEAN DEFAULT true NOT NULL,
     lastexecuted TIMESTAMP(0) DEFAULT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE tasks (
 CREATE SEQUENCE properties_seq;
 CREATE TABLE properties (
     id INT CHECK (id > 0) DEFAULT NEXTVAL ('properties_seq') PRIMARY KEY,
-  	name VARCHAR(256) not NULL,
+  	name VARCHAR(256) NOT NULL,
   	value VARCHAR(2000) NULL,
     created TIMESTAMP(0) DEFAULT NOW(),
     modified TIMESTAMP(0) DEFAULT NOW(),
@@ -117,7 +117,7 @@ INSERT INTO users (id, username, password, email, phone, lasttoken, settings, ro
 INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
 (nextval('users_seq'), 'operator', 'beetroot', 'beetroot-op@autumo.ch', '', 'NONE', 'theme=default', '', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', NOW(), NOW());
 INSERT INTO users (id, username, password, email, phone, lasttoken, settings, role, lang, two_fa, secretkey, created, modified) VALUES
-(nextval('users_seq'), 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', '', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', NOW(), NOW());
+(nextval('users_seq'), 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', '', null, '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', NOW(), NOW());
 
 -- ROLES
 INSERT INTO roles (id, name, description, permissions, created, modified) VALUES

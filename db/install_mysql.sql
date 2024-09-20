@@ -32,18 +32,18 @@ DROP TABLE IF EXISTS properties;
 
 CREATE TABLE users (
     "id" INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    "username" VARCHAR(50) not NULL,
-    "firstname" VARCHAR(50) default '',
-    "lastname" VARCHAR(50) default '',
-    "password" VARCHAR(1024) not NULL,
-    "email" VARCHAR(255) not NULL,
-    "phone" VARCHAR(15) default '',
-    "lasttoken" varchar(255) not NULL default 'NONE',
-    "settings" varchar(1024) default '',
-    "role" VARCHAR(20) not NULL default 'Operator',
-    "lang" VARCHAR(5) not NULL default 'en',
-    "two_fa" BOOLEAN default false NOT NULL,
-    "secretkey" VARCHAR(32) default '',
+    "username" VARCHAR(50) NOT NULL,
+    "firstname" VARCHAR(50) DEFAULT '',
+    "lastname" VARCHAR(50) DEFAULT '',
+    "password" VARCHAR(1024) NOT NULL,
+    "email" VARCHAR(255) NOT NULL,
+    "phone" VARCHAR(15) DEFAULT '',
+    "lasttoken" varchar(255) NOT NULL DEFAULT 'NONE',
+    "settings" varchar(1024) DEFAULT '',
+    "role" VARCHAR(20) NOT NULL DEFAULT 'Operator',
+    "lang" VARCHAR(5) DEFAULT NULL,
+    "two_fa" BOOLEAN DEFAULT false NOT NULL,
+    "secretkey" VARCHAR(32) DEFAULT '',
     "created" DATETIME DEFAULT NOW(),
     "modified" DATETIME DEFAULT NOW(),
     unique("username"),
@@ -52,9 +52,9 @@ CREATE TABLE users (
 
 CREATE TABLE roles (
     "id" INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    "name" VARCHAR(255) not NULL,
-    "description" VARCHAR(1024) default '',
-    "permissions" VARCHAR(1024) default '',
+    "name" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(1024) DEFAULT '',
+    "permissions" VARCHAR(1024) DEFAULT '',
     "created" DATETIME DEFAULT NOW(),
     "modified" DATETIME DEFAULT NOW(),
     unique("name")
@@ -74,15 +74,15 @@ ALTER TABLE users_roles ADD INDEX "idx_role_id" ("role_id");
 CREATE TABLE tasks (
     "id" INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     "guid" VARCHAR(48) DEFAULT NULL,
-    "name" VARCHAR(50) not NULL,
-    "path" VARCHAR(255) not NULL,
-    "minute" VARCHAR(128) not NULL,
-    "hour" VARCHAR(128) not NULL,
-    "dayofmonth" VARCHAR(128) not NULL,
-    "monthofyear" VARCHAR(128) not NULL,
-    "dayofweek" VARCHAR(128) not NULL,
-    "active" BOOLEAN default true NOT NULL,
-    "laststatus" BOOLEAN default true NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
+    "path" VARCHAR(255) NOT NULL,
+    "minute" VARCHAR(128) NOT NULL,
+    "hour" VARCHAR(128) NOT NULL,
+    "dayofmonth" VARCHAR(128) NOT NULL,
+    "monthofyear" VARCHAR(128) NOT NULL,
+    "dayofweek" VARCHAR(128) NOT NULL,
+    "active" BOOLEAN DEFAULT true NOT NULL,
+    "laststatus" BOOLEAN DEFAULT true NOT NULL,
     "lastexecuted" DATETIME DEFAULT NULL,
     "created" DATETIME DEFAULT NOW(),
     "modified" DATETIME DEFAULT NOW(),
@@ -91,7 +91,7 @@ CREATE TABLE tasks (
 
 CREATE TABLE properties (
     "id" INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  	"name" VARCHAR(255) not NULL,
+  	"name" VARCHAR(255) NOT NULL,
   	"value" VARCHAR(2000) NULL,
     "created" DATETIME DEFAULT NOW(),
     "modified" DATETIME DEFAULT NOW(),
@@ -115,7 +115,7 @@ INSERT INTO users ("id", "username", "password", "email", "phone", "lasttoken", 
 INSERT INTO users ("id", "username", "password", "email", "phone", "lasttoken", "settings", "role", "lang", "two_fa", "secretkey", "created", "modified") VALUES
 (2, 'operator', 'beetroot', 'beetroot-op@autumo.ch', '', 'NONE', 'theme=default', '', 'de', '0', 'LERDNDDT2SONGR6NRBRQ2WL5JCPADSH2', NOW(), NOW());
 INSERT INTO users ("id", "username", "password", "email", "phone", "lasttoken", "settings", "role", "lang", "two_fa", "secretkey", "created", "modified") VALUES
-(3, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', '', 'en', '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', NOW(), NOW());
+(3, 'controller', 'beetroot', 'beetroot-ctrl@autumo.ch', '', 'NONE', 'theme=default', '', null, '0', 'HC6TBZ75IQMGT5ZUOPTV4S43NJPCDNUV', NOW(), NOW());
 
 -- ROLES
 INSERT INTO roles ("id", "name", "description", "permissions", "created", "modified") VALUES

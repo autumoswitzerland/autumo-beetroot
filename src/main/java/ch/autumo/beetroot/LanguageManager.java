@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
@@ -69,8 +71,11 @@ public class LanguageManager {
 	private static final Map<String, ResourceBundle> DEF_BUNDLE_PER_GROUP = new HashMap<>();
 	private static final Map<String, Map<String, ResourceBundle>> BUNDLE_GROUPS = new HashMap<>();
 
+    // Pattern to match 2 or 3 character language codes only
+	private static final Pattern HTTP_HEADER_LANG_PATTERN = Pattern.compile("([a-zA-Z]{2,3})(?:-[a-zA-Z]{2})?(?:;q=([0-9.]+))?");
+	
 	private static String defaultLang = DEFAULT_LANG;
-
+	
 	private static LanguageManager instance = null;	
 	
 	private static String langs[] = null;
@@ -577,7 +582,7 @@ public class LanguageManager {
 	/**
 	 * Retrieve language when user is not or possibly not logged in.
 	 * 
-	 * @param beetRoot HTTP session
+	 * @param session beetRoot HTTP session
 	 * @return found language
 	 */
 	public String retrieveLanguage(BeetRootHTTPSession session) {
@@ -589,7 +594,15 @@ public class LanguageManager {
 		}
 	    User user = userSession.getUser();
 	    if (user != null)  {
-	    	lang = user.getLang();
+	    	final String dbLang = user.getLang();
+	    	// Special/initial case: We have a DB user, but no language, 
+	    	// so initially set the detected language for him!
+	    	if (dbLang == null) {
+		    	LanguageManager.getInstance().updateLanguage(lang, userSession);
+		    	user.setLang(lang);
+	    	} else {
+	    		lang = dbLang;
+	    	}
 	    }
 		return lang;		
 	}
@@ -598,26 +611,48 @@ public class LanguageManager {
 	 * Get language from the header of the HTTP session and use it
 	 * if available in beetRoot, otherwise return default language.
 	 * 
-	 * @param beetRoot HTTP session
+	 * @param session beetRoot HTTP session
 	 * @return found language
 	 */
 	public String getLanguageFromHttpSession(BeetRootHTTPSession session) {
-		String lang = null;
-		String headerLang = ((IHTTPSession) session).getHeaders().get("accept-language");
-		if (headerLang != null && headerLang.length() > 1)
-			headerLang = headerLang.substring(0, 2);
-		else
-			return LanguageManager.DEFAULT_LANG;
 		
-		final String langs[] = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
-		for (int i = 0; i < langs.length; i++) {
-			if (headerLang.equals(langs[i]))
-				lang = headerLang;
-		}
-		if (lang == null)
-			return LanguageManager.DEFAULT_LANG;
+		final String acceptLanguage = ((IHTTPSession) session).getHeaders().get("accept-language");
 		
-		return lang;
+		 if (acceptLanguage == null || acceptLanguage.isEmpty()) {
+			 return LanguageManager.DEFAULT_LANG;
+		 } else {
+		        // Split the Accept-Language header by commas to get each language part
+		        final String languages[] = acceptLanguage.split(",");
+		        // Map to store language and its priority (q-value)
+		        final Map<String, Double> langMap = new HashMap<>();
+		        for (String lang : languages) {
+		            final Matcher matcher = HTTP_HEADER_LANG_PATTERN.matcher(lang.trim());
+		            if (matcher.find()) {
+		                final String languageCode = matcher.group(1); // Get the language code (e.g., en, fr, haw)
+		                final String qValue = matcher.group(2);       // Get the q-value if present
+		                double quality = (qValue != null) ? Double.parseDouble(qValue) : 1.0; // Default q-value is 1.0
+		                langMap.put(languageCode, quality);
+		            }
+		        }
+		        // Find the language with the highest q-value
+		        final String headerLang = langMap.entrySet()
+		                .stream()
+		                .max(Map.Entry.comparingByValue()) // Sort by q-value
+		                .map(Map.Entry::getKey)            // Return the language code with highest priority
+		                .orElse(null);                     // Return null if no valid language code found
+
+				if (headerLang == null)
+					return LanguageManager.DEFAULT_LANG;
+		        
+				// Compare with application available languages
+				final String langs[] = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
+				for (int i = 0; i < langs.length; i++) {
+					if (headerLang.equals(langs[i]))
+						return headerLang;
+				}
+		 }
+		
+		return LanguageManager.DEFAULT_LANG;
 	}
 	
 	/**
