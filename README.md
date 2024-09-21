@@ -123,7 +123,6 @@ algorithm for everything. Also, load resources from the file system (first), the
 
 Enjoy!
 
-<p align="right"><a href="#top">[Back to top]</a></p>
 
 
 <!-- QUICKSTART -->
@@ -167,8 +166,6 @@ cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta
 %PACKAGE%\bin\beetroot.bat start
 ```
 
-<p align="right"><a href="#top">[Back to top]</a></p>
-
 
 
 <!-- Documentation -->
@@ -196,8 +193,6 @@ cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta
 - [HTTPS](doc/https.md)
 - [Migration Guides](doc/migration.md)
 
-<p align="right"><a href="#top">[Back to top]</a></p>
-
 
 
 <!-- BUILT WITH -->
@@ -215,8 +210,6 @@ cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta
 * [Bootstrap](https://getbootstrap.com/)
 * ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
 
-<p align="right"><a href="#top">[Back to top]</a></p>
-
 
 
 <!-- Links -->
@@ -225,8 +218,6 @@ cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta
 - [Products](https://twitter.com/autumo)
 - [Github](https://github.com/autumoswitzerland/autumo-beetroot)
 - [Email](mailto:autumo.switzerland@gmail.com)
-
-<p align="right"><a href="#top">[Back to top]</a></p>
 
 
 
@@ -240,3 +231,6 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 <br>
 <br>
 Copyright 2024, autumo Ltd., Switzerland
+
+<p align="right" style="float:right;"><a href="#top">&uarr;</a></p>
+
