@@ -1,15 +1,25 @@
-<div class="users form large-12 medium-8 columns content">
 
-	<br><br>
-	<h3>
-		<a href="/{$lang}/users/login">Click here to login again.</a>
-	</h3>
-	<br><br><br>
+<div class="users form large-12 medium-12 columns content login-container">
+
+	<div class="login-container-2">
+		
+		<div class="column large-6 login-creds">
+			<h3>
+				<a href="/{$lang}/users/login">Click here to login again.</a>
+			</h3>
+		</div>
+		
+		<div class="column large-6 login-infos">
+			<div class="login-info-box">
+			</div>
+		</div>
+		
+	</div>
 
 </div>
 
 <script>
 	setTimeout(function() {
     	window.location.href = '/{$lang}/users/login';
-	}, 0);
+	}, 10000);
 </script>

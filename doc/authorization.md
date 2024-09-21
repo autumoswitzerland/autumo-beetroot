@@ -134,6 +134,6 @@ which authorization granularity you want to grant access to (role group or sub-r
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
 
-<p align="right"><a href="#top">[Back to top]</a></p>
+<p align="right"><a href="#top">&uarr;</a></p>

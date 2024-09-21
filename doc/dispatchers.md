@@ -22,6 +22,9 @@ see keys <code>dispatcher_*</code>.
 
 To see how a dispatcher is implemented in detail, see the [log dispatcher](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/server/modules/log/).
 
+
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
+
+<p align="right"><a href="#top">&uarr;</a></p>

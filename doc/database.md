@@ -7,6 +7,9 @@ To setup a new database scheme use the SQL-Script `db/install_<database-type>.sq
 
 A word about the use of MySQL: Due to the GPL license, we do not distribute the MySQL Connector for Java and do not create a dependency on it. Visit the Oracle MySQL website and download it yourself if you want to use this connector. Note that the MariaAB Connector for Java also works for MySQL databases up to version 5.5 of MySQL or even for higher versions! Here you can find more valuable information in this context: [MariaDB License FAQ](https://mariadb.com/kb/en/licensing-faq).
 
+
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
+
+<p align="right"><a href="#top">&uarr;</a></p>

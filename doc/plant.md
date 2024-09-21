@@ -40,9 +40,9 @@ Customize them to your needs (examples can be found in the existing handlers) an
 
 The HTML templates and the model configuration are usually moved/copied to a subdirectory for languages:
 
-- web/html/`{entity-plural-name}`/en/*.html|columns.cfg
-- web/html/`{entity-plural-name}`/de/*.html|columns.cfg
-- web/html/`{entity-plural-name}`/fr/*.html|columns.cfg
+- web/html/`{entity-plural-name}`/en/*.html and columns.cfg
+- web/html/`{entity-plural-name}`/de/*.html and columns.cfg
+- web/html/`{entity-plural-name}`/fr/*.html and columns.cfg
 - etc.
 
 We recommend that you create a backup copy of the originally generated HTML templates and the model configuration. They serve as a fallback scenario if the user requests a language that is not available!
@@ -113,6 +113,6 @@ Make sure to adjust the package name correctly if you move your classes!
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
 
-<p align="right"><a href="#top">[Back to top]</a></p>
+<p align="right"><a href="#top">&uarr;</a></p>

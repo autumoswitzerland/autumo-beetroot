@@ -30,7 +30,7 @@
 <br>
 <div align="center">
   <a href="https://github.com/autumoswitzerland/autumo/tree/master/autumo-beetroot">
-    <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png" alt="Logo" width="200" height="200">
+    <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png" alt="Logo" width="200" height="200" />
   </a>
 
 <h1 align="center">autumo beetRoot</h1>
@@ -232,5 +232,5 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 <br>
 Copyright 2024, autumo Ltd., Switzerland
 
-<p align="right" style="float:right;"><a href="#top">&uarr;</a></p>
+<p align="right"><a href="#top">&uarr;</a></p>
 

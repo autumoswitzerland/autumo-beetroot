@@ -16,6 +16,8 @@ The quickstart setup is also effortless and very fast!
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
+
+<p align="right"><a href="#top">&uarr;</a></p>
 
 [video-url]: https://youtu.be/X2_FVYiMnIE

@@ -66,4 +66,6 @@ When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an 
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
+
+<p align="right"><a href="#top">&uarr;</a></p>

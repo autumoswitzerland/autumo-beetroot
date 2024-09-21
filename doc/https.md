@@ -11,4 +11,6 @@ The password for `ssl/beetroot.jks` is **`beetroot`**.
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
+Click <a href="../README.md">here</a> to go to the main page.
+
+<p align="right"><a href="#top">&uarr;</a></p>

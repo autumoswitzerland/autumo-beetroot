@@ -26,3 +26,10 @@ See [Migration Guide 3.0.0](migration/3_0_0.md).
 - Update `gen/` directory
 - Update `web/html/` directory
 - Update `web/lang/` directory
+
+
+<br>
+<br>
+Click <a href="../README.md">here</a> to go to the main page.
+
+<p align="right"><a href="#top">&uarr;</a></p>
