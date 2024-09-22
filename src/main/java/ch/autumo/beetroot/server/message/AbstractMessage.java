@@ -28,6 +28,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,21 @@ import ch.autumo.beetroot.Constants;
 
 /**
  * Abstract message.
+ * <br><br>
+ * Reduce the transport layer to the max. with the option to encrypt all
+ * information with SHA3.
+ * <br><br>
+ * Messages are mainly used for dispatchers / distributed modules between 
+ * the a dedicated web-app installed in a web-container and the beetRoot 
+ * server or for server administration commands.
+ * <br><br>
+ * It is also used for the file-server (if activated) to down- or upload files 
+ * from/to a plug-able file storage and for roundtrip-checks if the file-server 
+ * is working properly.
+ * <br><br>
+ * Messages for dispatchers are sent and received with {@link ch.autumo.beetroot.server.communication.ClientCommunicator}
+ * and files are sent and received with {@link ch.autumo.beetroot.server.communication.FileTransfer}; in this case messages
+ * are being used for coordinating the upload and download of files that are directly transported by sockets. 
  */
 public abstract class AbstractMessage {
 
@@ -64,73 +81,128 @@ public abstract class AbstractMessage {
 	}	
 
 	
+	/** Transport message map. */
 	private Map<String, String> messageMap = null;
-	
+	/** Transport message. */
 	protected String message = "null";
+	/** Transport entity name. */
 	protected String entity = "null";
+	/** Transport domain name. */
 	protected String domain = "null";
+	/** Transport entity ID. */
 	protected long id = 0;
+	/** Transport file ID. */
 	protected String fileId = "null";
 
+	/** Additional transport object. */
 	protected Serializable object = null;
 
 	
+	/**
+	 * Constructor.
+	 */
 	public AbstractMessage() {
 	}
 
+	/**
+	 * Constructor with a transport message. A transport message
+	 * is usually the minimum of information needed.
+	 * 
+	 * @param message text message with an own chosen format
+	 */
 	public AbstractMessage(String message) {
 		this.message = message;
 	}
+	
+	/**
+	 * Return a JSON object or null; null means the object hold
+	 * by this message represents another object type, but it is
+	 * always serializable.
+	 * 
+	 * @return JSON object or null
+	 */
+	public JSONObject getJSONObject() {
+		try {
+			return new JSONObject(this.object.toString());
+        } catch (JSONException ex) {
+            return null;
+        }
+	}
 
+	/**
+	 * Set any serializable object, usually a JSON string
+	 * is meaningful for transport.
+	 * 
+	 * @param object serializable object, e.g. JSON string
+	 */
 	public void setObject(Serializable object) {
-		this.object = object;
+		try {
+			final String str = object.toString();
+			new JSONObject(str);
+			this.object = str;
+        } catch (JSONException ex) {
+			this.object = object;
+        }		
 	}
 	
+	/**
+	 * Get serializable transport object hold by this message or null.
+	 * 
+	 * @return transport object or null
+	 */
 	public Serializable getObject() {
 		return object;
 	}
 	
+	/**
+	 * Set an entity associated with this message.
+	 * 
+	 * @param entity entity
+	 */
 	public void setEntity(String entity) {
 		this.entity = entity;
 	}
 	
+	/**
+	 * Get entity associated with this message or null.
+	 * 
+	 * @return entity or null.
+	 */
 	public String getEntity() {
 		return entity;
 	}
 	
+	/**
+	 * Get entity ID associated with this message or null.
+	 * 
+	 * @return ID or 0.
+	 */
 	public long getId() {
 		return id;
 	}
 
+	/**
+	 * Get a domain associated with this message or null.
+	 * A domain can help to categorize this message for
+	 * specific destinations or logical containers.
+	 * 
+	 * @return domain or null.
+	 */
 	public String getDomain() {
 		return domain;
 	}
 
+	/**
+	 * File ID if this message is used to transport file information.
+	 * 
+	 * @return File ID or 0
+	 */
 	public String getFileId() {
 		return fileId;
 	}
 	
-	protected void deserializeObject(String serializedObject) throws IOException {
-		final byte data[] = Base64.getDecoder().decode(serializedObject);
-		final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-		try {
-			this.object  = (Serializable) ois.readObject();
-		} catch (ClassNotFoundException e) {
-			throw new IOException("Class not found for transferred object", e);
-		}
-		ois.close();
-	}
-
-	protected String serializeObject() throws IOException {
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(this.object);
-		oos.close();
-		return Base64.getEncoder().encodeToString(baos.toByteArray()); 
-	}
-	
 	/**
-	 * Get transfer data.
+	 * Get transfer data; this includes all set information including an object.
 	 * 
 	 * @return transfer data
 	 * @throws IOException IO exception
@@ -150,7 +222,11 @@ public abstract class AbstractMessage {
 	}
 
 	/**
-	 * Helper method for paired message.
+	 * Helper method for accessing paired transport message values. A paired 
+	 * transport message  separates values with {@link #INTERNAL_MSG_PART_SEPARATOR} 
+	 * and is set by the constructor {@link #AbstractMessage(String)}.
+	 * 
+	 * Key-Value pairs are separated by the '=' sign.
 	 * 
 	 * @param key key
 	 * @return value
@@ -160,7 +236,11 @@ public abstract class AbstractMessage {
 	}
 	
 	/**
-	 * Helper method for paired message.
+	 * Helper method for accessing paired transport message values. A paired 
+	 * transport message separates values with {@link #INTERNAL_MSG_PART_SEPARATOR} 
+	 * and is set by the constructor {@link #AbstractMessage(String)}.
+	 * 
+	 * Key-Value pairs are separated by the '=' sign.
 	 * 
 	 * @param key key
 	 * @return value
@@ -182,7 +262,7 @@ public abstract class AbstractMessage {
 	}
 	
 	/**
-	 * Checks if this key is contained.
+	 * Checks if this key is contained in a paired transport message.
 	 * 
 	 * @param key key
 	 * @return true if so, otherwise false
@@ -192,7 +272,8 @@ public abstract class AbstractMessage {
 	}
 	
 	/**
-	 * Get transfer string for transferring.
+	 * Get transfer string; this includes all set information including
+	 * the additional object is set.
 	 * 
 	 * @return transfer string
 	 * @throws IOException IO exception
@@ -200,11 +281,43 @@ public abstract class AbstractMessage {
 	public abstract String getTransferString() throws IOException;
 
 	/**
-	 * Get JSON transfer string for transferring.
+	 * Get JSON representation; this includes all set information including
+	 * the additional object if set.
 	 * 
-	 * @return transfer string
+	 * @return transfer JSON string
 	 * @throws IOException IO exception
 	 */
 	public abstract String getJsonTransferString() throws IOException;
+
+	/**
+	 * Deserialize this object with FasterXML/Jackson. Internal method,
+	 * don't call it.
+	 * 
+	 * @param serializedObject serialized object
+	 */
+	protected void deserializeObject(String serializedObject) throws IOException {
+		final byte data[] = Base64.getDecoder().decode(serializedObject);
+		final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+		try {
+			this.object  = (Serializable) ois.readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException("Class not found for transferred object", e);
+		}
+		ois.close();
+	}
+
+	/**
+	 * Serialize this object with FasterXML/Jackson. Internal method,
+	 * don't call it.
+	 * 
+	 * @return serialized object
+	 */
+	protected String serializeObject() throws IOException {
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(this.object);
+		oos.close();
+		return Base64.getEncoder().encodeToString(baos.toByteArray()); 
+	}
 	
 }
