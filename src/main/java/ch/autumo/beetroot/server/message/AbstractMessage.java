@@ -43,12 +43,11 @@ import ch.autumo.beetroot.Constants;
  * information with SHA3.
  * <br><br>
  * Messages are mainly used for dispatchers / distributed modules between 
- * the a dedicated web-app installed in a web-container and the beetRoot 
+ * the dedicated web-app installed in a web-container and the beetRoot 
  * server or for server administration commands.
  * <br><br>
  * It is also used for the file-server (if activated) to down- or upload files 
- * from/to a plug-able file storage and for roundtrip-checks if the file-server 
- * is working properly.
+ * from/to a plug-able file storage and for roundtrip-checks of the file-server.
  * <br><br>
  * Messages for dispatchers are sent and received with {@link ch.autumo.beetroot.server.communication.ClientCommunicator}
  * and files are sent and received with {@link ch.autumo.beetroot.server.communication.FileTransfer}; in this case messages
