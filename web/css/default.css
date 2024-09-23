@@ -104,30 +104,31 @@ label.login {
 a.login {
 	color: #07b;
 }
-.login-container legend{
+
+.log-container legend{
 	background-color: transparent !important;
 }
-.login-container label{
+.log-container label{
 	background-color: transparent !important;
 }
-.login-container input{
+.log-container input{
 	opacity: 0.5;
 }
-.login-container-2 {
+.log-container-2 {
 	justify-content: center;
 	align-items: center;
 	height: 100%;
 }
-.login-creds {
+.log-left {
 	padding-top: 78px;
 	padding-bottom: 78px;
 }
-.login-infos {
+.log-right {
 	padding-top: 110px;
 	padding-left: 24px;
 	padding-bottom: 78px;
 }
-.login-info-box {
+.log-info-box {
 	text-align: center;
 	padding: 24px 12px 24px 12px;
 	margin-right: 20px;
@@ -136,20 +137,20 @@ a.login {
 	font-weight: lighter;
 	height: 100%;
 }
-.login-info-box p {
+.log-info-box p {
 	font-size: 1.4rem;
 	font-weight: lighter;
 	margin-bottom: 10px;
 }
-.login-info-box a {
+.log-info-box a {
 	color: #ffaf65;
 }
-.login-info-box a:hover, a:focus {
+.log-info-box a:hover, a:focus {
 	color: #ffffff !important;
 }
-.login-info-box img {
+.log-info-box img {
 	margin-top: 12px;
-	width: 224px;
+	width: 274px;
 	filter: hue-rotate(80deg) saturate(1) contrast(1);
 	opacity: 0.5;
 }

@@ -43,7 +43,7 @@ body {
 	background-image: url('/img/lang/en.png');
 }
 
-.login-container {
+.log-container {
 	background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/img/cornflowers.webp');	
     background-repeat: no-repeat;
 	background-position: 0 -580px;
