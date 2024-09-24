@@ -144,7 +144,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final Pattern PATTERN_SCRIPT	= Pattern.compile("\\{#script.*\\}");
 	
 	// Tags
-	private static final String TAG_PREFIX_LANG		= "{$l.";
+	public static final String TAG_PREFIX_LANG		= "{$l.";
 	private static final String TAG_IG 				= "{$id}";
 	private static final String TAG_DBID			= "{$dbid}";
 	private static final String TAG_DISPLAY_NAME	= "{$displayName}";
@@ -454,6 +454,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		    		// list and single records data field names aka GUI column names.
 		    		if (templateResource != null && templateResource.length() != 0) {
 			    		final String htmlAction = templateResource.substring(templateResource.lastIndexOf("/") + 1, templateResource.length());
+
 			    		switch (htmlAction) {
 			    			case "index.json":
 				    			if (configPair[0].startsWith("list_json.")) {
@@ -464,28 +465,28 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				    			break;
 			    			case FILE_HTML_ACTION_INDEX:
 				    			if (configPair[0].startsWith("list.")) {
-				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + configPair[1];
+				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
 			    			case FILE_HTML_ACTION_VIEW:
 				    			if (configPair[0].startsWith("view.")) {
-				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + configPair[1];
+				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
 			    			case FILE_HTML_ACTION_EDIT:
 				    			if (configPair[0].startsWith("edit.")) {
-				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + configPair[1];
+				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
 			    			case FILE_HTML_ACTION_ADD:
 				    			if (configPair[0].startsWith("add.")) {
-				    				newCfgLine = configPair[0].substring(4, configPair[0].length()) + "=" + configPair[1];
+				    				newCfgLine = configPair[0].substring(4, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			} else if (configPair[0].startsWith("init.")) { // initial values set in add template :)
@@ -1229,11 +1230,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						}
 						// template specific variables
 						this.render(session);
-						this.renderAll(session);
+						
 						final String res = this.replaceTemplateVariables(text, session);
 						if (res != null && res.length() != 0)
 							text = res;
-						buffer.delete(0, buffer.length()); // buffer consumed!						
+						buffer.delete(0, buffer.length()); // buffer consumed!
+						
 					} catch (Exception e) {
 						final String err = "Error Parsing Template! - Exception:\n"+e.getMessage();
 						LOG.error(err, e);
@@ -2705,7 +2707,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	}
 	
 	/**
-	 * Overwrite to set your variables for the hole HTML page.
+	 * Overwrite to set your variables for the whole HTML page.
 	 * 
 	 * Only use the pure names without bracket-limiters
 	 * and $-sign; e.g., In template '{$name}' -> 'name' as variable.

@@ -57,6 +57,8 @@ public class Plant {
 	
 	private String tableNames[] = null;
 	private String singleEntity = null;
+	
+	private File webDir = null;
 
 	
 	public Plant() {
@@ -133,7 +135,7 @@ public class Plant {
 
 			do {
 				System.out.println("");
-				System.out.println(Colors.darkYellow("Process another entity? (enter=y)") + ": ");
+				System.out.println(Colors.darkYellow("Do you want to do more tasks? (enter=y)") + ": ");
 				System.out.println("  [y] = Yes ");
 				System.out.println("  [n] = No ");
 				System.out.print(">");
@@ -173,15 +175,6 @@ public class Plant {
 					tableList.add(rs.getString(1));
 				rs.close();
 					
-				/**
-				System.out.println(" "+Colors.yellow("NOTE") + ": At this time CRUD generation is only possible with MySQL and MariaDB.");
-				System.out.println(" We suggest setting up one of these databases for development and then using");
-				System.out.println(" the generated templates and code for the target database. Exit.");
-				this.printLine();
-				System.out.println("");
-				// finish now!
-				Helper.normalExit();
-				*/
 			} finally {
 				if (stmt != null)
 					stmt.close();
@@ -202,6 +195,8 @@ public class Plant {
 					System.out.println("  ["+(j+1)+"] = "+tableNames[j]);
 				} 
 				System.out.println("  [all] = All tables !");
+				System.out.println(Colors.darkYellow("Other functions") + ": ");
+				System.out.println("  [t] = Translate templates");
 				System.out.println("  [x] = Exit");
 				System.out.print(">");
 
@@ -209,6 +204,8 @@ public class Plant {
 				if (val.trim().equalsIgnoreCase("all")) {
 					d = 1;
 					val = "all";
+				} else if (val.trim().equalsIgnoreCase("t")) {
+					val = "t";
 				} else if (val.trim().equalsIgnoreCase("x")) {
 					System.out.println("Bye.");
 					System.out.println("");
@@ -218,7 +215,7 @@ public class Plant {
 					val = "one";
 				}
 
-			} while (!val.equals("all") && (d < 1 || d > size));
+			} while (!val.equals("all") && !val.equals("t") && (d < 1 || d > size));
 
 			/*
 			// Something else
@@ -234,30 +231,61 @@ public class Plant {
 			} while (d != 1 && d != 2);
 			*/
 
-			if (!val.equals("all")) {
-				
-				singleEntity = tableNames[d-1];
-				System.out.println("");
-				System.out.println("Generate CRUD templates and code for entity '" + singleEntity + "' (y/n, enter = y) ?): ");
-				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
-				System.out.print(">");
-	
-				String answer = br.readLine();
-				if (answer != null && (answer.trim().equalsIgnoreCase("y") || answer.equals("")))
-					return 1;
-				else
-					return -1;
-			
-			} else {
+			if (val.equals("all")) {
 				
 				System.out.println("");
-				System.out.println("Generate CRUD templates and code for ALL (!) entities (y/n) ?): ");
 				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
-				System.out.print(">");
+				System.out.print("Generate CRUD templates and code for ALL (!) entities (y/n) ?): ");
 				
 				String answer = br.readLine().trim();
 				if (answer != null && answer.trim().equalsIgnoreCase("y"))
 					return 10;
+				else
+					return -1;
+
+			} else if (val.equals("t")) {
+				
+				System.out.println("");
+				System.out.println(Colors.darkYellow("NOTE") + ": Translate the HTML templates (add, edit, view and index) as well as the column titles in the 'columns.cfg'");
+				System.out.println("files. This should only be done once for a specific folder; all subfolders will also be processed recursively.");
+				System.out.println("If you do not specify a folder, it will start with the 'web/' folder. Translations are always written or added");
+				System.out.println("to the translation file 'web/lang/tmpl_lang_default.properties'. Copy this file for other language translations");
+				System.out.println("e.g. to 'web/lang/tmpl_lang_en.properties'.");
+				System.out.println("");
+				boolean valid = false;
+				String answer = null;
+				while (!valid) {
+					System.out.print("Specify the folder to be started (empty = 'web/'): ");
+					answer = br.readLine().trim();
+					if (answer.length() == 0) {
+						answer = "web/";
+					}
+					webDir = new File(answer);
+					if (!webDir.isDirectory()) {
+						System.out.println(Colors.red("Folder is invalid. Enter a valid path."));
+					} else {
+						System.out.println(Colors.cyan("Folder") + ": " + webDir.getAbsolutePath());
+						valid = true;
+					}
+				}
+				System.out.println("");
+				System.out.println("Continue (y/n, enter = y) ?): ");
+				answer = br.readLine();
+				if (answer != null && (answer.trim().equalsIgnoreCase("y") || answer.equals("")))
+					return 20;
+				else
+					return -1;				
+				
+			} else {
+				
+				singleEntity = tableNames[d-1];
+				System.out.println("");
+				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
+				System.out.print("Generate CRUD templates and code for entity '" + singleEntity + "' (y/n, enter = y) ?): ");
+	
+				String answer = br.readLine();
+				if (answer != null && (answer.trim().equalsIgnoreCase("y") || answer.equals("")))
+					return 1;
 				else
 					return -1;
 			}
@@ -357,20 +385,21 @@ public class Plant {
 			Helper.invalidArgumentsExit();
 		}
 
+		int a = 0;
 		try {
 			
 			this.initialize(line);
 
 			do { // loop for more entities
 			
-				int a = this.readParameters(false);
+				a = this.readParameters(false);
 				if (a == 1) {
 					
 					System.out.println("");
 					
 					this.execute();
 					
-					System.out.println(Colors.green("Entity '"+singleEntity+"' processed!"));
+					System.out.println(Colors.green("Entity '"+singleEntity+"' processed."));
 					System.out.println("");
 					
 				} else if (a == 10) {
@@ -379,12 +408,23 @@ public class Plant {
 					for (int i = 0; i < tableNames.length; i++) {
 						singleEntity = tableNames[i];
 						this.execute();
-						System.out.println(Colors.green("Entity '"+singleEntity+"' processed!"));
+						System.out.println(Colors.green("Entity '"+singleEntity+"' processed."));
 					}
 					System.out.println("");
-				}
-				else {
+					
+				} else if (a == 20) {
+					
+					System.out.println("");
+					
+					final TemplateLanguageProcessor tlp = new TemplateLanguageProcessor();
+					tlp.process(webDir.getAbsolutePath(), "web/");
+					
+					System.out.println("");
+					
+				} else {
+					
 					// finish!
+					
 				}
 				
 			} while (this.readParameters(true) == 1);
@@ -402,22 +442,26 @@ public class Plant {
 
 		System.out.println("");
 		this.printLine();
-		System.out.println("");
-		System.out.println(Colors.darkYellow("NOTE")+":");
-		System.out.println("- Move generated code to own packages and HTML to the desired (language)");
-		System.out.println("  directories.");
-		System.out.println("- New generation has overwriten possible previous generated sources!");
-		System.out.println("");
-		System.out.println(Colors.darkYellow("TODO's")+":");
-		System.out.println("- Add the routes above to your configuration 'cfg/routing.xml'!");
-		System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
-		System.out.println("  default value in the add handler that are not present in the GUI!");
-		System.out.println("- Remove unwanted GUI fields from 'columns.cfg' for the views 'view', 'add'");
-		System.out.println("  and 'edit'.");
-		System.out.println("- Also Remove unwanted <col span..> tags in the 'index.html'; e.g. if you");
-		System.out.println("  removed standard fields 'id', 'created' and 'modified' from 'columns.cfg'.");
-		System.out.println("- Add entity to menu or admin menu and overwrite 'hasAccess' method for every");
-		System.out.println("  handler if necessary.");
+		if (a != 20) {
+			System.out.println("");
+			System.out.println(Colors.darkYellow("NOTE")+":");
+			System.out.println("- Move generated code to own packages and HTML to the desired (language)");
+			System.out.println("  directories.");
+			System.out.println("- New generation has overwriten possible previous generated sources!");
+			System.out.println("");
+			System.out.println(Colors.darkYellow("TODO's")+":");
+			System.out.println("- Add the routes above to your configuration 'cfg/routing.xml'!");
+			System.out.println("- Adjust mandatory fields in java add handler: only the mandatory fields need a");
+			System.out.println("  default value in the add handler that are not present in the GUI!");
+			System.out.println("- Remove unwanted GUI fields from 'columns.cfg' for the views 'view', 'add'");
+			System.out.println("  and 'edit'.");
+			System.out.println("- Also Remove unwanted <col span..> tags in the 'index.html'; e.g. if you");
+			System.out.println("  removed standard fields 'id', 'created' and 'modified' from 'columns.cfg'.");
+			System.out.println("- Add entity to menu or admin menu and overwrite 'hasAccess' method for every");
+			System.out.println("  handler if necessary.");
+		} else {
+			
+		}
 		// overwrite method access
 		System.out.println("");
 		System.out.println("Done.");
