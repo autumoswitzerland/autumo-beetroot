@@ -82,7 +82,7 @@ Use the quickstart guide below, then go to http://localhost:8778 and log in:
 <br />
 
 When developing, take a look at the
-[API Docs](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/doc/apidocs/index.html).
+[API Docs](https://products.autumo.ch/javadoc/autumo-beetroot/index.html).
 <br />
 
 
