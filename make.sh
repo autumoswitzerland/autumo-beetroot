@@ -69,7 +69,7 @@ then
 	then
     	rm autumo-beetRoot-$VERSION.zip
 	fi		
-	if [ -f "rm autumo-beetRoot-web-$VERSION.zip" ]
+	if [ -f "autumo-beetRoot-web-$VERSION.zip" ]
 	then
     	rm autumo-beetRoot-web-$VERSION.zip
 	fi		
@@ -112,9 +112,9 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	echo "-> Pack and copy newest beetroot lib..."
 	
 	# package beetroot
-	# mvn package
-	mkdir -p lib/repo/autumo/beetroot/autumo-beetroot/$VERSION
-	cp target/autumo-beetroot-$VERSION.jar lib/repo/autumo/beetroot/autumo-beetroot/$VERSION
+	mvn install
+	mkdir -p lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION
+	cp target/autumo-beetroot-$VERSION.jar lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION
 	
 
 # -----------------------------
@@ -124,8 +124,14 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	echo "-> Cleanup & prepare..."
 	
 	# delete old product package
-	rm product/autumo-beetRoot-$VERSION.zip
-	rm product/autumo-beetRoot-web-$VERSION.zip
+	if [ -f "product/autumo-beetRoot-$VERSION.zip" ]
+	then
+    	rm product/autumo-beetRoot-$VERSION.zip
+	fi		
+	if [ -f "product/autumo-beetRoot-web-$VERSION.zip" ]
+	then
+    	rm product/autumo-beetRoot-web-$VERSION.zip
+	fi			
 	
 	# go to product
 	cd product
@@ -167,6 +173,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc/licenses
 
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-web-$VERSION/beetroot.cfg
+	cp ../cfg/languages.cfg autumo-beetRoot-web-$VERSION/languages.cfg
 	cp ../cfg/routing.xml autumo-beetRoot-web-$VERSION/routing.xml
 	cp ../cfg/context.xml autumo-beetRoot-web-$VERSION/META-INF/context.xml
 	cp ../cfg/web.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
@@ -207,12 +214,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../lib/autumo-beetroot-$VERSION.jar autumo-beetRoot-$VERSION/lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION/
 	# Copy local repo for dev (not yet public maven libs)
 	cp -R ../lib/repo autumo-beetRoot-$VERSION/lib/
-	rm autumo-beetRoot-$VERSION/lib/jakarta.mail-*.jar
-	rm autumo-beetRoot-$VERSION/lib/jakarta.activation-2.0.1.jar
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.mail-*.jar
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/jakarta.activation-2.0.1.jar
 	# Servlet API not needed in web-containers!
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet-api*.jar
 	
@@ -296,7 +299,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-$VERSION/doc/migration
 
 	cp ../doc/*.md autumo-beetRoot-$VERSION/doc
-	cp ../doc/migration/*.md autumo-beetRoot-$VERSION/doc/migration/*.md
+	cp ../doc/migration/*.md autumo-beetRoot-$VERSION/doc/migration/
 
 	cp ../README.md autumo-beetRoot-$VERSION/
 	cp ../LICENSE.md autumo-beetRoot-$VERSION/

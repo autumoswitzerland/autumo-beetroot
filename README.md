@@ -141,10 +141,6 @@ curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/
 unzip $PACKAGE.zip
 rm $PACKAGE.zip
 
-# Optional libraries to send emails (needed for password reset)
-(cd $PACKAGE/lib && curl -LO https://repo1.maven.org/maven2/com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar)
-(cd $PACKAGE/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta.mail/2.0.1/jakarta.mail-2.0.1.jar)
-
 $PACKAGE/bin/beetroot.sh start
 ```
 
@@ -158,10 +154,6 @@ curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/
 
 tar -xf %PACKAGE%.zip
 del %PACKAGE%.zip
-
-REM Optional libraries to send emails (needed for password reset)
-cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar && cd ..\..
-cd %PACKAGE%/lib && curl -LO https://repo1.maven.org/maven2/com/sun/mail/jakarta.mail/2.0.1/jakarta.mail-2.0.1.jar && cd ..\..
 
 %PACKAGE%\bin\beetroot.bat start
 ```

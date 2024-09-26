@@ -338,7 +338,6 @@
 		    <scope>compile</scope> <!-- IMPORTANT! -->
 		</dependency>
 
-		<!-- Not distributed in the builds -->
 		<dependency>
 		    <groupId>com.sun.activation</groupId>
 		    <artifactId>jakarta.activation</artifactId>
@@ -346,7 +345,6 @@
 		    <scope>provided</scope>
 		</dependency>
 
-		<!-- Not distributed in the builds -->
 		<dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>jakarta.mail</artifactId>
