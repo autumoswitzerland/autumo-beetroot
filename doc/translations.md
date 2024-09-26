@@ -49,7 +49,7 @@ becomes
 
 `yourproject=Ihre Projekte`
 
-in the translations file `tmpl_lang_de.properties`.
+in the translations file `web/lang/tmpl/lang_de.properties`.
 
 
 <br>
