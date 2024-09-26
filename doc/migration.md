@@ -10,7 +10,10 @@ In general, you should always save your changes/customizations in the following 
 
 ## Release 3.1.0
 
-Release 3.1.0 is a minor release.
+Version 3.1.0 is a smaller version, but requires some effort as the default translation has been 
+changed from translating templates by multiplication in language subdirectories to directly 
+translating templates if you want to change the language subdirectory approach. However, 
+both methods work in parallel or in combination.
 
 See [Migration Guide 3.1.0](migration/3_1_0.md).
 
