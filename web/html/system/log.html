@@ -5,13 +5,20 @@
 <div class="users view large-10 medium-8 columns content">
     <h3 style="width: 100%;">
         {$l.system.log.1,{$logSize}}
+		<div class="arrcont">
+			<a href="#bottom" id="return-to-bottom">
+				<i class="arrow down">
+				</i>
+			</a>
+		</div>
     </h3>
     <div id="dottedLine">
     </div>
     <div class="table-responsive">
         <div id="termbar">
             <svg height="32" width="32" class="termdot">
-                        </svg>
+				<circle cx="16" cy="16" r="8" fill="#2DC7E2" />
+			</svg>
             <div id="termsource">
                 {$logSource}
             </div>
@@ -38,4 +45,10 @@
 </div>
 <!-- java-script -->
 <script>
+	$('#return-to-bottom').click(function() {
+		$('body,html').animate({ scrollTop: $(document).height() }, 500);
+	});		
+	$('#return-to-top').click(function() {
+		$('body,html').animate({ scrollTop: 0 }, 500);
+	});	
 </script>

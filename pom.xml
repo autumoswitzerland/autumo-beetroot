@@ -71,23 +71,14 @@
 				<version>3.11.0</version>
 				<configuration>
 					<release>11</release>
+			        <annotationProcessorPaths>
+			            <path>
+			                <groupId>org.apache.logging.log4j</groupId>
+			                <artifactId>log4j-core</artifactId>
+			                <version>2.23.1</version>
+			            </path>
+			        </annotationProcessorPaths>					
 				</configuration>
-				<executions>
-					<execution>
-						<id>log4j-plugin-processor</id>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<phase>process-classes</phase>
-						<configuration>
-							<proc>only</proc>
-							<annotationProcessors>
-								<annotationProcessor>
-									org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor</annotationProcessor>
-							</annotationProcessors>
-						</configuration>
-					</execution>
-				</executions>				
 			</plugin>
 			
 			<plugin>

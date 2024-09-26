@@ -27,9 +27,12 @@
 
         <div class="top-bar-section refresh_section">
             <input type="checkbox" name="cb_log_refresh" id="cb_log_refresh" onchange="refresh();">
-            <!-- 1 tag per line in this custom case -->
-            <label class="refresh_section_label" for="cb_log_refresh">{$refresh}
-            <span id="timer"> ({$logRefreshTime}s)</span></label>
+            <label class="refresh_section_label" for="cb_log_refresh">
+				{$refresh}
+            	<span id="timer"> 
+					({$logRefreshTime}s)
+				</span>
+			</label>
 		</div>
 
     </nav>

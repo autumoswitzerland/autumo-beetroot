@@ -228,6 +228,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private final Map<String, String> vars = new HashMap<>();
 	private final Map<String, String> varsAll = new HashMap<>();
 	
+	// start time
+	//private long handlerStart = 0;
+	
 	
 	/**
 	 * Base Handler.
@@ -251,6 +254,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 * @param session session
 	 */
 	public void initialize(BeetRootHTTPSession session) {
+		
+		// start stop-watch
+		//handlerStart = System.currentTimeMillis();
 		
 		// IF section handler
 		ish = new IfSectionHandler(this);
@@ -2087,7 +2093,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 
 			
-			// ======== F. Create final response ==========
+			// ======== F. Processing time ================
+			/*
+			final long handlerEnd = System.currentTimeMillis();
+			final long duration = handlerEnd - handlerStart;
+			final String durStr = "Handler '" + this.getResource() + "' processing time: " + OS.getReadableDuration(duration, TimeUnit.HOURS);
+			LOG.info(durStr);
+			*/
+
+			
+			// ======== G. Create final response ==========
 			
 	        return Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
 
