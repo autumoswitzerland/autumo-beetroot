@@ -113,7 +113,7 @@ public class FileCacheTest {
 	@Test
 	public void testBinary() throws IOException {
 		
-		Path p1 = Paths.get("lib/repo");
+		Path p1 = Paths.get("lib/repo/ch");
 		listAllFiles(p1, allFiles, "jar");
 		allFiles.forEach(System.out::println);
 		File f = allFiles.get(0).toFile();

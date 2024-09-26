@@ -164,6 +164,10 @@ del %PACKAGE%.zip
 
 ## Documentation
 
+🚀 beetRoot is already largely documented by its basic configuration. Take a look at the comments for each 
+configuration key to get to know the possibilities and the extensive features of beetRoot: 
+[cfg/beetroot.cfg](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/cfg/beetroot.cfg).
+
 - [Distributions](doc/distributions.md)
 - [Developing with beetRoot](doc/development.md)
 - [Running](doc/running.md)

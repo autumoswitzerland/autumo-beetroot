@@ -19,6 +19,10 @@ If you want to add languages:
 - In `cfg/languages.cfg` add full language name.
 - In `web/css/refs.css` add new styles for flag icon used in the menu and of course add an icon to `web/img/lang`.
 
+Note: The enclosed German and English translations are mostly reviewed, but the other languages are not, 
+because they have been translated automatically. If you use one of these languages, you should review the 
+translations. Corrections are gladly accepted!
+
 ## Base translations (used by Java code)
 
 If you need translations within the Java code, simply add the keys of the language Java resource 
