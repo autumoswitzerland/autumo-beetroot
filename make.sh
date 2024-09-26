@@ -109,11 +109,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 # ---- Pack & copy libs
 # -----------------------------
 		
-#	echo "-> Pack and copy newest beetroot lib..."
+	echo "-> Pack and copy newest beetroot lib..."
 	
 	# package beetroot
-#	mvn package
-#	cp target/autumo-beetroot-$VERSION.jar lib/
+	# mvn package
+	mkdir -p lib/repo/autumo/beetroot/autumo-beetroot/$VERSION
+	cp target/autumo-beetroot-$VERSION.jar lib/repo/autumo/beetroot/autumo-beetroot/$VERSION
 	
 
 # -----------------------------
@@ -154,6 +155,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	mkdir autumo-beetRoot-$VERSION/cfg
 	
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
+	cp ../cfg/languages.cfg autumo-beetRoot-$VERSION/cfg/languages.cfg
 	cp ../cfg/routing.xml autumo-beetRoot-$VERSION/cfg/routing.xml
 
 	#mkdir autumo-beetRoot-$VERSION/doc

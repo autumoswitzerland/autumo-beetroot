@@ -21,6 +21,7 @@ import org.nanohttpd.protocols.http.response.IStatus;
 import org.nanohttpd.protocols.http.response.Status;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
 
 /**
@@ -38,7 +39,7 @@ public class Error404Handler extends BaseHandler {
 
 	@Override
 	public void render(BeetRootHTTPSession session) {
-		setVar("title", "The requested page doesn't exist. (ERROR 404)");
+		setVar("title", LanguageManager.getInstance().translate("base.err.srv.404.title", session.getUserSession()));
 		setVar("message", " ");
 	}
 

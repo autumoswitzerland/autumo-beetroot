@@ -1,0 +1,45 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        <li class="heading">
+            {$l.properties.view.1}
+        </li>
+        {$if-role=Administrator:}
+        <li>
+            <a href="/{$lang}/properties/edit?id={$id}" class="side-nav-item">
+                {$l.properties.view.2}
+            </a>
+        </li>
+        <li>
+            <form name="post_properties_delete_{$id}" style="display: none;" method="post" action="/{$lang}/properties/delete?id={$id}">
+                <input type="hidden" name="_method" value="POST" />
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </form>
+            <a href="/{$lang}/properties/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.properties.view.confirm_message.4,{$displayName}}" data-form-name="post_properties_delete_{$id}">
+                {$l.properties.view.3}
+            </a>
+        </li>
+        {$endif-role;}
+        <li>
+            <a href="/{$lang}/properties" class="side-nav-item">
+                {$l.properties.view.5}
+            </a>
+        </li>
+        {$if-role=Administrator:}
+        <li>
+            <a href="/{$lang}/properties/add" class="side-nav-item">
+                {$l.properties.view.6}
+            </a>
+        </li>
+        {$endif-role;}
+    </ul>
+</nav>
+<div class="properties view large-10 medium-8 columns content">
+    <h3>
+        {$l.properties.view.7,{$displayName}}
+    </h3>
+    <div class="table-responsive">
+        <table>
+            {$data}
+        </table>
+    </div>
+</div>

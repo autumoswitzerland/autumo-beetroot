@@ -18,6 +18,7 @@
 package ch.autumo.beetroot.handler;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
+import ch.autumo.beetroot.LanguageManager;
 
 /**
  * Default not-implemented handler.
@@ -34,7 +35,7 @@ public class NotImplementedHandler extends BaseHandler {
 
 	@Override
 	public void render(BeetRootHTTPSession session) {
-		setVar("title", "There's nothing under this page! Soooo sorry...NOT!");
+		setVar("title", LanguageManager.getInstance().translate("base.err.srv.501.title", session.getUserSession()));
 		setVar("message", " ");
 	}
 

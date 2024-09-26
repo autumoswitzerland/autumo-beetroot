@@ -84,6 +84,7 @@ public class JakartaMailer extends AbstractMailer {
 			
 			String template = super.loadTemplate(templateName, session, mailformats[i]);		
 			template = super.replaceAllVariables(template, variables, mailformats[i]);
+			template = super.replaceAllLanguageVariables(template, session, mailformats[i]); 
 			
 			messageBodyPart = new MimeBodyPart();
 			if (mailformats[i].toLowerCase().equals("html"))

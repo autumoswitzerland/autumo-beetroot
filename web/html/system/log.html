@@ -1,0 +1,41 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+    </ul>
+</nav>
+<div class="users view large-10 medium-8 columns content">
+    <h3 style="width: 100%;">
+        {$l.system.log.1}
+    </h3>
+    <div id="dottedLine">
+    </div>
+    <div class="table-responsive">
+        <div id="termbar">
+            <svg height="32" width="32" class="termdot">
+                        </svg>
+            <div id="termsource">
+                {$logSource}
+            </div>
+        </div>
+        <div id="terminal" class="termfont">
+            {$logData}
+        </div>
+    </div>
+    <br />
+    <div class="flash-button-container">
+        <button id="flashButton" onclick="copyTerm()">
+            {$l.system.log.2}
+        </button>
+        <div class="arrcont">
+            <a href="#top" id="return-to-top">
+                <i class="arrow up">
+                </i>
+            </a>
+        </div>
+        <div id="flashMessage" class="hidden">
+            {$l.system.log.3}
+        </div>
+    </div>
+</div>
+<!-- java-script -->
+<script>
+</script>

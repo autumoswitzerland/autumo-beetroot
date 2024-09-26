@@ -39,6 +39,7 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.LanguageManager;
 import ch.autumo.beetroot.Session;
+import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.utils.web.Web;
 
@@ -152,7 +153,7 @@ public abstract class AbstractMailer implements Mailer {
 		
 		if (!f.exists() || (streamIt && is == null)) {
 			streamIt = false;
-			LOG.warn("Resource '"+res+"' doesn't exist, looking up with default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.trace("Resource '"+res+"' doesn't exist, looking up with default language '"+LanguageManager.DEFAULT_LANG+"'!");
 			if (session == null) {
 				res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension, LanguageManager.DEFAULT_LANG);
 			} else {
@@ -174,7 +175,7 @@ public abstract class AbstractMailer implements Mailer {
 			
 			if (!f.exists() || (streamIt && is == null)) {
 				streamIt = false;
-				LOG.warn("Resource '"+res+"' doesn't exist, trying with NO language!");
+				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
 				if (session == null) {
 					res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/email/"+templateName+"."+extension, LanguageManager.DEFAULT_LANG);
 				} else {
@@ -218,6 +219,43 @@ public abstract class AbstractMailer implements Mailer {
 	    	sb.append(line+"\n");
 	    br.close();
 		return sb.toString();
+	}
+
+	protected String replaceAllLanguageVariables(String template, BeetRootHTTPSession session, String extension) {
+		// Only when switched on!
+		if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
+			int idx = -1;
+			while ((idx = template.indexOf(BaseHandler.TAG_PREFIX_LANG)) != -1) {
+				final int pos1 = idx + BaseHandler.TAG_PREFIX_LANG.length();
+				final int pos2 = template.indexOf("}", idx + BaseHandler.TAG_PREFIX_LANG.length());
+				int posC = template.indexOf(",", idx + BaseHandler.TAG_PREFIX_LANG.length());
+				// if a comma is found outside the tag it refers not ro a replace variable!
+				if (posC > pos2)
+					posC = -1;
+				String totrans = null; 
+				String subValues = null; 
+				String subValuesArr[] = null; 
+				if (posC == -1) {
+					totrans = template.substring(pos1, pos2); // no values to replace
+				}
+				else {
+					totrans = template.substring(pos1, posC);
+					subValues = template.substring(posC + 1, pos2);
+					if (subValues.length() > 0) {
+						subValuesArr = subValues.trim().split("\\s*,\\s*");
+					}
+				}
+				String trans = "";
+				if (totrans.length() > 0) {
+					if (extension.toLowerCase().equals("html"))
+						trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session, subValuesArr, true);
+					else
+						trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session, subValuesArr, false);
+				}
+				template = template.substring(0, idx) + trans + template.substring(pos2 + 1);
+			}
+		}
+		return template;
 	}
 	
 	protected String replaceAllVariables(String template, Map<String, String> variables, String extension) {

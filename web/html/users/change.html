@@ -1,0 +1,29 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+</nav>
+<div class="users form large-10 medium-8 columns content">
+    <form method="POST" accept-charset="utf-8" action="/{$lang}/users/change">
+        <input type="hidden" name="_method" value="PUT" />
+		<fieldset>
+			<legend>{$l.users.change.2}</legend>
+			<div class="input password">
+				{$passElem}			
+			</div>
+			<br>
+			{$l.users.change.1}
+			<br>
+			<br>
+			<a href="/{$lang}/users/login">
+				{$l.users.change.3}
+			</a>
+		</fieldset>
+        <a href="/{$lang}/users/change?cancel=true" class="button right">
+            {$l.users.change.4}
+        </a>
+        <button type="submit">
+            {$l.users.change.5}
+        </button>
+        <br />
+        <br />
+        <br />
+    </form>
+</div>

@@ -1,0 +1,36 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        <li class="heading">
+            {$l.properties.add.1}
+        </li>
+        <li>
+            <a href="/{$lang}/properties" class="side-nav-item">
+                {$l.properties.add.2}
+            </a>
+        </li>
+    </ul>
+</nav>
+<div class="tasks form large-10 medium-8 columns content">
+    <div class="tasks form content">
+        <form method="post" accept-charset="utf-8" action="/properties/add">
+            <div style="display: none;">
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </div>
+            <fieldset>
+                <legend>
+                    {$l.properties.add.3}
+                </legend>
+                {$data}
+            </fieldset>
+            <a href="/{$lang}/properties/index" class="button right">
+                {$l.properties.add.4}
+            </a>
+            <button type="submit">
+                {$l.properties.add.5}
+            </button>
+            <br />
+            <br />
+            <br />
+        </form>
+    </div>
+</div>

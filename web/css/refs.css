@@ -42,6 +42,24 @@ body {
 .lang_select_en {
 	background-image: url('/img/lang/en.png');
 }
+.lang_select_it {
+	background-image: url('/img/lang/it.png');
+}
+.lang_select_es {
+	background-image: url('/img/lang/es.png');
+}
+.lang_select_pt {
+	background-image: url('/img/lang/pt.png');
+}
+.lang_select_ru {
+	background-image: url('/img/lang/ru.png');
+}
+.lang_select_ja {
+	background-image: url('/img/lang/ja.png');
+}
+.lang_select_zh {
+	background-image: url('/img/lang/zh.png');
+}
 
 .log-container {
 	background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/img/cornflowers.webp');	

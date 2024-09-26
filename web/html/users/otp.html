@@ -1,0 +1,28 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+</nav>
+<div class="users form large-10 medium-8 columns content">
+    <form method="POST">
+        <fieldset>
+            <legend>
+                {$l.users.otp.1}
+            </legend>
+            <div class="input text">
+                <label for="code">
+                    {$l.users.otp.2}
+                </label>
+                <input type="text" name="code" id="code" autocomplete="off" />
+            </div>
+            <br />
+            <a href="/{$lang}/users/login">
+                {$l.users.otp.3}
+            </a>
+            <br />
+        </fieldset>
+        <button type="submit">
+            {$l.users.otp.4}
+        </button>
+        <br />
+        <br />
+        <br />
+    </form>
+</div>

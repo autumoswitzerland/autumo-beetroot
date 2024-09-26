@@ -51,14 +51,14 @@ import ch.autumo.beetroot.utils.common.Colors;
  * 
  * Note this overwrites existing templates and columns.cfg
  * files in 'web/html' and template language translation
- * files in 'web/lang'. It always looks up these files in
+ * files in 'web/lang/tmpl'. It always looks up these files in
  * 'web'-folder, unless a specific folder is defined, which
  * must point should a similar beetRoot web-folder structure.
  */
 public class TemplateLanguageProcessor {
 
 	// Default language template 
-	private static final String LANG_TMPL_FILE = "/lang/tmpl_lang_default.properties";
+	private static final String LANG_TMPL_FILE = "tmpl/lang.properties";
 	
 	// List of special elements to handle
 	private static final List<String> SPECIAL_ELEMENTS = Arrays.asList(
@@ -131,8 +131,8 @@ public class TemplateLanguageProcessor {
         	// Ensure that the parent directories exist
             Files.createDirectories(propertiesFile.getParent());
             
-            // Write properties to the file using ISO_8859_1 (resource bundle) encoding
-            final BufferedWriter propertiesWriter = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND), StandardCharsets.ISO_8859_1));
+            // Write properties to the file using UTF-8 (resource bundle Java 9+) encoding
+            final BufferedWriter propertiesWriter = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(propertiesFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND), StandardCharsets.UTF_8));
         	
             // Collect all files
             final List<Path> allFiles = Files.walk(basePath)
@@ -151,10 +151,13 @@ public class TemplateLanguageProcessor {
             // Process .html files
             for (Path file : allFiles) {
             	final String fName = file.toString().toLowerCase();
+                if (fName.endsWith(".html")) {
+                	/*
                 if (fName.endsWith("add.html") ||
 	                	fName.endsWith("edit.html") ||
 	                	fName.endsWith("view.html") ||
 	                	fName.endsWith("index.html")) {
+                	 */
                     keyCounter = 1; // Reset the counter for each HTML file
                     processHtmlFile(file, basePath, propertiesWriter);
                     System.out.println(Colors.green("File '"+file.toAbsolutePath().toString()+"' processed."));                    
@@ -368,15 +371,23 @@ public class TemplateLanguageProcessor {
                 keyCounter++;
             }
             // Handle the 'data-confirm-message' attribute if the element is an 'a' tag
-            if (element.tagName().equals("a") && element.hasAttr("data-confirm-message")) {
-                final String confirmMessage = element.attr("data-confirm-message").trim();
-                if (!ignore(confirmMessage)) {
-                    // Generate a key for the attribute message
-                    final String keyForAttribute = directoryName + "." + fnNoExt + ".confirm_message." + keyCounter;
-                    translations.put(keyForAttribute, encodeHtmlEntities(confirmMessage));
-                    // Increment the counter for the attribute message
-                    keyCounter++;
-                }
+            if (element.tagName().equals("a")) {
+            	if (element.hasAttr("data-confirm-message")) {
+            		final String confirmMessage = element.attr("data-confirm-message").trim();
+	                if (!ignore(confirmMessage)) {
+	                    final String keyForAttribute = directoryName + "." + fnNoExt + ".confirm_message." + keyCounter;
+	                    translations.put(keyForAttribute, encodeHtmlEntities(confirmMessage));
+	                    keyCounter++;
+	                }
+            	}
+            	if (element.hasAttr("title")) {
+            		final String title = element.attr("title").trim();
+	                if (!ignore(title)) {
+	                    final String keyForAttribute = directoryName + "." + fnNoExt + ".title." + keyCounter;
+	                    translations.put(keyForAttribute, encodeHtmlEntities(title));
+	                    keyCounter++;
+	                }
+            	}
             }            
         }
         return translations;
@@ -395,13 +406,23 @@ public class TemplateLanguageProcessor {
 	            }
             }
             // Check for 'data-confirm-message' in 'a' tags
-            if (element.tagName().equals("a") && element.hasAttr("data-confirm-message")) {
-                String confirmMessage = encodeHtmlEntities(element.attr("data-confirm-message").trim());
-                for (Map.Entry<String, String> entry : translations.entrySet()) {
-                    if (confirmMessage.equals(entry.getValue())) {
-                        element.attr("data-confirm-message", BaseHandler.TAG_PREFIX_LANG + entry.getKey() + "}");
-                    }
-                }
+            if (element.tagName().equals("a")) {
+            	if (element.hasAttr("data-confirm-message")) {
+            		String confirmMessage = encodeHtmlEntities(element.attr("data-confirm-message").trim());
+	                for (Map.Entry<String, String> entry : translations.entrySet()) {
+	                    if (confirmMessage.equals(entry.getValue())) {
+	                        element.attr("data-confirm-message", BaseHandler.TAG_PREFIX_LANG + entry.getKey() + "}");
+	                    }
+	                }
+            	}
+            	if (element.hasAttr("title")) {
+            		String title = encodeHtmlEntities(element.attr("title").trim());
+	                for (Map.Entry<String, String> entry : translations.entrySet()) {
+	                    if (title.equals(entry.getValue())) {
+	                        element.attr("title", BaseHandler.TAG_PREFIX_LANG + entry.getKey() + "}");
+	                    }
+	                }
+            	}
             }            
         }
     }

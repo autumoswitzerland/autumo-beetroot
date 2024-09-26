@@ -1,0 +1,53 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        <li class="heading">
+            {$l.users.edit.1}
+        </li>
+        {$if-role=Administrator:}
+        <li>
+            <form name="post_users_delete_{$id}" style="display: none;" method="post" action="/{$lang}/users/delete?id={$id}">
+                <input type="hidden" name="_method" value="POST" />
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </form>
+            <a href="/{$lang}/users/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.users.edit.confirm_message.3,{$displayName}}" data-form-name="post_users_delete_{$id}">
+                {$l.users.edit.2}
+            </a>
+        </li>
+        {$endif-role;}
+        <li>
+            <a href="/{$lang}/users" class="side-nav-item">
+                {$l.users.edit.4}
+            </a>
+        </li>
+    </ul>
+</nav>
+<div class="users form large-10 medium-8 columns content">
+    <div class="users form content">
+        <form method="post" accept-charset="utf-8" action="/{$lang}/users/edit?id={$id}">
+            <div style="display: none;">
+                <input type="hidden" name="_method" value="PUT" />
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </div>
+            <fieldset>
+                <legend>
+                    {$l.users.edit.5}
+                </legend>
+                {$data}
+            </fieldset>
+            <a href="/{$lang}/users/index" class="button right">
+                {$l.users.edit.6}
+            </a>
+            <button type="submit">
+                {$l.users.edit.7}
+            </button>
+            {$if-role=Administrator:}
+            <a href="/{$lang}/users/newqrcode?id={$id}" class="dialogLink button right twofabtn" title="{$l.users.edit.title.10}" data-confirm-message="{$l.users.edit.confirm_message.9}">
+                {$l.users.edit.8}
+            </a>
+            {$endif-role;}
+            <br />
+            <br />
+            <br />
+        </form>
+    </div>
+</div>

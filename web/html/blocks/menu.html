@@ -1,11 +1,17 @@
-        <div class="top-bar-section dropdown_main">
-			<button onclick="dropdown('main')" class="dropbtn" id="mainmenu">Menu</button>
-			<div id="dropdown_main" class="dropdown-content">
-				<a href="/{$lang}/home">Home</a>
-				<hr class="menusep">
-				<a href="/{$lang}/tasks/index?page=1">Tasks</a>
-				{$adminmenu}
-				<hr class="menusep">
-				{$loginorlogout}
-			</div>
-        </div>    
+<div class="top-bar-section dropdown_main">
+    <button onclick="dropdown('main')" class="dropbtn" id="mainmenu">
+        {$l.blocks.menu.1}
+    </button>
+    <div id="dropdown_main" class="dropdown-content">
+        <a href="/{$lang}/home">
+            {$l.blocks.menu.2}
+        </a>
+        <hr class="menusep" />
+        <a href="/{$lang}/tasks/index?page=1">
+            {$l.blocks.menu.3}
+        </a>
+        {$adminmenu}
+        <hr class="menusep" />
+        {$loginorlogout}
+    </div>
+</div>

@@ -54,8 +54,6 @@ public class ResetHandler extends BaseHandler {
 	@Override
 	public HandlerResponse updateData(BeetRootHTTPSession session, int id) throws Exception {
 		
-		final Session userSession = session.getUserSession();
-		
 		String email = session.getParms().get("email");
 		if (email == null || email.length() == 0) {
 
@@ -129,13 +127,13 @@ public class ResetHandler extends BaseHandler {
 
 		final Map<String, String> variables = new HashMap<String, String>();
 		
-		variables.put("title", LanguageManager.getInstance().translateFullEscape("base.mail.reset.title", userSession));
+		variables.put("title", LanguageManager.getInstance().translateFullEscape("base.mail.reset.title", session));
 		
-		variables.put("subtitle", LanguageManager.getInstance().translateFullEscape("base.mail.reset.subtitle", userSession));
-		variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.reset.msg", userSession));
+		variables.put("subtitle", LanguageManager.getInstance().translateFullEscape("base.mail.reset.subtitle", session));
+		variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.reset.msg", session));
 		variables.put("link", link);
 		
-		MailerFactory.getInstance().mail(new String[] {email}, LanguageManager.getInstance().translateFullEscape("base.mail.reset.title", userSession), variables, "reset", session);
+		MailerFactory.getInstance().mail(new String[] {email}, LanguageManager.getInstance().translateFullEscape("base.mail.reset.title", session), variables, "reset", session);
 		
 		return new HandlerResponse(HandlerResponse.STATE_OK, "Mail sent!");
 	}

@@ -1,0 +1,30 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+</nav>
+<div class="users form large-10 medium-8 columns content">
+	<form method="POST" accept-charset="utf-8" action="/{$lang}/users/reset">
+		<input type="hidden" name="_method" value="PUT">
+		<fieldset>
+			<legend>{$l.users.reset.2}</legend>
+			<div class="input email">
+				<label for="email">
+					{$l.users.reset.3}
+				</label>
+				<input type="email" name="email" id="email" />
+			</div>
+			<br>
+			{$l.users.reset.1}
+			<br>
+			<br>
+			<a href="/{$lang}/users/login">
+				{$l.users.reset.4}
+			</a>
+			<br>
+		</fieldset>
+		<button type="submit">
+			{$l.users.reset.5}
+		</button>
+		<br>
+		<br>
+		<br>
+	</form>
+</div>

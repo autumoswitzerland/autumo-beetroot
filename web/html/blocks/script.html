@@ -1,22 +1,22 @@
-	<!-- Some basics. -->
-	<script>
-		$(document).ready(function() {
-			// Tooltips
-			$(function() {
-			    $(document).tooltip();
-			});
-			// Year string
-			prepareYear();
-			// Adjust address after redirect
-			{$redirectIndex}
-			// Refresh value of check box input fields
-			{$checkBoxLogic}
-			// Show password checker if necessary
-			$('#password').strength_meter();
-			// Focus first input fiels
-		    $('form:first *:input[type!=hidden]:first').focus();
-	    });
-	</script>  
+<!-- Some basics. -->
+<script>
+	$(document).ready(function() {
+		// Tooltips
+		$(function() {
+		    $(document).tooltip();
+		});
+		// Year string
+		prepareYear();
+		// Adjust address after redirect
+		{$redirectIndex}
+		// Refresh value of check box input fields
+		{$checkBoxLogic}
+		// Show password checker if necessary
+		$('#password').strength_meter();
+		// Focus first input fiels
+	    $('form:first *:input[type!=hidden]:first').focus();
+    });
+</script>
 
-	<script src="/js/header.js"></script>
-	<script src="/js/dialog.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/dialog.js"></script>

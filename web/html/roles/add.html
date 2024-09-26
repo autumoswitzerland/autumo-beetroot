@@ -1,0 +1,36 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        <li class="heading">
+            {$l.roles.add.1}
+        </li>
+        <li>
+            <a href="/{$lang}/roles" class="side-nav-item">
+                {$l.roles.add.2}
+            </a>
+        </li>
+    </ul>
+</nav>
+<div class="tasks form large-10 medium-8 columns content">
+    <div class="tasks form content">
+        <form method="post" accept-charset="utf-8" action="/roles/add">
+            <div style="display: none;">
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </div>
+            <fieldset>
+                <legend>
+                    {$l.roles.add.3}
+                </legend>
+                {$data}
+            </fieldset>
+            <a href="/{$lang}/roles/index" class="button right">
+                {$l.roles.add.4}
+            </a>
+            <button type="submit">
+                {$l.roles.add.5}
+            </button>
+            <br />
+            <br />
+            <br />
+        </form>
+    </div>
+</div>

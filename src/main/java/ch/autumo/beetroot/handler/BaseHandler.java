@@ -465,28 +465,28 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				    			break;
 			    			case FILE_HTML_ACTION_INDEX:
 				    			if (configPair[0].startsWith("list.")) {
-				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
+				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariablesNoEscape(configPair[1], session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
 			    			case FILE_HTML_ACTION_VIEW:
 				    			if (configPair[0].startsWith("view.")) {
-				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
+				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariablesNoEscape(configPair[1], session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
 			    			case FILE_HTML_ACTION_EDIT:
 				    			if (configPair[0].startsWith("edit.")) {
-				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
+				    				newCfgLine = configPair[0].substring(5, configPair[0].length()) + "=" + this.replaceLanguageVariablesNoEscape(configPair[1], session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			}
 				    			break;
 			    			case FILE_HTML_ACTION_ADD:
 				    			if (configPair[0].startsWith("add.")) {
-				    				newCfgLine = configPair[0].substring(4, configPair[0].length()) + "=" + this.replaceLanguageVariables(htmlAction, session);
+				    				newCfgLine = configPair[0].substring(4, configPair[0].length()) + "=" + this.replaceLanguageVariablesNoEscape(configPair[1], session);
 				    		    	columns.put(Integer.valueOf(++l), newCfgLine);
 				    		    	added = true;
 				    			} else if (configPair[0].startsWith("init.")) { // initial values set in add template :)
@@ -1580,10 +1580,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						String entries = "";
 						final String langs[] = LanguageManager.getInstance().getConfiguredLanguages();
 						for (int i = 0; i < langs.length; i++) {
+							
+							String language = BeetRootConfigurationManager.getInstance().getLanguage(langs[i]);
+							if (language == null)
+								language = langs[i].toUpperCase();
+							
 							if (i+1 == langs.length) {
-								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".png\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".png\" alt=\""+language+"\">"+language+"</a>\n";
 							} else {
-								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".png\" alt=\""+langs[i].toUpperCase()+"\">"+langs[i].toUpperCase()+"</a>\n";
+								entries += "<a href=\"/"+langs[i]+"/"+route+"\"><img class=\"imglang\" src=\"/img/lang/"+langs[i]+".png\" alt=\""+language+"\">"+language+"</a>\n";
 								entries += "<hr class=\"menusep\">\n";
 							}
 						}
@@ -1670,18 +1675,39 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		return s1 + e.substring(1);
 	}
 
+	private Scanner getNewScannerForSnippet(String resource, String originalResource) throws FileNotFoundException {
+		return getNewScanner(resource, originalResource);
+	}
+
 	private Scanner getNewScanner(Session userSession) throws FileNotFoundException {
 		return getNewScanner(LanguageManager.getInstance().getResource(this.getResource(), userSession));
 	}
-	
+
 	/**
-	 * Getting a new scanner for web a resource (HTML template) to parse.
+	 * Getting a new scanner for a web resource (HTML template) to parse.
 	 * 
-	 * @param resource resource string, e.g. 'web/html/:lang/&lt;entity&gt;/index.html'.
+	 * @param resource resource string, e.g. 'web/html/en/&lt;entity&gt;/index.html'
 	 * @return file scanner for reading lines
 	 * @throws FileNotFoundException if file is not found
 	 */
 	protected Scanner getNewScanner(String resource) throws FileNotFoundException {
+		return this.getNewScanner(resource, null);
+	}
+	
+	/**
+	 * Getting a new scanner for a web resource (HTML template) to parse.
+	 * 
+	 * @param resource resource string, e.g. 'web/html/en/&lt;entity&gt;/index.html'
+	 * @param originalResource resource string, e.g. 'web/html/:lang/&lt;entity&gt;/index.html';
+	 * 			useful for looking up snippets
+	 * @return file scanner for reading lines
+	 * @throws FileNotFoundException if file is not found
+	 */
+	protected Scanner getNewScanner(String resource, String originalResource) throws FileNotFoundException {
+		
+		if (originalResource == null)
+			originalResource = this.getResource();
+		
     	String filePath = null;
     	FileCache fc = null;
     	boolean tryFurther = false;
@@ -1702,7 +1728,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		if (tryFurther) {
 			tryFurther = false;
 			LOG.trace("Resource '{}' doesn't exist, trying default language '{}'!", resource, LanguageManager.DEFAULT_LANG);
-			resource = LanguageManager.getInstance().getResourceByLang(this.getResource(), LanguageManager.DEFAULT_LANG);
+			resource = LanguageManager.getInstance().getResourceByLang(originalResource, LanguageManager.DEFAULT_LANG);
 			try {
 				if (context == null )
 					fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
@@ -1719,7 +1745,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (tryFurther) {
 				tryFurther = false;
 				LOG.trace("Resource '{}' doesn't exist, trying NO language!", resource);
-				resource = LanguageManager.getInstance().getResourceWithoutLang(this.getResource(), LanguageManager.DEFAULT_LANG);
+				resource = LanguageManager.getInstance().getResourceWithoutLang(originalResource, LanguageManager.DEFAULT_LANG);
 				try {
 					if (context == null )
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);
@@ -1763,7 +1789,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	protected StringBuilder readSnippetResource(String resource, Session userSession) throws FileNotFoundException {
 		final StringBuilder sb = new StringBuilder();
 		final String res = LanguageManager.getInstance().getResource(resource, userSession);
-		final Scanner sc = this.getNewScanner(res);
+		final Scanner sc = this.getNewScannerForSnippet(res, resource);
 		while (sc.hasNextLine()) {
 			sb.append(sc.nextLine() + "\n");
 		}
@@ -2781,22 +2807,50 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		}
 		return text;
 	}
-	
+
 	/**
-	 * Replace language variables within the whole page if any.
+	 * Replace language variables within the whole page if any. Translations will be
+	 * HTML escaped with the following characters "<>&\'".
 	 * 
 	 * @param text text to parse and return
 	 * @param session HTTP session
 	 * @return parsed text or null
 	 */
 	private String replaceLanguageVariables(String text, BeetRootHTTPSession session) {
+		return this.replaceLanguageVariablesInt(text, session, false);
+	}
+	
+	/**
+	 * Replace language variables within the whole page if any. Translations will NOT
+	 * be HTML escaped at all.
+	 * 
+	 * @param text text to parse and return
+	 * @param session HTTP session
+	 * @return parsed text or null
+	 */
+	private String replaceLanguageVariablesNoEscape(String text, BeetRootHTTPSession session) {
+		return this.replaceLanguageVariablesInt(text, session, false);
+	}
+	
+	/**
+	 * Replace language variables within the whole page if any.
+	 * 
+	 * @param text text to parse and return
+	 * @param session HTTP session
+	 * @param escape if true, basic HTML escaping is applied
+	 * @return parsed text or null
+	 */
+	private String replaceLanguageVariablesInt(String text, BeetRootHTTPSession session, boolean escape) {
 		// Only when switched on!
 		if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
 			int idx = -1;
 			while ((idx = text.indexOf(TAG_PREFIX_LANG)) != -1) {
 				final int pos1 = idx + TAG_PREFIX_LANG.length();
-				final int posC = text.indexOf(",", idx + TAG_PREFIX_LANG.length());
-				int pos2 = text.indexOf("}", idx + TAG_PREFIX_LANG.length());
+				final int pos2 = text.indexOf("}", idx + TAG_PREFIX_LANG.length());
+				int posC = text.indexOf(",", idx + TAG_PREFIX_LANG.length());
+				// if a comma is found outside the tag it refers not ro a replace variable!
+				if (posC > pos2)
+					posC = -1;
 				String totrans = null; 
 				String subValues = null; 
 				String subValuesArr[] = null; 
@@ -2812,7 +2866,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				}
 				String trans = "";
 				if (totrans.length() > 0)
-					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession(), subValuesArr);
+					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession(), subValuesArr, escape);
 				text = text.substring(0, idx) + trans + text.substring(pos2 + 1);
 			}
 		}

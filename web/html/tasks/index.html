@@ -1,0 +1,48 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        {$if-role=Administrator,Operator:}
+        <li class="heading">
+            {$l.tasks.index.4}
+        </li>
+        <li>
+            <a href="/{$lang}/tasks/add">
+                {$l.tasks.index.2}
+            </a>
+        </li>
+        {$endif-role;}
+    </ul>
+</nav>
+<div class="tasks index large-10 medium-8 columns content">
+    <h3>
+        {$l.tasks.index.3}
+    </h3>
+    <div class="table-responsive">
+        <table>
+            <colgroup>
+                <col span="1" style="width: 15%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 15%;" />
+                <col span="1" style="width: 15%;" />
+                <col span="1" style="width: 10%;" />
+            </colgroup>
+            <thead>
+                <tr>
+                    {$head}
+                    <th class="actions">
+                        {$l.tasks.index.4}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {$data}
+            </tbody>
+        </table>
+    </div>
+    {$paginator}
+</div>

@@ -822,13 +822,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							}
 							if (codeEmailOn) {
 								final Map<String, String> variables = new HashMap<>();
-								variables.put("title", LanguageManager.getInstance().translateFullEscape("base.mail.code.title", userSession));
-								variables.put("subtitle", LanguageManager.getInstance().translateFullEscape("base.mail.code.subtitle", userSession));
+								variables.put("title", LanguageManager.getInstance().translateFullEscape("base.mail.code.title", session));
+								variables.put("subtitle", LanguageManager.getInstance().translateFullEscape("base.mail.code.subtitle", session));
 								variables.put("code", genCode);
-								variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.code.msg", userSession));
+								variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.code.msg", session));
 								try {
 									// Mail it!
-									MailerFactory.getInstance().mail(new String[] {user.getEmail()}, LanguageManager.getInstance().translateFullEscape("base.mail.code.title", userSession), variables, "code", session);	
+									MailerFactory.getInstance().mail(new String[] {user.getEmail()}, LanguageManager.getInstance().translateFullEscape("base.mail.code.title", session), variables, "code", session);	
 						        } catch (Exception me) {
 									final String err = "Server Internal Error - Mail Exception: " + me.getMessage();
 									LOG.error(err, me);

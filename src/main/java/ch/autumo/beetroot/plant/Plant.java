@@ -249,16 +249,16 @@ public class Plant {
 				System.out.println(Colors.darkYellow("NOTE") + ": Translate the HTML templates (add, edit, view and index) as well as the column titles in the 'columns.cfg'");
 				System.out.println("files. This should only be done once for a specific folder; all subfolders will also be processed recursively.");
 				System.out.println("If you do not specify a folder, it will start with the 'web/' folder. Translations are always written or added");
-				System.out.println("to the translation file 'web/lang/tmpl_lang_default.properties'. Copy this file for other language translations");
-				System.out.println("e.g. to 'web/lang/tmpl_lang_en.properties'.");
+				System.out.println("to the translation file 'web/lang/tmpl/lang_default.properties'. Copy this file for other language translations");
+				System.out.println("e.g. to 'web/lang/tmpl/lang_en.properties'.");
 				System.out.println("");
 				boolean valid = false;
 				String answer = null;
 				while (!valid) {
-					System.out.print("Specify the folder to be started (empty = 'web/'): ");
+					System.out.print("Specify the folder to be started (empty = 'web/html/'): ");
 					answer = br.readLine().trim();
 					if (answer.length() == 0) {
-						answer = "web/";
+						answer = "web/html/";
 					}
 					webDir = new File(answer);
 					if (!webDir.isDirectory()) {
@@ -417,7 +417,7 @@ public class Plant {
 					System.out.println("");
 					
 					final TemplateLanguageProcessor tlp = new TemplateLanguageProcessor();
-					tlp.process(webDir.getAbsolutePath(), "web/");
+					tlp.process(webDir.getAbsolutePath(), "web/lang/");
 					
 					System.out.println("");
 					

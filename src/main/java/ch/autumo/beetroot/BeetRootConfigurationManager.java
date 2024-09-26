@@ -20,6 +20,8 @@ package ch.autumo.beetroot;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,6 +64,7 @@ public class BeetRootConfigurationManager {
 	
 	private Properties generalProps = null;
 	private Properties htmlInputMap = null;
+	private Properties languageMap = null;
 	private boolean translateTemplates = false;
 	private boolean extendedRoles = true;
 	private boolean csrf = true;
@@ -219,9 +222,9 @@ public class BeetRootConfigurationManager {
 		}
 		
 		generalProps = new Properties();
-		final String file = configFilePath;
+		String file = configFilePath;
+		File f = new File(file);
 		
-		final File f = new File(file);
 		if (f.exists()) {
 			// Get path only
 			fullConfigBasePath = f.getParent();
@@ -234,7 +237,7 @@ public class BeetRootConfigurationManager {
 			else 
 				fullConfigBasePath = file;
 		}
-		
+		// fullConfigBasePath always ends with a '/'
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
@@ -253,34 +256,61 @@ public class BeetRootConfigurationManager {
 		
 		
 		// load some main props separately
-		
 		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
 		if (this.csrf)
 	    	LOG.info("CSRF activated!");
 		
 		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
-		
 		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
-		
 		if (this.translateTemplates)
 	    	LOG.info("Web templates are translated.");
+
 		
+		// HTML Input map
+		fis = null;
 		final String htmlMap = getString(Constants.KEY_WEB_INPUT_MAP);
 		if (htmlMap != null && htmlMap.length() != 0) {
 			final File mapFile = new File(htmlMap);
-			if (mapFile.exists()) {
+			try {
 				this.htmlInputMap = new Properties();
-				fis = new FileInputStream(mapFile);
-				try {
+				if (mapFile.exists()) {
+					fis = new FileInputStream(mapFile);
 					this.htmlInputMap.load(fis);
-				} catch (IOException e) {
-					LOG.error("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !", e);
-					throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
-				} finally {
-					fis.close();
+				} else {
+					this.htmlInputMap.load(BeetRootConfigurationManager.class.getResourceAsStream(htmlMap));
 				}
+			} catch (IOException e) {
+				htmlInputMap = null;
+				LOG.error("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !", e);
+				throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
+			} finally {
+				if (fis != null)
+					fis.close();
 			}
 		}
+        
+		
+		// Languages
+        InputStreamReader isr = null;
+		file = fullConfigBasePath + "languages.cfg";
+		f = new File(file);
+		try {
+			this.languageMap = new Properties();
+			if (f.exists()) {
+				isr = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
+				this.languageMap.load(isr);
+			} else {
+				isr = new InputStreamReader(BeetRootConfigurationManager.class.getResourceAsStream(file), StandardCharsets.UTF_8);				
+				this.languageMap.load(isr);
+			}
+		} catch (IOException e) {
+			this.languageMap = null;
+			LOG.warn("Couldn't read languages file '" + file + "' !", e);
+		} finally {
+			if (isr != null)
+				isr.close();
+		}		
+		
 		
 		isInitialized = true;
 	}
@@ -330,13 +360,27 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
+	 * Get language.
+	 * 
+	 * @param langCode language code
+	 * @return full language name
+	 */
+	public String getLanguage(String langCode) {
+		if (languageMap != null) {
+			return (String) languageMap.get(langCode);
+		}
+		return null;
+	}
+	
+	/**
 	 * Get HTML input map type.
 	 * 
+	 * @param columnName column name
 	 * @return HTML input map type or null
 	 */
-	public String getHtmlInputMapType(String name) {
+	public String getHtmlInputMapType(String columnName) {
 		if (htmlInputMap != null) {
-			final Object val = htmlInputMap.get(name);
+			final Object val = htmlInputMap.get(columnName);
 			if (val != null) {
 				final String parts[] = val.toString().trim().split (",", 2);
 				return parts[0].trim();
@@ -348,11 +392,12 @@ public class BeetRootConfigurationManager {
 	/**
 	 * Get HTML input map pattern.
 	 * 
+	 * @param columnName column name
 	 * @return HTML input map pattern or null
 	 */
-	public String getHtmlInputMapPattern(String name) {
+	public String getHtmlInputMapPattern(String columnName) {
 		if (htmlInputMap != null) {
-			final Object val = htmlInputMap.get(name);
+			final Object val = htmlInputMap.get(columnName);
 			if (val != null) {
 				final String parts[] = val.toString().trim().split (",", 2);
 				if (parts.length > 1)

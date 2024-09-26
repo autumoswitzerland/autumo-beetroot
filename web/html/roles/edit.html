@@ -1,0 +1,46 @@
+<nav class="large-2 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        <li class="heading">
+            {$l.roles.edit.1}
+        </li>
+        <li>
+            <form name="post_roles_delete_{$id}" style="display: none;" method="post" action="/{$lang}/roles/delete?id={$id}">
+                <input type="hidden" name="_method" value="POST" />
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </form>
+            <a href="/{$lang}/roles/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.roles.edit.confirm_message.3,{$displayName}}" data-form-name="post_roles_delete_{$id}">
+                {$l.roles.edit.2}
+            </a>
+        </li>
+        <li>
+            <a href="/{$lang}/roles" class="side-nav-item">
+                {$l.roles.edit.4}
+            </a>
+        </li>
+    </ul>
+</nav>
+<div class="roles form large-10 medium-8 columns content">
+    <div class="roles form content">
+        <form method="post" accept-charset="utf-8" action="/{$lang}/roles/edit?id={$id}">
+            <div style="display: none;">
+                <input type="hidden" name="_method" value="PUT" />
+                <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
+            </div>
+            <fieldset>
+                <legend>
+                    {$l.roles.edit.5}
+                </legend>
+                {$data}
+            </fieldset>
+            <a href="/{$lang}/roles/index" class="button right">
+                {$l.roles.edit.6}
+            </a>
+            <button type="submit">
+                {$l.roles.edit.7}
+            </button>
+            <br />
+            <br />
+            <br />
+        </form>
+    </div>
+</div>

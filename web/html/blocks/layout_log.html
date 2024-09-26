@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="{$lang}">
 <head>
 
 {#head}
@@ -12,13 +12,13 @@
 {#header}
 
     <nav class="top-bar expanded hideprint" data-topbar ondblclick="showHeader();">
-    
+
         <ul class="title-area large-2 medium-4 columns">
             <li class="name">
                 <h1><a href="">{$title}</a></h1>
             </li>
         </ul>
-    
+
 {#langmenu}
 
 {#menu}
@@ -27,25 +27,25 @@
 
         <div class="top-bar-section refresh_section">
             <input type="checkbox" name="cb_log_refresh" id="cb_log_refresh" onchange="refresh();">
-            <!-- 1 tag per line in this custom case-->
+            <!-- 1 tag per line in this custom case -->
             <label class="refresh_section_label" for="cb_log_refresh">{$refresh}
             <span id="timer"> ({$logRefreshTime}s)</span></label>
 		</div>
-		
+
     </nav>
-    
+
 {#message}
-    
+
 	<div class="container clearfix">
 
 {#template}
 
     </div>
 
-{#footer}    
+{#footer}
 
-{#script_log}    
-	
+{#script_log}
+
 </body>
 
 </html>
