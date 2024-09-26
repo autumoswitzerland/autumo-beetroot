@@ -151,13 +151,11 @@ public class TemplateLanguageProcessor {
             // Process .html files
             for (Path file : allFiles) {
             	final String fName = file.toString().toLowerCase();
-                if (fName.endsWith(".html")) {
-                	/*
+                //if (fName.endsWith(".html")) {
                 if (fName.endsWith("add.html") ||
 	                	fName.endsWith("edit.html") ||
 	                	fName.endsWith("view.html") ||
 	                	fName.endsWith("index.html")) {
-                	 */
                     keyCounter = 1; // Reset the counter for each HTML file
                     processHtmlFile(file, basePath, propertiesWriter);
                     System.out.println(Colors.green("File '"+file.toAbsolutePath().toString()+"' processed."));                    
