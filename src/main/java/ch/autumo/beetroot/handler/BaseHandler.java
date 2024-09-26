@@ -334,17 +334,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		
 		final List<String> fallBackList = new ArrayList<>();
 		
-		Session userSession = session.getUserSession();
-		String res = null;
+		String lang = LanguageManager.getInstance().retrieveLanguage(session);
+		String res = LanguageManager.getInstance().getResourceByLang(URL_WEB_HTML_PREFIX + ":lang/" + entity + FILE_CFG_COLUMNS, lang);
 		
 		// Special case JSON: overwrite languages, not needed!
 		if (session.getUri().endsWith(Constants.JSON_EXT)) {
 			res = URL_WEB_HTML_PREFIX + entity + FILE_CFG_COLUMNS;
-		} else {
-			if (userSession == null)
-				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+FILE_CFG_COLUMNS, Web.normalizeUri(session.getUri()));
-			else
-				res = LanguageManager.getInstance().getResource("web/html/:lang/"+entity+FILE_CFG_COLUMNS, userSession);
 		}
 		
     	FileCache fc = null;
@@ -365,16 +360,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				tryFurther = true;
 			}
 		}
-		
-		if (tryFurther) {
+		if (tryFurther && !session.getUri().endsWith(Constants.JSON_EXT)) {
 			tryFurther = false;
 			LOG.trace("Resource '{}' doesn't exist, trying with default language '{}'!", res, LanguageManager.DEFAULT_LANG);
-			if (!session.getUri().endsWith(Constants.JSON_EXT)) {
-				if (userSession == null)
-					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+FILE_CFG_COLUMNS, Web.normalizeUri(session.getUri()));
-				else
-					res = LanguageManager.getInstance().getResource(URL_WEB_HTML_PREFIX+LanguageManager.DEFAULT_LANG+"/"+entity+FILE_CFG_COLUMNS, userSession);
-			}
+			res = URL_WEB_HTML_PREFIX + LanguageManager.DEFAULT_LANG+"/"+entity + FILE_CFG_COLUMNS;
 			try {
 				if (context == null)
 					fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
@@ -388,11 +377,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					tryFurther = true;
 				}
 			}			
-				
 			if (tryFurther) {
 				tryFurther = false;
 				LOG.trace("Resource '{}' doesn't exist, trying with NO language!", res);
-				res = LanguageManager.getInstance().getResourceWithoutLang(URL_WEB_HTML_PREFIX+entity+FILE_CFG_COLUMNS, Web.normalizeUri(session.getUri()));
+				res = URL_WEB_HTML_PREFIX + entity + FILE_CFG_COLUMNS;
 				try {
 					if (context == null)
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + res);
@@ -1751,7 +1739,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (tryFurther) {
 				tryFurther = false;
 				LOG.trace("Resource '{}' doesn't exist, trying NO language!", resource);
-				resource = LanguageManager.getInstance().getResourceWithoutLang(originalResource, LanguageManager.DEFAULT_LANG);
+				resource = LanguageManager.getInstance().getResourceWithoutLang(originalResource);
 				try {
 					if (context == null )
 						fc = FileCacheManager.getInstance().findOrCreate(BeetRootConfigurationManager.getInstance().getRootPath() + resource);

@@ -296,6 +296,27 @@ public class LanguageManager {
 	
 	/**
 	 * Translate method for the template engine. If escape is true,
+	 * Translations will be fully HTML.
+	 * 
+	 * It is internally used only.
+	 * 
+	 * Template language files are place in the directory:
+	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
+	 * @param session HTTP session
+	 * @param values place-holder values
+	 * @return translated text
+	 */
+	public String translateTemplateFullEscape(String key, BeetRootHTTPSession session, String values[]) {
+		String lang = session.getUserSession().getUserLang();
+		if (lang == null)
+			lang = this.retrieveLanguage(session);
+		return translateTemplateFullEscape(key, lang, values);
+	}
+	
+	/**
+	 * Translate method for the template engine. If escape is true,
 	 * Translations will be HTML escaped with the following characters
 	 * "&lt;&gt;&amp;\&#39;".
 	 * 
@@ -352,6 +373,39 @@ public class LanguageManager {
 			return Web.escapeHtmlReserved(formatted);
 		else
 			return formatted;
+	}
+	
+	/**
+	 * Translate method for the template engine. If escape is true,
+	 * Translations will be fully HTML escaped.
+	 * 
+	 * It is internally used only.
+	 * 
+	 * Template language files are place in the directory:
+	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
+	 * @param lang language
+	 * @param values placeholder values
+	 * @return translated text
+	 */	
+	public String translateTemplateFullEscape(String key, String lang, String values[]) {
+		final Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(LANG_GRP_TMPL);
+		ResourceBundle bundle = langBundles.get(lang);
+		String text = null;
+		try {
+			text = bundle.getString(key);
+		} catch (Exception e) {
+	    	LOG.info("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
+	    	bundle = langBundles.get(DEFAULT_LANG);
+	    	try {
+				text = bundle.getString(key);
+			} catch (Exception e2) {
+		    	LOG.warn("No template translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
+				return null;
+			}
+		}
+		return Web.escapeHtml(MessageFormat.format(text, ((Object[]) values)));
 	}
 	
 	/**
@@ -602,13 +656,11 @@ public class LanguageManager {
 	 * Used for general templates usually.
 	 * 
 	 * @param configResource language template/resource
-	 * @param lang öanguage code
 	 * @return web resource
 	 */
-	public String getResourceWithoutLang(String configResource, String lang) {
+	public String getResourceWithoutLang(String configResource) {
 		String res = configResource;
 		if (configResource.contains(URL_LANG_TAG+"/")) {
-			
 			res = configResource.replace(URL_LANG_TAG+"/", "");
 		}		
 		return res;

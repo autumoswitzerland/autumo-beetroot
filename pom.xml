@@ -189,7 +189,9 @@
 	</build>
 
 	<dependencies>
-				
+			
+  	<!-- NANO-Http -->
+
 		<!-- CVE-2022-21230: Resolved when setting 'ws_tmp_dir' in beetRoot configuration -->
 		<dependency>
 		    <groupId>org.nanohttpd</groupId>
@@ -198,6 +200,8 @@
 		    <scope>provided</scope>
 		</dependency>		
 
+  	<!-- Logging -->
+  	
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-slf4j-impl</artifactId>
@@ -219,6 +223,8 @@
 		    <scope>provided</scope>
 		</dependency>
 
+  	<!-- Apache Commons -->
+  	
 		<dependency>
 		    <groupId>commons-cli</groupId>
 		    <artifactId>commons-cli</artifactId>
@@ -254,6 +260,8 @@
 		    <scope>provided</scope>
 		</dependency>
 		
+  	<!-- Apache HTTP -->
+		
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
@@ -268,6 +276,8 @@
 		    <scope>provided</scope>
 		</dependency>
 
+  	<!-- Format Handling -->
+
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
@@ -281,6 +291,8 @@
 		    <version>1.18.1</version>
 		    <scope>provided</scope>
 		</dependency>
+		
+  	<!-- OTP -->
 		
 		<dependency>
 		    <groupId>de.taimos</groupId>
@@ -303,12 +315,16 @@
 		    <scope>provided</scope>
 		</dependency>
 
+  	<!-- SMS -->
+
 		<dependency>
 		    <groupId>com.twilio.sdk</groupId>
 		    <artifactId>twilio</artifactId>
 		    <version>10.4.1</version>
 		    <scope>provided</scope>
 		</dependency>
+
+  	<!-- Password -->
 
 		<dependency>
 			<groupId>org.passay</groupId>
@@ -317,6 +333,8 @@
 		    <scope>provided</scope>
 		</dependency>
   
+  	<!-- Colors -->
+  
 		<dependency>
     		<groupId>com.diogonunes</groupId>
     		<artifactId>JColor</artifactId>
@@ -324,27 +342,22 @@
 		    <scope>provided</scope>
 		</dependency>
 
+  	<!-- Mailing -->
+
 		<dependency>
 		    <groupId>jakarta.activation</groupId>
 		    <artifactId>jakarta.activation-api</artifactId>
-		    <version>2.1.0</version>
-		    <scope>provided</scope>
+		    <version>2.1.3</version>
+		    <scope>compile</scope>
 		</dependency>
 		
 		<dependency>
-		    <groupId>jakarta.mail</groupId>
-		    <artifactId>jakarta.mail-api</artifactId>
-		    <version>2.0.1</version>
-		    <scope>compile</scope> <!-- IMPORTANT! -->
-		</dependency>
-
-		<dependency>
-		    <groupId>com.sun.activation</groupId>
-		    <artifactId>jakarta.activation</artifactId>
-		    <version>2.0.1</version>
+		    <groupId>org.eclipse.angus</groupId>
+		    <artifactId>angus-activation</artifactId>
+		    <version>2.0.2</version>
 		    <scope>provided</scope>
 		</dependency>
-
+		
 		<dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>jakarta.mail</artifactId>
@@ -353,18 +366,22 @@
 		</dependency>
 
 		<dependency>
+    		<groupId>javax.mail</groupId>
+    		<artifactId>javax.mail-api</artifactId>
+    		<version>1.6.2</version>
+		    <scope>compile</scope>
+		</dependency>
+
+  	<!-- Servlet API -->
+
+		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>javax.servlet-api</artifactId>
 		    <version>4.0.1</version>
 		    <scope>provided</scope>
 		</dependency>
 
-		<dependency>
-    		<groupId>javax.mail</groupId>
-    		<artifactId>javax.mail-api</artifactId>
-    		<version>1.6.2</version>
-		    <scope>compile</scope> <!-- IMPORTANT! -->
-		</dependency>
+  	<!-- Spring -->
 
 		<dependency>
     		<groupId>org.springframework.security</groupId>
@@ -373,6 +390,8 @@
 		    <scope>provided</scope>
 		</dependency>
 
+  	<!-- Cryptography -->
+
 		<!-- CVE-2023-33201: LDAP is not used! -->
 		<dependency>
 		    <groupId>org.bouncycastle</groupId>
@@ -380,6 +399,8 @@
 		    <version>1.70</version>
 		    <scope>provided</scope>
 		</dependency>
+
+  	<!-- Database -->
 
 		<dependency>
 		   <groupId>com.zaxxer</groupId>
@@ -409,7 +430,6 @@
 			<version>3.4.1</version>               
 		    <scope>provided</scope>
 		</dependency>
-				
 				
   		<!-- Testing -->
         

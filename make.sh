@@ -112,6 +112,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	echo "-> Pack and copy newest beetroot lib..."
 	
 	# package beetroot
+	mvn clean
 	mvn install
 	mkdir -p lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION
 	cp target/autumo-beetroot-$VERSION.jar lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION

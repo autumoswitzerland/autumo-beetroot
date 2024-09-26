@@ -279,6 +279,12 @@ public abstract class BaseServer {
 			Helper.fatalExit();
 		}
 
+		// Log H2 features if any
+		if (BeetRootDatabaseManager.getInstance().isH2Db()) {
+			final String h2Features = BeetRootDatabaseManager.getInstance().getH2Url().getFeatures();
+			LOG.info("H2 features: '{}'.", h2Features);
+		}
+		
 		
 		//------------------------------------------------------------------------------
 

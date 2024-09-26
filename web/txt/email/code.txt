@@ -1,0 +1,4 @@
+
+{$l.email.code.3}: {$code}
+
+{$message}
