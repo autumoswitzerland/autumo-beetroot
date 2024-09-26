@@ -81,47 +81,9 @@ Use the quickstart guide below, then go to http://localhost:8778 and log in:
 </ul>
 <br />
 
-**Furthermore, take a look at the
-[API Docs](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/doc/apidocs/index.html).**
+When developing, take a look at the
+[API Docs](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/doc/apidocs/index.html).
 <br />
-
-The web framework comes ready to use with the following **features**:
-
-- Features to add, edit, view, list and delete entities
-- Full CRUD generator **PLANT** for views, models and handlers
-- One-to-many database relationships are fully applied in MVC layers
-- Many-to-many relationship handling can be easily applied in MVC layers, including drag-and-drop assignments in the UI
-- Easy-to-understand HTML template engine
-- User roles and access control at controller level and within templates
-- URL routing with language support
-- Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
-- 2-factor authentication
-- Argon2/PBKPD2 password encryption
-- Password reset mechanism
-- Extensible user settings
-- Bean support with transient and unique fields
-- User sessions are saved when servers are stopped
-- Entities can be deployed via JSON REST API
-- Language management (template translations and/or separate templates for each language)
-- Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
-- SMS and phone call interfaces
-- Mailing including mail templates
-- Database connection pooling (HikariCP, with internal and external JNDI data sources)
-- Supported databases: H2, MySQL, MariaDB, PostgreSQL and Oracle
-- File upload and download
-- Full MIME type control
-- Dark theme and theme support
-- File caching (resources and templates)
-- HTTPS protocol and TLS for mail if configured
-- Logging implementations other than log4j2 are supported
-- Optimized console logging with colored sections (if required)
-- Runs standalone as well as in common servlet containers like Apache Tomcat and Jetty on the URL root path as well as behind a servlet path without any changes to HTML templates etc.
-- Secure client-server communication when beetRoot is installed in a servlet container separate from the beetRoot server and such communication is required to control backend processes
-- Hierarchical resource loader; e.g. request German language, if not found, use configured default language, then use no language at all; “search until you find something useful” is the
-algorithm for everything. Also, load resources from the file system (first), then as a resource inside packages (JAR, WAR) if they were not found before.
-- And more stuff...
-
-Enjoy!
 
 
 
@@ -214,6 +176,47 @@ configuration key to get to know the possibilities and the extensive features of
 - [Products](https://twitter.com/autumo)
 - [Github](https://github.com/autumoswitzerland/autumo-beetroot)
 - [Email](mailto:autumo.switzerland@gmail.com)
+
+
+
+<!-- Features -->
+## Features List
+
+- Features to add, edit, view, list and delete entities
+- Full CRUD generator **PLANT** for views, models and handlers
+- One-to-many database relationships are fully applied in MVC layers
+- Many-to-many relationship handling can be easily applied in MVC layers, including drag-and-drop assignments in the UI
+- Easy-to-understand HTML template engine
+- User roles and access control at controller level and within templates
+- URL routing with language support
+- Standard CSRF mechanism as well as obfuscated CRUD IDs within HTTP requests
+- 2-factor authentication
+- Argon2/PBKPD2 password encryption
+- Password reset mechanism
+- Extensible user settings
+- Bean support with transient and unique fields
+- User sessions are saved when servers are stopped
+- Entities can be deployed via JSON REST API
+- Language management (template translations and/or separate templates for each language)
+- Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
+- SMS and phone call interfaces
+- Mailing including mail templates
+- Database connection pooling (HikariCP, with internal and external JNDI data sources)
+- Supported databases: H2, MySQL, MariaDB, PostgreSQL and Oracle
+- File upload and download
+- Full MIME type control
+- Dark theme and theme support
+- File caching (resources and templates)
+- HTTPS protocol and TLS for mail if configured
+- Logging implementations other than log4j2 are supported
+- Optimized console logging with colored sections (if required)
+- Runs standalone as well as in common servlet containers like Apache Tomcat and Jetty on the URL root path as well as behind a servlet path without any changes to HTML templates etc.
+- Secure client-server communication when beetRoot is installed in a servlet container separate from the beetRoot server and such communication is required to control backend processes
+- Hierarchical resource loader; e.g. request German language, if not found, use configured default language, then use no language at all; “search until you find something useful” is the
+algorithm for everything. Also, load resources from the file system (first), then as a resource inside packages (JAR, WAR) if they were not found before.
+- And more stuff...
+
+Enjoy!
 
 
 
