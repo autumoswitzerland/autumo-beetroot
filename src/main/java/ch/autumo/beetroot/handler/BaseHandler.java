@@ -155,6 +155,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final String TAG_LANG			= "{$lang}";
 	private static final String TAG_THEME			= "{$theme}";
 	private static final String TAG_ANTITHEME		= "{$antitheme}";
+	private static final String TAG_SERVLETNAME		= "{$servletName}";
 	
 	// Tags for sub-resource
 	private static final String TAG_REDIRECT_INDEX		= "{$redirectIndex}";
@@ -1268,9 +1269,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				// language
 				if (text.contains(TAG_LANG)) {
 					text = text.replace(TAG_LANG, lang);
-				}				
-				
-				
+				}
+				// servlet name with a beginning "/" if any or an empty string ""
+				if (insertServletNameInTemplateRefs) {
+					text = text.replace(TAG_SERVLETNAME, "/"+servletName);
+				} else {
+					text = text.replace(TAG_SERVLETNAME, "");
+				}
+
+
 				// 2. User settings variables!
 				
 				// theme
@@ -1604,9 +1611,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					// Show login or logout?
 					if (text.contains(TAG_LOGIN_OR_LOGOUT)) {
 						if (userroles.size() > 0)
-							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/{$lang}/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
+							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/"+TAG_LANG+"/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
 						else
-							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/{$lang}/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
+							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/"+TAG_LANG+"/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
 					}
 					break;
 				case "{#adminmenu}":

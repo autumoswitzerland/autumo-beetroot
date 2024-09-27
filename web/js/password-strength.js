@@ -8,6 +8,8 @@
  * 1. jQuery
  * 2. jQuery UI 
  */
+
+
 ;(function ( $, window, document, undefined ) {
     var upperCase = new RegExp('[A-Z]');
     var lowerCase = new RegExp('[a-z]');

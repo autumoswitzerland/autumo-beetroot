@@ -17,15 +17,10 @@
  */
 
 
-// Obfuscator rotation map
-const rotmap = r18init();
-
 /**
  * Prepare all.
  */
 function prepareAll() {
-	prepareGetInTouch();
-	prepareTelInTouch();
 	prepareYear();
 }
 
@@ -36,127 +31,6 @@ function prepareYear() {
 	let now = new Date();
 	let year = now.getFullYear();
 	document.getElementById('footeryear').innerHTML += year;
-}
-
-/**
- * Prepare all getintouch-links (obfuscated email).
- * ROT-18 with map 'abcdefghijklmnopqrstuvwxyz0123456789'.
- *
- * Example <a href="/getintouch/05x6+scbc46+uz">Email</a>
- */
-function prepareGetInTouch() {
-	let links = document.getElementsByTagName('a'); // Get all anchors
-	function decode(anchor) { // function to recompose the orginal address
-		let href = anchor.getAttribute('href');
-		let address = href.replace(/.*getintouch\/([a-z0-9._%-]+)\+([a-z0-9._%-]+)\+([a-z.]+)/i, '$1' + '@' + '$2' + '.' + '$3');
-		let linktext = anchor.innerHTML; // IE Fix
-		if (href != address) {
-			let ns = str_r18(address, rotmap);
-			ns = ns.toLowerCase();
-			anchor.setAttribute('href', 'mailto:' + ns); // Add mailto link	
-			anchor.innerHTML = linktext; // IE Fix
-		}
-	}
-	for (let l of links) {	
-		let anchor = l.getAttribute("href");
-		if (anchor != null) {
-			let subSection = anchor.substring(0, 10);
-			if (subSection == "getintouch") {
-				l.onclick = function() { // Encode links when clicked
-					decode(this);
-				}
-				l.onmouseover = function() { // Display tooltip when links are hovered
-					decode(this);
-				}
-			}
-		}
-	}
-}
-
-/**
- * Prepare all telintouch-links (obfuscated phone numbers).
- * ROT-18 with map 'abcdefghijklmnopqrstuvwxyz0123456789'.
- *
- * Example <a href="/telintouch/+41786665544">Phone</a>
- */
-function prepareTelInTouch() {
-	let links = document.getElementsByTagName('a'); // Get all anchors
-	function decode(anchor) { // function to recompose the orginal address
-		let href = anchor.getAttribute('href');
-		let address = href.replace('telintouch/', '');
-		let linktext = anchor.innerHTML; // IE Fix
-		if (href != address) {
-			anchor.setAttribute('href', 'tel:' + str_r18(address, rotmap)); // Add tel link	
-			anchor.innerHTML = linktext; // IE Fix
-		}
-	}
-	for (let l of links) {	
-		let anchor = l.getAttribute("href");
-		if (anchor != null) {
-			let subSection = anchor.substring(0, 10);
-			if (subSection == "telintouch") {
-				l.onclick = function() { // Encode links when clicked
-					decode(this);
-				}
-				l.onmouseover = function() { // Display tooltip when links are hovered
-					decode(this);
-				}
-			}
-		}
-	}
-}
-
-/**
- * Decode getintouch-strings.
- * 
- * Parameter link: getintouch-link
- */
-function decodeM(link) {
-	let address = link.replace(/.*getintouch\/([a-z0-9._%-]+)\+([a-z0-9._%-]+)\+([a-z.]+)/i, '$1' + '@' + '$2' + '.' + '$3');
-	let email = str_r18(address, rotmap);
-	email = email.toLowerCase();
-	document.write(email);
-}
-
-/**
- * Decode telintouch-strings.
- * 
- * Parameter link: getintouch-link
- */
-function decodeT(link) {
-	let address = link.replace('telintouch/', '');
-	let tel = str_r18(address, rotmap);
-	document.write(tel);
-}
-
-/**
- * Prepare rotation map.
- */
-function r18init() {
-	let map = new Array();
-	let s = "abcdefghijklmnopqrstuvwxyz0123456789";
-	for (let i = 0; i < s.length; i++) {
-		map[s.charAt(i)] = s.charAt((i + 18) % 36);
-	}
-	for (let i = 0; i < s.length; i++) {
-		map[s.charAt(i).toUpperCase()] = s.charAt((i + 18) % 36).toUpperCase();
-	}
-	return map;
-}
-
-/**
- * Rotate string.
- *
- * Parameter a: string to rotate
- * Parameter map: rotation map
- */
-function str_r18(a, map) {
-	let s = "";
-	for (let i = 0; i < a.length; i++) {
-		let b = a.charAt(i);
-		s += (b >= 'A' && b <= 'Z' || b >= 'a' && b <= 'z' || b >= '0' && b <= '9' ? map[b] : b);
-	}
-	return s;
 }
 
 function checkUpload(maxSizeMb) {
