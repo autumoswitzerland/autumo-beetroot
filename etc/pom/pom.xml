@@ -149,7 +149,7 @@
 								</resource>
 			                    <resource>
 				                    <include>*.jar</include>
-				                    <directory>${localrepo}</directory>
+				                    <directory>${localrepo}/org</directory> <!-- NANO Http-->
 								</resource>
 							</resources>
 			            </configuration>

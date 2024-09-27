@@ -147,11 +147,27 @@
 								</resource>
 			                    <resource>
 				                    <include>*.jar</include>
-				                    <directory>${localrepo}</directory>
+				                    <directory>${localrepo}/org</directory> <!-- NANO Http-->
 								</resource>
 							</resources>
 			            </configuration>
 			        </execution>
+			        <execution>
+			            <id>copy-jar-resource-to-localrepo</id>
+			            <phase>install</phase>
+			            <goals>
+			                <goal>copy-resources</goal>
+			            </goals>
+			            <configuration>
+			                <outputDirectory>${localrepo}/ch/autumo/beetroot/autumo-beetroot/${project.version}</outputDirectory>
+			                <resources>
+			                    <resource>
+				                    <include>*.jar</include>
+				                    <directory>${basedir}/target</directory>
+								</resource>
+							</resources>
+			            </configuration>
+			        </execution>			        
 			    </executions>
 			</plugin>
 			
