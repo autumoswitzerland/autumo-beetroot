@@ -18,13 +18,6 @@
 
 
 /**
- * Prepare all.
- */
-function prepareAll() {
-	prepareYear();
-}
-
-/**
  * Prepare year.
  */
 function prepareYear() {
@@ -33,6 +26,9 @@ function prepareYear() {
 	document.getElementById('footeryear').innerHTML += year;
 }
 
+/**
+ * Check upload size of files.
+ */
 function checkUpload(maxSizeMb) {
 	const fi = document.getElementById('file');
 	// Check if any file is selected.
@@ -93,9 +89,8 @@ function dropdown(menuid) {
 		}
 	}
 }
-
 /**
- * Get elements startind with an id
+ * Get elements startind with an ID.
  */
 function getElementsStartsWithId(id) {
 	let children = document.body.getElementsByTagName('*');
@@ -107,8 +102,9 @@ function getElementsStartsWithId(id) {
 	}
 	return elements;
 }
-
-// Close the dropdown menu if the user clicks outside of it
+/**
+ * Close the dropdown menu if the user clicks outside of it.
+ */
 window.onclick = function(event) {
 	if (!event.target.matches('.dropbtn')) {
 		let dropdowns = document.getElementsByClassName("dropdown-content");

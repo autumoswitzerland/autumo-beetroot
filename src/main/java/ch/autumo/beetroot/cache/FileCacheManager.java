@@ -17,6 +17,7 @@
  */
 package ch.autumo.beetroot.cache;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -174,8 +175,13 @@ public class FileCacheManager {
 	 */
 	public FileCache findOrCreate(String path, boolean forceCaching) throws IOException {
 		
-		Path p = Paths.get(path);
-		return findOrCreate(p.toAbsolutePath(), forceCaching);
+		// Pre-check
+		final Path absPath = Path.of(path).toAbsolutePath();
+		if (!absPath.toFile().exists()) {
+			throw new FileNotFoundException("File not found: " + absPath.toString());
+		}		
+		
+		return findOrCreate(absPath, forceCaching);
 	}
 	
 	/**
@@ -187,7 +193,13 @@ public class FileCacheManager {
 	 */
 	public FileCache findOrCreate(Path path) throws IOException {
 		
-		final String pstr = path.toAbsolutePath().toString();
+		// Pre-check
+		final Path absPath = path.toAbsolutePath();
+		if (!absPath.toFile().exists()) {
+			throw new FileNotFoundException("File not found: " + absPath.toString());
+		}		
+		
+		final String pstr = absPath.toString();
 		final String mimeType = Constants.MIME_TYPES_MAP.getContentType(pstr);
 		if (!cacheMap.containsKey(pstr)) {
 		
@@ -210,6 +222,12 @@ public class FileCacheManager {
 	 */
 	public FileCache findOrCreate(Path path, boolean forcedCaching) throws IOException {
 		
+		// Pre-check
+		final Path absPath = path.toAbsolutePath();
+		if (!absPath.toFile().exists()) {
+			throw new FileNotFoundException("File not found: " + absPath.toString());
+		}		
+		
 		final String pstr = path.toAbsolutePath().toString();
 		final String mimeType = Constants.MIME_TYPES_MAP.getContentType(pstr);
 		if (!cacheMap.containsKey(pstr)) {
@@ -231,6 +249,7 @@ public class FileCacheManager {
 	 */
 	public FileCache findOrCreateByResource(String resourcePath) throws IOException {
 		
+		// No pre-check here
 		final String rstr = "resource:" + resourcePath; 
 		final String mimeType = Constants.MIME_TYPES_MAP.getContentType(resourcePath);
 		if (!cacheMap.containsKey(rstr)) {

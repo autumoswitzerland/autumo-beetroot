@@ -99,6 +99,11 @@ public class FileCache  {
 	 * @throws IOException IO exception
 	 */
 	public FileCache(Path filePath, ContentType contentType) throws IOException {
+
+		this.file = filePath.toFile();
+		if (!this.file.exists()) {
+			throw new FileNotFoundException("File not found: " + this.file.getPath());
+		}
 		
 		this.filePath = filePath;
 		this.contentType = contentType;
@@ -108,12 +113,6 @@ public class FileCache  {
 		this.isArchive = MIME.isMimeTypeArchive(mimeType); 
 		this.isBinary = MIME.isMimeTypeOctet(mimeType); 
 		this.isText = MIME.isMimeTypeText(mimeType); 
-		
-		this.file = filePath.toFile();
-		
-		if (!this.file.exists()) {
-			throw new FileNotFoundException("File not found: " + this.file.getPath());
-		}
 		
 		this.fileSize = file.length();
 		this.lastModified = file.lastModified();
@@ -159,6 +158,11 @@ public class FileCache  {
 	 */
 	public FileCache(Path filePath, ContentType contentType, boolean forcedCaching) throws IOException {
 		
+		this.file = filePath.toFile();
+		if (!this.file.exists()) {
+			throw new FileNotFoundException("File not found: " + this.file.getPath());
+		}
+		
 		this.filePath = filePath;
 		this.contentType = contentType;
 
@@ -169,12 +173,6 @@ public class FileCache  {
 		this.isText = MIME.isMimeTypeText(mimeType); 
 		
 		this.forcedCaching = forcedCaching;
-		
-		this.file = filePath.toFile();
-		
-		if (!this.file.exists()) {
-			throw new FileNotFoundException("File not found: " + this.file.getPath());
-		}
 		
 		this.fileSize = file.length();
 		this.lastModified = file.lastModified();
