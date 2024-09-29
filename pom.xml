@@ -10,6 +10,22 @@
 	<version>3.1.0</version>
 	<packaging>jar</packaging>
 
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Michael Gasche</name>
+			<email>michael.gasche@gmail.com</email>
+			<organization>autumo</organization>
+			<organizationUrl>https://autumo.ch</organizationUrl>
+		</developer>
+	</developers>
+  
 	<scm>
 		<connection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</connection>
 		<developerConnection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</developerConnection>
@@ -191,7 +207,7 @@
 	            <artifactId>maven-surefire-plugin</artifactId>
 	            <version>3.0.0-M5</version>
 	            <configuration>
-	                <!-- Optional classpath configuration for resources under web/ -->
+					<!-- Optional classpath configuration for resources under web/ -->
 	                <additionalClasspathElements>
 	                    <additionalClasspathElement>${project.basedir}</additionalClasspathElement>
 	                </additionalClasspathElements>
@@ -202,8 +218,8 @@
 	</build>
 
 	<dependencies>
-			
-  	<!-- NANO-Http -->
+
+		<!-- NANO-Http -->
 
 		<!-- CVE-2022-21230: Resolved when setting 'ws_tmp_dir' in beetRoot configuration -->
 		<dependency>
@@ -211,9 +227,9 @@
 		    <artifactId>nanohttpd</artifactId>
 		    <version>BEETROOT-2.3.4</version>
 		    <scope>provided</scope>
-		</dependency>		
+		</dependency>
 
-  	<!-- Logging -->
+		<!-- Logging -->
   	
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
@@ -236,7 +252,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Apache Commons -->
+		<!-- Apache Commons -->
   	
 		<dependency>
 		    <groupId>commons-cli</groupId>
@@ -272,8 +288,8 @@
 		    <version>1.12.0</version>
 		    <scope>provided</scope>
 		</dependency>
-		
-  	<!-- Apache HTTP -->
+
+		<!-- Apache HTTP -->
 		
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
@@ -289,7 +305,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Format Handling -->
+		<!-- Format Handling -->
 
 		<dependency>
 		    <groupId>org.json</groupId>
@@ -304,8 +320,8 @@
 		    <version>1.18.1</version>
 		    <scope>provided</scope>
 		</dependency>
-		
-  	<!-- OTP -->
+
+		<!-- OTP -->
 		
 		<dependency>
 		    <groupId>de.taimos</groupId>
@@ -328,7 +344,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- SMS -->
+		<!-- SMS -->
 
 		<dependency>
 		    <groupId>com.twilio.sdk</groupId>
@@ -337,7 +353,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Password -->
+		<!-- Password -->
 
 		<dependency>
 			<groupId>org.passay</groupId>
@@ -345,8 +361,8 @@
 			<version>1.6.4</version>
 		    <scope>provided</scope>
 		</dependency>
-  
-  	<!-- Colors -->
+
+		<!-- Colors -->
   
 		<dependency>
     		<groupId>com.diogonunes</groupId>
@@ -355,7 +371,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Mailing -->
+		<!-- Mailing -->
 
 		<dependency>
 		    <groupId>jakarta.activation</groupId>
@@ -385,7 +401,7 @@
 		    <scope>compile</scope>
 		</dependency>
 
-  	<!-- Servlet API -->
+		<!-- Servlet API -->
 
 		<dependency>
 		    <groupId>javax.servlet</groupId>
@@ -394,7 +410,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Spring -->
+		<!-- Spring -->
 
 		<dependency>
     		<groupId>org.springframework.security</groupId>
@@ -403,7 +419,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Cryptography -->
+		<!-- Cryptography -->
 
 		<!-- CVE-2023-33201: LDAP is not used! -->
 		<dependency>
@@ -413,7 +429,7 @@
 		    <scope>provided</scope>
 		</dependency>
 
-  	<!-- Database -->
+		<!-- Database -->
 
 		<dependency>
 		   <groupId>com.zaxxer</groupId>
@@ -443,8 +459,8 @@
 			<version>3.4.1</version>               
 		    <scope>provided</scope>
 		</dependency>
-				
-  		<!-- Testing -->
+
+		<!-- Testing -->
         
         <dependency>
             <groupId>junit</groupId>
