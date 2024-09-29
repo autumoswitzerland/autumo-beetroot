@@ -100,21 +100,6 @@
 			                    </resource>
 			                </resources>
 			            </configuration>
-			        </execution>			    
-			        <execution>
-			            <id>copy-web-resource</id>
-			            <phase>generate-sources</phase>
-			            <goals>
-			                <goal>copy-resources</goal>
-			            </goals>
-			            <configuration>
-			                <outputDirectory>${basedir}/target/classes/web</outputDirectory>
-			                <resources>
-			                    <resource>
-			                        <directory>web</directory>
-			                    </resource>
-			                </resources>
-			            </configuration>
 			        </execution>
 					<execution>
 			            <id>copy-mime-types</id>
@@ -131,7 +116,7 @@
 			                    </resource>
 			                </resources>
 			            </configuration>
-			        </execution>			        
+			        </execution>
 			        <execution>
 			            <id>copy-jar-resource</id>
 			            <phase>install</phase>
@@ -200,7 +185,19 @@
 					<stylesheetfile>${basedir}/doc/autumo.css</stylesheetfile>
 				</configuration>
 			</plugin>
-						
+
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-surefire-plugin</artifactId>
+	            <version>3.0.0-M5</version>
+	            <configuration>
+	                <!-- Optional classpath configuration for resources under web/ -->
+	                <additionalClasspathElements>
+	                    <additionalClasspathElement>${project.basedir}</additionalClasspathElement>
+	                </additionalClasspathElements>
+	            </configuration>
+	        </plugin>
+        
 		</plugins>
 	</build>
 
