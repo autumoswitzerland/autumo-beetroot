@@ -19,7 +19,9 @@ package ch.autumo.beetroot;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -39,6 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import ch.autumo.beetroot.logging.LogBuffer;
+import ch.autumo.beetroot.logging.LogBuffer.LogLevel;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.security.Security;
@@ -204,8 +208,7 @@ public class BeetRootConfigurationManager {
 		if (servletContext == null) {
 		
 	    	if (rootPath == null || rootPath.length() == 0) {
-	    		
-	    		LOG.error("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
+	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
 				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
 	    	}
 		    	
@@ -215,8 +218,7 @@ public class BeetRootConfigurationManager {
 		    
 			final File dir = new File(rootPath);
 			if (!dir.exists() || !dir.isDirectory()) {
-				
-				LOG.error("Specified '-DROOTPATH' is invalid! Check starting script of java process.");
+	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is invalid! Check starting script of java process.");
 				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
 			}		
 		}
@@ -247,7 +249,7 @@ public class BeetRootConfigurationManager {
 				generalProps.load(BeetRootConfigurationManager.class.getResourceAsStream(file));
 			
 		} catch (IOException e) {
-			LOG.error("Couldn't read general server configuration '" + file + "' !", e);
+    		LogBuffer.log(LogLevel.ERROR, "Couldn't read general server configuration '{}' !", file, e);
 			throw new Exception("Couldn't read general server configuration '" + file + "' !");
 		} finally {
 			if (fis != null)
@@ -258,12 +260,12 @@ public class BeetRootConfigurationManager {
 		// load some main props separately
 		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
 		if (this.csrf)
-	    	LOG.info("CSRF activated!");
+    		LogBuffer.log(LogLevel.INFO, "CSRF activated!");
 		
 		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
 		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
 		if (this.translateTemplates)
-	    	LOG.info("Web templates are translated.");
+    		LogBuffer.log(LogLevel.INFO, "Web templates are translated.");
 
 		
 		// HTML Input map
@@ -277,11 +279,14 @@ public class BeetRootConfigurationManager {
 					fis = new FileInputStream(mapFile);
 					this.htmlInputMap.load(fis);
 				} else {
-					this.htmlInputMap.load(BeetRootConfigurationManager.class.getResourceAsStream(htmlMap));
+					final InputStream is = BeetRootConfigurationManager.class.getResourceAsStream(htmlMap);
+					this.htmlInputMap.load(is);
+					if (is == null)
+						throw new FileNotFoundException("The HTML input map file could not be loaded during the streaming attempt.");
 				}
 			} catch (IOException e) {
 				htmlInputMap = null;
-				LOG.error("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !", e);
+	    		LogBuffer.log(LogLevel.ERROR, "Couldn't read additionl HTML input mapping file '{}' !", htmlMap, e);
 				throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
 			} finally {
 				if (fis != null)
@@ -300,12 +305,15 @@ public class BeetRootConfigurationManager {
 				isr = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
 				this.languageMap.load(isr);
 			} else {
-				isr = new InputStreamReader(BeetRootConfigurationManager.class.getResourceAsStream(file), StandardCharsets.UTF_8);				
+				final InputStream is = BeetRootConfigurationManager.class.getResourceAsStream(file);
+				if (is == null)
+					throw new FileNotFoundException("Language file could not be loaded during the streaming attempt.");
+				isr = new InputStreamReader(is, StandardCharsets.UTF_8);				
 				this.languageMap.load(isr);
 			}
 		} catch (IOException e) {
 			this.languageMap = null;
-			LOG.warn("Couldn't read languages file '" + file + "' !", e);
+    		LogBuffer.log(LogLevel.WARN, "Couldn't read languages file '{}' !", file, e);
 		} finally {
 			if (isr != null)
 				isr.close();

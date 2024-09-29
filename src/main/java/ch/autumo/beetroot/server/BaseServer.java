@@ -43,6 +43,7 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.BeetRootWebServer;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.logging.LogBuffer;
 import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.server.action.Download;
@@ -260,6 +261,11 @@ public abstract class BaseServer {
 				System.out.println(ansiServerName + " Server stopping...");
 		}
 
+		//------------------------------------------------------------------------------
+		
+		// Flush the messages that have been collected before log-system initialization
+		LogBuffer.flushToLogger(LOG);
+		
 		//------------------------------------------------------------------------------
 		
 		// DB manager initialization if not yet done!
