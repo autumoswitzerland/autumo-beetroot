@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
@@ -368,7 +369,14 @@ public class LanguageManager {
 				return null;
 			}
 		}
-		final String formatted = MessageFormat.format(text, ((Object[]) values));
+		String formatted = null;
+		try {
+			formatted = MessageFormat.format(text, ((Object[]) values));
+		} catch (IllegalArgumentException e) {
+			final String arr = Arrays.toString(values);
+			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
+			throw e;
+		}
 		if (escape)
 			return Web.escapeHtmlReserved(formatted);
 		else
@@ -405,7 +413,16 @@ public class LanguageManager {
 				return null;
 			}
 		}
-		return Web.escapeHtml(MessageFormat.format(text, ((Object[]) values)));
+		
+		String formatted = null;
+		try {
+			formatted = MessageFormat.format(text, ((Object[]) values));
+		} catch (IllegalArgumentException e) {
+			final String arr = Arrays.toString(values);
+			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
+			throw e;
+		}
+		return Web.escapeHtml(formatted);
 	}
 	
 	/**
@@ -500,10 +517,18 @@ public class LanguageManager {
 			}
 		}
 		
+		String formatted = null;
+		try {
+			formatted = MessageFormat.format(text, arguments);
+		} catch (IllegalArgumentException e) {
+			final String arr = Arrays.toString(arguments);
+			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
+			throw e;
+		}		
 		if (fullEscape)
-			return Web.escapeHtml(MessageFormat.format(text, arguments));
+			return Web.escapeHtml(formatted);
 		else
-			return MessageFormat.format(text, arguments);
+			return formatted;
 	}
 	
 	/**
@@ -557,7 +582,15 @@ public class LanguageManager {
 				text = defaultValue;
 			}
 		}
-		return MessageFormat.format(text, arguments);
+		String formatted = null;
+		try {
+			formatted = MessageFormat.format(text, arguments);
+		} catch (IllegalArgumentException e) {
+			final String arr = Arrays.toString(arguments);
+			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
+			throw e;
+		}			
+		return formatted;
 	}
 	
 	/**
