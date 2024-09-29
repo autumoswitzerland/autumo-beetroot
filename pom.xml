@@ -50,8 +50,8 @@
 		<version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
 		<version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
 		
-		<version.HikariCP>6.0.0</version.HikariCP>
-		<version.JColor>5.5.1</version.JColor>
+		<version.hikaricp>6.0.0</version.hikaricp>
+		<version.jcolor>5.5.1</version.jcolor>
 		<version.angus.activation>2.0.2</version.angus.activation>
 		<version.bcprov.jdk15on>1.70</version.bcprov.jdk15on>
 		<version.commons.cli>1.9.0</version.commons.cli>
@@ -406,7 +406,7 @@
 		<dependency>
     		<groupId>com.diogonunes</groupId>
     		<artifactId>JColor</artifactId>
-		    <version>${version.JColor}</version>
+		    <version>${version.jcolor}</version>
 		    <scope>provided</scope>
 		</dependency>
 
@@ -473,7 +473,7 @@
 		<dependency>
 		   <groupId>com.zaxxer</groupId>
 		   <artifactId>HikariCP</artifactId>
-		   <version>${version.HikariCP}</version>
+		   <version>${version.hikaricp}</version>
 		   <scope>provided</scope>
 		</dependency>
 
