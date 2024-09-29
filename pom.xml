@@ -31,6 +31,7 @@
 		<tag>master</tag>
 	</scm>
 	
+	<!-- Local repository as long as autumo-beetroot and nanohttpd-BEETROOT are not published in maven central. -->
 	<repositories>
 		<repository>
 			<id>local-repo</id>
