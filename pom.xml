@@ -40,6 +40,7 @@
 	</repositories>
 	
 	<properties>
+	
 		<localrepo>${project.basedir}/lib/repo</localrepo>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	
@@ -51,6 +52,7 @@
 		<version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
 		<version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
 		
+		<version.nanohttpd>BEETROOT-2.3.4</version.nanohttpd>
 		<version.hikaricp>6.0.0</version.hikaricp>
 		<version.jcolor>5.5.1</version.jcolor>
 		<version.angus.activation>2.0.2</version.angus.activation>
@@ -76,7 +78,6 @@
 		<version.log4j.core>2.24.0</version.log4j.core>
 		<version.log4j.slf4j.impl>2.24.0</version.log4j.slf4j.impl>
 		<version.mariadb.java.client>3.4.1</version.mariadb.java.client>
-		<version.nanohttpd>BEETROOT-2.3.4</version.nanohttpd>
 		<version.passay>1.6.5</version.passay>
 		<version.postgresql>42.7.4</version.postgresql>
 		<version.spring.security.crypto>5.8.13</version.spring.security.crypto>
