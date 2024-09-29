@@ -246,7 +246,7 @@
 	            <artifactId>maven-surefire-plugin</artifactId>
 	            <version>${version.maven.surefire.plugin}</version>
 	            <configuration>
-					<!-- Optional classpath configuration for resources under web/ -->
+					<!-- Additional classpath configuration for resources under web/ -->
 	                <additionalClasspathElements>
 	                    <additionalClasspathElement>${project.basedir}</additionalClasspathElement>
 	                </additionalClasspathElements>
