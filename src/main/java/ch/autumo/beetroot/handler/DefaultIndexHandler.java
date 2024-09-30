@@ -62,19 +62,21 @@ public class DefaultIndexHandler extends BaseHandler {
 	 * @param entity entity
 	 */
 	public DefaultIndexHandler(String entity) {
-		
 		super(entity);
-		
 		final String err = "Couldn't read max records per page, using 20.'";
 		try {
-			maxRecPerPage = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
-			if (maxRecPerPage == -1) {
-				maxRecPerPage = 20;
-				LOG.warn(err);
-			}
+			maxRecPerPage = BeetRootDatabaseManager.getInstance().getPropertyInt("max.records.per.page");
 		} catch (Exception e) {
-			maxRecPerPage = 20;
-			LOG.warn(err, e);
+			try {
+				maxRecPerPage = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_WEB_MAX_RECORDS_PER_PAGE);
+				if (maxRecPerPage == -1) {
+					maxRecPerPage = 20;
+					LOG.warn(err);
+				}
+			} catch (Exception e2) {
+				maxRecPerPage = 20;
+				LOG.warn(err, e2);
+			}
 		}
 	}
 

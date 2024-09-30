@@ -496,6 +496,22 @@ public class BeetRootDatabaseManager {
 		}
 		return val != null ? val : defValue;
 	}
+
+	/**
+	 * Get property value from database (table 'properties').
+	 * If the value isn't found, null is returned.
+	 * 
+	 * It throws a NullPointerException if value is not found in
+	 * database.
+	 * 
+	 * @param name name/key
+	 * @return value for name/key as integer
+	 * @throws SQLException SQL exception
+	 */
+	public int getPropertyInt(String name) throws SQLException {
+		final String v = this.getProperty(name);
+		return Integer.parseInt(v);
+	}
 	
 	/**
 	 * Get property value from database (table 'properties').

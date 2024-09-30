@@ -223,7 +223,7 @@ public abstract class DefaultAddHandler extends BaseHandler {
 				savedId = keySet.getInt(1);
 			}
 		
-			LOG.debug("Record '"+savedId+"' in '"+entity+"'.");
+			LOG.debug("Record '"+savedId+"' saved in '"+entity+"'.");
 			
 			// Notify listeners
 			EventHandler.getInstance().notifyAfterCreate(getBeanClass(), savedId);
