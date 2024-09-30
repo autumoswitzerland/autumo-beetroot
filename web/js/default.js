@@ -90,7 +90,7 @@ function dropdown(menuid) {
 	}
 }
 /**
- * Get elements startind with an ID.
+ * Get elements starting with an ID.
  */
 function getElementsStartsWithId(id) {
 	let children = document.body.getElementsByTagName('*');
