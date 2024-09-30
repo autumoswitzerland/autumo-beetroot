@@ -360,12 +360,12 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.info("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
+	    	LOG.warn("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
 			} catch (Exception e2) {
-		    	LOG.warn("No template translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
+		    	LOG.error("No template translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
 				return null;
 			}
 		}
@@ -375,7 +375,7 @@ public class LanguageManager {
 		} catch (IllegalArgumentException e) {
 			final String arr = Arrays.toString(values);
 			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
-			throw e;
+			formatted = text;
 		}
 		if (escape)
 			return Web.escapeHtmlReserved(formatted);
@@ -404,12 +404,12 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.info("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
+	    	LOG.warn("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
 			} catch (Exception e2) {
-		    	LOG.warn("No template translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
+		    	LOG.error("No template translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
 				return null;
 			}
 		}
@@ -420,7 +420,7 @@ public class LanguageManager {
 		} catch (IllegalArgumentException e) {
 			final String arr = Arrays.toString(values);
 			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
-			throw e;
+			formatted = text;
 		}
 		return Web.escapeHtml(formatted);
 	}
@@ -507,12 +507,12 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.info("No app translation for key '{}' found for language '{}'! trying with default language '{}'.", key, lang, DEFAULT_LANG);
+	    	LOG.warn("No app translation for key '{}' found for language '{}'! trying with default language '{}'.", key, lang, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
 			} catch (Exception e2) {
-		    	LOG.warn("No app translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
+		    	LOG.error("No app translation for key '{}' for default language '{}' found!", key, DEFAULT_LANG);
 				return null;
 			}
 		}
@@ -523,8 +523,8 @@ public class LanguageManager {
 		} catch (IllegalArgumentException e) {
 			final String arr = Arrays.toString(arguments);
 			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
-			throw e;
-		}		
+			formatted = text;
+		}
 		if (fullEscape)
 			return Web.escapeHtml(formatted);
 		else
@@ -588,8 +588,8 @@ public class LanguageManager {
 		} catch (IllegalArgumentException e) {
 			final String arr = Arrays.toString(arguments);
 			LOG.error("Cannot format '{}' with '{}'! Translation key was '{}'.", text, arr, key);
-			throw e;
-		}			
+			formatted = text;
+		}
 		return formatted;
 	}
 	
