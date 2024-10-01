@@ -39,7 +39,6 @@ import com.diogonunes.jcolor.Attribute;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
-import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.common.Colors;
 import ch.autumo.beetroot.utils.systen.OS;
@@ -50,8 +49,6 @@ import ch.autumo.beetroot.utils.systen.OS;
 public class Plant {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(Plant.class.getName());
-
-	public static final String RELEASE = Constants.APP_VERSION;
 
 	private static final String CR = OS.LINE_SEPARATOR;
 	
@@ -77,7 +74,7 @@ public class Plant {
 	
 	private String getDescription() {
 		final String all = 
-				Colors.darkCyan(" PLANT "+RELEASE) + " - BeetRoot Generator for creating operable CRUD views" + CR
+				Colors.darkCyan(" PLANT "+ BeetRootConfigurationManager.getAppVersion()) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
 				+ " (c) 2024 autumo Ltd. Switzerland";
 		return all;

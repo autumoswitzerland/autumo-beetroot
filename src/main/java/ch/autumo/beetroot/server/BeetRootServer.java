@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.diogonunes.jcolor.Attribute;
 
-import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.utils.Helper;
 
 /**
@@ -73,7 +73,7 @@ public class BeetRootServer extends BaseServer {
 				"  |___  /\\___/  \\___/ |__| |____|_  /\\____/ \\____/|__|\n" +
 				"      \\/                          \\/";
 		System.out.println(Helper.createBanner(banner, Attribute.BRIGHT_MAGENTA_TEXT()));
-		System.out.println("  autumo beetRoot " + Constants.APP_VERSION);
+		System.out.println("  autumo beetRoot " + BeetRootConfigurationManager.getAppVersion());
 		System.out.println("");
 	}
 	

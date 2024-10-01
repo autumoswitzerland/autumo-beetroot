@@ -55,6 +55,9 @@ import ch.autumo.beetroot.utils.systen.OS;
 public class BeetRootConfigurationManager {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootConfigurationManager.class.getName());
+
+	/** Application version. */
+	public static String appVersion = "x.y.z";
 	
 	private static BeetRootConfigurationManager manager = null;
 	private static String rootPath = null;
@@ -75,14 +78,25 @@ public class BeetRootConfigurationManager {
 	
 	
 	static {
-    	
+		// Root-path.
     	rootPath = System.getProperty("ROOTPATH");
-    	
     	if (rootPath == null || rootPath.length() == 0)
     		rootPath = "." + Helper.FILE_SEPARATOR;
-    	
     	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
     		rootPath += Helper.FILE_SEPARATOR;
+    	
+		// App-Version
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+    		InputStream inputStream = classLoader.getResourceAsStream("VERSION.txt");
+    		if (inputStream != null) {
+    			final byte buffer[] = new byte[5];
+    			final int length = inputStream.read(buffer);
+    			appVersion = new String(buffer, 0, length);
+    		}
+		} catch (Exception e) {
+			appVersion = "x.y.z";
+		}
     }
 	
 	/**
@@ -104,6 +118,15 @@ public class BeetRootConfigurationManager {
 		return manager;
 	}
 
+	/**
+	 * Get application version.
+	 *  
+	 * @return application version
+	 */
+	public static String getAppVersion() {
+		return appVersion;
+	}
+	
 	/**
 	 * Has this configuration manager been initialized?
 	 *  

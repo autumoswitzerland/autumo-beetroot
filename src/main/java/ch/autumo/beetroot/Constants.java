@@ -27,23 +27,6 @@ import jakarta.activation.MimetypesFileTypeMap;
 public class Constants {
 
 	/**
-	 * App version.
-	 */
-	public static final String APP_VERSION = "3.1.0";
-	
-	/**
-	 * Initialize mime types registry.
-	 */
-	static {
-		// use our patched version of the mime type registry; 
-		// we want this under our control!
-		System.setProperty("jakarta.activation.spi.MimeTypeRegistryProvider", 
-				"ch.autumo.beetroot.mime.MimeTypeRegistryProviderImpl");
-		
-		MIME_TYPES_MAP = new MimetypesFileTypeMap();
-	}
-	
-	/**
 	 * MIME types map.
 	 */
 	public static final MimetypesFileTypeMap MIME_TYPES_MAP;
@@ -52,6 +35,16 @@ public class Constants {
 	 * Default length for user key.
 	 */
 	public static final int SECRET_USER_KEY_DEFAULT_LEN = 20;
+	
+	/**
+	 * Load some resources; MIME types and app-version.
+	 */
+	static {
+		// Using the patched version of the mime type registry. 
+		System.setProperty("jakarta.activation.spi.MimeTypeRegistryProvider", 
+				"ch.autumo.beetroot.mime.MimeTypeRegistryProviderImpl");
+		MIME_TYPES_MAP = new MimetypesFileTypeMap();
+	}
 	
 	
 	// General

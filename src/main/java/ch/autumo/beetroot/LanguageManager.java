@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.handler.users.User;
+import ch.autumo.beetroot.utils.common.PreprocessingResourceBundle;
 import ch.autumo.beetroot.utils.web.Web;
 
 
@@ -56,9 +57,9 @@ public class LanguageManager {
 	private static final String URL_LANG_TAG = ":lang";
     private static final String BUNDLE_BASE_LOC = "web/lang/";
 	
-	private static final String LANG_GRP_APP = "app";
-	private static final String LANG_GRP_TMPL = "tmpl";
-	private static final String LANG_GRP_PW = "pw";
+    public static final String LANG_GRP_APP = "app";
+	public static final String LANG_GRP_TMPL = "tmpl";
+	public static final String LANG_GRP_PW = "pw";
 	
 	private static final Map<String, String> GROUPS = new HashMap<>();
 	static {
@@ -148,14 +149,28 @@ public class LanguageManager {
 		        		
 		            	// a. Within servlets
 		            	if (context != null) {
-	            			defaultBundle = ResourceBundle.getBundle(group.getValue(), defaultLocale, loader);
+	            			defaultBundle = PreprocessingResourceBundle.getBundle(
+	            					groupType, 
+	            					group.getValue(), 
+	            					defaultLocale, 
+	            					loader
+	            				);
 		            		if (defaultBundle == null)
-		            			defaultBundle = ResourceBundle.getBundle(BUNDLE_BASE_LOC + groupType + "/" + group.getValue(), defaultLocale, Thread.currentThread().getContextClassLoader());
+		            			defaultBundle = PreprocessingResourceBundle.getBundle(
+		            					groupType, 
+		            					BUNDLE_BASE_LOC + groupType + "/" + group.getValue(), 
+		            					defaultLocale, 
+		            					Thread.currentThread().getContextClassLoader()
+		            				);
 		            		DEF_BUNDLE_PER_GROUP.put(langs[i], defaultBundle);
 		            		
 		            	// b. Within server
 		            	} else {
-	                		defaultBundle = ResourceBundle.getBundle(BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), defaultLocale);
+	                		defaultBundle = PreprocessingResourceBundle.getBundle(
+	                				groupType, 
+	                				BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), 
+	                				defaultLocale
+	                			);
 	                		DEF_BUNDLE_PER_GROUP.put(langs[i], defaultBundle);
 		            	}	
 		            	
@@ -175,13 +190,24 @@ public class LanguageManager {
 		        		// a. Within servlets
 		        		if (context != null) {
 		        			try {
-			                	bundle = ResourceBundle.getBundle(group.getValue(), locale, loader, ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+			                	bundle = PreprocessingResourceBundle.getBundle(
+			                			groupType, 
+			                			group.getValue(), 
+			                			locale, 
+			                			loader, 
+			                			ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
+			                		);
 							} catch (MissingResourceException e) {
 								 // No issue yet!
 							}
 		                	if (bundle == null) {
 		            			try {
-			            			bundle = ResourceBundle.getBundle(BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), locale, Thread.currentThread().getContextClassLoader(), ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+			            			bundle = PreprocessingResourceBundle.getBundle(
+			            					groupType, 
+			            					BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), 
+			            					locale, Thread.currentThread().getContextClassLoader(), 
+			            					ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
+			            				);
 		    					} catch (MissingResourceException e) {
 									LOG.warn("Language '{}' has been configured, but no template translation for group '{}' file found -> default translations file will be used!", langs[i], group.getValue(), e);
 		    					}
@@ -190,7 +216,11 @@ public class LanguageManager {
 		        		// b. Within server
 		        		} else {
 		        			try {
-	                    		bundle = ResourceBundle.getBundle(BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), locale, ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+	                    		bundle = PreprocessingResourceBundle.getBundle(
+	                    				groupType, 
+	                    				BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), 
+	                    				locale, ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
+	                    			);
 							} catch (MissingResourceException e) {
 								LOG.warn("Language '{}' has been configured, but no template translation for group '{}' file found -> default translations file will be used!", langs[i], group.getValue(), e);
 							}
