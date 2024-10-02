@@ -3,34 +3,44 @@
 		<li class="heading">Actions</li>
 		<li>
 			<form name="post_##entitynameplural##_delete_{$id}" style="display: none;"
-				method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST">
-				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
+					method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
+				<input type="hidden" name="_method" value="POST" />
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}" />
 			</form>
 			<a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="dialogLink side-nav-item"
-				data-confirm-message="Are you sure you want to delete '{$displayName}'?"
-				data-form-name="post_##entitynameplural##_delete_{$id}">Delete ##Entityname##</a>
+					data-confirm-message="Are you sure you want to delete '{$displayName}'?"
+					data-form-name="post_##entitynameplural##_delete_{$id}">
+				Delete ##Entityname##
+			</a>
 		</li>
-		<li><a href="/{$lang}/##entitynameplural##" class="side-nav-item">List ##Entitynameplural##</a></li>
+		<li>
+			<a href="/{$lang}/##entitynameplural##" class="side-nav-item">
+				List ##Entitynameplural##
+			</a>
+		</li>
 	</ul>
 </nav>
 
 <div class="##entitynameplural## form large-10 medium-8 columns content">
 	<div class="##entitynameplural## form content">
 		<form method="post" accept-charset="utf-8"
-			action="/{$lang}/##entitynameplural##/edit?id={$id}">
+				action="/{$lang}/##entitynameplural##/edit?id={$id}">
 			<div style="display: none;">
-				<input type="hidden" name="_method" value="PUT">
-				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
+				<input type="hidden" name="_method" value="PUT" />
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}" />
 			</div>
 			<fieldset>
-				<legend>Edit ##Entityname##</legend>
+				<legend>
+					Edit ##Entityname##
+				</legend>
 				{$data}
 			</fieldset>
-			<a href="/{$lang}/##entitynameplural##/index" class="button right">Cancel</a>
-			<button type="submit">Submit</button>
-			<br><br><br>
+			<a href="/{$lang}/##entitynameplural##/index" class="button right">
+				Cancel
+			</a>
+			<button type="submit">
+				Submit
+			</button>
 		</form>
 	</div>
 </div>
-

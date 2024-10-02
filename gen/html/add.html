@@ -9,15 +9,20 @@
 	<div class="tasks form content">
 		<form method="post" accept-charset="utf-8" action="/##entitynameplural##/add">
 			<div style="display: none;">
-				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}" />
 			</div>
 			<fieldset>
-				<legend>Add ##Entityname##</legend>
+				<legend>
+					Add ##Entityname##
+				</legend>
 				{$data}
 			</fieldset>
-			<a href="/{$lang}/##entitynameplural##/index" class="button right">Cancel</a>
-			<button type="submit">Submit</button>
-			<br><br><br>
+			<a href="/{$lang}/##entitynameplural##/index" class="button right">
+				Cancel
+			</a>
+			<button type="submit">
+				Submit
+			</button>
 		</form>
 	</div>
 </div>

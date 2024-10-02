@@ -1,29 +1,45 @@
 <nav class="large-2 medium-4 columns" id="actions-sidebar">
 	<ul class="side-nav">
-		<li class="heading">Actions</li>
-		<li><a href="/{$lang}/##entitynameplural##/edit?id={$id}" class="side-nav-item">Edit
-				##Entityname##</a></li>
+		<li class="heading">
+			Actions
+		</li>
+		<li>
+			<a href="/{$lang}/##entitynameplural##/edit?id={$id}" class="side-nav-item">
+				Edit ##Entityname##
+			</a>
+		</li>
 		<li>
 			<form name="post_##entitynameplural##_delete_{$id}" style="display: none;"
-				method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
-				<input type="hidden" name="_method" value="POST">
-				<input type="hidden" name="_csrfToken" value="{$csrfToken}">
+					method="post" action="/{$lang}/##entitynameplural##/delete?id={$id}">
+				<input type="hidden" name="_method" value="POST" />
+				<input type="hidden" name="_csrfToken" value="{$csrfToken}" />
 			</form>
 			<a href="/{$lang}/##entitynameplural##/delete?id={$id}" class="dialogLink side-nav-item"
-				data-confirm-message="Are you sure you want to delete '{$displayName}'?"
-				data-form-name="post_##entitynameplural##_delete_{$id}">Delete ##Entityname##</a>
+					data-confirm-message="Are you sure you want to delete '{$displayName}'?"
+					data-form-name="post_##entitynameplural##_delete_{$id}">
+				Delete ##Entityname##
+			</a>
 		</li>
-		<li><a href="/{$lang}/##entitynameplural##" class="side-nav-item">List ##Entitynameplural##</a>
+		<li>
+			<a href="/{$lang}/##entitynameplural##" class="side-nav-item">
+				List ##Entitynameplural##
+			</a>
 		</li>
-		<li><a href="/{$lang}/##entitynameplural##/add" class="side-nav-item">New
-				##Entityname##</a></li>
+		<li>
+			<a href="/{$lang}/##entitynameplural##/add" class="side-nav-item">
+				New ##Entityname##
+			</a>
+		</li>
 	</ul>
 </nav>
 
 <div class="##entitynameplural## view large-10 medium-8 columns content">
-	<h3>##Entityname## &#171;{$displayName}&#187;</h3>
+	<h3>
+		##Entityname## &#171;{$displayName}&#187;
+	</h3>
 	<div class="table-responsive">
-		<table>{$data}
+		<table>
+			{$data}
 		</table>
 	</div>
 </div>
