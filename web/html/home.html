@@ -7,10 +7,10 @@
                 <div class="menuEntry">
                     {$if-role=Administrator:}
                     <a class="portfolio-box" href="/{$lang}/users">
-                        {$endif-role;} {$if-role=Operator,Controller:}
-                    </a>
+					{$endif-role;}
+					{$if-role=Operator,Controller:}
                     <a class="portfolio-box" href="{$userlink}">
-                        {$endif-role;}
+                    {$endif-role;}
                         <img class="img-fluid" src="/img/icons/menu-user-128.png" alt="" />
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -20,7 +20,8 @@
                                 <div class="project-category text-faded">
                                     {$l.home.1}
                                 </div>
-                                {$endif-role;} {$if-role=Operator,Controller:}
+                                {$endif-role;}
+								{$if-role=Operator,Controller:}
                                 <div class="project-category text-faded">
                                     {$l.home.2}
                                 </div>
