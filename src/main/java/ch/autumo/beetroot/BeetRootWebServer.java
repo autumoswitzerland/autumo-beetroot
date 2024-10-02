@@ -491,8 +491,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				} catch (FileNotFoundException e) {
 					final String err = "Couldn't serve temporary file '" + fullTmpPath + "'!";
 					LOG.error(err, e);
-					final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-					final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
+					final String t = LanguageManager.getInstance().translate("base.err.resource.title", userLang);
+					final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userLang, uriWithoutServlet);
 					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 				}
 			}
@@ -527,8 +527,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					} catch (IOException e1) {
 						final String err = "Resource not found on server looking up with resource path '" + filePath + "'!";
 						LOG.error(err, e);
-						final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
+						final String t = LanguageManager.getInstance().translate("base.err.resource.title", userLang);
+						final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userLang, uriWithoutServlet);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 				}
@@ -545,8 +545,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					} catch (IOException e1) {
 						final String err = "Resource not found on server looking up with file path '" + filePath + "'!";
 						LOG.error(err, e);
-						final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-						final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, uriWithoutServlet);
+						final String t = LanguageManager.getInstance().translate("base.err.resource.title", userLang);
+						final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userLang, uriWithoutServlet);
 						return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 					}
 		        }
@@ -602,15 +602,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					// If we come here, a mime type has been requested that is not yet implemented
 					final String err = "Mime type for web resource '" + filePath + "' not implemented yet!";
 					LOG.warn(err);
-					final String t = LanguageManager.getInstance().translate("base.err.resource.mime.title", userSession);
-					final String m = LanguageManager.getInstance().translate("base.err.resource.mime.msg", userSession, filePath);
+					final String t = LanguageManager.getInstance().translate("base.err.resource.mime.title", userLang);
+					final String m = LanguageManager.getInstance().translate("base.err.resource.mime.msg", userLang, filePath);
 					return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 		        }	
 	        } catch (IOException e) {
 				final String err = "Couldn't parse css for pre-url replacements Resource Not found! - Web resource '" + filePath + "'.";
 				LOG.error(err, e);
-				final String t = LanguageManager.getInstance().translate("base.err.resource.title", userSession);
-				final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userSession, filePath);
+				final String t = LanguageManager.getInstance().translate("base.err.resource.title", userLang);
+				final String m = LanguageManager.getInstance().translate("base.err.resource.msg", userLang, filePath);
 				return serverResponse(session, ErrorHandler.class, Status.NOT_FOUND, t, m);
 	        }
 		}
@@ -632,15 +632,15 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	        } catch (IOException ioe) {
 				final String err = "Server Internal Error - I/O Exception: " + ioe.getMessage();
 				LOG.error(err, ioe);
-				final String t = LanguageManager.getInstance().translate("base.err.srv.io.title", userSession);
-				final String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", userSession, ioe.getMessage());
+				final String t = LanguageManager.getInstance().translate("base.err.srv.io.title", userLang);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", userLang, ioe.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 				
 	        } catch (ResponseException re) {
 				final String err = "Server Internal Error - Response Exception (Status: "+re.getStatus().getDescription()+"): " + re.getMessage();
 				LOG.error(err, re);
-				final String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userSession);
-				final String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userSession, re.getStatus().getRequestStatus(), re.getMessage());
+				final String t = LanguageManager.getInstance().translate("base.err.srv.re.title", userLang);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.re.msg", userLang, re.getStatus().getRequestStatus(), re.getMessage());
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 	        }
 	    }
@@ -655,7 +655,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
-			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userSession));
+			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userLang));
 			userSession.deleteAllParameters();
 			userSession.destroy(session.getCookies());
 			return end;
@@ -670,7 +670,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
-			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userSession));
+			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userLang));
 			userSession.deleteAllParameters();
 			userSession.destroyDelete(session.getCookies());
 			return end;
@@ -704,7 +704,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		            return postLogin(session, userSession, userSession.getUserId().intValue(), userSession.getUserName());
         		} else {
         			userSession.clearUserData();
-					String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
+					String m = LanguageManager.getInstance().translate("base.err.login.msg", userLang, postParamUsername);
 					return serverResponse(session, this.getHandlerClass("LoginHandler"), "Login", m);
         		}
         	}        	
@@ -729,31 +729,32 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            				user.setLang(userLang);
 	            			}
 	            			dbTwoFa = user.getTwoFa();
-	            		}
 	            		
-	            		// Roles
-	        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(user.getId()));
-	        			if (usersRoles == null)
-	        				throw new SQLException("no roles data!");
-	        			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
-	        				final UserRole userRole = (UserRole) iterator.next();
-	        				final Role role = (Role) userRole.getAssociatedReference(Role.class);
-	        				dbRoles += role.getName() + ",";
-	        				dbPermissions += role.getPermissions()+",";
-	        			}
-	        			if (usersRoles.size() > 0) {
-	        				dbRoles = dbRoles.substring(0, dbRoles.length() - 1);
-	        				if (dbPermissions.endsWith(","))
-	        					dbPermissions = dbPermissions.substring(0, dbPermissions.length() - 1);
-	        			}
-	        			dbRoles = dbRoles.toLowerCase();
-	        			dbPermissions = dbPermissions.toLowerCase();
+		            		// Roles
+		        			final List<Model> usersRoles = UserRole.where(UserRole.class, "user_id = ?", Integer.valueOf(user.getId()));
+		        			if (usersRoles == null)
+		        				throw new SQLException("no roles data!");
+		        			for (Iterator<Model> iterator = usersRoles.iterator(); iterator.hasNext();) {
+		        				final UserRole userRole = (UserRole) iterator.next();
+		        				final Role role = (Role) userRole.getAssociatedReference(Role.class);
+		        				dbRoles += role.getName() + ",";
+		        				dbPermissions += role.getPermissions()+",";
+		        			}
+		        			if (usersRoles.size() > 0) {
+		        				dbRoles = dbRoles.substring(0, dbRoles.length() - 1);
+		        				if (dbPermissions.endsWith(","))
+		        					dbPermissions = dbPermissions.substring(0, dbPermissions.length() - 1);
+		        			}
+		        			dbRoles = dbRoles.toLowerCase();
+		        			dbPermissions = dbPermissions.toLowerCase();
+	            		}
+
 					} catch (SQLException e) {
 						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
 						LOG.error(err, e);
             			userSession.clearUserData();
-						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userSession);
-						String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userSession, e.getMessage());
+						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userLang);
+						String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userLang, e.getMessage());
 						return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 					} finally {
 						try {
@@ -780,8 +781,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 								final String err = "Server Internal Error - Exception: " + e.getMessage();
 								LOG.error(err, e);
 		            			userSession.clearUserData();
-								String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userSession);
-								String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userSession, e.getMessage());
+								String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userLang);
+								String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userLang, e.getMessage());
 								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 							}
 						} else {
@@ -872,7 +873,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
             		} else {
             			userSession.clearUserData();
 						// serve login page!
-						String m = LanguageManager.getInstance().translate("base.err.login.msg", userSession, postParamUsername);
+						String m = LanguageManager.getInstance().translate("base.err.login.msg", userLang, postParamUsername);
 						return serverResponse(session, this.getHandlerClass("LoginHandler"), "Login", m);
             		}
             	}
@@ -1011,6 +1012,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			return Response.newFixedLengthResponse(Status.NOT_IMPLEMENTED, "text/html", t+m);
 		}
         BaseHandler handler = null;
+        
         try {
             handler = (BaseHandler) constructor.newInstance(initParameter);
 		} catch (Exception e) {

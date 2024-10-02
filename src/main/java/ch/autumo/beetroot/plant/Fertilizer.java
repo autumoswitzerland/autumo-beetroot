@@ -119,7 +119,8 @@ public class Fertilizer {
 			} catch (SQLException e) {
 			}
 		}
-		fieldNames = databaseFields.keySet();
+		
+		fieldNames = new FieldSet<String>(databaseFields.keySet());
 		amountOfFields = fieldNames.size();
 	}
 	
