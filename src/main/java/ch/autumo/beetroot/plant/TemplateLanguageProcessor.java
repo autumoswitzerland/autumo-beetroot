@@ -258,7 +258,16 @@ public class TemplateLanguageProcessor {
             propertiesWriter.newLine();
             // Write translations to the properties file in the form of key=value
             for (Map.Entry<String, String> entry : translations.entrySet()) {
-                propertiesWriter.write(entry.getKey() + "=" + entry.getValue());
+            	final String escaped = escape(entry.getValue());
+            	if (escaped.contains("{$")) {
+                    propertiesWriter.write("# TODO: Replace the variables with placeholders for Java message formatting ({0}, {1} etc.)");
+                    propertiesWriter.newLine();
+                    propertiesWriter.write("#       and insert the variables as arguments in the language translation placeholders");
+                    propertiesWriter.newLine();
+                    propertiesWriter.write("#       in the HTML template; see documentation on language management.");
+                    propertiesWriter.newLine();
+            	}
+                propertiesWriter.write(entry.getKey() + "=" + escaped);
                 propertiesWriter.newLine();
             }
         }
@@ -276,6 +285,10 @@ public class TemplateLanguageProcessor {
         	final String t = prettyPrint(kids);
             htmlWriter.write(t);
         }
+    }
+    
+    private static String escape(String entry) {
+    	return entry.replace("'", "''");
     }
 
     private static String prettyPrint(List<Node> nodes) {
