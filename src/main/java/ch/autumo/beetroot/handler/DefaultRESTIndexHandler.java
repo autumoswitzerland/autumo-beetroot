@@ -172,13 +172,14 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 					int dbIdx = i + 1; // because of additional id!
 					
 					final String jsonColTitle = params[0].trim();
-					if (jsonColTitle != null && jsonColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
+					final String jsonGuiColTitle = params[1].trim();
+					if (jsonGuiColTitle != null && jsonGuiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 						continue LOOP;
 					
 					if (i == columns().size())
-						htmlData += extractSingleTableData(session, set, jsonColTitle, dbIdx, entity)+ "\n";
+						htmlData += extractSingleTableData(session, set, jsonColTitle, jsonGuiColTitle, dbIdx, entity)+ "\n";
 					else
-						htmlData += extractSingleTableData(session, set, jsonColTitle, dbIdx, entity)+ ",\n";
+						htmlData += extractSingleTableData(session, set, jsonColTitle, jsonGuiColTitle, dbIdx, entity)+ ",\n";
 				}
 				
 				if (counter + 1 == totalShown)
@@ -220,25 +221,22 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 	 * @param session HTTP session
 	 * @param set database result set pointing to current record
 	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param guiColumnName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param idx SQL result set column index
 	 * @param entity whole entity bean
 	 * @return JSON data extract &lt;td&gt;...&lt;/td&gt;
 	 * @throws Exception exception
 	 */
-	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, int idx, Entity entity) throws Exception {
-		
+	public String extractSingleTableData(BeetRootHTTPSession session, ResultSet set, String columnName, String guiColumnName, int idx, Entity entity) throws Exception {
 		if (transientFields.contains(columnName))
 			return ""; // only a specific user implementation knows what to do with transient fields
-		
 		final Object o = set.getObject(idx);
-		
 		String val = null;
 		if (o == null || o.toString().equals("null"))
 			val = "";
 		else
 			val = o.toString();
-		
-		return "            \"" + columnName + "\": \"" + val + "\"";
+		return "            \"" + guiColumnName + "\": \"" + val + "\"";
 	}
 	
 	/**

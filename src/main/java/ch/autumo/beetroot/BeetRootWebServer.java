@@ -700,6 +700,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		            loggedIn = true;
         			userSession.resetTwoFaLogin();
         			userSession.clearInternalTOTPCode();
+        			userSession.refresh();
 		            // Finish all necessary steps and give response
 		            return postLogin(session, userSession, userSession.getUserId().intValue(), userSession.getUserName());
         		} else {
@@ -866,6 +867,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 					    // LOGGED IN!
 			            loggedIn = true;
+	        			userSession.refresh();
 			            
 			            // Finish all necessary steps and give response
 			            return postLogin(session, userSession, user.getId(), postParamUsername);
