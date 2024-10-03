@@ -17,13 +17,12 @@
  */
 package ch.autumo.beetroot;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
@@ -42,17 +41,32 @@ public class Session implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Map<String, Serializable> data = new ConcurrentHashMap<String, Serializable>();
+	/** Persistent session data; don't put data in this map that isn't necessary when restoring a user session! */
+	private Map<String, Serializable> data = new ConcurrentHashMap<>();
+	
+	// Session ID
 	private final String sessionID;
 	
-	// User settings are stored in DB, not serialized in session
+	// Temporary list with files for uploads - not stored.
+	private transient Map<String, String> files = null;
+	// User settings are stored in DB, not serialized in session.
 	private transient Map<String, String> settingsMap = null;
+	// Security map - not stored.
+	private transient Map<String, String> secData = new ConcurrentHashMap<>();
+	// ID conversion map - not stored.
+	private transient Map<String, Serializable> idData = new ConcurrentHashMap<>();
+	// Additional mappings that should not be stored.
+	private transient Map<String, Serializable> additionalMapData = new ConcurrentHashMap<>();
+
+	// Don't store the user to the session file
+	private transient User user = null;
+
+	// User ID
+	private int userId = -1;
 	
 	private final Date created;
 	private long sessionRefreshTime;
-	
-	private User user = null;
-	
+
 	
 	/**
 	 * New session with given session id '__SESSION_ID__' or what is configured.
@@ -100,30 +114,38 @@ public class Session implements Serializable {
 	 * @return newly created modify ID
 	 */
 	public String createIdPair(int origId, String entity) {
-	
-		String oldMod = getModifyId(origId, entity);
+		final String oldMod = getModifyId(origId, entity);
 		if (oldMod != null) {
 			removeIds(oldMod, entity);
 		}
-		
 		String modifyId = GUIDGenerator.generate();
-		
-		data.put("origId-" + entity + "-" + modifyId, Integer.valueOf(origId));
-		data.put("modifyId-" + entity + "-"+ origId, modifyId);
-		
+		idData.put("origId-" + entity + "-" + modifyId, Integer.valueOf(origId));
+		idData.put("modifyId-" + entity + "-"+ origId, modifyId);
 		return modifyId;
 	}
 	
+	/**
+	 * Get modified ID based on original database ID.
+	 * 
+	 * @param origId original database ID
+	 * @param entity entity
+	 * @return modified ID
+	 */
 	public String getModifyId(int origId, String entity) {
-		return (String) data.get("modifyId-" + entity + "-" + origId);
+		return (String) idData.get("modifyId-" + entity + "-" + origId);
 	}
 
+	/**
+	 * Get original database ID based on modified ID.
+	 * 
+	 * @param modifyId modified ID
+	 * @param entity entity
+	 * @return original database ID
+	 */
 	public int getOrigId(String modifyId, String entity) {
-		
-		Object oid = data.get("origId-" + entity + "-"+ modifyId);
+		final Object oid = idData.get("origId-" + entity + "-"+ modifyId);
 		if (oid == null)
 			return -1;
-		
 		return ((Integer) oid).intValue();
 	}
 	
@@ -136,30 +158,14 @@ public class Session implements Serializable {
 	public void removeIds(String modifyId, String entity) {
 		final Integer origId = (Integer) data.remove("origId-" + entity + "-" + modifyId);
 		if (origId != null)
-			data.remove("modifyId-" + entity + "-" + origId);
+			idData.remove("modifyId-" + entity + "-" + origId);
 	}
 	
 	/**
 	 * Clean session from all ID pairs!
 	 */
 	public synchronized void removeAllIds() {
-		
-		final List<String> remKeys = new ArrayList<String>();
-		final Set<String> keys = data.keySet();
-		
-		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-			final String key = (String) iterator.next();
-			if (key.startsWith("modifyId-"))
-				remKeys.add(key);
-			if (key.startsWith("origId-"))
-				remKeys.add(key);
-		}
-		
-		// delete
-		for (Iterator<String> iterator = remKeys.iterator(); iterator.hasNext();) {
-			final String remKey = (String) iterator.next();
-			data.remove(remKey);
-		}
+		idData.clear();
 	}
 
 	/**
@@ -172,7 +178,10 @@ public class Session implements Serializable {
 	 * @param permissions user permissions (comma-separated permissions)
 	 */
 	public void setUserData(User user, String roles, String permissions) {
+		
 		this.user = user;
+		this.userId = user.getId();
+		
 		this.set("userroles", roles);
 		this.set("userpermissions", permissions);
 		
@@ -188,19 +197,15 @@ public class Session implements Serializable {
 	 * Clear all user data within session.
 	 */
 	public void clearUserData() {
-		
 		this.user = null;
-
+		this.userId = -1;
 		this.remove("userroles");
 		this.remove("userpermissions");
 		this.remove("firstname");
 		this.remove("lastname");
-		this.remove("two_fa");
-		
 		this.remove("userlang");
-		
-		this.remove("two_fa_login");
-		this.remove("_2facode");
+		this.remove("two_fa");
+		this.secData.clear();
 	}
 	
 	/**
@@ -208,7 +213,15 @@ public class Session implements Serializable {
 	 */
 	public void deleteAllParameters() {
 		this.user = null;
-		data.clear();
+		this.userId = -1;
+		this.data.clear();
+		this.idData.clear();
+		this.secData.clear();
+		this.additionalMapData.clear();
+		if (this.settingsMap != null)
+			this.settingsMap.clear();
+		if (this.files != null)
+			this.files.clear();
 	}
 
 	/**
@@ -266,13 +279,11 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Get user DB id.
+	 * Get user DB id. Returns -1 is no user is present.
 	 * @return user DB id
 	 */
-	public Integer getUserId() {
-		if (user != null)
-			return user.getId();
-		return null;
+	public int getUserId() {
+		return this.userId;
 	}
 	
 	/**
@@ -326,7 +337,15 @@ public class Session implements Serializable {
 	public boolean hasUserPermission(String perm) {
 		return this.getUserPermissions().contains(perm.toLowerCase());
 	}
-
+	
+	/**
+	 * Set user after loading session from session file.
+	 * @param user user
+	 */
+	void setUser(User user) {
+		this.user  = user;
+	}
+	
 	/**
 	 * Get user.
 	 * @return user or null
@@ -399,7 +418,7 @@ public class Session implements Serializable {
 	 * Set 2FA state to <code>true</code>.
 	 */
 	public void setTwoFaLogin() {
-		this.set("two_fa_login", "true");
+		secData.put("_two_fa_login", "true");
 	}
 	
 	/**
@@ -407,7 +426,7 @@ public class Session implements Serializable {
 	 * @return true is so
 	 */
 	public boolean isTwoFaLoginOk() {
-		final Object ok = this.get("two_fa_login");
+		final Object ok = secData.get("_two_fa_login");
 		if (ok == null)
 			return false;
 		return Boolean.valueOf(ok.toString());
@@ -417,7 +436,7 @@ public class Session implements Serializable {
 	 * Reset 2FA state.
 	 */
 	public void resetTwoFaLogin() {
-		this.remove("two_fa_login");
+		secData.remove("_two_fa_login");
 	}
 	
 	/**
@@ -425,18 +444,15 @@ public class Session implements Serializable {
 	 * @param files uploaded file info
 	 */
 	public void addFiles(Map<String, String> files) {
-		data.put("_uploadfiles", (Serializable)files);
+		this.files = files;
 	}
 	
 	/**
 	 * Get uploaded files info
 	 * @return uploaded files info
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, String> consumeFiles() {
-		final Map<String, String> result = (Map<String, String>) data.get("_uploadfiles");
-		data.remove("_uploadfiles");
-		return result;
+		return files;
 	}
 	
 	/**
@@ -479,7 +495,7 @@ public class Session implements Serializable {
 	 * @return CSRF token
 	 */
 	public String getFormCsrfToken() {
-		return (String) data.get("_csrfToken");
+		return secData.get("_csrfToken");
 	}
 
 	/**
@@ -488,9 +504,34 @@ public class Session implements Serializable {
 	 * @param token CSRF token
 	 */
 	public void setFormCsrfToken(String token){
-		data.put("_csrfToken", token);
+		secData.put("_csrfToken", token);
 	}
 
+	/**
+	 * Set internal generated 2FA code.
+	 * 
+	 * @param genCode generated 2FA code
+	 */
+	public void setInternalTOTPCode(String genCode) {
+		secData.put("_2facode", genCode);
+	}
+
+	/**
+	 * Get internal generated 2FA code.
+	 * 
+	 * @return internal generated 2FA code
+	 */
+	public String getInternalTOTPCode() {
+		return secData.get("_2facode");
+	}
+	
+	/**
+	 * Delete internal generated 2FA code from session.
+	 */
+	public void clearInternalTOTPCode() {
+		secData.remove("_2facode");
+	}
+	
 	/**
 	 * Get map value.
 	 * @param mapKey map key
@@ -499,13 +540,11 @@ public class Session implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public Serializable getMapValue(String mapKey, String key) {
-		
-		final Serializable obj = data.get("map."+mapKey);
+		final Serializable obj = additionalMapData.get("map."+mapKey);
 		if (obj instanceof ConcurrentHashMap && obj != null) {
 			final ConcurrentHashMap<String, Serializable> map = (ConcurrentHashMap<String, Serializable>) obj;
 			return map.get(key);
 		}
-		
 		return null;
 	}
 	
@@ -518,15 +557,13 @@ public class Session implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public void setMapValue(String mapKey, String key, String value){
-		
 		ConcurrentHashMap<String, Serializable> map = null;
-		
-		final Serializable obj = data.get("map."+mapKey);
+		final Serializable obj = additionalMapData.get("map."+mapKey);
 		if (obj instanceof ConcurrentHashMap) {
 			map = (ConcurrentHashMap<String, Serializable>) obj;
 		} else if (obj == null) {
 			map = new ConcurrentHashMap<String, Serializable>();
-			data.put("map."+mapKey, map);
+			additionalMapData.put("map."+mapKey, map);
 		}
 		map.put(key, value);
 	}
@@ -536,7 +573,7 @@ public class Session implements Serializable {
 	 * @param mapKey map key
 	 */
 	public void removeMap(String mapKey){
-		data.remove("map."+mapKey);
+		additionalMapData.remove("map."+mapKey);
 	}	
 	
 	/**
@@ -549,7 +586,9 @@ public class Session implements Serializable {
 	}
 
 	/**
-	 * Set a key/value pair
+	 * Set a key/value pair. They are persisted in the session file
+	 * if the server is stopped; you have to house-keep these values! 
+	 * 
 	 * @param key key
 	 * @param value value
 	 */
@@ -566,7 +605,7 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Destroy session by given cookie handler holding the '__SESSION_UD__'.
+	 * Destroy session by given cookie handler holding the '__SESSION_ID__'.
 	 * @param cookies cookie handler
 	 */
 	public void destroy(CookieHandler cookies) {
@@ -574,7 +613,7 @@ public class Session implements Serializable {
 	}
 
 	/**
-	 * Destroy session by given cookie handler holding the '__SESSION_UD__'
+	 * Destroy session by given cookie handler holding the '__SESSION_ID__'
 	 * and delete stored session.
 	 * @param cookies cookie handler
 	 */
@@ -583,28 +622,18 @@ public class Session implements Serializable {
 	}
 	
 	/**
-	 * Set internal generated 2FA code.
+	 * Custom readObject method for de-serialization.
 	 * 
-	 * @param genCode generated 2FA code
+	 * @param ois object input stream
+	 * @throws IOException
+	 * @throws ClassNotFoundException
 	 */
-	public void setInternalTOTPCode(String genCode) {
-		data.put("_2facode", genCode);
-	}
-
-	/**
-	 * Get internal generated 2FA code.
-	 * 
-	 * @return internal generated 2FA code
-	 */
-	public String getInternalTOTPCode() {
-		return (String) data.get("_2facode");
-	}
-	
-	/**
-	 * Delete internal generated 2FA code from session.
-	 */
-	public void clearInternalTOTPCode() {
-		data.remove("_2facode");
-	}
-	
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject(); // Read non-transient fields
+        this.idData = new ConcurrentHashMap<>();
+        this.secData = new ConcurrentHashMap<>();
+    	this.additionalMapData = new ConcurrentHashMap<>();
+        this.user = (User) Model.read(User.class, this.userId);
+    }
+    
 }

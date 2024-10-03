@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,16 +152,12 @@ public class DB {
 		Map.Entry<Integer, String> entry = null;
 		try {
 			conn = BeetRootDatabaseManager.getInstance().getConnection();
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-			
-			String stmtStr = "SELECT id, " + displayColumn + " FROM " + table + " WHERE id = " + id;
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);			
+			final String stmtStr = "SELECT id, " + displayColumn + " FROM " + table + " WHERE id = " + id;
 			set = stmt.executeQuery(stmtStr);
-	
 			// One record!
 			set.next();
-			
 			entry = Map.entry(Integer.valueOf(set.getInt(1)), set.getString(2));
-		
 		} finally {
 			if (set != null)
 				set.close();
@@ -248,20 +245,19 @@ public class DB {
 		}
 		
 		if (settingsString == null || settingsString.length() == 0) {
-			map = new HashMap<String, String>();
+			map = new ConcurrentHashMap<>();
 			userSession.setUserSettings(map);
 			return map;
 		}
 		
 		final String pairs[] = settingsString.replace(" ", "").trim().split(",");
-		final Map<String, String> settingsMap = new HashMap<String, String>();
+		map = new ConcurrentHashMap<>();
 		for (int i = 0; i < pairs.length; i++) {
 			String pair[] = pairs[i].split("=");
-			settingsMap.put(pair[0], pair[1]);
+			map.put(pair[0], pair[1]);
 		}
-		
-		userSession.setUserSettings(settingsMap);
-		return settingsMap;
+		userSession.setUserSettings(map);
+		return map;
 	}
 
 	/**

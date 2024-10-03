@@ -277,7 +277,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     public void start(final int timeout, boolean daemon) throws IOException {
 		super.start(timeout, daemon);
 		try {
-			SessionManager.getInstance().load();
+			SessionManager.load();
 	    } catch (Exception e) {
 	    	LOG.warn("Couldn't load user sessions!", e);
 	    }    	
@@ -290,7 +290,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
     public void stop() {
 		super.stop();
         try {
-            SessionManager.getInstance().save();
+            SessionManager.save();
         } catch (Exception e) {
         	LOG.warn("Couldn't save current user sessions!", e);
         }
@@ -655,6 +655,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
+			if (userSession.getUserSettings() != null)
+				userSession.addOrUpdateUserSetting("theme", "dark"); // Logout should go back to dark theme
 			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.session.timeout", userLang));
 			userSession.deleteAllParameters();
 			userSession.destroy(session.getCookies());
@@ -670,6 +672,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			loggedIn = false;
 			session.getParameters().clear();
 			session.getHeaders().put("Connection", "close");
+			if (userSession.getUserSettings() != null)
+				userSession.addOrUpdateUserSetting("theme", "dark"); // Logout should go back to dark theme
 			final Response end = serverResponse(session, this.getHandlerClass("LogoutHandler"), "logout", LanguageManager.getInstance().translate("base.info.logout.msg", userLang));
 			userSession.deleteAllParameters();
 			userSession.destroyDelete(session.getCookies());
@@ -701,8 +705,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
         			userSession.resetTwoFaLogin();
         			userSession.clearInternalTOTPCode();
         			userSession.refresh();
+        			userSession.removeAllIds();
 		            // Finish all necessary steps and give response
-		            return postLogin(session, userSession, userSession.getUserId().intValue(), userSession.getUserName());
+		            return postLogin(session, userSession, userSession.getUserId(), userSession.getUserName());
         		} else {
         			userSession.clearUserData();
 					String m = LanguageManager.getInstance().translate("base.err.login.msg", userLang, postParamUsername);
@@ -868,7 +873,8 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 					    // LOGGED IN!
 			            loggedIn = true;
 	        			userSession.refresh();
-			            
+	        			userSession.removeAllIds();
+
 			            // Finish all necessary steps and give response
 			            return postLogin(session, userSession, user.getId(), postParamUsername);
 			            

@@ -409,7 +409,7 @@ h5 {
 	color: #0e4e74;
 }
 .side-nav li a:not(.button):hover {
-	color: #146fa6;
+	color: #1cc7ff;
 }
 .side-nav li.heading {
 	color: #146fa6;
@@ -686,7 +686,7 @@ video {
 }
 
 a:hover {
-	color: #146fa6;
+	color: #1cc7ff;
 }
 a {
 	color: #0e4e74;
@@ -1248,7 +1248,6 @@ button {
 	background-color: #cccccc;
 }
 
-
 .modal {
     display: none;
     position: fixed;
@@ -1331,6 +1330,15 @@ button {
 	.portfolio-box-caption {
 		visibility: hidden;
 	}
+}
+
+
+/* Force equal height by overflowing for Safari*/
+@supports (-webkit-backdrop-filter: none) {
+    .content, #actions-sidebar, #service-sidebar {
+		margin-bottom: -99959px; /* Set your desired margin for Safari */
+		padding-bottom: 99999px;
+    }
 }
 
 

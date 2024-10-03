@@ -1192,9 +1192,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						text = text.replace("{#template}", buffer.toString());
 						// Provide a link to current logged in user for every template!
 						if (text.contains(TAG_USERLINK)) {
-							final Integer uid = userSession.getUserId();
-							if (uid != null) {
-								String usid = userSession.getModifyId(uid.intValue(), "users");
+							final int uid = userSession.getUserId();
+							if (uid != -1) {
+								String usid = userSession.getModifyId(uid, "users");
 								if (usid == null)
 									userSession.createIdPair(uid, "users");
 								text = text.replace(TAG_USERLINK, "/"+lang+"/users/view?id=" + userSession.getModifyId(uid, "users")); 
@@ -1512,9 +1512,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					break;
 				case "{#footer}":
 					if (text.contains(TAG_USERINFO)) {
-						final Integer uid = userSession.getUserId();
-						if (uid != null) {
-							String usid = userSession.getModifyId(uid.intValue(), "users");
+						final int uid = userSession.getUserId();
+						if (uid != -1) {
+							String usid = userSession.getModifyId(uid, "users");
 							if (usid == null) {
 								userSession.createIdPair(uid, "users");
 							}

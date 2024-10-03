@@ -146,7 +146,7 @@ public class User extends Model {
 	}
 	
     public void setSecretkey(String secretkey) {
-		this.secretkey = secretkey;		
+		this.secretkey = secretkey;
 	}
     
     @Column (name = "two_fa")

@@ -25,6 +25,8 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.nanohttpd.protocols.http.content.CookieHandler;
 import org.slf4j.Logger;
@@ -40,8 +42,11 @@ public class SessionManager {
 	
 	protected static final Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
 	
-	
+	// Singleton instance
 	private static SessionManager instance = null;	
+
+	// Lock for loading/saving sessions.
+	private static final ReentrantLock lock = new ReentrantLock();
 	
 	private static final char[] HEX = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 	private static final File SESSION_DATA = new File(Helper.USER_HOME + Helper.FILE_SEPARATOR +BeetRootConfigurationManager.getInstance().getString("ws_user_sessions"));
@@ -76,26 +81,19 @@ public class SessionManager {
 	 * @return session manager
 	 */
 	public static synchronized SessionManager getInstance() {
-
 		if (instance == null) {
-        	
         	instance = new SessionManager();
- 
 	        String idname = BeetRootConfigurationManager.getInstance().getString("ws_session_id_name");
 	        if (idname != null && idname.length() != 0)
 	        	webContainerSessionIdName = idname;
-	        
 	        userSessionExpirationDays = BeetRootConfigurationManager.getInstance().getInt("ws_session_expiration");
 	        if (userSessionExpirationDays < 1)
 	        	userSessionExpirationDays = DEFAULT_USER_SESSION_EXPIRATION;
-        
 	        userSessionTimeout = BeetRootConfigurationManager.getInstance().getInt("ws_session_timeout");
 	        if (userSessionTimeout < 600)
 	        	userSessionTimeout = 600;
-	        
 	        sessionTimeoutInMillis = userSessionTimeout * 1000;
         }
-
         return instance;
     }
 	
@@ -105,13 +103,11 @@ public class SessionManager {
 	 * @return session token ID
 	 */
 	private String genSessionToken() {
-		
 		final StringBuilder sb = new StringBuilder(TOKEN_SIZE);
 		for (int i = 0; i < TOKEN_SIZE; i++){
 			sb.append(HEX[RANDOM.nextInt(HEX.length)]);
 		}
 		return sb.toString();
-		
 	}
 	
 	/**
@@ -120,13 +116,10 @@ public class SessionManager {
 	 * @return user session token
 	 */
 	private String newSessionToken() {
-		
 		String token;
-		
 		do {
 			token = this.genSessionToken();
 		} while(sessions.containsKey(token));
-		
 		return token;
 	}
 	
@@ -138,29 +131,22 @@ public class SessionManager {
 	 * @return session user session
 	 */
 	public synchronized Session findOrCreate(BeetRootHTTPSession session) {
-		
 		final CookieHandler cookies = session.getCookies();
-		
 		String token = null;
-		
 		if (session.getExternalSessionId() != null) {
 			token = session.getExternalSessionId();
 		}
 		else {
 			token = cookies.read(webContainerSessionIdName);
 		}		
-		
 		if (token == null) {
 			token = this.newSessionToken();
 			cookies.set(webContainerSessionIdName, token, userSessionExpirationDays);
 		}
-		
 		if (!sessions.containsKey(token)) {
-			
 			sessions.put(token, new Session(token));
 			//LOG.debug("New session token: "+ token);
 		}
-		
 		return sessions.get(token);
 	}
 	
@@ -185,9 +171,9 @@ public class SessionManager {
 		this.destroy(token, cookies);
 		// session is remove from memory, write them out
 		try {
-			this.save();
+			save();
 		} catch (Exception e) {
-			LOG.warn("Couldn't save sessions after deleting session with token: " + token);
+			LOG.warn("Couldn't save sessions after deleting session with token: {}.", token);
 		}
 	}
 	
@@ -197,12 +183,20 @@ public class SessionManager {
 	 * @throws Exception exception
 	 */
 	@SuppressWarnings("unchecked")
-	public void load() throws Exception {
-		if (!SESSION_DATA.exists())
-			return;
-		final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SESSION_DATA));
-		sessions = (Map<String, Session>) ois.readObject();
-		ois.close();
+	public static void load() throws Exception {
+	    lock.lock();
+	    try {
+	        if (!SESSION_DATA.exists())
+	            return;
+	        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SESSION_DATA))) {
+	            sessions = (Map<String, Session>) ois.readObject();
+	        } catch (Exception e) {
+	            LOG.warn("Failed to load sessions from file storage; try deleting '{}' and restart the server.", SESSION_DATA, e);
+	            throw e;
+	        }
+	    } finally {
+	        lock.unlock();
+	    }
 	}
 	
 	/**
@@ -210,11 +204,20 @@ public class SessionManager {
 	 * 
 	 * @throws Exception exception
 	 */
-	public void save() throws Exception {
-		final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SESSION_DATA));
-		oos.writeObject(sessions);
-		oos.close();
-	}
+	public static void save() throws Exception {
+	    lock.lock();
+	    try {
+	        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SESSION_DATA))) {
+	        	final Map<String, Session> filtered = sessions.entrySet()
+		                .stream()
+		                .filter(entry -> entry.getValue().getUser() != null) // Only session that have an active user!
+		                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	            oos.writeObject(filtered);
+	        }
+	    } finally {
+	        lock.unlock();
+	    }		
+    }
 	
 	/**
 	 * Get timeout in millis.
