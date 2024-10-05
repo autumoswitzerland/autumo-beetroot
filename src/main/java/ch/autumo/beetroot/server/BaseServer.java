@@ -24,6 +24,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -32,6 +33,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -90,6 +93,8 @@ public abstract class BaseServer {
 	private AdminListener adminListener = null;
 	/** Administration server socket. */
 	private ServerSocket serverSocket = null;
+	/** Administration executor service. */
+	private ExecutorService clientExecutorService = Executors.newCachedThreadPool();
 
 	/** Filer server. */
     private FileServer fileServer = null;
@@ -687,11 +692,32 @@ public abstract class BaseServer {
 					BaseServer.this.serverStop = true;
 					Communicator.safeClose(serverSocket);
 					// shutdown server
-					stopServer();
-					//alternative: sendStopServer();
+					stopServer(); // alternative: sendStopServer();
+					// shutdown thread pool
+					shutDownExecutorService();
 				}
 			}
 		};
+	}
+	
+	/**
+	 * Shutdown thread pool.
+	 */
+	private void shutDownExecutorService() {
+		clientExecutorService.shutdown();
+	    try {
+	        // Wait for tasks to complete for up to 60 seconds
+	        if (!clientExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+	            clientExecutorService.shutdownNow(); // Force shutdown if timeout occurs
+	            if (!clientExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+	                LOG.error("Client executor service did not terminate.");
+	            }
+	        }
+	    } catch (InterruptedException ie) {
+	        // If interrupted, force shutdown immediately
+	        clientExecutorService.shutdownNow();
+	        Thread.currentThread().interrupt(); // Restore interrupt status
+	    }
 	}
 	
 	/**
@@ -1089,32 +1115,39 @@ public abstract class BaseServer {
 				try {
 					// it waits for a connection
 					clientSocket = serverSocket.accept();
-					String addr = null;
-					if (clientSocket.getInetAddress() != null)
-						addr = clientSocket.getInetAddress().toString();
-					
+					final String threadName;
+					final InetAddress addr = clientSocket.getInetAddress();
+					if (addr != null) {
+						threadName = BaseServer.this.name + "-Client(" + addr.toString() + ")";
+					} else {
+						threadName = BaseServer.this.name + "-Client";
+					}
 					if (clientSocket != null) {
 						final ClientHandler handler = new ClientHandler(clientSocket);
-						final Thread threadForClient = new Thread(handler);
-						if (addr == null)
-							threadForClient.setName(BaseServer.this.name + "-Client");
-						else
-							threadForClient.setName(BaseServer.this.name + "-Client("+addr+")");
-						threadForClient.start();
+                        clientExecutorService.execute(() -> {
+                            Thread.currentThread().setName(threadName);
+                            try {
+                            	handler.run();								
+							} catch (Exception e) {
+								LOG.error("Error handling client: " + threadName, e);
+				                throw new RuntimeException("Error handling client: " + threadName, e);
+							}
+                        });			
 					}
 		        } catch (IOException e) {
-		        	if (!BaseServer.this.serverStop)
+		        	if (!BaseServer.this.serverStop) {
 		        		LOG.error("Admin server connection listener failed! We recommend to restart the server!", e);
+		        	}
 		        } finally {
 		        	if (!BaseServer.this.serverStop && serverSocket != null && serverSocket.isClosed()) {
 	        			try {
 	        				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
 		    				if (serverTimeout > 0)
 		    					serverSocket.setSoTimeout(serverTimeout);
-	        			} catch (IOException e) {
-	        				// That's wild, I know 
-	        			}
-	        		}
+	                    } catch (IOException e) {
+	                        LOG.error("Failed to recreate server socket after it was closed.", e);
+	                    }
+		        	}
 	            }				
             } 
 			if (!hookShutdown) {
@@ -1122,6 +1155,8 @@ public abstract class BaseServer {
 				Communicator.safeClose(serverSocket);
 				// shutdown server
 				stopServer();
+				// shutdown thread pool
+				shutDownExecutorService();
 			}
 		}
 	}	
@@ -1150,75 +1185,71 @@ public abstract class BaseServer {
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 				// server command from client received
 				command = Communicator.readCommand(in);
-	        } 
-	        catch (UtilsException e) {
+			
+				// Correct server name?
+				final String serverName = command.getServerName();
+				if (!serverName.equals(BaseServer.this.getServerName())) {
+					LOG.error("Server command: Wrong server name received, command is ignored!");
+					return;
+				}
+				
+				// execute command
+				final ClientAnswer answer = BaseServer.this.processServerCommand(command);
+	
+				// Health status request?
+				if (answer instanceof HealthAnswer) {
+					LOG.info("[HEALTH] signal received, printing server's health state to console.");
+					// print info
+					BaseServer.this.printHealthStatus(true);
+					return;
+				}
+				
+				// Shutdown received?
+				if (answer instanceof StopAnswer) {
+					LOG.info("[STOP] signal received! Shutting down...");
+					if (!LOG.isInfoEnabled()) {
+						System.out.println("");
+						System.out.println(BaseServer.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
+					}
+					// only escape of this loop
+					BaseServer.this.serverStop = true;
+					Communicator.safeClose(serverSocket);
+					return;
+				}
+				
+				// We have to answer -> get output-stream to client
+	            sendResponse(answer);
+			
+			} catch (UtilsException e) {
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match or different encrypt modes");
 				LOG.error("     have been defined within client/server-configuration, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both sides!");
-				//LOG.error("  -> Exception: " + e);
 				e.printStackTrace();
-				return;
-	        }	
-	        catch (IOException e) {
-				LOG.error("Admin server listener failed! Possible invalid messages received.", e);
+	        } catch (IOException e) {
+				LOG.error("Admin server listener failed! Possible invalid messages from '{}' received.", clientSocket.getRemoteSocketAddress(), e);
+			} finally {
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket);
-				return;
-	        }	
-			
-			// Correct server name?
-			final String serverName = command.getServerName();
-			if (!serverName.equals(BaseServer.this.getServerName())) {
-				LOG.error("Server command: Wrong server name received, command is ignored!");
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket);
-				return;
-			}
-			
-			// execute command
-			final ClientAnswer answer = BaseServer.this.processServerCommand(command);
-
-			// Health status request?
-			if (answer instanceof HealthAnswer) {
-				LOG.info("[HEALTH] signal received, printing server's health state to console.");
-				// print info
-				BaseServer.this.printHealthStatus(true);
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket); //
-				return;
-			}
-			
-			// Shutdown received?
-			if (answer instanceof StopAnswer) {
-				LOG.info("[STOP] signal received! Shutting down...");
-				if (!LOG.isInfoEnabled()) {
-					System.out.println("");
-					System.out.println(BaseServer.ansiServerName + " " + Colors.darkRed("[STOP]") + " signal received! Shutting down...");
-				}
-				// only escape of this loop
-				BaseServer.this.serverStop = true;
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket); //
-				Communicator.safeClose(serverSocket);
-				return;
-			}
-			
-			// We have to answer -> get output-stream to client
-			DataOutputStream out = null;
-			try {
-				 out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-				 Communicator.writeAnswer(answer, out);
-			} catch (IOException e) {
+	        }			
+		}
+		
+	    /**
+	     * Sends the answer to the client using the output stream.
+	     */
+	    private void sendResponse(ClientAnswer answer) {
+	        DataOutputStream out = null;
+	        try {
+	            out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
+	            Communicator.writeAnswer(answer, out);
+	        } catch (IOException e) {
 				LOG.error("Admin server client response failed! We recommend to restart the server!", e);
 				System.err.println(BaseServer.ansiErrServerName + " Admin server client response failed! We recommend to restart the server!");
 	        } finally {
-	        	Communicator.safeClose(out);
-			}
-        	Communicator.safeClose(in);
-        	Communicator.safeClose(clientSocket);
-		}
+	            Communicator.safeClose(out);
+	        }
+	    }		
 	}
 	
 	/**

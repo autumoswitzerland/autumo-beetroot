@@ -24,6 +24,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -34,6 +35,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -199,6 +203,7 @@ public class FileServer {
 	 */
 	private final class FileServerListener implements Runnable {
 	
+		private ExecutorService clientExecutorService = Executors.newCachedThreadPool();
 		private int listenerPort = -1;
 
 		/**
@@ -207,9 +212,7 @@ public class FileServer {
 		 * @param listenerPort listener port
 		 */
 		public FileServerListener(int listenerPort) {
-			
 			this.listenerPort = listenerPort;
-			
 			// Communication is encrypted through the command message (cmd),
 			// by SSL sockets (ssl) or it is not (none) 
 			try {
@@ -225,52 +228,66 @@ public class FileServer {
 		
 		@Override
 		public void run() {
-			
+			// File server main loop
 			while (!stopped) {
-				
 				Socket clientSocket = null;
 				try {
-					
 					// it waits for a connection
 					clientSocket = fileServerSocket.accept();
-					
-					String addr = null;
-					if (clientSocket.getInetAddress() != null)
-						addr = clientSocket.getInetAddress().toString();
-					
+					final String threadName;
+					final InetAddress addr = clientSocket.getInetAddress();
+					if (addr != null) {
+						threadName = FileServer.this.baseServer.name + "-FileServerClient(" + addr.toString() + ")";
+					} else {
+						threadName = FileServer.this.baseServer.name + "-FileServerClient";
+					}
 					if (clientSocket != null) {
 						final ClientFileHandler handler = new ClientFileHandler(clientSocket);
-						final Thread threadForClient = new Thread(handler);
-						if (addr == null)
-							threadForClient.setName(FileServer.this.baseServer.name + "-FileServerClient");
-						else
-							threadForClient.setName(FileServer.this.baseServer.name + "-FileServerClient("+addr+")");
-						threadForClient.start();
+                        clientExecutorService.execute(() -> {
+                            Thread.currentThread().setName(threadName);
+                            try {
+                            	handler.run();								
+							} catch (Exception e) {
+								LOG.error("Error handling client: " + threadName, e);
+				                throw new RuntimeException("Error handling client: " + threadName, e);
+							}
+                        });							
 					}
 					
 		        } catch (IOException e) {
-		        	
-		        	if (!stopped)
-		        		LOG.error("File server connection listener failed! We recommend to restart the server!", e);
-		        	
-		        } finally {
-		        	
 		        	if (!stopped) {
-		        		if (fileServerSocket != null && fileServerSocket.isClosed()) {
-		        			try {
-		        				fileServerSocket = baseServer.serverSocketFactory.create(this.listenerPort);
-			    				if (serverTimeout > 0)
-			    					fileServerSocket.setSoTimeout(serverTimeout);
-		        			} catch (IOException e) {
-		        				// That's wild, I know 
-		        			}
-		        		}
+		        		LOG.error("File server connection listener failed! We recommend to restart the server!", e);
+		        	}
+		        } finally {
+		        	if (!stopped && fileServerSocket != null && fileServerSocket.isClosed()) {
+	        			try {
+	        				fileServerSocket = baseServer.serverSocketFactory.create(this.listenerPort);
+		    				if (serverTimeout > 0)
+		    					fileServerSocket.setSoTimeout(serverTimeout);
+	        			} catch (IOException e) {
+	        				LOG.error("Failed to recreate server socket after it was closed.", e);
+	        			}
 		        	}
 	            }				
             } 
 		
 			// loop has been broken by STOP command.
 			Communicator.safeClose(fileServerSocket);
+			// shutdown thread pool
+			clientExecutorService.shutdown();
+		    try {
+		        // Wait for tasks to complete for up to 60 seconds
+		        if (!clientExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+		            clientExecutorService.shutdownNow(); // Force shutdown if timeout occurs
+		            if (!clientExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+		                LOG.error("Client executor service did not terminate.");
+		            }
+		        }
+		    } catch (InterruptedException ie) {
+		        // If interrupted, force shutdown immediately
+		        clientExecutorService.shutdownNow();
+		        Thread.currentThread().interrupt(); // Restore interrupt status
+		    }			
 		}		
 	}
 	
