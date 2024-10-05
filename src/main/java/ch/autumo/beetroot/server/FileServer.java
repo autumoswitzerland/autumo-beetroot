@@ -69,8 +69,6 @@ public class FileServer {
 	/** the base server */
 	private BaseServer baseServer = null;
 	
-	private FileServerListener fileListener = null;
-	private FileReceiverListener fileReceiverListener = null;
 	protected int portFileServer = -1;
 	protected int portFileReceiver = -1;
 	private ServerSocket fileServerSocket = null;
@@ -97,26 +95,21 @@ public class FileServer {
 	 * @param fileStorage file storage
 	 */
 	public FileServer(BaseServer baseServer, FileStorage fileStorage) {
-		
 		this.baseServer = baseServer;
 		this.fileStorage = fileStorage;
-		
 		portFileServer = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_PORT);
 		if (portFileServer == -1) {
-			LOG.error("File server port not specified! Using port '" + FileTransfer.DEFAULT_FILE_SERVER_PORT + "'.");
+			LOG.error("File server port not specified! Using port '{}'.", FileTransfer.DEFAULT_FILE_SERVER_PORT);
 			portFileServer = FileTransfer.DEFAULT_FILE_SERVER_PORT;
 		}
-
 		portFileReceiver = BeetRootConfigurationManager.getInstance().getInt(Constants.KEY_ADMIN_FILE_RECEIVER_PORT);
 		if (portFileReceiver == -1) {
-			LOG.error("File receiver port not specified! Using port '" + FileTransfer.DEFAULT_FILE_RECEIVER_PORT + "'.");
+			LOG.error("File receiver port not specified! Using port '{}'.", FileTransfer.DEFAULT_FILE_RECEIVER_PORT);
 			portFileReceiver = FileTransfer.DEFAULT_FILE_RECEIVER_PORT;
 		}
-		
 		// SSL sockets?
 		final String mode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_ENC);
 		sslSockets = (mode != null && mode.equalsIgnoreCase("ssl"));
-		
 		// read some undocumented settings if available
 		serverTimeout = BeetRootConfigurationManager.getInstance().getIntNoWarn("server_timeout"); // in ms !
 	}
@@ -125,13 +118,11 @@ public class FileServer {
 	 * Start file server.
 	 */
 	public void start() {
-		
-		fileListener = new FileServerListener(portFileServer);
+		final FileServerListener fileListener = new FileServerListener(portFileServer);
 		final Thread flServer = new Thread(fileListener);
 		flServer.setName(baseServer.name + "-FileServer");
 		flServer.start();
-		
-		fileReceiverListener = new FileReceiverListener(portFileReceiver);
+		final FileReceiverListener fileReceiverListener = new FileReceiverListener(portFileReceiver);
 		final Thread frServer = new Thread(fileReceiverListener);
 		frServer.setName(baseServer.name + "-FileReceiverServer");
 		frServer.start();
@@ -189,7 +180,6 @@ public class FileServer {
 				}
 			}
 		}
-		
 		// nothing found
 		return null;
 	}
@@ -310,71 +300,53 @@ public class FileServer {
 		
 		@Override
 		public void run() {
-			
 			ServerCommand command = null;
 			try {
-			
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-
 				// Only file GET commands allowed!
 				command = Communicator.readCommand(in);
-	        } 
-	        catch (UtilsException e) {
+			
+				// Security checks:
+				// 0. invalid server command?
+				if (command == null) {
+					LOG.error("Server command: received command is too long, command is ignored!");
+					return;
+				}
+				// 1. correct server name?
+				final String serverName = command.getServerName();
+				if (!serverName.equals(FileServer.this.baseServer.name)) {
+					LOG.error("Server command: Wrong server name received, command is ignored!");
+					return;
+				}
+				
+				// execute command
+				final Download download = FileServer.this.processServerCommand(command);
+				// Deliver file!
+				if (download != null) {
+					DataOutputStream out = null;
+					try {
+						 out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
+						 FileTransfer.writeFile(download, out);
+					} catch (IOException e) {
+						LOG.error("File server client response failed! We recommend to restart the server!", e);
+						System.err.println(BaseServer.ansiErrServerName + " File server client response failed! We recommend to restart the server!");
+			        } finally {
+			        	Communicator.safeClose(out);
+					}			
+				}
+	        } catch (UtilsException e) {
 				LOG.error("File server couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode) or");
 				LOG.error("     different encrypt modes have been defined on boths side, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket);
-				return;
 	        }	
 	        catch (IOException e) {
 				LOG.error("File server listener failed! Possible invalid messages received.", e);
+	        } finally {
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket);
-				return;
-	        }	
-			
-			// Security checks:
-			// 0. invalid server command?
-			if (command == null) {
-				LOG.error("Server command: received command is too long, command is ignored!");
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket); //
-				return;
-			}
-			// 1. correct server name?
-			final String serverName = command.getServerName();
-			if (!serverName.equals(FileServer.this.baseServer.name)) {
-				LOG.error("Server command: Wrong server name received, command is ignored!");
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket); //
-				return;
-			}
-			
-			// execute command
-			final Download download = FileServer.this.processServerCommand(command);
-			
-			// Deliver file!
-			if (download != null) {
-
-				DataOutputStream out = null;
-				try {
-	
-					 out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-					 FileTransfer.writeFile(download, out);
-				
-				} catch (IOException e) {
-					LOG.error("File server client response failed! We recommend to restart the server!", e);
-					System.err.println(BaseServer.ansiErrServerName + " File server client response failed! We recommend to restart the server!");
-		        } finally {
-		        	Communicator.safeClose(out);
-				}			
-			}
-			
-        	Communicator.safeClose(in);
-        	Communicator.safeClose(clientSocket);
+	        }					
 		}		
 	}
 	
@@ -387,6 +359,7 @@ public class FileServer {
 	 */
 	private final class FileReceiverListener implements Runnable {
 	
+		private ExecutorService clientExecutorService = Executors.newCachedThreadPool();
 		private int listenerPort = -1;
 
 		/**
@@ -395,9 +368,7 @@ public class FileServer {
 		 * @param listenerPort listener port
 		 */
 		public FileReceiverListener(int listenerPort) {
-			
 			this.listenerPort = listenerPort;
-			
 			// Communication is encrypted through the command message (cmd),
 			// by SSL sockets (ssl) or it is not (none) 
 			try {
@@ -412,36 +383,35 @@ public class FileServer {
 		
 		@Override
 		public void run() {
-			
 			while (!stopped) {
-				
 				Socket clientSocket = null;
 				try {
-					
 					// it waits for a connection
 					clientSocket = fileReceiverSocket.accept();
-					
-					String addr = null;
-					if (clientSocket.getInetAddress() != null)
-						addr = clientSocket.getInetAddress().toString();
-					
+					final String threadName;
+					InetAddress addr = clientSocket.getInetAddress();
+					if (addr != null) {
+						threadName = FileServer.this.baseServer.name + "-FileReceiverClient(" + addr.toString() + ")";
+					} else {
+						threadName = FileServer.this.baseServer.name + "-FileReceiverClient";
+					}
 					if (clientSocket != null) {
 						final ClientReceiverHandler handler = new ClientReceiverHandler(clientSocket);
-						final Thread threadForClient = new Thread(handler);
-						if (addr == null)
-							threadForClient.setName(FileServer.this.baseServer.name + "-FileReceiverClient");
-						else
-							threadForClient.setName(FileServer.this.baseServer.name + "-FileReceiverClient("+addr+")");
-						threadForClient.start();
-					}
-					
+                        clientExecutorService.execute(() -> {
+                            Thread.currentThread().setName(threadName);
+                            try {
+                            	handler.run();								
+							} catch (Exception e) {
+								LOG.error("Error handling client: " + threadName, e);
+				                throw new RuntimeException("Error handling client: " + threadName, e);
+							}
+                        });							
+					}					
 		        } catch (IOException e) {
-		        	
-		        	if (!stopped)
+		        	if (!stopped) {
 		        		LOG.error("File receiver connection listener failed! We recommend to restart the server!", e);
-		        	
+		        	}
 		        } finally {
-		        	
 		        	if (!stopped) {
 		        		if (fileReceiverSocket != null && fileReceiverSocket.isClosed()) {
 		        			try {
@@ -458,9 +428,23 @@ public class FileServer {
 		        	}
 	            }				
             } 
-		
 			// loop has been broken by STOP command.
 			Communicator.safeClose(fileReceiverSocket);
+			// shutdown thread pool
+			clientExecutorService.shutdown();
+		    try {
+		        // Wait for tasks to complete for up to 60 seconds
+		        if (!clientExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+		            clientExecutorService.shutdownNow(); // Force shutdown if timeout occurs
+		            if (!clientExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+		                LOG.error("Client executor service did not terminate.");
+		            }
+		        }
+		    } catch (InterruptedException ie) {
+		        // If interrupted, force shutdown immediately
+		        clientExecutorService.shutdownNow();
+		        Thread.currentThread().interrupt(); // Restore interrupt status
+		    }				
 		}		
 	}
 
@@ -483,25 +467,19 @@ public class FileServer {
 		
 		@Override
 		public void run() {
-			
 			File file = null;
 			Upload upload = null;
-			boolean found = false;
+			boolean verified = false;
 			try {
-			
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-				
 				// Only files!
 				final long size = in.readLong();
 				for (Iterator<Upload> iterator = uploadQueue.iterator(); iterator.hasNext();) {
-					
 					upload = iterator.next();
 					if (upload.getSize() == size) { // First check: file size
-						
 						file = FileTransfer.readFile(in, upload.getFileName(), size);
 						final String absPath = file.getAbsolutePath();
 						final Path path = Paths.get(absPath);
-						
 					    byte data[];
 					    String checkSum = null;
 						try {
@@ -511,34 +489,37 @@ public class FileServer {
 						} catch (Exception e) {
 							throw new IOException("Couldn't build checksum for file '" + absPath + "!", e);
 						}						
-						
 						if (upload.getCheckSum().equals(checkSum)) {
-							found = true;
+							verified = true;
 							uploadQueue.remove(upload);
 							break;
 						}
 					}
 				}
-	        } 
-	        catch (UtilsException e) {
+				// Do work and create answers!
+				this.process(upload, file, verified);
+	        } catch (UtilsException e) {
 				LOG.error("File receiver couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match on both sides ('msg' mode) or");
 				LOG.error("     different encrypt modes have been defined on boths side, or the server's");
 				LOG.error("     configuration is set to encode server-client communication, but the client's isn't!");
 				LOG.error("  -> Check config 'admin_com_encrypt' on both ends.");
-				Communicator.safeClose(in);
-	        	Communicator.safeClose(clientSocket);
-				return;
-	        }	
+	        }
 	        catch (IOException e) {
 				LOG.error("File receiver listener failed! Possible invalid messages received.", e);
+	        } finally {
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket);
-				return;
-	        }	
-			
+				// Purge the temporary file if any!
+				if (file != null && file.exists()) {
+					file.delete();
+				}
+	        }
+		}
+		
+		private void process(Upload upload, File file, boolean verified) {
+			// 0. PING answer (for health status)
 			if (upload.getFileName().startsWith(PingUploadRequest.PING_FILE_PREFIX)) {
-				
 				// Dummy answer!
 				DataOutputStream out = null;
 				try {
@@ -550,25 +531,20 @@ public class FileServer {
 		        } finally {
 		        	Communicator.safeClose(out);
 				}			
-				
-			} else if (file != null && found) {
-				
+			// 1. Store file and return state of file storage
+			} else if (file != null && verified) {
 				// store it !
 				String uniqueFileId = null;
 				try {
-					
 					if (fileStorage != null)
 						uniqueFileId = fileStorage.store(file, upload.getFileName(), upload.getUser(), upload.getDomain());
 					else
 						uniqueFileId = baseServer.store(file, upload.getFileName(), upload.getUser(), upload.getDomain());
-					
 				} catch (Exception e1) {
-					
 					LOG.error("Couldn't store received file '"+upload.getFileName()+"'!", e1);
 					System.err.println(BaseServer.ansiErrServerName + " Couldn't store received file '"+upload.getFileName()+"'!");
 					uniqueFileId = null;
 				}					
-				
 				DataOutputStream out = null;
 				try {
 					out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
@@ -583,9 +559,8 @@ public class FileServer {
 		        } finally {
 		        	Communicator.safeClose(out);
 				}			
-
-			} else { // no matching file found!
-				
+			// 2. No file received of file couldn't be verified
+			} else {
 				DataOutputStream out = null;
 				try {
 					out = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
@@ -596,15 +571,8 @@ public class FileServer {
 		        } finally {
 		        	Communicator.safeClose(out);
 				}							
-			}
-			
-			// Purge the temporary file!
-			if (file != null && file.exists())
-				file.delete();
-			
-        	Communicator.safeClose(in);
-        	Communicator.safeClose(clientSocket);
-		}		
+			}			
+		}
 	}
 	
 }
