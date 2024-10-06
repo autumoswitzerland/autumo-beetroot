@@ -42,6 +42,7 @@ public class HandlerResponse {
 	private Exception exception = null;
 	private Object object = null;
 	private File downloadFile = null;
+	private String downloadFileName = null;
 	private String downloadFileMimeType = null;
 	
 	private Response httpResponse = null;
@@ -207,6 +208,14 @@ public class HandlerResponse {
 		this.downloadFile = downloadFile;
 	}
 
+	public String getDownloadFileName() {
+		return downloadFileName;
+	}
+
+	public void setDownloadFileName(String downloadFileName) {
+		this.downloadFileName = downloadFileName;
+	}
+	
 	public String getDownloadFileMimeType() {
 		return downloadFileMimeType;
 	}

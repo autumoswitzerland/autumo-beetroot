@@ -2046,7 +2046,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 				if (!file.exists())
 					throw new FileNotFoundException("File '"+file.getName()+"' doesn't exist (Download)!");
 		        final Response downloadResponse = Response.newFixedLengthResponse(getStatus(), mime, new FileInputStream(file), file.length());
-		        downloadResponse.addHeader("Content-disposition", "attachment; filename=" +file.getName());
+		        String fName = response.getDownloadFileName();
+		        if (fName == null || fName.length() == 0) {
+		        	fName = file.getName();
+		        }
+		        downloadResponse.addHeader("Content-disposition", "attachment; filename=" + fName);
 				return downloadResponse;
 			}
 			
