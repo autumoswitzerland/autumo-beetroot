@@ -1,4 +1,4 @@
-# CRUD Generator **PLANT** &amp Columns Configuration
+# CRUD Generator **PLANT** &amp; Columns Configuration
 <div id="top"></div>
 
 Start the CRUD generator with the script `plant.sh` / `plant.bat` and follow the steps!
