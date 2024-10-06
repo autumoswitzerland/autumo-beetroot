@@ -1,6 +1,18 @@
 # Handlers
 
-There are several handler types from which you can inherit.
+There are several handler types from which you can inherit. All handlers are generally stateless; the following main methods are called in a stateless context, and you should store variables in the user session if they are needed in another method, and remove them from the session after use, unless you want them to be stored in the persisted user session when the server exits:
+
+- `HandlerResponse readData(BeetRootHTTPSession session, int id)`
+	- Used by View, Add, Edit and Index handlers
+- `HandlerResponse saveData(BeetRootHTTPSession session)`
+	- Used by Add handler
+- `HandlerResponse updateData(BeetRootHTTPSession session, int id)`
+	- Used by Edit handler
+- `HandlerResponse deleteData(BeetRootHTTPSession session, int id)`
+	- Used by Delete handler
+
+The base handler (base for each handler) calls many methods so that you can customize the behavior of a handler in different ways. Class attributes can be used in some of these methods, and between these calls the handler maintains its state. To know which methods are in a stateful context, examine the 
+[BaseHandler](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/handler/BaseHandler.java).
 
 ## [DefaultIndexHandler](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/handler/DefaultIndexHandler.java)
 

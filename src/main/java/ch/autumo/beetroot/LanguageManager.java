@@ -390,7 +390,7 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.warn("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
+	    	LOG.warn("No template translation for key '{}' found! trying with language '{}'.", key, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
@@ -434,7 +434,7 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.warn("No template translation for key '{}' found! trying with default language '{}'.", key, DEFAULT_LANG);
+	    	LOG.warn("No template translation for key '{}' found! trying with language '{}'.", key, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);
@@ -537,7 +537,7 @@ public class LanguageManager {
 		try {
 			text = bundle.getString(key);
 		} catch (Exception e) {
-	    	LOG.warn("No app translation for key '{}' found for language '{}'! trying with default language '{}'.", key, lang, DEFAULT_LANG);
+	    	LOG.warn("No app translation for key '{}' found for language '{}'! trying with language '{}'.", key, lang, DEFAULT_LANG);
 	    	bundle = langBundles.get(DEFAULT_LANG);
 	    	try {
 				text = bundle.getString(key);

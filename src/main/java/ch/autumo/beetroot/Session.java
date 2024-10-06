@@ -192,6 +192,16 @@ public class Session implements Serializable {
 		
 		this.set("two_fa", user.getTwoFa() ? "1" : "0");
 	} 	
+
+	/**
+	 * Clear all user data within session 
+	 * except a previously set language.
+	 */
+	public void clearUserDataExceptLanguage() {
+		final String tempLang = this.getUserLang();
+		this.clearUserData();
+		this.setUserLang(tempLang);
+	}
 	
 	/**
 	 * Clear all user data within session.

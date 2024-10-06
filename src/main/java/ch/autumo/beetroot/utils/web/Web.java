@@ -24,6 +24,10 @@ import java.net.URLEncoder;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
 import java.util.List;
@@ -352,7 +356,70 @@ public class Web {
 		
 		return pattern;
 	}
+
+	/**
+	 * Pre-format values from database for HTML input values.
+	 * 
+	 * @param databaseValueObject database value object
+	 * @param sqlType SQL type, see {@link java.sql.Types}
+	 * @return pre-formatted value for HTML
+	 */
+	public static String preFormatForHTML(Object databaseValueObject, int sqlType) {
+		String preformattedVal = "";
+		switch (sqlType) {
+			case Types.TIMESTAMP:
+				preformattedVal = Web.formatDateTimeForHTML((java.sql.Timestamp) databaseValueObject);
+				break;
+			case Types.DATE:
+				preformattedVal = Web.formatDateForHTML((java.sql.Date) databaseValueObject);
+				break;
+			case Types.TIME:
+				preformattedVal = Web.formatTimeForHTML((java.sql.Time) databaseValueObject);
+				break;
+			default:
+				if (databaseValueObject != null)
+					preformattedVal = databaseValueObject.toString().trim();
+				break;
+		}
+		return preformattedVal;
+	}
 	
+	/**
+	 * Format SQL date.
+	 * 
+	 * @param sqlDate SQL date
+	 * @return formatted string for HTML input value
+	 */
+    protected static String formatDateForHTML(java.sql.Date sqlDate) {
+        final LocalDate localDate = sqlDate.toLocalDate();
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return localDate.format(formatter); // Format as YYYY-MM-DD
+    }
+    
+	/**
+	 * Format SQL time.
+	 * 
+	 * @param sqlDate SQL time
+	 * @return formatted string for HTML input value
+	 */
+    protected static String formatTimeForHTML(java.sql.Time sqlTime) {
+    	final LocalTime localTime = sqlTime.toLocalTime();
+    	final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return localTime.format(formatter); // Format as HH:MM
+    }
+    
+	/**
+	 * Format SQL time-stamp.
+	 * 
+	 * @param sqlDate SQL time-stamp
+	 * @return formatted string for HTML input value
+	 */
+    protected static String formatDateTimeForHTML(java.sql.Timestamp sqlTimestamp) {
+    	final LocalDateTime localDateTime = sqlTimestamp.toLocalDateTime();
+    	final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        return localDateTime.format(formatter); // Format as YYYY-MM-DDTHH:MM
+    }
+    
 	/**
 	 * Ping a web-site.
 	 * 

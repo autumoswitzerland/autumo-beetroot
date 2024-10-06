@@ -92,13 +92,10 @@ public abstract class DefaultAddHandler extends BaseHandler {
 				set = stmt.executeQuery(stmtStr);
 	
 				LOOP: for (int i = 1; i <= columns().size(); i++) {
-					
 					final String col[] = getColumn(i);
-					
 					final String guiColTitle = col[1];
 					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 						continue LOOP;
-					
 					htmlData += this.extractSingleInputDiv(session, params, set.getMetaData(), col[0], guiColTitle, i);
 				}
 				set.close();
@@ -114,17 +111,14 @@ public abstract class DefaultAddHandler extends BaseHandler {
 			// we only need the result set for the column meta data
 			stmt.setFetchSize(1);
 			
-			String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; //NO SEMICOLON + ";";
+			String stmtStr = "SELECT " + super.getColumnsForSql() + " FROM " + this.entity; // NO SEMICOLON + ";";
 			set = stmt.executeQuery(stmtStr); // NOTE: call only for types, make this better!
 			
 			LOOP: for (int i = 1; i <= columns().size(); i++) {
-				
 				final String col[] = getColumn(i);
-				
 				final String guiColTitle = col[1];
 				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 					continue LOOP;
-				
 				htmlData += extractSingleInputDiv(session, set.getMetaData(), col[0], guiColTitle, i);
 			}
 			

@@ -1110,8 +1110,11 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	    // Language
 		final Session userSession = session.getUserSession();
 	    final User user = userSession.getUser();
-	    final String lang = LanguageManager.getInstance().retrieveLanguage(session);
-		userSession.setUserLang(lang);
+	    String lang = userSession.getUserLang();
+	    if (lang == null) {
+	    	lang = LanguageManager.getInstance().retrieveLanguage(session);
+	    	userSession.setUserLang(lang);
+	    }
 		
 		
 		String userName = userSession.getUserName();
@@ -2875,8 +2878,12 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					}
 				}
 				String trans = "";
-				if (totrans.length() > 0)
-					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session.getUserSession(), subValuesArr, escape);
+				if (totrans.length() > 0) {
+					final Session userSession = session.getUserSession();
+					if (userSession.getUserLang() == null)
+						userSession.setUserLang(LanguageManager.getInstance().retrieveLanguage(session));
+					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), userSession, subValuesArr, escape);
+				}
 				text = text.substring(0, idx) + trans + text.substring(pos2 + 1);
 			}
 		}
@@ -2991,6 +2998,15 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	
 	/**
 	 * Format single value before update / insert into DB.
+	 * 
+	 * This method is useful if you want to store null values for date, 
+	 * time or time-stamp in the database. In the HTML user interface, 
+	 * the value would be displayed as '' (empty string), which is not 
+	 * a valid value in the database; in this case, it would need to be 
+	 * set to null. This is rarely the case, as date/time values are 
+	 * normally set or, if they are mandatory, should be set in the 
+	 * {@link DefaultAddHandler#getAddMandatoryFields()} method when 
+	 * creating a new record. It is therefore only possible for updates. 
 	 * 
 	 * @param session HTTP session
 	 * @param val value

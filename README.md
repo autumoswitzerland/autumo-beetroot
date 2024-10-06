@@ -135,7 +135,7 @@ configuration key to get to know the possibilities and the extensive features of
 - [Running](doc/running.md)
 - [Configuration &amp; Passwords](doc/configuration.md)
 - [Database Setup](doc/database.md)
-- [PLANT: The CRUD Generator](doc/plant.md)
+- [PLANT: The CRUD Generator &amp Columns Configuration](doc/plant.md)
 - [Default HTML Templates](doc/templates.md)
 - [Routing](doc/routing.md)
 - [Handlers](doc/handlers.md)

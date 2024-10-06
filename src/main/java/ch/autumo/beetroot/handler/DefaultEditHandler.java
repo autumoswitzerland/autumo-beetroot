@@ -84,13 +84,10 @@ public class DefaultEditHandler extends BaseHandler {
 				set = stmt.executeQuery(stmtStr);
 	
 				LOOP: for (int i = 1; i <= columns().size(); i++) {
-					
 					final String col[] = getColumn(i);
-					
 					final String guiColTitle = col[1];
 					if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 						continue LOOP;
-					
 					htmlData += this.extractSingleInputDiv(session, params, set.getMetaData(), col[0], guiColTitle, i);
 				}
 				set.close();
@@ -105,6 +102,7 @@ public class DefaultEditHandler extends BaseHandler {
 			
 			String stmtStr = "SELECT id, " + super.getColumnsForSql() + " FROM " + this.entity + " WHERE id=" + id;
 			set = stmt.executeQuery(stmtStr);
+			final ResultSetMetaData metaData = set.getMetaData();
 	
 			set.next(); // one record !
 			
@@ -121,12 +119,13 @@ public class DefaultEditHandler extends BaseHandler {
 				
 				final String col[] = getColumn(i);
 				int dbIdx = i + 1; // because of additional id!
+				int sqlType = metaData.getColumnType(dbIdx);
 				
 				final String guiColTitle = col[1];
 				if (guiColTitle != null && guiColTitle.equals(Constants.GUI_COL_NO_SHOW)) // NO_SHOW option
 					continue LOOP;
 				
-				htmlData += extractSingleInputDiv(session, set, entity, col[0], guiColTitle, dbIdx);		
+				htmlData += extractSingleInputDiv(session, set, entity, col[0], guiColTitle, sqlType, dbIdx);		
 			}
 		
 		} finally {
@@ -202,16 +201,15 @@ public class DefaultEditHandler extends BaseHandler {
 	 * @param entity entity bean
 	 * @param columnName column name as configured in 'web/&lt;entity&gt;/columns.cfg'
 	 * @param guiColName GUI column name as configured in 'web/&lt;entity&gt;/columns.cfg'
+	 * @param sqlType SQL type, see {@link java.sql.Types}
 	 * @param idx SQL result set column index
 	 * @return html data extract &lt;div&gt;...&lt;/div&gt;
 	 * @throws Exception exception
 	 */
-	protected String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int idx) throws Exception {
+	protected String extractSingleInputDiv(BeetRootHTTPSession session, ResultSet set, Entity entity, String columnName, String guiColName, int sqlType, int idx) throws Exception {
 		final Object dbObj = set.getObject(idx);
-		String dbVal = new String("");
-		if (dbObj != null)
-			dbVal = dbObj.toString().trim();
-		final String val = this.formatSingleValueForGUI(session, dbVal, columnName, idx, entity);
+		final String preformattedVal = Web.preFormatForHTML(dbObj, sqlType);
+		final String val = this.formatSingleValueForGUI(session, dbObj, preformattedVal, columnName, sqlType, idx, entity);
 		return this.extractSingleInputDiv(session, val, set.getMetaData(), columnName, guiColName, idx, false); // true); // ->no PW from DB anymore
 	}
 	
@@ -234,6 +232,8 @@ public class DefaultEditHandler extends BaseHandler {
 		String val = data.get(columnName);
 		if (val == null) // TRANSIENT values
 			val = "";
+		// Note: We cannot set date/time objects (date time, time-stamp) to null in the GUI,
+		// so even these values will be an empty string.
 		return this.extractSingleInputDiv(session, val, rsmd, columnName, guiColName, idx, false);
 	}
 	
@@ -477,14 +477,16 @@ public class DefaultEditHandler extends BaseHandler {
 	 * Format value for GUI.
 	 * 
 	 * @param session HTTP session
+	 * @param dbObject DB object 
 	 * @param value value from DB 
 	 * @param columnName DB column name
+	 * @param sqlType SQL type, see {@link java.sql.Types}
 	 * @param dbIdx SQL result set column index
 	 * @param entity whole entity bean
 	 * @return formated value for given column-name or DB index 
 	 */
-	public String formatSingleValueForGUI(BeetRootHTTPSession session, String value, String columnName, int dbIdx, Entity entity) {
-		return value;
+	public String formatSingleValueForGUI(BeetRootHTTPSession session, Object dbObject, String preformattedValue, String columnName, int sqlType, int dbIdx, Entity entity) {
+		return preformattedValue;
 	}
 	
 	@Override

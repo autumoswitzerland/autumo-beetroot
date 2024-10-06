@@ -709,7 +709,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		            // Finish all necessary steps and give response
 		            return postLogin(session, userSession, userSession.getUserId(), userSession.getUserName());
         		} else {
-        			userSession.clearUserData();
+        			userSession.clearUserDataExceptLanguage();
 					String m = LanguageManager.getInstance().translate("base.err.login.msg", userLang, postParamUsername);
 					return serverResponse(session, this.getHandlerClass("LoginHandler"), "Login", m);
         		}
@@ -756,9 +756,9 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	            		}
 
 					} catch (SQLException e) {
-						final String err = "Server Internal Error - DB is possibly not reachable, check DB configuration - DB Exception: " + e.getMessage();
+						final String err = "Server Internal Error - DB is possibly not reachable, Check DB configuration - DB Exception: " + e.getMessage();
 						LOG.error(err, e);
-            			userSession.clearUserData();
+            			userSession.clearUserDataExceptLanguage();
 						String t = LanguageManager.getInstance().translate("base.err.srv.db.title", userLang);
 						String m = LanguageManager.getInstance().translate("base.err.srv.db.msg", userLang, e.getMessage());
 						return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
@@ -786,7 +786,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 							} catch (UtilsException e) {
 								final String err = "Server Internal Error - Exception: " + e.getMessage();
 								LOG.error(err, e);
-		            			userSession.clearUserData();
+		            			userSession.clearUserDataExceptLanguage();
 								String t = LanguageManager.getInstance().translate("base.err.srv.ex.title", userLang);
 								String m = LanguageManager.getInstance().translate("base.err.srv.ex.msg", userLang, e.getMessage());
 								return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
@@ -879,7 +879,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 			            return postLogin(session, userSession, user.getId(), postParamUsername);
 			            
             		} else {
-            			userSession.clearUserData();
+            			userSession.clearUserDataExceptLanguage();
 						// serve login page!
 						String m = LanguageManager.getInstance().translate("base.err.login.msg", userLang, postParamUsername);
 						return serverResponse(session, this.getHandlerClass("LoginHandler"), "Login", m);
@@ -890,7 +890,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 
 		// Nope, no login after all.
 		if (!loggedIn) {
-			userSession.clearUserData();
+			userSession.clearUserDataExceptLanguage();
 			if (uriWithoutServlet.endsWith("/users/reset") || uriWithoutServlet.endsWith("/users/change")) {
 	            return this.serveAtLast(session);
 			} else {
