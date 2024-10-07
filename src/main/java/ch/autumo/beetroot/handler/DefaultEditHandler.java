@@ -478,7 +478,7 @@ public class DefaultEditHandler extends BaseHandler {
 	 * 
 	 * @param session HTTP session
 	 * @param dbObject DB object 
-	 * @param value value from DB 
+	 * @param preformattedValue pre-formatted database value 
 	 * @param columnName DB column name
 	 * @param sqlType SQL type, see {@link java.sql.Types}
 	 * @param dbIdx SQL result set column index

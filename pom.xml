@@ -236,10 +236,10 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${version.maven.javadoc.plugin}</version>
 				<configuration>
-					<sourcepath>src/main/java</sourcepath>
 					<doclint>all,-missing</doclint>
-					<reportOutputDirectory>${basedir}/doc</reportOutputDirectory>
+					<sourcepath>src/main/java</sourcepath>
 					<stylesheetfile>${basedir}/doc/autumo.css</stylesheetfile>
+					<outputDirectory>${basedir}/doc</outputDirectory>
 				</configuration>
 			</plugin>
 

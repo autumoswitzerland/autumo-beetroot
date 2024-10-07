@@ -205,7 +205,7 @@ public class DefaultRESTIndexHandler extends BaseHandler {
 	/**
 	 * Prepare call to to something with the current entity bean 
 	 * processed in the list if necessary. Called before all 
-	 * {@link #extractSingleTableData(BeetRootHTTPSession, ResultSet, String, int, Entity)}
+	 * {@link #extractSingleTableData(BeetRootHTTPSession, ResultSet, String, String, int, Entity)}
 	 * calls.
 	 * 
 	 * @param session HTTP session

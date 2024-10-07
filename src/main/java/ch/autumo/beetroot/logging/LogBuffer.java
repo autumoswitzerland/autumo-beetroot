@@ -57,7 +57,6 @@ public class LogBuffer {
      * 
      * @param level level
      * @param message message
-     * @param arguments arguments
      */
     public static void log(LogLevel level, String message) {
         logBuffer.add(new LogEntry(level, message));

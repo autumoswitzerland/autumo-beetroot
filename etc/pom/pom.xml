@@ -24,12 +24,12 @@
 		<version.maven.antrun.plugin>3.1.0</version.maven.antrun.plugin>
 		<version.maven.compiler.plugin>3.13.0</version.maven.compiler.plugin>
 		<version.maven.dependency.plugin>3.7.0</version.maven.dependency.plugin>
-		<version.maven.javadoc.plugin>3.7.0</version.maven.javadoc.plugin>
 		<version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
 		<version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
 		
 		<version.autumo.beetroot>3.1.0</version.autumo.beetroot>
-		<version.nanohttpd>BEETROOT-2.3.5</version.nanohttpd>
+		<version.nanohttpd>BEETROOT-2.3.5</version.nanohttpd
+		>
 		<version.hikaricp>6.0.0</version.hikaricp>
 		<version.jcolor>5.5.1</version.jcolor>
 		<version.angus.activation>2.0.2</version.angus.activation>

@@ -399,7 +399,7 @@ public class Web {
 	/**
 	 * Format SQL time.
 	 * 
-	 * @param sqlDate SQL time
+	 * @param sqlTime SQL time
 	 * @return formatted string for HTML input value
 	 */
     protected static String formatTimeForHTML(java.sql.Time sqlTime) {
@@ -411,7 +411,7 @@ public class Web {
 	/**
 	 * Format SQL time-stamp.
 	 * 
-	 * @param sqlDate SQL time-stamp
+	 * @param sqlTimestamp SQL time-stamp
 	 * @return formatted string for HTML input value
 	 */
     protected static String formatDateTimeForHTML(java.sql.Timestamp sqlTimestamp) {
