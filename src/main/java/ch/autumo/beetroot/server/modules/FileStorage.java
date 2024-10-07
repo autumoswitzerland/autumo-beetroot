@@ -40,8 +40,11 @@ public interface FileStorage {
 
 	/**
 	 * Find a file (latest version). The file delivered within the download must be
-	 * physically temporarily available, so it can be delivered by
-	 * a stream.
+	 * physically temporarily available, so it can be delivered by a stream and the
+	 * file referenced by the download will ALWAYS be deleted after sending it to the
+	 * client; so it is necessary to create a temporary file in the download -
+	 * never reference the original file, e.g. when a real file structure is used
+	 * as a file storage!
 	 *   
 	 * @param uniqueFileId unique file id
 	 * @param domain domain or null (default)

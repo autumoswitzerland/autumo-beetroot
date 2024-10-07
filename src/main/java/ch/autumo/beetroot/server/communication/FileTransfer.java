@@ -69,6 +69,10 @@ public class FileTransfer {
 	/**
 	 * Write/send file from server to client.
 	 * 
+	 * NOTE: The file referenced by the download will be deleted after sending
+	 * it to the client; only provide temporary files (copy of the originals)
+	 * within the download!
+	 * 
 	 * @param download download file
 	 * @param output output stream
 	 * @throws IOException IO exception
@@ -88,11 +92,14 @@ public class FileTransfer {
         }
         fileInputStream.close();
 
-		LOG.trace("Server file '" + download.getFileName() + "' sent!");
+		LOG.trace("Server file '{}' sent!", download.getFileName());
         
 		// At last we delete the temporary file, it is consumed now !
-        if (download.getFile().exists())
-        	download.getFile().delete();
+        if (download.getFile().exists()) {
+        	if (!download.getFile().delete()) {
+        		LOG.warn("File '{}' couldn't be deleted after sending it to client!", download.getFile().getAbsolutePath());
+        	}
+        }
 	}
 	
 	
