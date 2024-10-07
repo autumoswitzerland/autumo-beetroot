@@ -15,15 +15,17 @@ These resources are straightly routed by the user's URL request, e.g.:
 
 Also, in this case, you never have to reference a servlet name in any HTML template, you always point to the root-path "/", no matter what!
 
-A few words about existing stylesheets:
+A few words about existing stylesheets (see directory `web/css/uncompressed` for uncompressed versions):
 
-  - `base.css`, `bootstrap-beetroot.css`, `foundation.min.css`: Base styles, this is something you don't want to change in most cases unless you create your own page design from scratch; In this case, you could get rid of them all.
+  - `base.min.css`, `bootstrap.min.css`, `foundation.min.css`: Base styles, this is something you don't want to change in most cases unless you create your own page design from scratch; In this case, you could get rid of them all.
 
-  - `web/css/style.css`: Adjust your general web-application style here.
-
-  - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet context correctly.
+  - `web/css/password-strength.min.css`: Password validator/strength script.
 
   - `web/css/jquery-ui.min.css`: Better tooltips.
+
+  - `web/css/style.min.css`: Adjust your general web-application style here.
+  
+  - `web/css/refs.css`: Add here styles that reference images, fonts, etc. per url-references, e.g.: `url('/img/...');`. This is necessary, so beetRoot can translate resource URL's for a servlet context correctly.
 
   - `web/css/default.css`: Your default web-application styles and designs.
 

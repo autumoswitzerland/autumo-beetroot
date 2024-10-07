@@ -1,6 +1,8 @@
 # Logging
 
-beetRoot uses [SLF4j](https://slf4j.org). For the standalone and Tomcat wep-app version, the log4j2 implementation (the one that has NOT the log4j2 bug in it...!) is used and the default configuration `cfg/logging.xml` (standalone) and/or `logging.xml` (in Tomcat web application servlet directory) is used. If you want to specify your own, adjust it this way:
+beetRoot uses [SLF4j](https://slf4j.org) with [log4j2](https://logging.apache.org/log4j). For the standalone and Tomcat wep-app version, the log4j2 
+implementation is used and the default configuration `cfg/logging.xml` (standalone) and/or `logging.xml` (in Tomcat web application servlet directory) 
+is read for that purpose. If you want to specify your own logging configuration, adjust it this way:
 
 - Standalone: Define a runtime parameter in the shell/bash script when starting Java:
 
