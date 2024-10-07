@@ -23,8 +23,6 @@ VERSION=3.1.0
 
 
 
-
-
 # ------------------------------------------------
 # -------- Usage
 # ------------------------------------------------
@@ -43,8 +41,6 @@ then
 	echo " "
 	exit 1
 fi
-
-
 
 
 # ------------------------------------------------
@@ -89,7 +85,6 @@ then
 	
 	exit 1
 fi
-
 
 
 # ------------------------------------------------
@@ -226,7 +221,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# make empty dirs
 	mkdir autumo-beetRoot-$VERSION/log
 
-# --------- H2 DB
+	# --------- H2 DB
 
 	mkdir autumo-beetRoot-$VERSION/db
 	cd autumo-beetRoot-$VERSION/db
@@ -253,25 +248,23 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	cp ../db/h2/h2* autumo-beetRoot-web-$VERSION/db/h2/
 	cp ../db/h2/db/dist/* autumo-beetRoot-web-$VERSION/db/h2/db/
-	cp ../db/*.sql autumo-beetRoot-web-$VERSION/db/
-	
+	cp ../db/*.sql autumo-beetRoot-web-$VERSION/db/	
 
-# --------- Gen resources
+	# --------- Gen resources
 
 	mkdir autumo-beetRoot-$VERSION/gen
 	
 	cp -r ../gen autumo-beetRoot-$VERSION/
 
-# --------- Web resources
+	# --------- Web resources
 
 	mkdir autumo-beetRoot-$VERSION/web
 	
 	cp -r ../web autumo-beetRoot-$VERSION/
-
 	
 	cp -r ../web autumo-beetRoot-web-$VERSION/
 	
-# --------- SSL resources
+	# --------- SSL resources
 
 	mkdir autumo-beetRoot-$VERSION/ssl
 
@@ -279,7 +272,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	cp -r ../ssl autumo-beetRoot-web-$VERSION/
 	
-# --------- Copy scripts
+	# --------- Copy scripts
 
 	mkdir autumo-beetRoot-$VERSION/bin
 
@@ -292,8 +285,10 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../bin/plant.sh autumo-beetRoot-$VERSION/bin
 	cp ../bin/plant.bat autumo-beetRoot-$VERSION/bin
 
+	cp ../bin/version.sh autumo-beetRoot-$VERSION/bin
+	cp ../bin/version.bat autumo-beetRoot-$VERSION/bin
 
-# --------- Copy infos
+	# --------- Copy infos
 
 	mkdir autumo-beetRoot-$VERSION/doc
 	mkdir autumo-beetRoot-$VERSION/doc/migration
@@ -415,5 +410,4 @@ else
 	echo "Nope! -> make create|clear "
 	echo " "
 fi
-
 
