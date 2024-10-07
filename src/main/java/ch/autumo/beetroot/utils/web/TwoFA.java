@@ -35,7 +35,7 @@ import com.google.zxing.common.BitMatrix;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.utils.UtilsException;
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 import de.taimos.totp.TOTP;
 
 /**

@@ -40,7 +40,7 @@ import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.database.DB;
 import ch.autumo.beetroot.utils.database.DBField;
 import ch.autumo.beetroot.utils.database.H2Url;
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 
 /**
  * Database manager.

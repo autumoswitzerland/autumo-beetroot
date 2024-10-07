@@ -69,7 +69,7 @@ import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.common.Colors;
 import ch.autumo.beetroot.utils.security.SSL;
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 import ch.autumo.beetroot.utils.web.Web;
 
 /**

@@ -41,7 +41,7 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.common.Colors;
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 
 /**
  * PLANT - beetRoot CRUD Generator.

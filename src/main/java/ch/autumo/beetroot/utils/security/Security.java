@@ -38,7 +38,7 @@ import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.security.password.PasswordHashProvider;
 import ch.autumo.beetroot.utils.UtilsException;
-import ch.autumo.beetroot.utils.systen.GUIDGenerator;
+import ch.autumo.beetroot.utils.system.GUIDGenerator;
 
 
 /**

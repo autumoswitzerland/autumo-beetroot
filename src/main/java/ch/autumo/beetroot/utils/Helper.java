@@ -20,7 +20,7 @@ package ch.autumo.beetroot.utils;
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
 
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 
 /**
  * Helper methods.

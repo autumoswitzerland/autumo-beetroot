@@ -29,7 +29,7 @@ import org.nanohttpd.protocols.http.content.CookieHandler;
 
 import ch.autumo.beetroot.handler.users.User;
 import ch.autumo.beetroot.utils.common.LowerCaseList;
-import ch.autumo.beetroot.utils.systen.GUIDGenerator;
+import ch.autumo.beetroot.utils.system.GUIDGenerator;
 
 /**
  * User session.

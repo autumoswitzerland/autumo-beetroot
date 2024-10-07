@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
 import ch.autumo.beetroot.server.action.Download;
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 
 /**
  * Client/Server file transfer.

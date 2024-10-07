@@ -119,7 +119,7 @@ public class PWEncoder {
     private static final class Help {
 		private static final String SHELL_EXT = SystemUtils.IS_OS_UNIX ? "sh" : "bat";
 		private static final String USAGEA = Colors.darkYellow("pwencoder."+SHELL_EXT+" <mode> \"<password to encode>\"");
-		private static final String USAGE0 = Colors.darkYellow("pwencoder.sh 1 \"mySecretPass\"");
+		private static final String USAGE0 = Colors.darkYellow("pwencoder."+SHELL_EXT+" \"mySecretPass\"");
     	public static final String TEXT =
 				"" 																					+ LINE_SEPARATOR +
 				"" 																					+ LINE_SEPARATOR +

@@ -46,7 +46,7 @@ import ch.autumo.beetroot.logging.LogBuffer.LogLevel;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.security.Security;
-import ch.autumo.beetroot.utils.systen.OS;
+import ch.autumo.beetroot.utils.system.OS;
 
 
 /**

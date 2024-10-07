@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package ch.autumo.beetroot.utils.systen;
+package ch.autumo.beetroot.utils.system;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
