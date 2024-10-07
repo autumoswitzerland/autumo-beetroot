@@ -63,6 +63,8 @@ the database model! The client-server framework supports encrypted communication
 as well as HTTP/HTTPS tunneling, provides an interface for downloading and uploading files
 and can be extended with your own (distributed) modules.
 
+[![autumo beetRoot 3.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-login.webp)][video-url]
+
 [![autumo beetRoot 3.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.webp)][video-url]
 <p style="text-align: center;">
 	<strong>
