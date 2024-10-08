@@ -175,8 +175,9 @@ configuration key to get to know the possibilities and the extensive features of
 <!-- Links -->
 ## Links
 
-- [Products](https://twitter.com/autumo)
-- [Github](https://github.com/autumoswitzerland/autumo-beetroot)
+- [Quickstart Guide][video-url]
+- [Website](https://beetroot.autumo.ch)
+- [Products](https://products.autumo.ch)
 - [Email](mailto:autumo.switzerland@gmail.com)
 
 
