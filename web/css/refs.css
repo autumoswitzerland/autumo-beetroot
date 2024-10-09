@@ -36,17 +36,23 @@ body {
 /**
  * Images for language selection entries.
  */
-.lang_select_de {
-	background-image: url('/img/lang/de.png');
-}
 .lang_select_en {
 	background-image: url('/img/lang/en.png');
 }
-.lang_select_it {
-	background-image: url('/img/lang/it.png');
+.lang_select_zh {
+	background-image: url('/img/lang/zh.png');
+}
+.lang_select_hi {
+	background-image: url('/img/lang/hi.png');
 }
 .lang_select_es {
 	background-image: url('/img/lang/es.png');
+}
+.lang_select_fr {
+	background-image: url('/img/lang/fr.png');
+}
+.lang_select_arz {
+	background-image: url('/img/lang/arz.png');
 }
 .lang_select_pt {
 	background-image: url('/img/lang/pt.png');
@@ -57,8 +63,29 @@ body {
 .lang_select_ja {
 	background-image: url('/img/lang/ja.png');
 }
-.lang_select_zh {
-	background-image: url('/img/lang/zh.png');
+.lang_select_de {
+	background-image: url('/img/lang/de.png');
+}
+.lang_select_tr {
+	background-image: url('/img/lang/tr.png');
+}
+.lang_select_it {
+	background-image: url('/img/lang/it.png');
+}
+.lang_select_nl {
+	background-image: url('/img/lang/nl.png');
+}
+.lang_select_se {
+	background-image: url('/img/lang/se.png');
+}
+.lang_select_fi {
+	background-image: url('/img/lang/fi.png');
+}
+.lang_select_no {
+	background-image: url('/img/lang/no.png');
+}
+.lang_select_ch {
+	background-image: url('/img/lang/ch.png');
 }
 
 .log-container {

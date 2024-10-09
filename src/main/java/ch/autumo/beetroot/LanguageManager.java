@@ -563,7 +563,7 @@ public class LanguageManager {
 	
 	/**
 	 * Translate method for the template engine and for
-	 * users of this framework that returns the defaukt value
+	 * users of this framework that returns the default value
 	 * if no translation is found at all.
 	 * 
 	 * Should only be used for special cases.
@@ -828,43 +828,38 @@ public class LanguageManager {
 	 * @return found language
 	 */
 	public String getLanguageFromHttpSession(BeetRootHTTPSession session) {
-		
-		final String acceptLanguage = ((IHTTPSession) session).getHeaders().get("accept-language");
-		
-		 if (acceptLanguage == null || acceptLanguage.isEmpty()) {
-			 return LanguageManager.DEFAULT_LANG;
-		 } else {
-		        // Split the Accept-Language header by commas to get each language part
-		        final String languages[] = acceptLanguage.split(",");
-		        // Map to store language and its priority (q-value)
-		        final Map<String, Double> langMap = new HashMap<>();
-		        for (String lang : languages) {
-		            final Matcher matcher = HTTP_HEADER_LANG_PATTERN.matcher(lang.trim());
-		            if (matcher.find()) {
-		                final String languageCode = matcher.group(1); // Get the language code (e.g., en, fr, haw)
-		                final String qValue = matcher.group(2);       // Get the q-value if present
-		                double quality = (qValue != null) ? Double.parseDouble(qValue) : 1.0; // Default q-value is 1.0
-		                langMap.put(languageCode, quality);
-		            }
-		        }
-		        // Find the language with the highest q-value
-		        final String headerLang = langMap.entrySet()
-		                .stream()
-		                .max(Map.Entry.comparingByValue()) // Sort by q-value
-		                .map(Map.Entry::getKey)            // Return the language code with highest priority
-		                .orElse(null);                     // Return null if no valid language code found
-
-				if (headerLang == null)
-					return LanguageManager.DEFAULT_LANG;
-		        
-				// Compare with application available languages
-				final String langs[] = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
-				for (int i = 0; i < langs.length; i++) {
-					if (headerLang.equals(langs[i]))
-						return headerLang;
+		String acceptLanguage = ((IHTTPSession) session).getHeaders().get("accept-language");
+		if (acceptLanguage == null || acceptLanguage.isEmpty()) {
+			return LanguageManager.DEFAULT_LANG;
+		} else {
+			// Split the Accept-Language header by commas to get each language part
+			final String languages[] = acceptLanguage.split(",");
+			// Map to store language and its priority (q-value)
+			final Map<String, Double> langMap = new HashMap<>();
+			for (String lang : languages) {
+				final Matcher matcher = HTTP_HEADER_LANG_PATTERN.matcher(lang.trim());
+				if (matcher.find()) {
+					final String languageCode = matcher.group(1); // Get the language code (e.g., en, fr, haw)
+					final String qValue = matcher.group(2); // Get the q-value if present
+					double quality = (qValue != null) ? Double.parseDouble(qValue) : 1.0; // Default q-value is 1.0
+					langMap.put(languageCode, quality);
 				}
-		 }
-		
+			}
+			// Find the language with the highest q-value
+			final String headerLang = langMap.entrySet().stream().max(Map.Entry.comparingByValue()) // Sort by q-value
+					.map(Map.Entry::getKey) // Return the language code with highest priority
+					.orElse(null); // Return null if no valid language code found
+
+			if (headerLang == null)
+				return LanguageManager.DEFAULT_LANG;
+
+			// Compare with application available languages
+			final String langs[] = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
+			for (int i = 0; i < langs.length; i++) {
+				if (headerLang.equals(langs[i]))
+					return headerLang;
+			}
+		}
 		return LanguageManager.DEFAULT_LANG;
 	}
 	

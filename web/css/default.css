@@ -105,6 +105,10 @@ a.login {
 	color: #07b;
 }
 
+.dropdown-content a {
+	padding: 6px 16px;
+}
+
 .log-container legend{
 	background-color: transparent !important;
 }
