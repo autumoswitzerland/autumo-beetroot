@@ -54,7 +54,7 @@ framework that is ready to use, starts in less than a second and gives you a wor
 initial setup for the current version, a transparent and clear way to configure the 
 framework and its components, and the freedom to choose any web container or just use 
 the optimized and embedded web container from the start. However, none of this stops 
-you from customizing the `pom.xml` file.
+you from customizing the `pom.xml` file and extend beetRoot as you wish.
 
 If you know [CakePHP](https://cakePHP.org) for web development, you will like beetRoot.
 It is based on the same principles and has a full CRUD generator that generates all views, 
