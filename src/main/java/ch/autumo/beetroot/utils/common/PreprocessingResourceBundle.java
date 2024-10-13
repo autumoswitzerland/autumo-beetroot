@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
+import ch.autumo.beetroot.Constants;
 
 
 /**
@@ -78,9 +79,11 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
     }    
 
     private Object preprocess(Object value) {
-    	// App-Version
-        if (value.equals("{$APP_VERSION}"))
+        if (value.equals("{$APP_VERSION}")) // App-Version
         	return BeetRootConfigurationManager.getAppVersion();
+        else if (value.equals("{$APP_NAME}")) // App-Name
+        	return BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME, "<UNDEFINED:"+Constants.KEY_WS_APP_NAME+">");
+        
         return value;
     }
 
