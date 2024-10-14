@@ -533,9 +533,9 @@ public abstract class BaseServer {
 
 		// SHA3 communication encryption?
 		if (sha3Com) {
-			LOG.info("Client-Server communication is SHA3-256 encrypted!");
+			LOG.info("Client-Server communication is SHA3-256 encrypted.");
 			if (!LOG.isInfoEnabled())
-				System.out.println(ansiServerName + " Client-Server communication is SHA3-256 encrypted!");
+				System.out.println(ansiServerName + " Client-Server communication is SHA3-256 encrypted.");
 		}
 		
 		// Start file server?

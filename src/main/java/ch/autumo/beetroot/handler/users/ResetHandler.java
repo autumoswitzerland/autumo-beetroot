@@ -125,15 +125,17 @@ public class ResetHandler extends BaseHandler {
 				link = baseUrl + "/" + lang + "/users/change?token=" + token;
 		}
 
-		final Map<String, String> variables = new HashMap<String, String>();
-		
-		variables.put("title", LanguageManager.getInstance().translateFullEscape("base.mail.reset.title", session));
-		
-		variables.put("subtitle", LanguageManager.getInstance().translateFullEscape("base.mail.reset.subtitle", session));
-		variables.put("message", LanguageManager.getInstance().translateFullEscape("base.mail.reset.msg", session));
+		final Map<String, String> variables = new HashMap<String, String>();		
+		variables.put("title", LanguageManager.getInstance().translate("base.mail.reset.title", session));
+		variables.put("subtitle", LanguageManager.getInstance().translate("base.mail.reset.subtitle", session));
+		variables.put("message", LanguageManager.getInstance().translate("base.mail.reset.msg", session));
 		variables.put("link", link);
-		
-		MailerFactory.getInstance().mail(new String[] {email}, LanguageManager.getInstance().translateFullEscape("base.mail.reset.title", session), variables, "reset", session);
+		MailerFactory.getInstance().mail(
+				new String[] {email},
+				LanguageManager.getInstance().translate("base.mail.reset.title", session),
+				variables,
+				"reset",
+				session);
 		
 		return new HandlerResponse(HandlerResponse.STATE_OK, "Mail sent!");
 	}

@@ -345,7 +345,7 @@ public class LanguageManager {
 			lang = this.retrieveLanguage(session);
 		return translateTemplateFullEscape(key, lang, values);
 	}
-	
+    
 	/**
 	 * Translate method for the template engine. If escape is true,
 	 * Translations will be HTML escaped with the following characters
@@ -497,8 +497,6 @@ public class LanguageManager {
 	 * users of this framework. It HTML escapes special
 	 * characters and 'Umlaute' fully.
 	 * 
-	 * Useful for mails.
-	 * 
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
 	 *  
@@ -512,6 +510,26 @@ public class LanguageManager {
 		if (lang == null)
 			lang = this.retrieveLanguage(session);
 		return this.translate(key, lang, true, arguments);
+	}
+	
+	/**
+	 * Translate method. It doesn't HTML escapes anything.
+	 * 
+	 * Useful for mail.
+	 * 
+	 * General language files are place in the directory:
+	 * 'web/lang/app'; e.g. 'lang_en.properties'.
+	 *  
+	 * @param key key associated to text in translation resources
+	 * @param session HTTP session
+	 * @param arguments the arguments to replace in the text with variables
+	 * @return translated text
+	 */
+	public String translate(String key, BeetRootHTTPSession session, Object... arguments) {
+		String lang = session.getUserSession().getUserLang();
+		if (lang == null)
+			lang = this.retrieveLanguage(session);
+		return this.translate(key, lang, false, arguments);
 	}
 	
 	/**

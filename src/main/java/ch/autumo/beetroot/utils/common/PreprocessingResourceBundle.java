@@ -26,15 +26,27 @@ import java.util.ResourceBundle;
 
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.Constants;
+import ch.autumo.beetroot.LanguageManager;
 
 
 /**
  * Pre-processes special resource bundle entries. 
  */
 public final class PreprocessingResourceBundle extends ResourceBundle {
+
+	/**
+	 * Placeholder for {$APP_NAME}.
+	 */
+	public static final String PLACEHOLDER_APP_NAME = "{$APP_NAME}";
+	
+	/**
+	 * Placeholder for {$APP_VERSION}.
+	 */
+	public static final String PLACEHOLDER_APP_VERSION = "{$APP_VERSION}";
 	
     private final Map<String, Object> processedValues = new HashMap<>();
 
+    
     /**
      * Constructor.
      * 
@@ -47,7 +59,7 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
              if (value instanceof String) {
             	 processedValues.put(key, preprocess(value.toString()));
              } else {
-            	 processedValues.put(key, value);
+            	 processedValues.put(key, value); // We don not process other objects
              }        	
         }
     }
@@ -78,12 +90,18 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
         return processedValues.containsKey(key);
     }    
 
-    private Object preprocess(Object value) {
-        if (value.equals("{$APP_VERSION}")) // App-Version
-        	return BeetRootConfigurationManager.getAppVersion();
-        else if (value.equals("{$APP_NAME}")) // App-Name
-        	return BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME, "<UNDEFINED:"+Constants.KEY_WS_APP_NAME+">");
-        
+    private String preprocess(String value) {
+        if (value.contains(PLACEHOLDER_APP_VERSION)) { // App-Version
+        	value = value.replace(
+        			PLACEHOLDER_APP_VERSION, 
+        			BeetRootConfigurationManager.getAppVersion()
+        		);
+        } else if (value.contains(PLACEHOLDER_APP_NAME)) { // App-Name
+        	value = value.replace(
+        			PLACEHOLDER_APP_NAME, 
+        			BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_APP_NAME, "<UNDEFINED:"+Constants.KEY_WS_APP_NAME+">")
+        		);
+        }
         return value;
     }
 
@@ -100,7 +118,7 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
     	final ResourceBundle rb = ResourceBundle.getBundle(baseName, locale);
     	if (rb == null)
     		return null;
-    	if (type.equals("tmpl"))
+    	if (type.equals(LanguageManager.LANG_GRP_APP) || type.equals(LanguageManager.LANG_GRP_TMPL))
     		return new PreprocessingResourceBundle(rb);
     	else
     		return rb;
@@ -120,7 +138,7 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
     	final ResourceBundle rb = ResourceBundle.getBundle(baseName, locale, loader);
     	if (rb == null)
     		return null;
-    	if (type.equals("tmpl"))
+    	if (type.equals(LanguageManager.LANG_GRP_APP) || type.equals(LanguageManager.LANG_GRP_TMPL))
     		return new PreprocessingResourceBundle(rb);
     	else
     		return rb;
@@ -140,7 +158,7 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
     	final ResourceBundle rb = ResourceBundle.getBundle(baseName, locale, control);
     	if (rb == null)
     		return null;
-    	if (type.equals("tmpl"))
+    	if (type.equals(LanguageManager.LANG_GRP_APP) || type.equals(LanguageManager.LANG_GRP_TMPL))
     		return new PreprocessingResourceBundle(rb);
     	else
     		return rb;
@@ -161,7 +179,7 @@ public final class PreprocessingResourceBundle extends ResourceBundle {
     	final ResourceBundle rb = ResourceBundle.getBundle(baseName, locale, loader, control);
     	if (rb == null)
     		return null;
-    	if (type.equals("tmpl"))
+    	if (type.equals(LanguageManager.LANG_GRP_APP) || type.equals(LanguageManager.LANG_GRP_TMPL))
     		return new PreprocessingResourceBundle(rb);
     	else
     		return rb;

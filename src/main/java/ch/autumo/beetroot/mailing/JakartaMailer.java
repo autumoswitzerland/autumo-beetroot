@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.BeetRootHTTPSession;
 import jakarta.mail.Authenticator;
-import jakarta.mail.BodyPart;
 import jakarta.mail.Message;
 import jakarta.mail.Multipart;
 import jakarta.mail.PasswordAuthentication;
@@ -47,9 +46,7 @@ public class JakartaMailer extends AbstractMailer {
 
 	@Override
 	public void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {
-
 		final Properties props = super.getProperties();
-
 		jakarta.mail.Session mailSession = null;
 
 		if (auth) {
@@ -65,39 +62,30 @@ public class JakartaMailer extends AbstractMailer {
 
 		final MimeMessage message = new MimeMessage(mailSession);
 		message.setFrom(new InternetAddress(from));
-
 		// process receivers
 		for (int i = 0; i < to.length; i++) {
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to[i]));
-			LOG.info("Sending mail to '"+to[i]+"'.");
+			LOG.info("Sending mail to '{}'.", to[i]);
 		}
-
-		message.setSubject(subject);
-
+		message.setSubject(subject, "UTF-8");
+		
 		final Multipart multipart = new MimeMultipart();
-		
-		// txt must be first always !
+		// TXT must be first always !
 		Arrays.sort(mailformats, Collections.reverseOrder());
-		
-		BodyPart messageBodyPart = null;
+		MimeBodyPart messageBodyPart = null;
 		for (int i = 0; i < mailformats.length; i++) {
-			
 			String template = super.loadTemplate(templateName, session, mailformats[i]);		
 			template = super.replaceAllVariables(template, variables, mailformats[i]);
 			template = super.replaceAllLanguageVariables(template, session, mailformats[i]); 
-			
 			messageBodyPart = new MimeBodyPart();
-			if (mailformats[i].toLowerCase().equals("html"))
-				messageBodyPart.setContent(template, "text/html");
+			if (mailformats[i].equalsIgnoreCase("html"))
+				messageBodyPart.setContent(template, "text/html; charset=UTF-8");
 			else
-				messageBodyPart.setText(template);
-			
+				messageBodyPart.setText(template, "UTF-8");
 			multipart.addBodyPart(messageBodyPart);
 		}
-		
 		message.setContent(multipart);
 		message.saveChanges();
-
 		// Send message
 		Transport.send(message);
 	}

@@ -45,6 +45,7 @@ import ch.autumo.beetroot.logging.LogBuffer;
 import ch.autumo.beetroot.logging.LogBuffer.LogLevel;
 import ch.autumo.beetroot.security.SecureApplication;
 import ch.autumo.beetroot.utils.Helper;
+import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.security.Security;
 import ch.autumo.beetroot.utils.system.OS;
 
@@ -111,7 +112,6 @@ public class BeetRootConfigurationManager {
 	 * @return manager
 	 */
 	public static synchronized BeetRootConfigurationManager getInstance() {
-		
 		if (manager == null) {
 			manager = new BeetRootConfigurationManager();
 		}
@@ -283,7 +283,7 @@ public class BeetRootConfigurationManager {
 		// load some main props separately
 		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
 		if (this.csrf)
-    		LogBuffer.log(LogLevel.INFO, "CSRF activated!");
+    		LogBuffer.log(LogLevel.INFO, "CSRF activated.");
 		
 		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
 		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
@@ -490,14 +490,11 @@ public class BeetRootConfigurationManager {
 	 * @return string value
 	 */
 	public String getString(String key) {
-		
 		String v = generalProps.getProperty(key);
 		if (v != null)
 			v = v.trim();
-
 		if (v == null)
-			LOG.warn("Value for key '"+key+"' doesn't exist in beetroot configuration!");
-		
+			LOG.warn("Value for key '{}' doesn't exist in beetroot configuration!", key);
 		return v;
 	}
 
@@ -509,7 +506,6 @@ public class BeetRootConfigurationManager {
 	 * @return string value
 	 */
 	public String getString(String key, String defaultVal) {
-		
 		String v = generalProps.getProperty(key);
 		if (v != null)
 			v = v.trim();
@@ -538,7 +534,6 @@ public class BeetRootConfigurationManager {
 	 * @return collected values
 	 */
 	public String[] getKeys(String keyPrefix) {
-		
 		final List<String> collectedKeys = new ArrayList<>();
 		final Set<Object> keys = generalProps.keySet();
 		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
@@ -574,14 +569,11 @@ public class BeetRootConfigurationManager {
 	 * @return integer value
 	 */
 	public int getInt(String key) {
-		
 		String v = generalProps.getProperty(key);
-		
 		if (v == null || v.length() == 0) {
-			LOG.warn("Value for key '"+key+"' doesn't exist in beetroot configuration!");
+			LOG.warn("Value for key '{}' doesn't exist in beetroot configuration!", key);
 			return -1;
 		}
-		
 		return Integer.valueOf(v);
 	}
 
@@ -624,10 +616,10 @@ public class BeetRootConfigurationManager {
 	public boolean getYesOrNo(String key, String defaultVal) {
 		String val = generalProps.getProperty(key);
 		if (val == null || val.length() == 0) {
-			return defaultVal.toLowerCase().equals(Constants.YES);
+			return defaultVal.equalsIgnoreCase(Constants.YES);
 		}
 		val = val.trim();
-		return val.toLowerCase().equals(Constants.YES);
+		return val.equalsIgnoreCase(Constants.YES);
 	}
 	
 	/**
@@ -640,11 +632,11 @@ public class BeetRootConfigurationManager {
 	public boolean getYesOrNo(String key) {
 		String val = generalProps.getProperty(key);
 		if (val == null || val.length() == 0) {
-			LOG.warn("Value for yes/no key '"+key+"' doesn't exist in beetroot configuration!");
+			LOG.warn("Value for yes/no key '{}' doesn't exist in beetroot configuration!", key);
 			return false;
 		}
 		val = val.trim();
-		return val.toLowerCase().equals(Constants.YES);
+		return val.equalsIgnoreCase(Constants.YES);
 	}	
 
 	/**
@@ -659,7 +651,7 @@ public class BeetRootConfigurationManager {
 		if (val == null || val.length() == 0)
 			return false;
 		val = val.trim();
-		return val.toLowerCase().equals(Constants.YES);
+		return val.equalsIgnoreCase(Constants.YES);
 	}	
 	
 	/**
@@ -669,14 +661,12 @@ public class BeetRootConfigurationManager {
 	 * @param key key
 	 * @param app secure application
 	 * @return encrypted value
-	 * @throws Exception exception
+	 * @throws UtilsException if decoding fails
 	 */
-	public String getDecodedString(String key, SecureApplication app) throws Exception {
-		
+	public String getDecodedString(String key, SecureApplication app) throws UtilsException {
 		String v = generalProps.getProperty(key);
 		if (v != null)
 			v = v.trim();
-		
 		return Security.decode(v, app);
 	}
 	
@@ -740,10 +730,9 @@ public class BeetRootConfigurationManager {
 	 * @return allowed mime types
 	 */
 	public List<String> getMimeTypes(String key) {
-		
 		final String mimes = generalProps.getProperty(key);
 		if (mimes == null || mimes.trim().length() == 0) {
-			LOG.warn("There are no mime types for key '" + key + "' ! This will create errors...");
+			LOG.warn("There are no mime types for key '{}' ! This will create errors...", key);
 			return Collections.emptyList();
 		}
 		final String arr[] = mimes.trim().split(" ");
@@ -767,7 +756,6 @@ public class BeetRootConfigurationManager {
 	 * @return servlet name
 	 */
 	public String getServletName() {
-		
 		String servletName = generalProps.getProperty("web_html_ref_pre_url_part");
 		if (servletName != null)
 			servletName = servletName.trim();
@@ -784,9 +772,8 @@ public class BeetRootConfigurationManager {
 	 * @param xmlConfigFile only the file name, path is concluded by ROOTPATH and cfg-directory
 	 * @param moduleName module name
 	 * @return XML doc root
-	 * @throws Exception if module configuration cannot be loaded
 	 */
-	public static Document getXMLModuleConfig(String xmlConfigFile, String moduleName) throws Exception {
+	public static Document getXMLModuleConfig(String xmlConfigFile, String moduleName) {
 		return getXMLModuleConfigWithFullPath(rootPath + Constants.CONFIG_PATH + xmlConfigFile, moduleName);
 	}
 	
@@ -797,9 +784,8 @@ public class BeetRootConfigurationManager {
 	 * @param xmlRelativePath relative path that is concluded with ROOTPATH
 	 * @param moduleName module name
 	 * @return XML doc root
-	 * @throws Exception if module configuration cannot be loaded
 	 */
-	public static Document getXMLModuleConfigRelative(String xmlRelativePath, String moduleName) throws Exception {
+	public static Document getXMLModuleConfigRelative(String xmlRelativePath, String moduleName) {
 		// check root path
     	if (!rootPath.endsWith(OS.FILE_SEPARATOR))
     		rootPath += OS.FILE_SEPARATOR;
@@ -815,10 +801,8 @@ public class BeetRootConfigurationManager {
 	 * @return XML doc root
 	 */
 	public static Document getXMLModuleConfigWithFullPath(String xmlConfigFilePath, String moduleName) {
-		
 		Document doc = null;
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		
 		try {
 			// optional, but recommended
 			// process XML securely, avoid attacks like XML External Entities (XXE)

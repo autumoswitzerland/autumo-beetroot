@@ -335,8 +335,17 @@ public class Constants {
      */
 	public static String MAIL_SMTP_TLS_ENABLE_KEY = "mail.smtp.starttls.enable";
 	
+    /**
+     * Mail, enable SSL?
+     */
+	public static String MAIL_SMTP_SSL = "mail.smtp.ssl.enable";
 	
+    /**
+     * Mail SSL server identity check.
+     */
+	public static String MAIL_SMTP_SSL_CHECK_SERVER_ID = "mail.smtp.ssl.checkserveridentity";
 	
+
 	// DB specific
 	//------------------------------------------------------------------------------
 	

@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
@@ -38,9 +37,9 @@ import javax.naming.InitialContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.BeetRootDatabaseManager;
+import ch.autumo.beetroot.BeetRootHTTPSession;
 
 /**
  * Javax Mailer.
@@ -51,69 +50,51 @@ public class JavaxMailer extends AbstractMailer {
 	
 	@Override
 	public void mail(String[] to, String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {
-
 		final Properties props = super.getProperties();
 		props.put("mail.from", from);
-		
 		String msname = BeetRootDatabaseManager.getInstance().getProperty("mail.session.name");
 		if (msname == null || msname.length() == 0) {
 			msname = BeetRootConfigurationManager.getInstance().getString("mail_session_name");
 			if (msname == null || msname.length() == 0)
 				msname = "beetRootMailSession";
 		}
-		
 		final InitialContext ic = new InitialContext();
 		final Session initSession = (Session) ic.lookup(msname);
 		@SuppressWarnings("static-access")
 		final Session mailSession = initSession.getInstance(props);
-		
 		if (auth) {
-		
 			mailSession.setPasswordAuthentication(
 						new URLName("smtp", host, -1, null, user, null),
 						new PasswordAuthentication(user, password)
 					);		
 		}
-
 		final MimeMessage message = new MimeMessage(mailSession);
-		
 		String from = BeetRootDatabaseManager.getInstance().getProperty("mail.mailer");
 		from = from == null ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
-		
 		message.setFrom(new InternetAddress(from));
-
 		// process receivers
 		for (int i = 0; i < to.length; i++) {
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to[i]));
-			LOG.info("Sending mail to '"+to[i]+"'.");
+			LOG.info("Sending mail to '{}'.", to[i]);
 		}
-
-		message.setSubject(subject);
-
+		message.setSubject(subject, "UTF-8");
 		final Multipart multipart = new MimeMultipart();
-		
-		// txt must be first always !
+		// TXT must be first always !
 		Arrays.sort(mailformats, Collections.reverseOrder());
-		
-		BodyPart messageBodyPart = null;
+		MimeBodyPart messageBodyPart = null;
 		for (int i = 0; i < mailformats.length; i++) {
-			
 			String template = super.loadTemplate(templateName, session, mailformats[i]);		
 			template = super.replaceAllVariables(template, variables, mailformats[i]);
 			template = super.replaceAllLanguageVariables(template, session, mailformats[i]); 
-			
 			messageBodyPart = new MimeBodyPart();
-			if (mailformats[i].toLowerCase().equals("html"))
-				messageBodyPart.setContent(template, "text/html");
+			if (mailformats[i].equalsIgnoreCase("html"))
+				messageBodyPart.setContent(template, "text/html; charset=UTF-8");
 			else
-				messageBodyPart.setText(template);
-			
+				messageBodyPart.setText(template, "UTF-8");
 			multipart.addBodyPart(messageBodyPart);
 		}
-		
 		message.setContent(multipart);
 		message.saveChanges();
-
 		// Send message
 		Transport.send(message);
 	}

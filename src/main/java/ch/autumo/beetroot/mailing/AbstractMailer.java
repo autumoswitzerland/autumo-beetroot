@@ -49,35 +49,49 @@ public abstract class AbstractMailer implements Mailer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractMailer.class.getName());
 	
+	/** Mail formats. */
 	protected String mailformats[] = null;
+	/** Mail authentication? */
 	protected boolean auth = false;
+	/** TLS enabled? */
 	protected boolean tlsEnable = false;
+	/** SSL enabled? */
+	protected boolean sslEnable = false;
 	
+	/** SMTP Port. */
 	protected int port = -1;
+	/** SMTP Port string. */
 	protected String portStr = null;
+	/** SMTP Host. */
 	protected String host = null;
 	
+	/** Passwords encoded in mail configuration section ('cfg/beetroot.cfg')? */
 	protected boolean pwEncoded = false;
+	/** Mail user (email). */
 	protected String user = null;
+	/** Mail user password. */
 	protected String password = null;
-	
+	/** Mail from (email). */
 	protected String from = null;
 	
 	
+	/**
+	 * Load mail configuration.
+	 * 
+	 * @return configuration
+	 * @throws Exception if configuration loading fails
+	 */
 	protected Properties getProperties() throws Exception {
-
 		final Properties props = System.getProperties();
-		
 		mailformats = BeetRootConfigurationManager.getInstance().getSepValues("mail_formats");
 		if (mailformats.length < 1)
 			throw new IllegalArgumentException("At least one email format must be defined in configuration!");
-
 		auth = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_auth");
 		tlsEnable = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_tls_enable");
-		
+		sslEnable = BeetRootConfigurationManager.getInstance().getYesOrNo("mail_ssl_enable");
 		portStr = BeetRootDatabaseManager.getInstance().getProperty("mail.port");
 		if (portStr != null)
-			port = Integer.valueOf(portStr).intValue();
+			port = Integer.parseInt(portStr);
 		if (port < 0) {
 			port = BeetRootConfigurationManager.getInstance().getInt("mail_port");
 			if (port == -1) {
@@ -85,44 +99,46 @@ public abstract class AbstractMailer implements Mailer {
 				port = 25;
 			}
 		}
-		   
 		host = BeetRootDatabaseManager.getInstance().getProperty("mail.host");
 		host = (host == null || host.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_host") : host; 
-
 		pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
 		user = BeetRootConfigurationManager.getInstance().getString("mail_user");
 		password = pwEncoded
 				? BeetRootConfigurationManager.getInstance().getDecodedString("mail_password",
 						SecureApplicationHolder.getInstance().getSecApp())
 				: BeetRootConfigurationManager.getInstance().getString("mail_password");
-
 		from = BeetRootDatabaseManager.getInstance().getProperty("mail.mailer");
 		from = (from == null || from.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
-		
 		
 		props.put(Constants.MAIL_TRANSPORT_PROTOCOL, "smtp");
 		props.put(Constants.MAIL_SMTP_HOST_KEY, host);
 		props.put(Constants.MAIL_SMTP_PORT_KEY, "" + port);
-		props.put(Constants.MAIL_SMTP_AUTH_KEY, Boolean.valueOf(auth).toString());
-
+		props.put(Constants.MAIL_SMTP_AUTH_KEY, Boolean.toString(auth));
 		if (tlsEnable) {
-			props.put(Constants.MAIL_SMTP_TLS_ENABLE_KEY, Boolean.valueOf(tlsEnable).toString());
-			// Use the following if you need SSL
-			props.put("mail.smtp.socketFactory.port", port);
-			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-			props.put("mail.smtp.socketFactory.fallback", "false");
+			props.put(Constants.MAIL_SMTP_TLS_ENABLE_KEY, "true");
 		}		
-		
+		if (sslEnable) {
+			props.put(Constants.MAIL_SMTP_SSL, "true");
+			props.put(Constants.MAIL_SMTP_SSL_CHECK_SERVER_ID, "true");
+		}
 		return props;
 	}
 	
+	/**
+	 * Load mail template.
+	 * 
+	 * @param templateName template name
+	 * @param session HTTP session
+	 * @param extension template extension (txt or html)
+	 * @return loaded template as string
+	 * @throws Exception if an error occurs
+	 */
 	protected String loadTemplate(String templateName, BeetRootHTTPSession session, String extension) throws Exception {
 		
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		File f = null;	
 		InputStream is = null;
 		boolean streamIt = false;
-		
 		String lang = LanguageManager.getInstance().retrieveLanguage(session);
 		String res = LanguageManager.getInstance().getResourceByLang("web/"+extension+"/:lang/email/" + templateName + "." + extension, lang);
 
@@ -137,7 +153,7 @@ public abstract class AbstractMailer implements Mailer {
 		}
 		if (!f.exists() || (streamIt && is == null)) {
 			streamIt = false;
-			LOG.trace("Resource '"+res+"' doesn't exist, looking up with default language '"+LanguageManager.DEFAULT_LANG+"'!");
+			LOG.trace("Resource '{}' doesn't exist, looking up with default language '{}'!", res, LanguageManager.DEFAULT_LANG);
 			res = "web/"+extension+"/"+LanguageManager.DEFAULT_LANG+"/email/" + templateName + "." + extension;
 			if (context != null) {
 				f = new File(Web.getRealPath(context) + res);
@@ -150,7 +166,7 @@ public abstract class AbstractMailer implements Mailer {
 			}
 			if (!f.exists() || (streamIt && is == null)) {
 				streamIt = false;
-				LOG.trace("Resource '"+res+"' doesn't exist, trying with NO language!");
+				LOG.trace("Resource '{}' doesn't exist, trying with NO language!", res);
 				res = "web/"+extension+"/email/"+templateName+"."+extension;
 				if (context != null) {
 					f = new File(Web.getRealPath(context) + res);
@@ -162,35 +178,38 @@ public abstract class AbstractMailer implements Mailer {
 					f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 				}
 				if (!f.exists() || (streamIt && is == null)) {
-					LOG.warn("Resource '" + res + "' doesn't exist, that's an error!");
+					LOG.warn("Resource '{}' doesn't exist, that's an error!", res);
 					throw new FileNotFoundException("No email template for name '" + templateName + "' found at all!");
 				}
 			}
 		}		
 		
-		
-		BufferedReader br = null;
-		if (context != null) {
-			if (is != null)
-				br = new BufferedReader(new InputStreamReader(is));
-			else
-				br = new BufferedReader(new FileReader(Web.getRealPath(context) + res));
-		} else {
-			if (is != null)
-				br = new BufferedReader(new InputStreamReader(is));
-			else
-				br = new BufferedReader(new FileReader(BeetRootConfigurationManager.getInstance().getRootPath() + res));
-		}
-
-		
 		final StringBuilder sb = new StringBuilder();
-	    String line;
-	    while ((line = br.readLine()) != null)
-	    	sb.append(line+"\n");
-	    br.close();
+		BufferedReader br = null;
+		try {
+			br = this.getReader(context, is, res);
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		    	sb.append(line+"\n");
+		    }
+		} finally {
+			if (br != null)
+				try {
+				    br.close();
+				} catch (Exception e) {
+				}
+		}
 		return sb.toString();
 	}
 
+	/**
+	 * Replace language variables in loaded mail template.
+	 * 
+	 * @param template loaded te,plate
+	 * @param session HTTP session
+	 * @param extension template extension (txt or html)
+	 * @return template with replaced language variables
+	 */
 	protected String replaceAllLanguageVariables(String template, BeetRootHTTPSession session, String extension) {
 		// Only when switched on!
 		if (BeetRootConfigurationManager.getInstance().translateTemplates()) {
@@ -217,10 +236,8 @@ public abstract class AbstractMailer implements Mailer {
 				}
 				String trans = "";
 				if (totrans.length() > 0) {
-					if (extension.toLowerCase().equals("html"))
-						trans = LanguageManager.getInstance().translateTemplateFullEscape(totrans.trim(), session, subValuesArr);
-					else
-						trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session, subValuesArr, false);
+					// No escaping at all for TXT and HTML mails
+					trans = LanguageManager.getInstance().translateTemplate(totrans.trim(), session, subValuesArr, false);
 				}
 				template = template.substring(0, idx) + trans + template.substring(pos2 + 1);
 			}
@@ -228,11 +245,18 @@ public abstract class AbstractMailer implements Mailer {
 		return template;
 	}
 	
+	/**
+	 * Replace general variables in loaded mail template.
+	 * 
+	 * @param template loaded template
+	 * @param variables variables to replace
+	 * @param extension template extension (txt or html)
+	 * @return replaced templates
+	 */
 	protected String replaceAllVariables(String template, Map<String, String> variables, String extension) {
 		
 		String baseUrl = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
 		String baseUrlPort = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
-		
 		String base = null;
 		if (baseUrlPort != null)
 			base = baseUrl + ":" + baseUrlPort;
@@ -248,24 +272,45 @@ public abstract class AbstractMailer implements Mailer {
 			}
 		}
 		
-		// we have no URLs pointing to images in txt, only html
-		if (extension.toLowerCase().equals("html")) {
-			if (template.contains("{$ws_url}"))
-				template = template.replaceAll("\\{\\$ws_url\\}", base);
+		// we have no URLs pointing to images in TXT, only HTML
+		if (extension.equalsIgnoreCase("html")&& template.contains("{$ws_url}")) {
+			template = template.replaceAll("\\{\\$ws_url\\}", base);
 		}
 		
 		final Set<String> names = variables.keySet();
-		
 		for (Iterator<String> iterator = names.iterator(); iterator.hasNext();) {
-			
 			final String name = iterator.next();
 			final String variable = variables.get(name);
-
-			if (variable != null && variable.length() != 0)
+			if (variable != null && variable.length() != 0) {
 				template = template.replace("{$"+name+"}", variable);
+			}
 		}		
-		
 		return template;
+	}
+	
+	private BufferedReader getReader(ServletContext context, InputStream is, String res) throws Exception {
+		BufferedReader br = null;
+		InputStreamReader isr = null;
+		FileReader fr = null;
+		if (context != null) {
+			if (is != null) {
+				isr = new InputStreamReader(is);
+				br = new BufferedReader(isr);
+			} else {
+				fr = new FileReader(Web.getRealPath(context) + res);
+				br = new BufferedReader(fr);
+			}
+		} else {
+			if (is != null) {
+				isr = new InputStreamReader(is);
+				br = new BufferedReader(isr);
+			}
+			else {
+				fr = new FileReader(BeetRootConfigurationManager.getInstance().getRootPath() + res);
+				br = new BufferedReader(fr);
+			}
+		}
+		return br;
 	}
 	
 	/**
