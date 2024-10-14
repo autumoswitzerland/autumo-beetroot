@@ -162,12 +162,12 @@ configuration key to get to know the possibilities and the extensive features of
 * [Apache commons](https://commons.apache.org)
 * [SLF4j](https://www.slf4j.org)
 * [Log4j2](https://logging.apache.org/log4j/2.x)
+* [H2 Database](https://h2database.com/)
+* [HikariCP](https://github.com/brettwooldridge/HikariCP)
+* [Eclipse Angus Mail](https://eclipse-ee4j.github.io/angus-mail)
 * [Checker Framework Qualifiers](https://checkerframework.org)
-* [Jakarta Mail API](https://eclipse-ee4j.github.io/mail)
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
-* [HikariCP](https://github.com/brettwooldridge/HikariCP)
-* [Bootstrap](https://getbootstrap.com/)
 * ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
 
 
