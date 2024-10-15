@@ -19,6 +19,7 @@ package ch.autumo.beetroot.models;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -64,5 +65,10 @@ public class ModelTest2 {
 		
 		assertEquals(uc, u);
 	}
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        BeetRootDatabaseManager.getInstance().release();
+    }
 	
 }

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -60,4 +61,9 @@ public class DBManagerTest {
 		assertTrue("Bean fields (from DB colums) missing!", fields.size() == 7);
 	}
 	
+    @AfterClass
+    public static void tearDown() throws Exception {
+        BeetRootDatabaseManager.getInstance().release();
+    }
+    
 }

@@ -318,7 +318,8 @@ public class BeetRootDatabaseManager {
 					LOG.warn("Couldn't de-register database driver '"+driver,getClass().getName()+"'.");
 				}
 			}
-		}		
+		}
+		isInitialized = false;
 	}
 	
 	/**
