@@ -89,7 +89,12 @@ public class BeetRootConfigurationManager {
 		// App-Version
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
+        	// The app's overwritten version
     		InputStream inputStream = classLoader.getResourceAsStream("VERSION.txt");
+    		if (inputStream == null) {
+    			// The beetRoot version
+    			inputStream = classLoader.getResourceAsStream("beetRoot-VERSION.txt");
+    		}
     		if (inputStream != null) {
     			final byte buffer[] = new byte[5];
     			final int length = inputStream.read(buffer);
