@@ -39,7 +39,7 @@ public interface Mailer {
 	 * @param subject subject
 	 * @param variables variables to parse in templates
 	 * @param templateName template name
-	 * @param session HTTP session or null if not called within a servlet context
+	 * @param session HTTP session or null if not called within a servlet context (default language used)
 	 * @throws Exception exception
 	 */
 	public void mail(String to[], String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception;
