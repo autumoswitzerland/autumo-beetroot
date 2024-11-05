@@ -128,7 +128,7 @@ public abstract class AbstractMailer implements Mailer {
 	 * Load mail template.
 	 * 
 	 * @param templateName template name
-	 * @param session HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @param extension template extension (txt or html)
 	 * @return loaded template as string
 	 * @throws Exception if an error occurs
@@ -206,7 +206,7 @@ public abstract class AbstractMailer implements Mailer {
 	 * Replace language variables in loaded mail template.
 	 * 
 	 * @param template loaded te,plate
-	 * @param session HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @param extension template extension (txt or html)
 	 * @return template with replaced language variables
 	 */

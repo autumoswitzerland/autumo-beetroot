@@ -313,15 +313,18 @@ public class LanguageManager {
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
 	 *  
 	 * @param key key associated to text in translation resources
-	 * @param session HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @param values place-holder values
 	 * @param escape if true, basic HTML escaping is applied
 	 * @return translated text
 	 */
 	public String translateTemplate(String key, BeetRootHTTPSession session, String values[], boolean escape) {
-		String lang = session.getUserSession().getUserLang();
-		if (lang == null)
-			lang = this.retrieveLanguage(session);
+		String lang = defaultLang;
+		if (session != null) {
+			lang = session.getUserSession().getUserLang();
+			if (lang == null)
+				lang = this.retrieveLanguage(session);
+		}
 		return translateTemplate(key, lang, values, escape);
 	}
 	
@@ -335,14 +338,17 @@ public class LanguageManager {
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
 	 *  
 	 * @param key key associated to text in translation resources
-	 * @param session HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @param values place-holder values
 	 * @return translated text
 	 */
 	public String translateTemplateFullEscape(String key, BeetRootHTTPSession session, String values[]) {
-		String lang = session.getUserSession().getUserLang();
-		if (lang == null)
-			lang = this.retrieveLanguage(session);
+		String lang = defaultLang;
+		if (session != null) {
+			lang = session.getUserSession().getUserLang();
+			if (lang == null)
+				lang = this.retrieveLanguage(session);
+		}
 		return translateTemplateFullEscape(key, lang, values);
 	}
     
@@ -501,14 +507,17 @@ public class LanguageManager {
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
 	 *  
 	 * @param key key associated to text in translation resources
-	 * @param session HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @param arguments the arguments to replace in the text with variables
 	 * @return translated text
 	 */
 	public String translateFullEscape(String key, BeetRootHTTPSession session, Object... arguments) {
-		String lang = session.getUserSession().getUserLang();
-		if (lang == null)
-			lang = this.retrieveLanguage(session);
+		String lang = defaultLang;
+		if (session != null) {
+			lang = session.getUserSession().getUserLang();
+			if (lang == null)
+				lang = this.retrieveLanguage(session);
+		}
 		return this.translate(key, lang, true, arguments);
 	}
 	
@@ -521,14 +530,17 @@ public class LanguageManager {
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
 	 *  
 	 * @param key key associated to text in translation resources
-	 * @param session HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @param arguments the arguments to replace in the text with variables
 	 * @return translated text
 	 */
 	public String translate(String key, BeetRootHTTPSession session, Object... arguments) {
-		String lang = session.getUserSession().getUserLang();
-		if (lang == null)
-			lang = this.retrieveLanguage(session);
+		String lang = defaultLang;
+		if (session != null) {
+			lang = session.getUserSession().getUserLang();
+			if (lang == null)
+				lang = this.retrieveLanguage(session);
+		}
 		return this.translate(key, lang, false, arguments);
 	}
 	
@@ -813,10 +825,13 @@ public class LanguageManager {
 	/**
 	 * Retrieve language when user is not or possibly not logged in.
 	 * 
-	 * @param session beetRoot HTTP session
+	 * @param session HTTP session or null (default language is used)
 	 * @return found language
 	 */
 	public String retrieveLanguage(BeetRootHTTPSession session) {
+		if (session == null) {
+			return defaultLang;
+		}
 		final Session userSession = session.getUserSession();
 	    String lang = LanguageManager.getInstance().parseLang(Web.normalizeUri(session.getUri()));
 		if (lang == null) {
