@@ -57,8 +57,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		final String configFilePath = config.getInitParameter("beetRootConfig");
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 
-
-		// Read general config
+		// 1. Read general config
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
 		try {
 			configMan.initializeWithFullPath(webAppRoot + configFilePath, getServletContext());
@@ -67,8 +66,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 			throw new ServletException("Configuration initialization failed !", e);
 		}		
 
-		
-		// Logging configuration
+		// 2. Logging configuration
 		final String servletContainer = config.getInitParameter("servletContainer");
 		if (servletContainer == null || !servletContainer.equals("jetty")) {
 			// configure logging
@@ -76,14 +74,11 @@ public class AbstractBeetRootServlet extends HttpServlet {
 			try {
 				LoggingFactory.getInstance().initialize(webAppRoot + logCfgFile);
 			} catch (Exception ioex) {
-				
-				LOG.error("Logging configuration initialization failed !", ioex);
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
 		}
-
 		
-		// DB connection manager
+		// 3. DB connection manager
 		try {
 			BeetRootDatabaseManager.getInstance().initialize(webAppRoot);
 		} catch (UtilsException e) {
