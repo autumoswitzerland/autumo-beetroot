@@ -34,10 +34,12 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
  */
 public final class Colors {
 
-	/** show ANSI colors? */
-	private static boolean showAnsiColors = false;
+	/** Show ANSI colors? */
+	private static boolean showAnsiColors = true;
 	static {
-		showAnsiColors = BeetRootConfigurationManager.getInstance().getYesOrNo("console_colors");
+		if (BeetRootConfigurationManager.isInitialized()) {
+			showAnsiColors = BeetRootConfigurationManager.getInstance().getYesOrNo("console_colors");
+		}
 	}
 	
 	/**

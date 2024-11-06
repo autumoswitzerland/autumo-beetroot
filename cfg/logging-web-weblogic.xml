@@ -2,32 +2,26 @@
 
 <!-- 
   beetRoot logging configuration (log4j2 behind SLF4j)
-  Version: 3.0 - 2023 autumo GmbH
+  Version: 3.1 - 2024 autumo GmbH
  -->
 
 <Configuration status="error" name="BeetRootConfig">
-
 	<Properties>
 		<Property name="basePath">servers/${env:SERVER_NAME}/logs</Property>
 	</Properties>
-
 	<Appenders>
-	
 		<Console name="console" target="SYSTEM_OUT">
+			<!-- See: https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout -->
 			<PatternLayout pattern="%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-30.30c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n" disableAnsi="false" />
         </Console>
-        	
 		<RollingFile name="file"
 			fileName="${basePath}/beetroot.log"
 			filePattern="${basePath}/beetroot-%d{yyyyMMdd}.log">
-			
 			<PatternLayout pattern="%-5p %d{yyyyMMdd-HH:mm:ss.SSS} [%-26.26t] %-30.30c{1.1.1.*} : %.-1000m%ex%n" />
-			
 			<Policies>
 				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
 				<SizeBasedTriggeringPolicy size="10MB" />
 			</Policies>
-			
 			<!-- Max 10 files will be created everyday -->
 			<DefaultRolloverStrategy max="10">
 				<Delete basePath="${basePath}" maxDepth="10">
@@ -35,21 +29,14 @@
 					<IfLastModified age="30d" />
 				</Delete>
 			</DefaultRolloverStrategy>
-			
 		</RollingFile>
-		
 	</Appenders>
-		
 	<Loggers>
-
 		<Logger name="ch.autumo.beetroot" level="info" additivity="false">
 			<AppenderRef ref="file" />
 		</Logger>
-
 		<Root level="info" additivity="false">
 			<AppenderRef ref="file" />
 		</Root>
-		
 	</Loggers>
-	
 </Configuration>
