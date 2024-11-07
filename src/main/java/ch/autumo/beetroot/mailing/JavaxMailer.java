@@ -49,18 +49,15 @@ public class JavaxMailer extends AbstractMailer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JavaxMailer.class.getName());
 	
-	@SuppressWarnings("static-access")
 	@Override
 	public void mail(String[] to, String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {
 		final Properties props = super.getProperties();
-		props.put("mail.from", from);
-		
 		Session mailSession = null;
 		String msname = BeetRootDatabaseManager.getInstance().getProperty("mail.session.name");
 		if (msname == null || msname.length() == 0) {
 			msname = BeetRootConfigurationManager.getInstance().getString("mail_session_name");
 			if (msname == null || msname.length() == 0) {
-				// no external mail session
+				// Customized mail session
 				if (auth) {
 					final Authenticator auth = new Authenticator() {
 			            protected PasswordAuthentication getPasswordAuthentication() {
@@ -73,9 +70,9 @@ public class JavaxMailer extends AbstractMailer {
 					mailSession = Session.getDefaultInstance(props);
 				}
 			} else {
+				// JNDI mail session
 				final InitialContext ic = new InitialContext();
-				final Session initSession = (Session) ic.lookup(msname);
-				mailSession = initSession.getInstance(props);
+				mailSession = (Session) ic.lookup(msname);
 				if (auth) {
 					mailSession.setPasswordAuthentication(
 								new URLName("smtp", host, -1, null, user, null),
@@ -86,8 +83,7 @@ public class JavaxMailer extends AbstractMailer {
 			}
 		} else {
 			final InitialContext ic = new InitialContext();
-			final Session initSession = (Session) ic.lookup(msname);
-			mailSession = initSession.getInstance(props);
+			mailSession = (Session) ic.lookup(msname);
 			if (auth) {
 				mailSession.setPasswordAuthentication(
 							new URLName("smtp", host, -1, null, user, null),

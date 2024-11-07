@@ -491,12 +491,13 @@ public class BeetRootConfigurationManager {
 	 * @return string value
 	 */
 	public String getString(String key) {
-		String v = generalProps.getProperty(key);
-		if (v != null)
-			v = v.trim();
-		if (v == null)
+		final String v = generalProps.getProperty(key);
+		if (v != null) {
+			return v.trim();
+		} else {
 			LOG.warn("Value for key '{}' doesn't exist in beetroot configuration!", key);
-		return v;
+			return null;
+		}
 	}
 
 	/**
@@ -507,12 +508,11 @@ public class BeetRootConfigurationManager {
 	 * @return string value
 	 */
 	public String getString(String key, String defaultVal) {
-		String v = generalProps.getProperty(key);
+		final String v = generalProps.getProperty(key);
 		if (v != null)
-			v = v.trim();
-		if (v == null)
+			return  v.trim();
+		else
 			return defaultVal;
-		return v;
 	}
 	
 	/**
@@ -522,10 +522,10 @@ public class BeetRootConfigurationManager {
 	 * @return string value
 	 */
 	public String getStringNoWarn(String key) {
-		String v = generalProps.getProperty(key);
+		final String v = generalProps.getProperty(key);
 		if (v != null)
-			v = v.trim();
-		return v;
+			return v.trim();
+		return null;
 	}
 	
 	/**
@@ -664,10 +664,13 @@ public class BeetRootConfigurationManager {
 	 * @throws UtilsException if decoding fails
 	 */
 	public String getDecodedString(String key, SecureApplication app) throws UtilsException {
-		String v = generalProps.getProperty(key);
-		if (v != null)
-			v = v.trim();
-		return Security.decode(v, app);
+		final String v = generalProps.getProperty(key);
+		if (v != null) {
+			return Security.decode(v.trim(), app);
+		} else {
+			LOG.warn("Value for key '{}' doesn't exist in beetroot configuration!", key);
+			return null;
+		}
 	}
 	
 	/**

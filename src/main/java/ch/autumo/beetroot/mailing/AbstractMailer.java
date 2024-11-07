@@ -100,9 +100,9 @@ public abstract class AbstractMailer implements Mailer {
 			}
 		}
 		host = BeetRootDatabaseManager.getInstance().getProperty("mail.host");
-		host = (host == null || host.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_host") : host; 
-		pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
+		host = (host == null || host.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_host") : host;
 		user = BeetRootConfigurationManager.getInstance().getString("mail_user");
+		pwEncoded = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
 		password = pwEncoded
 				? BeetRootConfigurationManager.getInstance().getDecodedString("mail_password",
 						SecureApplicationHolder.getInstance().getSecApp())
