@@ -68,7 +68,10 @@ public class BeetRootConfigurationManager {
 	private ServletContext servletContext = null;
 	protected boolean isWithinDesktop = false;
 	
+	/** Full path of configuration file without configuration file name. */
 	private String fullConfigBasePath = null;
+	/** Configuration file name. */
+	private String cfgFileName = null;
 	
 	private Properties generalProps = null;
 	private Properties htmlInputMap = null;
@@ -85,7 +88,6 @@ public class BeetRootConfigurationManager {
     		rootPath = "." + Helper.FILE_SEPARATOR;
     	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
     		rootPath += Helper.FILE_SEPARATOR;
-    	
 		// App-Version
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -227,34 +229,27 @@ public class BeetRootConfigurationManager {
 	 * @throws Exception exception
 	 */
 	public synchronized void initializeWithFullPath(String configFilePath) throws Exception {
-		
 		if (isInitialized) {
     		LOG.warn("WARNING: Initialisation of configuration manager is called more than once!");
     		return;
 		}
-		
 		if (servletContext == null) {
-		
 	    	if (rootPath == null || rootPath.length() == 0) {
 	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
 				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
 	    	}
-		    	
 			// check root path
 	    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
 	    		rootPath += Helper.FILE_SEPARATOR;
-		    
 			final File dir = new File(rootPath);
 			if (!dir.exists() || !dir.isDirectory()) {
 	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is invalid! Check starting script of java process.");
 				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
 			}		
 		}
-		
 		generalProps = new Properties();
 		String file = configFilePath;
 		File f = new File(file);
-		
 		if (f.exists()) {
 			// Get path only
 			fullConfigBasePath = f.getParent();
@@ -275,7 +270,6 @@ public class BeetRootConfigurationManager {
 				generalProps.load(fis);
 			else
 				generalProps.load(BeetRootConfigurationManager.class.getResourceAsStream(file));
-			
 		} catch (IOException e) {
     		LogBuffer.log(LogLevel.ERROR, "Couldn't read general server configuration '{}' !", file, e);
 			throw new Exception("Couldn't read general server configuration '" + file + "' !");
@@ -283,19 +277,16 @@ public class BeetRootConfigurationManager {
 			if (fis != null)
 				fis.close();
 		}
-		
-		
+		// set file name
+		cfgFileName = new File(file).getName();
 		// load some main props separately
 		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
 		if (this.csrf)
     		LogBuffer.log(LogLevel.INFO, "CSRF activated.");
-		
 		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
 		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
 		if (this.translateTemplates)
     		LogBuffer.log(LogLevel.INFO, "Web templates are translated.");
-
-		
 		// HTML Input map
 		fis = null;
 		final String htmlMap = getString(Constants.KEY_WEB_INPUT_MAP);
@@ -321,8 +312,6 @@ public class BeetRootConfigurationManager {
 					fis.close();
 			}
 		}
-        
-		
 		// Languages
         InputStreamReader isr = null;
 		file = fullConfigBasePath + "languages.cfg";
@@ -346,8 +335,6 @@ public class BeetRootConfigurationManager {
 			if (isr != null)
 				isr.close();
 		}		
-		
-		
 		isInitialized = true;
 	}
 	
@@ -360,37 +347,37 @@ public class BeetRootConfigurationManager {
 	 * @throws Exception exception
 	 */
 	public synchronized void initializeDesktop(String desktopCfgFile, String appName) throws Exception {
-		
 		if (isInitialized) {
     		LOG.warn("WARNING: Initialisation of configuration manager is called more than once!");
     		return;
 		}
-		
 		this.isWithinDesktop = true;
-		
 		final String path = Helper.getDesktopPropertiesPath(appName);
 		final String filePath = path + desktopCfgFile;
         final File f = new File(filePath);
         Properties p = null;
         if (f.exists()) {
             p = new Properties();
+            FileInputStream fis = null;
             try {
-                final FileInputStream fis = new FileInputStream(f);
+                fis = new FileInputStream(f);
                 p.load(fis);
-                fis.close();
             } catch (IOException ex) {
     			LOG.error("Couldn't read general desktop configuration '{}' !", path, ex);
     			throw new Exception("Couldn't read general desktop configuration '" + path + "' !");
-            }
+            } finally {
+				if (fis != null)
+					fis.close();
+			}
             this.generalProps = p;
         } else {
 			LOG.error("Couldn't read general desktop configuration '{}', file doesn't exist !", path);
 			throw new Exception("Couldn't read general desktop configuration '" + path + "', file doesn't exist !");
         }
-        
 		// set full path
-		fullConfigBasePath = path;
-        
+		fullConfigBasePath = f.getParent();
+		// set file name
+		cfgFileName = f.getName();
 		// At last
 		isInitialized = true;
 	}
@@ -452,6 +439,15 @@ public class BeetRootConfigurationManager {
 	 */
 	public String getFullConfigBasePath() {
 		return fullConfigBasePath;
+	}
+
+	/**
+	 * Returns the file name of the base configuration.
+	 * 
+	 * @return file name
+	 */
+	public String getConfigFileNme() {
+		return cfgFileName;
 	}
 	
 	/**
@@ -556,7 +552,6 @@ public class BeetRootConfigurationManager {
 	 * @return collected values
 	 */
 	public String[] getValues(String keyPrefix) {
-		
 		final List<String> collectedVals = new ArrayList<>();
 		final Set<Object> keys = generalProps.keySet();
 		for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();) {
@@ -814,20 +809,15 @@ public class BeetRootConfigurationManager {
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			// parse XML file
 			final DocumentBuilder db = dbf.newDocumentBuilder();
-			
 			final File cfg = new File(xmlConfigFilePath);
 			if (cfg.exists())
 				doc = db.parse(new File(xmlConfigFilePath));
 			else 
 				doc = db.parse(BeetRootConfigurationManager.class.getResourceAsStream(xmlConfigFilePath));
-			
 			doc.getDocumentElement().normalize();
-			
 			final String module = doc.getDocumentElement().getNodeName();
-			
 			if (!module.equalsIgnoreCase(moduleName))
 				throw new IllegalAccessException("Module '"+moduleName+"' is not a valid module name; here '"+module+"' would be right!");
-				
 		} catch (Exception e) {
 			LOG.error("Couldn't load module XML configuration from '"+xmlConfigFilePath+"'!", e);
 		}

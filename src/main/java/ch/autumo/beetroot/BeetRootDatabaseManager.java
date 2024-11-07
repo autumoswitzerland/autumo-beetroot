@@ -228,38 +228,31 @@ public class BeetRootDatabaseManager {
 	}
 	
 	private void initializePool() throws Exception {
-
-		// hikari data-source
+		// Hikari data-source
 		dataSource = new HikariDataSource();
-
-		// hikari proerties if any
+		// Hikari properties if any
 		final Properties dsProps = new Properties();
-		
 		// read additional configuration parameters
 		final BeetRootConfigurationManager cm = BeetRootConfigurationManager.getInstance();
-		
 		
 		// 1. external JNDI and data-source?
 		dsExternalJndi = cm.getStringNoWarn(CFG_KEY_DS_EXT_JNDI);
 		if (dsExternalJndi != null && dsExternalJndi.length() > 0) {
-			LOG.info("External JNDI data-source '"+dsExternalJndi+"' has been configured");
-			// check if we still have a JDBC-URL prefix for determining the db type for beetRoot
+			LOG.info("External JNDI data-source '{}' has been configured.", dsExternalJndi);
+			// check if we still have a JDBC-URL prefix for determining the DB type for beetRoot
 			if (url == null || url.length() == 0)
 				throw new Exception("External JNDI data-source '"+dsExternalJndi+"' has been configured, but no JDBC-URL-prefix within 'db_url' " 
 									+ "configuration parameterhas been defined! "
 									+ OS.LINE_SEPARATOR +
 									"It is used at least for determining what database is used; scheme 'jdbc:<database-id>'.");
-			
 			dataSource.setDataSourceJNDI(dsExternalJndi);
 			// This means jdbcUrl, driverClassName, dataSourceProperties, user-name, password have been set externally
 			// --> All done!
 			return;
 		}
 		
-		
 		// 2. set pool name for internal data-source
 		dataSource.setPoolName(cm.getString(Constants.KEY_SERVER_NAME) + POOL_NAME_POSTFIX);
-
 		
 		// 3 optional settings?
 		final String poolConfigKeys[] = cm.getKeys("db_pool_");
@@ -271,7 +264,6 @@ public class BeetRootDatabaseManager {
 		}
 		if (dsProps.size() > 0)
 			dataSource.setDataSourceProperties(dsProps);
-
 		
 		// 4. own defined data-source?
 		final String dscn = cm.getStringNoWarn(CFG_KEY_DS_INT_DSCN);
@@ -289,7 +281,6 @@ public class BeetRootDatabaseManager {
 			return;
 		}
 				
-		
 		// 5. Default initialization with JDBC URL and driver class
 		dataSource.setJdbcUrl(url);
 		dataSource.setUsername(user);

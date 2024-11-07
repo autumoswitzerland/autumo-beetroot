@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
@@ -48,29 +49,55 @@ public class JavaxMailer extends AbstractMailer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JavaxMailer.class.getName());
 	
+	@SuppressWarnings("static-access")
 	@Override
 	public void mail(String[] to, String subject, Map<String, String> variables, String templateName, BeetRootHTTPSession session) throws Exception {
 		final Properties props = super.getProperties();
 		props.put("mail.from", from);
+		
+		Session mailSession = null;
 		String msname = BeetRootDatabaseManager.getInstance().getProperty("mail.session.name");
 		if (msname == null || msname.length() == 0) {
 			msname = BeetRootConfigurationManager.getInstance().getString("mail_session_name");
-			if (msname == null || msname.length() == 0)
-				msname = "beetRootMailSession";
+			if (msname == null || msname.length() == 0) {
+				// no external mail session
+				if (auth) {
+					final Authenticator auth = new Authenticator() {
+			            protected PasswordAuthentication getPasswordAuthentication() {
+			                return new PasswordAuthentication(user, password);
+			            }
+			        };
+			        mailSession = Session.getInstance(props, auth);
+				}
+				else {
+					mailSession = Session.getDefaultInstance(props);
+				}
+			} else {
+				final InitialContext ic = new InitialContext();
+				final Session initSession = (Session) ic.lookup(msname);
+				mailSession = initSession.getInstance(props);
+				if (auth) {
+					mailSession.setPasswordAuthentication(
+								new URLName("smtp", host, -1, null, user, null),
+								new PasswordAuthentication(user, password)
+							);		
+				}
+				LOG.info("External Mail-session '{}' (from {}) has been configured.", msname, BeetRootConfigurationManager.getInstance().getConfigFileNme());
+			}
+		} else {
+			final InitialContext ic = new InitialContext();
+			final Session initSession = (Session) ic.lookup(msname);
+			mailSession = initSession.getInstance(props);
+			if (auth) {
+				mailSession.setPasswordAuthentication(
+							new URLName("smtp", host, -1, null, user, null),
+							new PasswordAuthentication(user, password)
+						);		
+			}
+			LOG.info("External Mail-session '{}' (from database) has been configured.", msname);
 		}
-		final InitialContext ic = new InitialContext();
-		final Session initSession = (Session) ic.lookup(msname);
-		@SuppressWarnings("static-access")
-		final Session mailSession = initSession.getInstance(props);
-		if (auth) {
-			mailSession.setPasswordAuthentication(
-						new URLName("smtp", host, -1, null, user, null),
-						new PasswordAuthentication(user, password)
-					);		
-		}
+		
 		final MimeMessage message = new MimeMessage(mailSession);
-		String from = BeetRootDatabaseManager.getInstance().getProperty("mail.mailer");
-		from = from == null ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
 		message.setFrom(new InternetAddress(from));
 		// process receivers
 		for (int i = 0; i < to.length; i++) {
