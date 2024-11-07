@@ -76,12 +76,13 @@ public abstract class AbstractMailer implements Mailer {
 	
 	
 	/**
-	 * Load mail configuration.
+	 * Initialize mail configuration; some are store in the returned properties
+	 * and some attributes are initialized.
 	 * 
-	 * @return configuration
+	 * @return mail configuration
 	 * @throws Exception if configuration loading fails
 	 */
-	protected Properties getProperties() throws Exception {
+	protected Properties initialize() throws Exception {
 		final Properties props = System.getProperties();
 		mailformats = BeetRootConfigurationManager.getInstance().getSepValues("mail_formats");
 		if (mailformats.length < 1)
@@ -122,6 +123,22 @@ public abstract class AbstractMailer implements Mailer {
 			props.put(Constants.MAIL_SMTP_SSL_CHECK_SERVER_ID, "true");
 		}
 		return props;
+	}
+	
+	/**
+	 * Load language translated templates with variables replaced.
+	 * 
+	 * @param templateName template name
+	 * @param session HTTPS session
+	 * @param variables variables
+	 * @param format mail format
+	 * @return replaced template
+	 * @throws Exception
+	 */
+	protected String loadTemplateWithVariables(String templateName, BeetRootHTTPSession session, Map<String, String> variables, String format) throws Exception {
+	    String template = this.loadTemplate(templateName, session, format);
+	    template = this.replaceAllVariables(template, variables, format);
+	    return this.replaceAllLanguageVariables(template, session, format);
 	}
 	
 	/**
@@ -254,7 +271,6 @@ public abstract class AbstractMailer implements Mailer {
 	 * @return replaced templates
 	 */
 	protected String replaceAllVariables(String template, Map<String, String> variables, String extension) {
-		
 		String baseUrl = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_URL);
 		String baseUrlPort = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_WS_PORT);
 		String base = null;
@@ -262,7 +278,6 @@ public abstract class AbstractMailer implements Mailer {
 			base = baseUrl + ":" + baseUrlPort;
 		else
 			base = baseUrl ;
-
 		String servletName = null;
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
 		if (context != null) {
@@ -271,12 +286,10 @@ public abstract class AbstractMailer implements Mailer {
 				base += ("/" + servletName);
 			}
 		}
-		
 		// we have no URLs pointing to images in TXT, only HTML
 		if (extension.equalsIgnoreCase("html")&& template.contains("{$ws_url}")) {
 			template = template.replaceAll("\\{\\$ws_url\\}", base);
 		}
-		
 		final Set<String> names = variables.keySet();
 		for (Iterator<String> iterator = names.iterator(); iterator.hasNext();) {
 			final String name = iterator.next();
