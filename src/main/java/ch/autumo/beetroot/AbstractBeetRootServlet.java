@@ -58,7 +58,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 
 		
-		// 1. Read general config
+		// 1. Read general configuration
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
 		try {
 			configMan.initializeWithFullPath(webAppRoot + configFilePath, getServletContext());
