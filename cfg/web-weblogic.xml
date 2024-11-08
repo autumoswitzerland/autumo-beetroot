@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+  beetRoot Web configuration for Tomcat & WebLogic
+  Version: 2.0 - 2022 autumo GmbH
+ -->
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         		             http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+  		 version="4.0"
+  		 metadata-complete="true">
+  
+	<request-character-encoding>UTF-8</request-character-encoding>
+	<response-character-encoding>UTF-8</response-character-encoding>
+
+	<display-name>autumo beetRoot Application</display-name>
+	<description>
+    	beetRoot - slim &amp; rapid Java web framework
+	</description>
+
+	<servlet>
+		<servlet-name>beetroot</servlet-name>
+		<servlet-class>ch.autumo.beetroot.BeetRootServlet</servlet-class>
+		<init-param>
+			<param-name>beetRootServiceClass</param-name>
+			<param-value>ch.autumo.beetroot.BeetRootWebServer</param-value>
+		</init-param>
+		<init-param>
+			<param-name>beetRootConfig</param-name>
+			<param-value>beetroot.cfg</param-value>
+		</init-param>
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>0</param-value>
+		</init-param>
+		<multipart-config>
+			<location>/tmp</location>
+			<max-file-size>33554432</max-file-size>
+			<max-request-size>418018841</max-request-size>
+			<file-size-threshold>1048576</file-size-threshold>
+		</multipart-config>		
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>beetroot</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+    <listener>
+        <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+    </listener>
+
+</web-app>
+   
