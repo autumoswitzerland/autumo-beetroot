@@ -588,12 +588,21 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 						}
 						return Response.newFixedLengthResponse(Status.OK, "text/css", css);
 					}
-					// Parse password strength javas-cript file for translations
+					// Parse password strength java-script file for translations
 					if (requestedFile.equals("password-strength.js")) {
 						String l = session.getParms().get("lang");
 						if (l == null)
 							l = userSession.getUserLang();
 						final String js = PwsParser.parseAll(fc.getTextData(), l);
+						return Response.newFixedLengthResponse(Status.OK, "application/javascript", js);
+					} else if (requestedFile.endsWith("search.js")) {
+						// Parse all scripts ending with search for servlet-name when in servlet-context
+						String js = fc.getTextData();
+						if (insertServletNameInTemplateRefs) {
+							js = js.replace("{$servletName}", "/"+servletName);
+						} else {
+							js = js.replace("{$servletName}", "");
+						}
 						return Response.newFixedLengthResponse(Status.OK, "application/javascript", js);
 					}
 					// Everything else: Text data !
