@@ -32,10 +32,6 @@
 			<param-value>beetroot.cfg</param-value>
 		</init-param>
 		<init-param>
-			<param-name>servletContainer</param-name>
-			<param-value>jetty</param-value>
-		</init-param>
-		<init-param>
 			<param-name>debug</param-name>
 			<param-value>0</param-value>
 		</init-param>

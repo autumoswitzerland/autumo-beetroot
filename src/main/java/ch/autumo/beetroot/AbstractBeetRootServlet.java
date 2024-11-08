@@ -57,6 +57,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		final String configFilePath = config.getInitParameter("beetRootConfig");
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 
+		
 		// 1. Read general config
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
 		try {
@@ -67,19 +68,21 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		}
 		
 		
-
 		// 2. Logging configuration
-		final String servletContainer = config.getInitParameter("servletContainer");
-		if (servletContainer == null || !servletContainer.equals("jetty")) {
-			// Configure logging
-			final String logCfgFile = config.getInitParameter("beetRootLogConfig");
+		final String logCfgFile = config.getInitParameter("beetRootLogConfig");
+		if (logCfgFile != null && !logCfgFile.isEmpty()) {
+			// 2.1 Apache Tomcat.
 			try {
-				// For environments such as WebLogic, it is important that a logging context has a unique name!
 				LoggingFactory.getInstance().initialize(webAppRoot + logCfgFile, configMan.getServletName());
 			} catch (Exception ioex) {
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
 		}
+		// logCfgFile = null ->
+		// 2.2 For WebLogic, log4j2-logging will be initialized
+		//     by the log4j-web-jar and the listener defined in web.xml.
+		// 2.3 Jetty uses simpler logging that can be bridged with slf4j-simple.
+		
 		
 		// 3. DB connection manager
 		try {
@@ -93,8 +96,8 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		}
 
 		
-		// Create the beetRoot server running in a passive server mode,
-		// basically only parsing and sending the body
+		// 4. Create the beetRoot server running in a passive server mode,
+		//    basically only parsing and sending the body
 		try {
 			final Class<?> clz = Class.forName(beetRootServiceClass);
 			beetRootService = (BeetRootService) clz.getDeclaredConstructor().newInstance();
@@ -103,6 +106,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 			throw new ServletException("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
 		}
 
+		
 		/** Servlet's life-cycle doesn't allow this.
 		// Finally load user sessions
 		try {
@@ -125,18 +129,15 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		}
 		*/
 		
-		// clear sessions from memory
+		// Clear sessions from memory
 		sessions.clear(); // all we need to do here
-		
-		// free service resource, etc.
+		// Free service resource, etc.
 		beetRootService.destroy();
-		
-		// release database resources
+		// Release database resources
 		BeetRootDatabaseManager.getInstance().release();
-		
-		// no threads need to be stopped, no streams closed,
-		// servlet container does it all for us here.,
-		// just call the standard servlet destroy-method  
+		// No threads need to be stopped, no streams closed,
+		// servlet-container does it all for us here.
+		// Just call the standard servlet-destroy-method.  
 		super.destroy();
 	}
 	
@@ -157,23 +158,17 @@ public class AbstractBeetRootServlet extends HttpServlet {
 	 * @throws IOException IO Exception
 	 */
 	protected BeetRootHTTPSession findOrCreateHttpSession(HttpServletRequest request) throws IOException {
-
-		// servlet container session ID
+		// Servlet-container session ID
 		final String sessionID = request.getSession().getId();
-		
 		BeetRootHTTPSession session = null; 
 		if (sessions.containsKey(sessionID))
 			return sessions.get(sessionID); // found !
-
-        // Create a temp file manager that handles the uploads within nano mechanics
+        // Create a temporary file manager that handles the uploads within NANO-Httpd API
         final ITempFileManager tempFileManager = beetRootService.newTempFileManager();
-        
 		// If there isn't a session yet, create one and deliver the input stream to it for parsing the body
         session = new BeetRootHTTPSession(sessionID, tempFileManager, request.getInputStream());
-        
-        // store it.
+        // Store it
         sessions.put(sessionID, session);
-        
         return session;		
 	}	
 

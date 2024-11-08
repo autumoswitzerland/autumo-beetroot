@@ -3,7 +3,7 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.7
+#  Version: 4.8
 #
 #  Notes:
 #   -
@@ -11,7 +11,7 @@
 #------------------------------------------------------------------------------
 #
 #  Copyright 2024 autumo GmbH
-#  Date: 02.07.2024
+#  Date: 2024-11-08
 #
 ###############################################################################
 
@@ -20,6 +20,8 @@
 
 # Vars
 VERSION=3.1.2
+SLF4J_SIMPLE_VERSION=1.7.36
+LOG4J_WEB_VERSION=2.24.1
 
 
 
@@ -350,12 +352,16 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	sed -i '' 's/web_html_ref_pre_url_part=/web_html_ref_pre_url_part=beetroot/' beetroot.cfg
 	jar --create --file "beetroot.war" *
 	mv *.war ../
+	rm -f logging.xml
 	cd ..
 
 
 	# -- 2. WebLogic
 	cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
-	cp ../cfg/logging-web-weblogic.xml autumo-beetRoot-web-${VERSION}/logging.xml
+	cp ../cfg/web-weblogic.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
+	cp ../cfg/logging-web-weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
+	# Enrich logging implementation
+	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-web/${LOG4J_WEB_VERSION}/log4j-web-${LOG4J_WEB_VERSION}.jar)
 	# change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=7001/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Use Javax for mailing
@@ -369,16 +375,16 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
 	rm -fR beetroot/
+	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
+	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/lib/log4j-web-*.jar
 
 
 	# -- 3. Jetty
-	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml
 	# Replace logging implementation!
-	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar)
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j-slf4j-impl-*.jar
-	rm -f autumo-beetRoot-web-$VERSION/logging.xml
+	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/${SLF4J_SIMPLE_VERSION}/slf4j-simple-${SLF4J_SIMPLE_VERSION}.jar)
 	# no AUTO_SERVER=TRUE switch
 	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Change back mailing implementation
