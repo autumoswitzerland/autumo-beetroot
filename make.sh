@@ -375,6 +375,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
 	rm -fR beetroot/
+	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/lib/log4j-web-*.jar
 
