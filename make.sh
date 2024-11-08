@@ -378,9 +378,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# Replace logging implementation!
 	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar)
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j-slf4j-impl-*.jar
-	
 	rm -f autumo-beetRoot-web-$VERSION/logging.xml
-	#rm -f autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j*
 	# no AUTO_SERVER=TRUE switch
 	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Change back mailing implementation
