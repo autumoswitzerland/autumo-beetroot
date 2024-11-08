@@ -64,15 +64,18 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		} catch (Exception e) {
 			LOG.error("Configuration initialization failed !", e);
 			throw new ServletException("Configuration initialization failed !", e);
-		}		
+		}
+		
+		
 
 		// 2. Logging configuration
 		final String servletContainer = config.getInitParameter("servletContainer");
 		if (servletContainer == null || !servletContainer.equals("jetty")) {
-			// configure logging
+			// Configure logging
 			final String logCfgFile = config.getInitParameter("beetRootLogConfig");
 			try {
-				LoggingFactory.getInstance().initialize(webAppRoot + logCfgFile);
+				// For environments such as WebLogic, it is important that a logging context has a unique name!
+				LoggingFactory.getInstance().initialize(webAppRoot + logCfgFile, configMan.getServletName());
 			} catch (Exception ioex) {
 				throw new ServletException("Logging configuration initialization failed !", ioex);
 			}
