@@ -49,6 +49,9 @@ public abstract class AbstractMailer implements Mailer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractMailer.class.getName());
 	
+	/** default SMTP port. */
+	public static final int DEFAULT_SMTP_PORT = 25;
+	
 	/** Mail formats. */
 	protected String mailformats[] = null;
 	/** Mail authentication? */
@@ -96,8 +99,8 @@ public abstract class AbstractMailer implements Mailer {
 		if (port < 0) {
 			port = BeetRootConfigurationManager.getInstance().getInt("mail_port");
 			if (port == -1) {
-				LOG.warn("Using mail port 25.");
-				port = 25;
+				LOG.warn("Using mail port {}.", DEFAULT_SMTP_PORT);
+				port = DEFAULT_SMTP_PORT;
 			}
 		}
 		host = BeetRootDatabaseManager.getInstance().getProperty("mail.host");
@@ -235,7 +238,7 @@ public abstract class AbstractMailer implements Mailer {
 				final int pos1 = idx + BaseHandler.TAG_PREFIX_LANG.length();
 				final int pos2 = template.indexOf("}", idx + BaseHandler.TAG_PREFIX_LANG.length());
 				int posC = template.indexOf(",", idx + BaseHandler.TAG_PREFIX_LANG.length());
-				// if a comma is found outside the tag it refers not ro a replace variable!
+				// if a comma is found outside the tag it refers not to a replace variable!
 				if (posC > pos2)
 					posC = -1;
 				String totrans = null; 

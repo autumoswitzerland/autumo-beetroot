@@ -20,6 +20,7 @@ package ch.autumo.beetroot.mailing;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -27,6 +28,7 @@ import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.URLName;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -79,17 +81,73 @@ public class JavaxMailer extends AbstractMailer {
 	}
 
 	/**
-	 * Lookup JNDI context.
-	 * 
-	 * @param jndiContextName JNDI context name (or mail session name)
-	 * @return mail session
-	 * @throws Exception
+	 * Looks up the JNDI mail session context.
+	 *
+	 * @param jndiContextName the JNDI context name (or mail session name)
+	 * @return the mail session, configured with fallback credentials if needed
+	 * @throws NamingException if the JNDI lookup fails
+	 * @throws NumberFormatException if the port property is invalid
 	 */
 	private Session lookupJndiMailSession(String jndiContextName) throws Exception {
-		// We still load properties from default configuration, because we still need some value, e.g., 'from'
+		// We still load properties from default configuration,
+		// because we still need some value, e.g., 'from'
+		// and possibly credentials
 		super.initialize();
-	    final InitialContext ic = new InitialContext();
-	    return (Session) ic.lookup(jndiContextName);
+		Session session = null;
+	    try {
+            // Retrieve the JNDI Mail Session
+		    final InitialContext ic = new InitialContext();
+		    session = (Session) ic.lookup(jndiContextName);
+		    if (session == null) {
+		    	throw new NamingException("Mail session not found in JNDI context: " + jndiContextName);
+		    }
+            final Properties jndiProps = session.getProperties();
+            if (Boolean.parseBoolean(jndiProps.getProperty("mail.smtp.auth", "false"))) {
+                configureAuthentication(session, jndiProps);
+            }
+	    } catch (NamingException e) {
+	        LOG.error("Failed to look up JNDI context '{}': {}", jndiContextName, e.getMessage(), e);
+	        throw e;
+	    } catch (NumberFormatException e) {
+	        LOG.error("Invalid port format in JNDI properties for '{}': {}", jndiContextName, e.getMessage(), e);
+	        throw e;
+	    }
+	    return session;
+	}
+	
+	/**
+	 * Configures SMTP authentication for the mail session if JNDI credentials are incomplete.
+	 * 
+	 * @param session the JNDI mail session
+	 * @param jndiProps the JNDI mail session properties
+	 * @throws NamingException if SMTP host is missing
+	 */
+	private void configureAuthentication(Session session, Properties jndiProps) throws NamingException {
+	    final String smtpHost = jndiProps.getProperty("mail.smtp.host");
+	    if (smtpHost == null) {
+	        throw new NamingException("SMTP host property is missing in JNDI properties.");
+	    }
+	    String jndiUsername = jndiProps.getProperty("mail.smtp.user");
+	    String jndiPassword = jndiProps.getProperty("mail.smtp.password");
+	    if (jndiUsername == null || jndiPassword == null) {
+	        LOG.info("Falling back to external configuration for SMTP credentials.");
+	        session.setPasswordAuthentication(
+	            new URLName(
+	                "smtp",
+	                smtpHost,
+	                Integer.parseInt(jndiProps.getProperty("mail.smtp.port", String.valueOf(DEFAULT_SMTP_PORT))),
+	                null,
+	                user,
+	                password
+	            ),
+	            new PasswordAuthentication(user, password)
+	        );
+	    } else {
+	        LOG.warn(
+	            "SMTP credentials found in JNDI context. For enhanced security, define them externally: '{}'.",
+	            BeetRootConfigurationManager.getInstance().getConfigFileName()
+	        );
+	    }
 	}
 	
 	/**
@@ -143,7 +201,7 @@ public class JavaxMailer extends AbstractMailer {
                 } else {
                     // JNDI mail session
                     mailSession = this.lookupJndiMailSession(jndiName);
-                    LOG.info("External Mail-session (JNDI) '{}' has been configured from configuration file '{}'.", jndiName, BeetRootConfigurationManager.getInstance().getConfigFileNme());
+                    LOG.info("External Mail-session (JNDI) '{}' has been configured from configuration file '{}'.", jndiName, BeetRootConfigurationManager.getInstance().getConfigFileName());
                 }
             } else {
                 // Retrieve session name from database and create JNDI context

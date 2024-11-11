@@ -446,7 +446,7 @@ public class BeetRootConfigurationManager {
 	 * 
 	 * @return file name
 	 */
-	public String getConfigFileNme() {
+	public String getConfigFileName() {
 		return cfgFileName;
 	}
 	
