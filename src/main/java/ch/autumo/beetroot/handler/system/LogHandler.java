@@ -35,6 +35,7 @@ import ch.autumo.beetroot.handler.NoConfigHandler;
 import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.modules.log.LogFactory;
+import ch.autumo.beetroot.utils.system.OS;
 import ch.autumo.beetroot.utils.web.Web;
 
 
@@ -42,7 +43,7 @@ import ch.autumo.beetroot.utils.web.Web;
  * Log extended handler.
  */
 public class LogHandler extends NoConfigHandler {
-
+	
 	private static final Logger LOG = LoggerFactory.getLogger(LogHandler.class);
 
 	/** Default log size . */
@@ -73,6 +74,7 @@ public class LogHandler extends NoConfigHandler {
 		this.layout = PatternLayout.newBuilder()
                 .withPattern(LOG_PATTERN)
                 .withCharset(StandardCharsets.UTF_8)
+                .withDisableAnsi(false)
                 .build();
 	}
 
@@ -160,68 +162,108 @@ public class LogHandler extends NoConfigHandler {
 	
     public String format(LogEvent event) {
         String formattedMessage = layout.toSerializable(event);
-
-        // You can now post-process the formattedMessage if needed
-        formattedMessage = processCustomPatternReferences(formattedMessage, event);
-
+        // Post-process the formattedMessage if needed
+        // formattedMessage = processCustomPatternReferences(formattedMessage, event);
         // Escape HTML characters to avoid issues with displaying in HTML
         formattedMessage = Web.escapeHtmlReserved(formattedMessage);
-
         // Replace ANSI escape codes with corresponding HTML styles
         formattedMessage = replaceAnsiWithHtml(formattedMessage);
-
         return formattedMessage;
     }
     
+    /**
     private String processCustomPatternReferences(String formattedMessage, LogEvent event) {
         // Example: Replace %im with custom logic
         formattedMessage = formattedMessage.replace("%im", customIMConverter(event));
         return formattedMessage;
-    }    
-
+    }
     private String customIMConverter(LogEvent event) {
         // Example custom logic for %im
         String message = event.getMessage().getFormattedMessage();
         // Apply your custom formatting logic here
         return message;
     }
+    */  
 
     private String replaceAnsiWithHtml(String input) {
+        // If the platform is Windows, handle full ANSI sequences including \u001b
+        if (OS.isWindows()) {
+        	
+            // Full escape sequences (with \u001b) for Windows
+        	
+	        // Standard colors
+            input = input.replace("\u001b[30m", "<span style=\"color: darkgrey;\">");
+            input = input.replace("\u001b[31m", "<span style=\"color: darkred;\">");
+            input = input.replace("\u001b[32m", "<span style=\"color: green;\">");
+            input = input.replace("\u001b[33m", "<span style=\"color: yellow;\">");
+            input = input.replace("\u001b[34m", "<span style=\"color: blue;\">");
+            input = input.replace("\u001b[35m", "<span style=\"color: magenta;\">");
+            input = input.replace("\u001b[36m", "<span style=\"color: cyan;\">");
+            input = input.replace("\u001b[37m", "<span style=\"color: lightgrey;\">");
 
-        // Standard colors
-        input = input.replace("[30m", "<span style=\"color: darkgrey;\">");
-        input = input.replace("[31m", "<span style=\"color: darkred;\">");
-        input = input.replace("[32m", "<span style=\"color: green;\">");
-        input = input.replace("[33m", "<span style=\"color: yellow;\">");
-        input = input.replace("[34m", "<span style=\"color: blue;\">");
-        input = input.replace("[35m", "<span style=\"color: magenta;\">");
-        input = input.replace("[36m", "<span style=\"color: cyan;\">");
-        input = input.replace("[37m", "<span style=\"color: lightgrey;\">");
+            // Standard bright colors
+            input = input.replace("\u001b[1;30m", "<span style=\"color: lightgrey;\">");
+            input = input.replace("\u001b[1;31m", "<span style=\"color: red;\">");
+            input = input.replace("\u001b[1;32m", "<span style=\"color: #90EE90;\">");
+            input = input.replace("\u001b[1;33m", "<span style=\"color: #FFFFE0;\">");
+            input = input.replace("\u001b[1;34m", "<span style=\"color: #ADD8E6;\">");
+            input = input.replace("\u001b[1;35m", "<span style=\"color: #FF80FF;\">");
+            input = input.replace("\u001b[1;36m", "<span style=\"color: #E0FFFF;\">");
+            input = input.replace("\u001b[1;37m", "<span style=\"color: white;\">");
 
-        // Standard bright colors
-        input = input.replace("[1;30m", "<span style=\"color: lightgrey;\">");
-        input = input.replace("[1;31m", "<span style=\"color: red;\">");
-        input = input.replace("[1;32m", "<span style=\"color: #90EE90;\">");
-        input = input.replace("[1;33m", "<span style=\"color: #FFFFE0;\">");
-        input = input.replace("[1;34m", "<span style=\"color: #ADD8E6;\">");
-        input = input.replace("[1;35m", "<span style=\"color: #FF80FF;\">");
-        input = input.replace("[1;36m", "<span style=\"color: #E0FFFF;\">");
-        input = input.replace("[1;37m", "<span style=\"color: white;\">");
-        
-        // beetRoot ANSI colors
-        input = input.replace("[90m", "<span style=\"color: darkgrey;\">");
-        input = input.replace("[91m", "<span style=\"color: red;\">");
-        input = input.replace("[92m", "<span style=\"color: green;\">");
-        input = input.replace("[93m", "<span style=\"color: yellow;\">");
-        input = input.replace("[94m", "<span style=\"color: blue;\">");
-        input = input.replace("[95m", "<span style=\"color: magenta;\">");
-        input = input.replace("[96m", "<span style=\"color: cyan;\">");
-        input = input.replace("[97m", "<span style=\"color: lightgrey;\">");
+	        // beetRoot ANSI colors
+	        input = input.replace("\u001b[90m", "<span style=\"color: darkgrey;\">");
+	        input = input.replace("\u001b[91m", "<span style=\"color: red;\">");
+	        input = input.replace("\u001b[92m", "<span style=\"color: green;\">");
+	        input = input.replace("\u001b[93m", "<span style=\"color: yellow;\">");
+	        input = input.replace("\u001b[94m", "<span style=\"color: blue;\">");
+	        input = input.replace("\u001b[95m", "<span style=\"color: magenta;\">");
+	        input = input.replace("\u001b[96m", "<span style=\"color: cyan;\">");
+	        input = input.replace("\u001b[97m", "<span style=\"color: lightgrey;\">");
+            
+            // Resets (any reset sequence)
+            input = input.replaceAll("\u001b\\[0m", "</span>");
+            input = input.replaceAll("\u001b\\[m", "</span>");
+            
+        } else {
+        	
+        	// macOSm Linux: Handle only the color codes, no \u001b present
+        	
+	        // Standard colors
+	        input = input.replace("[30m", "<span style=\"color: darkgrey;\">");
+	        input = input.replace("[31m", "<span style=\"color: darkred;\">");
+	        input = input.replace("[32m", "<span style=\"color: green;\">");
+	        input = input.replace("[33m", "<span style=\"color: yellow;\">");
+	        input = input.replace("[34m", "<span style=\"color: blue;\">");
+	        input = input.replace("[35m", "<span style=\"color: magenta;\">");
+	        input = input.replace("[36m", "<span style=\"color: cyan;\">");
+	        input = input.replace("[37m", "<span style=\"color: lightgrey;\">");
+	
+	        // Standard bright colors
+	        input = input.replace("[1;30m", "<span style=\"color: lightgrey;\">");
+	        input = input.replace("[1;31m", "<span style=\"color: red;\">");
+	        input = input.replace("[1;32m", "<span style=\"color: #90EE90;\">");
+	        input = input.replace("[1;33m", "<span style=\"color: #FFFFE0;\">");
+	        input = input.replace("[1;34m", "<span style=\"color: #ADD8E6;\">");
+	        input = input.replace("[1;35m", "<span style=\"color: #FF80FF;\">");
+	        input = input.replace("[1;36m", "<span style=\"color: #E0FFFF;\">");
+	        input = input.replace("[1;37m", "<span style=\"color: white;\">");
+	        
+	        // beetRoot ANSI colors
+	        input = input.replace("[90m", "<span style=\"color: darkgrey;\">");
+	        input = input.replace("[91m", "<span style=\"color: red;\">");
+	        input = input.replace("[92m", "<span style=\"color: green;\">");
+	        input = input.replace("[93m", "<span style=\"color: yellow;\">");
+	        input = input.replace("[94m", "<span style=\"color: blue;\">");
+	        input = input.replace("[95m", "<span style=\"color: magenta;\">");
+	        input = input.replace("[96m", "<span style=\"color: cyan;\">");
+	        input = input.replace("[97m", "<span style=\"color: lightgrey;\">");
+	
+	        // Resets
+	        input = input.replace("[0m", "</span>");
+	        input = input.replace("[m", "</span>");
+        }
 
-        // Resets
-        input = input.replace("[0m", "</span>");
-        input = input.replace("[m", "</span>");
-        
         // Special words (artistic freedom)
         input = input.replace("READER", "<span style=\"color: green;\">READER</span>");
         input = input.replace("READING", "<span style=\"color: green;\">READING</span>");
