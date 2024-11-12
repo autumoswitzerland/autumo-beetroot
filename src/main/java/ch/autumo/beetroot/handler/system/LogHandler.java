@@ -187,9 +187,9 @@ public class LogHandler extends NoConfigHandler {
 
     private String replaceAnsiWithHtml(String input) {
         // If the platform is Windows, handle full ANSI sequences including \u001b
-        if (OS.isWindows()) {
+        if (OS.isWindows() || OS.isUnix()) {
         	
-            // Full escape sequences (with \u001b) for Windows
+            // Full escape sequences (with \u001b) for Windows and Unix
         	
 	        // Standard colors
             input = input.replace("\u001b[30m", "<span style=\"color: darkgrey;\">");
