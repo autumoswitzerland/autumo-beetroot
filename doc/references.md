@@ -41,11 +41,6 @@ ALTER TABLE users_roles ADD INDEX "idx_role_id" ("role_id");
 
 <br>
 <br>
-<a href="../README.md">[Main Page]</a>
-
-
-<br>
-<br>
 Click <a href="../README.md">here</a> to go to the main page.
 
 <p align="right"><a href="#top">&uarr;</a></p>
