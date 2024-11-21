@@ -51,6 +51,7 @@ CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 # Encode 
 #
 java \
+	-DROOTPATH="${ROOT}" \
 	-cp "${CLASSPATH}" \
 	ch.autumo.beetroot.utils.security.PWEncoder $*
 

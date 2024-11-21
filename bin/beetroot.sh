@@ -53,6 +53,7 @@ CLASSPATH=${CLASSPATH}:${LIB_CLASSPATH}
 java \
 	-DROOTPATH="${ROOT}" \
 	-Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2,TLSv1.3 \
-	-cp "${CLASSPATH}" ch.autumo.beetroot.server.BeetRootServer $*
+	-cp "${CLASSPATH}" \
+	ch.autumo.beetroot.server.BeetRootServer $*
 
 popd
