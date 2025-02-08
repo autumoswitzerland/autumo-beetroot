@@ -100,7 +100,7 @@ public class BeetRootConfigurationManager {
     		if (inputStream != null) {
     			final byte buffer[] = new byte[32]; // Version string can be max. 32 characters
     			final int length = inputStream.read(buffer);
-    			appVersion = new String(buffer, 0, length);
+    			appVersion = new String(buffer, 0, length).trim();
     		}
 		} catch (Exception e) {
 			appVersion = "x.y.z";
