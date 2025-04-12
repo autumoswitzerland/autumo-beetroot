@@ -398,17 +398,17 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
 			}
 			
-			if (dbApiKey != null)
+			if (dbApiKey != null) {
 				dbApiKey = dbApiKey.trim();
+			}
 			
 			if (dbApiKey != null && apiKey!= null && dbApiKey.equals(apiKey)) {
 				return this.serveAtLast((BeetRootHTTPSession)session); // All good!
-			}
-			else {
+			} else {
 				LOG.warn("JSON API (URI: '{}'): Access with wrong JSON API Key!", uriWithoutServlet);
-				final String t = LanguageManager.getInstance().translate("base.err.srv.io.title", LanguageManager.DEFAULT_LANG);
-				final String m = LanguageManager.getInstance().translate("base.err.srv.io.msg", LanguageManager.DEFAULT_LANG, "Disperse, nothing to see here!");
-				return serverResponse(session, ErrorHandler.class, Status.INTERNAL_ERROR, t, m);
+				final String t = LanguageManager.getInstance().translate("base.err.srv.auth.title", LanguageManager.DEFAULT_LANG);
+				final String m = LanguageManager.getInstance().translate("base.err.srv.auth.msg", LanguageManager.DEFAULT_LANG);
+				return serverResponse(session, ErrorHandler.class, Status.UNAUTHORIZED, t, m);
 			}
 		}
 		
