@@ -27,7 +27,7 @@
 		<version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
 		<version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
 		
-		<version.autumo.beetroot>3.1.3</version.autumo.beetroot>
+		<version.autumo.beetroot>3.1.4</version.autumo.beetroot>
 		<version.nanohttpd>BEETROOT-2.3.5</version.nanohttpd>
 		<version.hikaricp>6.0.0</version.hikaricp>
 		<version.jcolor>5.5.1</version.jcolor>
