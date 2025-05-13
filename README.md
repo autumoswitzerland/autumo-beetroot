@@ -100,7 +100,7 @@ When developing, take a look at the
 | **Project Setup**            | Just unzip & run                                           | Maven/Gradle setup, lots of boilerplate                        |
 | **Memory Usage**             | Low                                                        | Higher due to extensive runtime features                       |
 | **UI & Template System**     | Built-in template engine with generated UI                 | Thymeleaf, FreeMarker, etc. require setup                      |
-| **CRUD Automation**          | Auto-generates MVC artefacts from DB schema (PLANT)        | Manual or use of third-party generators                        |
+| **CRUD Automation**          | Auto-generates MVC artifacts from DB schema (PLANT)        | Manual or use of third-party generators                        |
 | **Security (basic)**         | Built-in 2FA, CSRF, password encryption, role checks       | Requires Spring Security, setup is complex                     |
 | **Deployment**               | Embedded lightweight server included                       | Uses embedded Tomcat/Jetty but with larger footprint           |
 | **Learning Curve**           | Shallow — read code, understand fast                       | Steep — Spring ecosystem is large and deep                     |
