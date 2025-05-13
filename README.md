@@ -89,6 +89,44 @@ When developing, take a look at the
 
 
 
+<!-- beetRoot vs. Spring Boot -->
+## autumo beetRoot vs. Spring Boot
+
+### Advantages of autumo beetRoot over Spring Boot
+| Feature/Aspect               | 🌰 **autumo beetRoot**                                     | 🌿 **Spring Boot**                                             |
+|------------------------------|------------------------------------------------------------|----------------------------------------------------------------|
+| **Startup Time**             | < 1 second                                                 | Several seconds (depending on config & dependencies)           |
+| **Complexity**               | Very low — few annotations, no dependency injection magic  | High — requires understanding Spring internals, DI, beans, etc.|
+| **Project Setup**            | Just unzip & run                                           | Maven/Gradle setup, lots of boilerplate                        |
+| **Memory Usage**             | Low                                                        | Higher due to extensive runtime features                       |
+| **UI & Template System**     | Built-in template engine with generated UI                 | Thymeleaf, FreeMarker, etc. require setup                      |
+| **CRUD Automation**          | Auto-generates MVC artefacts from DB schema (PLANT)        | Manual or use of third-party generators                        |
+| **Security (basic)**         | Built-in 2FA, CSRF, password encryption, role checks       | Requires Spring Security, setup is complex                     |
+| **Deployment**               | Embedded lightweight server included                       | Uses embedded Tomcat/Jetty but with larger footprint           |
+| **Learning Curve**           | Shallow — read code, understand fast                       | Steep — Spring ecosystem is large and deep                     |
+| **Transparency**             | Explicit code, direct control                              | Convention over configuration, less transparent                |
+
+### Use Cases Where autumo beetRoot Shines
+- Small to mid-sized web apps or admin tools
+- CRUD-heavy internal systems
+- Environments with limited memory/CPU
+- Teams that prefer simple, readable code over "magic"
+- Replacing PHP-based admin panels with Java equivalents
+- Web hosting environments without the need for massive frameworks
+
+### Where Spring Boot Has Its Place
+- Microservice architectures
+- Advanced cloud-native features (e.g., Spring Cloud)
+- Reactive programming
+- Extensive ecosystem integration (Kafka, Elasticsearch, etc.)
+- Enterprise-scale systems with multiple layers of abstraction
+
+### Verdict
+If you're tired of Spring Boot's "annotation hell", slow startup, or complex configuration, and just want a clear, fast, and full-stack solution, 
+then autumo beetRoot is a breath of fresh air.
+
+
+
 <!-- QUICKSTART -->
 ## Quickstart
 
