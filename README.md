@@ -122,7 +122,7 @@ When developing, take a look at the
 - Enterprise-scale systems with multiple layers of abstraction
 
 ### Verdict
-If you're tired of Spring Boot's "annotation hell", slow startup, or complex configuration, and just want a clear, fast, and full-stack solution, 
+- If you're tired of Spring Boot's "annotation hell", slow startup, or complex configuration, and just want a clear, fast, and full-stack solution, 
 then autumo beetRoot is a breath of fresh air.
 
 
