@@ -130,3 +130,24 @@ function copyTerm() {
 	    flashMessage.classList.add('hidden');
 	}, 1000);
 }
+
+/**
+ * Export table.
+ */
+function exportTable(type, entity) {
+	// no id/class needed, first table taken
+	const table = document.querySelector("table");
+	const wb = XLSX.utils.table_to_book(table, { sheet: entity });
+
+	if (type === 'json') {
+		const json = XLSX.utils.sheet_to_json(wb.Sheets[entity], { defval: "" });
+		const blob = new Blob([JSON.stringify(json, null, 2)], { type: "application/json" });
+		const a = document.createElement("a");
+		a.href = URL.createObjectURL(blob);
+		a.download = entity + ".json";
+		a.click();
+	} else {
+		const ext = type === 'csv' ? '.csv' : '.xlsx';
+		XLSX.writeFile(wb, entity + ext, { bookType: type });
+	}
+}

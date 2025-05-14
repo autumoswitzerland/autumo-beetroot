@@ -87,6 +87,9 @@ table tr td {
 table tr {
     border-bottom: 1px solid #444444;
 }
+table thead tr th, table thead tr td {
+	color: #07b;
+}
 p {
     color: #0093E6 !important;
 }

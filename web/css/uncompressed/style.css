@@ -735,6 +735,17 @@ a {
 	color: #fff;
 }
 
+.exportButtons {
+	float: right;
+	margin-top: -6px;
+}
+.exportButtons a {
+	padding-left: 4px;
+}
+.exportButtons a:hover img {
+	filter: brightness(1.5);
+}
+
 ul.pagination li a {
 	color: rgba(0, 0, 0, 0.54);
 	font-weight: lighter;
@@ -753,6 +764,8 @@ ul.pagination .disabled:hover a {
 	background: none;
 }
 .paginator {
+	clear: both;
+	margin-top: 64px;
 	text-align: center;
 }
 .paginator ul.pagination li {
@@ -761,6 +774,7 @@ ul.pagination .disabled:hover a {
 	font-size: 1.2rem;
 }
 .paginator p {
+	margin-top: -16px;
 	font-size: 1.2rem;
 	font-weight: lighter;
 	text-align: right;
@@ -1330,15 +1344,6 @@ button {
 	.portfolio-box-caption {
 		visibility: hidden;
 	}
-}
-
-
-/* Force equal height by overflowing for Safari*/
-@supports (-webkit-backdrop-filter: none) {
-    .content, #actions-sidebar, #service-sidebar {
-		margin-bottom: -99959px; /* Set your desired margin for Safari */
-		padding-bottom: 99999px;
-    }
 }
 
 

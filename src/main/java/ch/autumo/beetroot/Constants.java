@@ -69,6 +69,11 @@ public class Constants {
 	 * Server Command URI.
 	 */
 	public static final String URI_SRV_CMD = "srvcmd";
+
+	/**
+	 * RFC 8615: Well-known URI is a Uniform Resource Identifier for URL path prefixes.
+	 */
+	public static final String URI_SRV_WELL_KNOWN = ".well-known";
 	
 	/**
 	 * Search page.

@@ -1186,6 +1186,13 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 						this.createTemplateContent(userSession, session);
 						if (templateResource.endsWith(FILE_HTML_ACTION_INDEX)) {
 							parseTemplateHead(buffer, "{$head}");
+							final int teidx = buffer.indexOf("{$tableExport}");
+							if (teidx != -1) {
+								final String exportTableRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/table_export.html", userSession);
+								final String exportTable = this.getSubResource(exportTableRessource, session);
+								buffer.replace(teidx, teidx + "{$tableExport}".length(), exportTable);
+							}
+							parseTableExport(buffer, "{$tableExport}", session); // if any, only index!
 							parsePaginator(buffer, "{$paginator}", session); // if any, only index!
 						}
 						if (templateResource.endsWith("search.html")) {
@@ -1467,11 +1474,31 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		template.replace(idx, idx + variable.length(), this.getHtmlData());
 	}
 
+	private void parseTableExport(StringBuilder template, String variable, BeetRootHTTPSession session) {
+		final int idx = template.indexOf(variable);
+		if (idx == -1)
+			return;
+		template.replace(idx, idx + variable.length(), this.getTableExport(session));
+	}
+	
 	private void parsePaginator(StringBuilder template, String variable, BeetRootHTTPSession session) {
 		final int idx = template.indexOf(variable);
 		if (idx == -1)
 			return;
 		template.replace(idx, idx + variable.length(), this.getPaginator(session));
+	}
+
+	private String getSubResource(String resource, BeetRootHTTPSession session) throws FileNotFoundException {
+		final Session userSession = session.getUserSession();
+		final StringBuilder sb = new StringBuilder();
+		String lang = userSession.getUserLang(); 
+		String currRessource = LanguageManager.getInstance().getBlockResource(resource, userSession);		
+		Scanner sc = getNewScanner(currRessource);
+		while (sc.hasNextLine()) {
+			sb.append(sc.nextLine() + "\n");
+		}	
+		sc.close();
+		return sb.toString();			
 	}
 	
 	private String parseAndGetSubResource(String origText, String resource, String type, BeetRootHTTPSession session, int origId) throws FileNotFoundException {
@@ -2892,6 +2919,16 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			}
 		}
 		return text;
+	}
+
+	/**
+	 * Get HTML table export code. Must only be implemented by index handlers
+	 * and is only called if there's a "{$tabelExport}" tag in a template.
+	 * @param session HTTP session  
+	 * @return HTML paginator code
+	 */
+	public String getTableExport(BeetRootHTTPSession session) {
+		throw new IllegalStateException("This method should not be called without a routed index template handler!");
 	}
 	
 	/**

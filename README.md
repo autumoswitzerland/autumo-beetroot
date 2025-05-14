@@ -135,7 +135,7 @@ Enter the following commands into your terminal:
 **Linux, macOS**
 
 ```NuShell
-VERSION=3.1.4
+VERSION=3.1.5
 PACKAGE=autumo-beetRoot-$VERSION
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
@@ -149,7 +149,7 @@ $PACKAGE/bin/beetroot.sh start
 **Windows**
 
 ```Batchfile
-SET VERSION=3.1.4
+SET VERSION=3.1.5
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
@@ -206,6 +206,7 @@ configuration key to get to know the possibilities and the extensive features of
 * [Checker Framework Qualifiers](https://checkerframework.org)
 * [Google ZXing Java SE Extensions](https://github.com/zxing)
 * [JQuery](https://jquery.com)
+* [SheetJS](https://sheetjs.com/)
 * ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
 
 
@@ -247,6 +248,7 @@ configuration key to get to know the possibilities and the extensive features of
 - File upload and download
 - Full MIME type control
 - Dark theme and theme support
+- Export tables in CSV, JSON, or XLSX format
 - File caching (resources and templates)
 - HTTPS protocol and TLS for mail if configured
 - Logging implementations other than log4j2 are supported

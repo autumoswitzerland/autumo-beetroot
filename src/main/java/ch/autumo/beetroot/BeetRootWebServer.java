@@ -55,6 +55,7 @@ import ch.autumo.beetroot.crud.EventHandler;
 import ch.autumo.beetroot.handler.BaseHandler;
 import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.ErrorHandler;
+import ch.autumo.beetroot.handler.NoContent204Handler;
 import ch.autumo.beetroot.handler.roles.Role;
 import ch.autumo.beetroot.handler.tasks.TasksIndexHandler;
 import ch.autumo.beetroot.handler.users.User;
@@ -386,6 +387,11 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		
 		// JSON
 		if (uriWithoutServlet.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
+			
+			// RFC 861
+			if (uriWithoutServlet.startsWith(Constants.URI_SRV_WELL_KNOWN)) {
+				return serverResponse(session, NoContent204Handler.class, "NoContent");
+			}
 			
 			final String apiKey = session.getParms().get(apiKeyName);
 			String dbApiKey = null;
