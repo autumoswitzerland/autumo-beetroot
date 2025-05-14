@@ -388,7 +388,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		// JSON
 		if (uriWithoutServlet.endsWith(Constants.JSON_EXT)) { // JSON serve without login, but with API key
 			
-			// RFC 861
+			// RFC 5785
 			if (uriWithoutServlet.startsWith(Constants.URI_SRV_WELL_KNOWN)) {
 				return serverResponse(session, NoContent204Handler.class, "NoContent");
 			}
