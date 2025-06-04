@@ -738,6 +738,7 @@ a {
 .exportButtons {
 	float: right;
 	margin-top: -6px;
+	margin-bottom: 20px;
 }
 .exportButtons a {
 	padding-left: 4px;
@@ -765,7 +766,6 @@ ul.pagination .disabled:hover a {
 }
 .paginator {
 	clear: both;
-	margin-top: 64px;
 	text-align: center;
 }
 .paginator ul.pagination li {
