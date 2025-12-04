@@ -79,7 +79,7 @@
 		<version.log4j.slf4j.impl>2.24.0</version.log4j.slf4j.impl>
 		<version.mariadb.java.client>3.4.1</version.mariadb.java.client>
 		<version.passay>1.6.5</version.passay>
-		<version.postgresql>42.7.4</version.postgresql>
+		<version.postgresql>42.7.7</version.postgresql>
 		<version.spring.security.crypto>5.8.13</version.spring.security.crypto>
 		<version.totp>1.0</version.totp>
 		<version.twilio>10.5.2</version.twilio>
