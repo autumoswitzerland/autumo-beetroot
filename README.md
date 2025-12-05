@@ -135,7 +135,7 @@ Enter the following commands into your terminal:
 **Linux, macOS**
 
 ```NuShell
-VERSION=3.1.5
+VERSION=3.2.0
 PACKAGE=autumo-beetRoot-$VERSION
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v$VERSION/$PACKAGE.zip
@@ -149,7 +149,7 @@ $PACKAGE/bin/beetroot.sh start
 **Windows**
 
 ```Batchfile
-SET VERSION=3.1.5
+SET VERSION=3.2.0
 SET PACKAGE=autumo-beetRoot-%VERSION%
 
 curl -LO https://github.com/autumoswitzerland/autumo-beetroot/releases/download/v%VERSION%/%PACKAGE%.zip
@@ -240,7 +240,7 @@ configuration key to get to know the possibilities and the extensive features of
 - User sessions are saved when servers are stopped
 - Entities can be deployed via JSON REST API
 - Language management (template translations and/or separate templates for each language)
-- Tested on Apache Tomcat 9, Eclipse Jetty 10 and Oracle Weblogic 14
+- Tested on Apache Tomcat 10, Eclipse Jetty 12.1 and Oracle Weblogic 15.1
 - SMS and phone call interfaces
 - Mailing including mail templates
 - Database connection pooling (HikariCP, with internal and external JNDI data sources)
@@ -272,7 +272,7 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 
 <br>
 <br>
-Copyright 2024, autumo Ltd., Switzerland
+Copyright 2025, autumo Ltd., Switzerland
 
 <p align="right"><a href="#top">&uarr;</a></p>
 

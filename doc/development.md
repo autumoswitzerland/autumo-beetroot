@@ -8,8 +8,12 @@
 
 2. Import the maven project into your favourite development IDE.
 
+  **Note**: Since version 3.2.0, the minimum requirement is Java 17. Due to certain CVE vulnerabilities, we can no longer support some libraries compatible with lower Java versions. Therefore, Java 17 is now mandatory for autumo BeetRoot.
+
 3. Start developing/customizing: [autumo beetRoot 3.x - Quickstart Video][video-url].
 
+
+<br>
 As much as we love [Gradle](https://gradle.org/), for this project we'll stick with [Maven](https://maven.apache.org/) for now.
 The quickstart setup is also effortless and very fast!
 

@@ -3,15 +3,15 @@
 ###############################################################################
 #
 #  beetRoot product packager.
-#  Version: 4.8
+#  Version: 4.9
 #
 #  Notes:
 #   -
 #
 #------------------------------------------------------------------------------
 #
-#  Copyright 2024 autumo GmbH
-#  Date: 2024-11-08
+#  Copyright 2025 autumo GmbH
+#  Date: 2025-11-04
 #
 ###############################################################################
 
@@ -19,9 +19,9 @@
 
 
 # Vars
-VERSION=3.1.5
-SLF4J_SIMPLE_VERSION=1.7.36
-LOG4J_WEB_VERSION=2.24.1
+VERSION=3.2.0
+SLF4J_SIMPLE_VERSION=2.0.17 # Jetty 12.1. with Servlet Spec 4.0 (https://jetty.org/download.html)
+LOG4J_WEB_VERSION=2.25.2
 
 
 
@@ -51,7 +51,7 @@ fi
 if [ "$1" = "clear" ]
 then
 	cd product
-	
+
 	# remove working directory
 	if [ -d "autumo-beetRoot-$VERSION" ]
 	then
@@ -61,30 +61,30 @@ then
 	then
 		rm -Rf autumo-beetRoot-web-$VERSION
 	fi
-		
+
 	# remove package
 	if [ -f "autumo-beetRoot-$VERSION.zip" ]
 	then
     	rm autumo-beetRoot-$VERSION.zip
-	fi		
+	fi
 	if [ -f "autumo-beetRoot-web-$VERSION.zip" ]
 	then
     	rm autumo-beetRoot-web-$VERSION.zip
-	fi		
+	fi
 	if [ -f "beetroot.war" ]
 	then
     	rm beetroot.war
-	fi		
+	fi
 	if [ -f "beetroot-jetty.war" ]
 	then
     	rm beetroot-jetty.war
-	fi		
+	fi
 	if [ -f "beetroot-weblogic.zip" ]
 	then
     	rm beetroot-weblogic.zip
-	fi		
+	fi
 
-	
+
 	exit 1
 fi
 
@@ -105,34 +105,34 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 # -----------------------------
 # ---- Pack & copy libs
 # -----------------------------
-		
+
 	echo "-> Pack and copy newest beetroot lib..."
-	
+
 	# package beetroot
 	mkdir -p lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION
 	mvn clean
 	mvn install
-	
+
 
 # -----------------------------
 # ---- Cleanup & Prepare
 # -----------------------------
 
 	echo "-> Cleanup & prepare..."
-	
+
 	# delete old product package
 	if [ -f "product/autumo-beetRoot-$VERSION.zip" ]
 	then
     	rm product/autumo-beetRoot-$VERSION.zip
-	fi		
+	fi
 	if [ -f "product/autumo-beetRoot-web-$VERSION.zip" ]
 	then
     	rm product/autumo-beetRoot-web-$VERSION.zip
-	fi			
-	
+	fi
+
 	# go to product
 	cd product
-	
+
 	# make working directory
 	mkdir autumo-beetRoot-$VERSION
 	mkdir autumo-beetRoot-web-$VERSION
@@ -141,22 +141,18 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 # -----------------------------
 # ---- Licenses
 # -----------------------------
-		
-	echo "-> Copying 3rd party licenses..."
-	
-	mkdir autumo-beetRoot-$VERSION/etc
-	mkdir autumo-beetRoot-$VERSION/etc/licenses
-	cp ../etc/licenses/* autumo-beetRoot-$VERSION/etc/licenses
+
+	# We no longer copy licenses; all third-party licenses are referenced in THIRDPARTYLICENSES.html.
 
 
 # -----------------------------
 # ---- Copying config
 # -----------------------------
-		
+
 	echo "-> Copying config..."
-	
+
 	mkdir autumo-beetRoot-$VERSION/cfg
-	
+
 	cp ../cfg/beetroot_dist.cfg autumo-beetRoot-$VERSION/cfg/beetroot.cfg
 	cp ../cfg/languages.cfg autumo-beetRoot-$VERSION/cfg/languages.cfg
 	cp ../cfg/routing.xml autumo-beetRoot-$VERSION/cfg/routing.xml
@@ -178,15 +174,15 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../LICENSE.md autumo-beetRoot-web-$VERSION/META-INF/etc/
 	cp ../etc/licenses/*.* autumo-beetRoot-web-$VERSION/META-INF/etc/licenses/
 
-	
+
 # -----------------------------
 # ---- Copying logging config
 # -----------------------------
-		
+
 	echo "-> Copying logging config..."
 
 	cp ../cfg/logging-dist.xml autumo-beetRoot-$VERSION/cfg/logging.xml
-	
+
 	cp ../cfg/logging-web.xml autumo-beetRoot-web-$VERSION/logging.xml
 
 
@@ -195,12 +191,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 # -----------------------------
 
 	echo "-> Making directories and copying..."
-	
+
 	# replace productive passwords!
 	#for file in interfaces/templates/*.ifacex
 	#do
 	#	sed -i '' 's/rest_in_api_key=.*/rest_in_api_key=<YOUR_OWN_API_KEY>/' $file
-	#	
+	#
 	#done
 
 	# copy libs
@@ -215,8 +211,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
 	# Servlet API not needed in web-containers!
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet-api*.jar
-	
-	
+
+
 	#echo "-> Signing libs..."
 	#jarsigner -storepass xxxxx -keystore ../cfg/KeyStore.jks -tsa http://tsa.pki.admin.ch/tsa autumo-beetRoot-$VERSION/lib/autumo-beetroot-${VERSION}.jar autumo.ch
 
@@ -233,12 +229,12 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cd ..
 	cd ..
 	cd ..
-	
+
 	cp ../db/h2/h2* autumo-beetRoot-$VERSION/db/h2/
 	cp ../db/h2/db/dist/* autumo-beetRoot-$VERSION/db/h2/db/
 	cp ../db/*.sql autumo-beetRoot-$VERSION/db/
-	
-	
+
+
 	mkdir autumo-beetRoot-web-$VERSION/db
 	cd autumo-beetRoot-web-$VERSION/db
 	mkdir h2
@@ -250,22 +246,22 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	cp ../db/h2/h2* autumo-beetRoot-web-$VERSION/db/h2/
 	cp ../db/h2/db/dist/* autumo-beetRoot-web-$VERSION/db/h2/db/
-	cp ../db/*.sql autumo-beetRoot-web-$VERSION/db/	
+	cp ../db/*.sql autumo-beetRoot-web-$VERSION/db/
 
 	# --------- Gen resources
 
 	mkdir autumo-beetRoot-$VERSION/gen
-	
+
 	cp -r ../gen autumo-beetRoot-$VERSION/
 
 	# --------- Web resources
 
 	mkdir autumo-beetRoot-$VERSION/web
-	
+
 	cp -r ../web autumo-beetRoot-$VERSION/
-	
+
 	cp -r ../web autumo-beetRoot-web-$VERSION/
-	
+
 	# --------- SSL resources
 
 	mkdir autumo-beetRoot-$VERSION/ssl
@@ -273,7 +269,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp -r ../ssl autumo-beetRoot-$VERSION/
 
 	cp -r ../ssl autumo-beetRoot-web-$VERSION/
-	
+
 	# --------- Copy scripts
 
 	mkdir autumo-beetRoot-$VERSION/bin
@@ -330,7 +326,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cd autumo-beetRoot-web-${VERSION}
 	# add servlet context variable to db url
 	sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
-	
+
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
 	cd ..
@@ -345,6 +341,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# -- BUILD container products
 
 	# -- 1. Tomcat
+	cp ../cfg/logging-web-tomcat.xml autumo-beetRoot-web-$VERSION/logging.xml
 	cd autumo-beetRoot-web-${VERSION}
 	# change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=8080/' beetroot.cfg
@@ -369,7 +366,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	sed -i '' 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Pack it
 	mkdir beetroot/
-	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/ 
+	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/
 	zip -r "beetroot-weblogic.zip" beetroot/ \
 		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
@@ -401,16 +398,16 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	rm -Rf autumo-beetRoot-$VERSION
 	rm -Rf autumo-beetRoot-web-$VERSION
-	
-	
+
+
 # -----------------------------
 # ---- END
 # -----------------------------
-	
+
 	# leave product folder
 	cd ..
 
-	
+
 else
 	echo "Nope! -> make create|clear "
 	echo " "

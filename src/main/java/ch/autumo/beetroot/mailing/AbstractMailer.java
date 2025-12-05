@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot.mailing;
 
@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +48,10 @@ import ch.autumo.beetroot.utils.web.Web;
 public abstract class AbstractMailer implements Mailer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractMailer.class.getName());
-	
+
 	/** default SMTP port. */
 	public static final int DEFAULT_SMTP_PORT = 25;
-	
+
 	/** Mail formats. */
 	protected String mailformats[] = null;
 	/** Mail authentication? */
@@ -60,14 +60,14 @@ public abstract class AbstractMailer implements Mailer {
 	protected boolean tlsEnable = false;
 	/** SSL enabled? */
 	protected boolean sslEnable = false;
-	
+
 	/** SMTP Port. */
 	protected int port = -1;
 	/** SMTP Port string. */
 	protected String portStr = null;
 	/** SMTP Host. */
 	protected String host = null;
-	
+
 	/** Passwords encoded in mail configuration section ('cfg/beetroot.cfg')? */
 	protected boolean pwEncoded = false;
 	/** Mail user (email). */
@@ -76,12 +76,12 @@ public abstract class AbstractMailer implements Mailer {
 	protected String password = null;
 	/** Mail from (email). */
 	protected String from = null;
-	
-	
+
+
 	/**
 	 * Initialize mail configuration; some are store in the returned properties
 	 * and some attributes are initialized.
-	 * 
+	 *
 	 * @return mail configuration
 	 * @throws Exception if configuration loading fails
 	 */
@@ -112,25 +112,25 @@ public abstract class AbstractMailer implements Mailer {
 						SecureApplicationHolder.getInstance().getSecApp())
 				: BeetRootConfigurationManager.getInstance().getString("mail_password");
 		from = BeetRootDatabaseManager.getInstance().getProperty("mail.mailer");
-		from = (from == null || from.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from; 
-		
+		from = (from == null || from.length() == 0) ? BeetRootConfigurationManager.getInstance().getString("mail_from") : from;
+
 		props.put(Constants.MAIL_TRANSPORT_PROTOCOL, "smtp");
 		props.put(Constants.MAIL_SMTP_HOST_KEY, host);
 		props.put(Constants.MAIL_SMTP_PORT_KEY, "" + port);
 		props.put(Constants.MAIL_SMTP_AUTH_KEY, Boolean.toString(auth));
 		if (tlsEnable) {
 			props.put(Constants.MAIL_SMTP_TLS_ENABLE_KEY, "true");
-		}		
+		}
 		if (sslEnable) {
 			props.put(Constants.MAIL_SMTP_SSL, "true");
 			props.put(Constants.MAIL_SMTP_SSL_CHECK_SERVER_ID, "true");
 		}
 		return props;
 	}
-	
+
 	/**
 	 * Load language translated templates with variables replaced.
-	 * 
+	 *
 	 * @param templateName template name
 	 * @param session HTTPS session
 	 * @param variables variables
@@ -143,10 +143,10 @@ public abstract class AbstractMailer implements Mailer {
 	    template = this.replaceAllVariables(template, variables, format);
 	    return this.replaceAllLanguageVariables(template, session, format);
 	}
-	
+
 	/**
 	 * Load mail template.
-	 * 
+	 *
 	 * @param templateName template name
 	 * @param session HTTP session or null (default language is used)
 	 * @param extension template extension (txt or html)
@@ -154,9 +154,9 @@ public abstract class AbstractMailer implements Mailer {
 	 * @throws Exception if an error occurs
 	 */
 	protected String loadTemplate(String templateName, BeetRootHTTPSession session, String extension) throws Exception {
-		
+
 		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-		File f = null;	
+		File f = null;
 		InputStream is = null;
 		boolean streamIt = false;
 		String lang = LanguageManager.getInstance().retrieveLanguage(session);
@@ -182,7 +182,7 @@ public abstract class AbstractMailer implements Mailer {
 					streamIt = true;
 				}
 			} else {
-				f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + res);	
+				f = new File(BeetRootConfigurationManager.getInstance().getRootPath() + res);
 			}
 			if (!f.exists() || (streamIt && is == null)) {
 				streamIt = false;
@@ -202,8 +202,8 @@ public abstract class AbstractMailer implements Mailer {
 					throw new FileNotFoundException("No email template for name '" + templateName + "' found at all!");
 				}
 			}
-		}		
-		
+		}
+
 		final StringBuilder sb = new StringBuilder();
 		BufferedReader br = null;
 		try {
@@ -224,7 +224,7 @@ public abstract class AbstractMailer implements Mailer {
 
 	/**
 	 * Replace language variables in loaded mail template.
-	 * 
+	 *
 	 * @param template loaded te,plate
 	 * @param session HTTP session or null (default language is used)
 	 * @param extension template extension (txt or html)
@@ -241,9 +241,9 @@ public abstract class AbstractMailer implements Mailer {
 				// if a comma is found outside the tag it refers not to a replace variable!
 				if (posC > pos2)
 					posC = -1;
-				String totrans = null; 
-				String subValues = null; 
-				String subValuesArr[] = null; 
+				String totrans = null;
+				String subValues = null;
+				String subValuesArr[] = null;
 				if (posC == -1) {
 					totrans = template.substring(pos1, pos2); // no values to replace
 				}
@@ -264,10 +264,10 @@ public abstract class AbstractMailer implements Mailer {
 		}
 		return template;
 	}
-	
+
 	/**
 	 * Replace general variables in loaded mail template.
-	 * 
+	 *
 	 * @param template loaded template
 	 * @param variables variables to replace
 	 * @param extension template extension (txt or html)
@@ -300,10 +300,10 @@ public abstract class AbstractMailer implements Mailer {
 			if (variable != null && variable.length() != 0) {
 				template = template.replace("{$"+name+"}", variable);
 			}
-		}		
+		}
 		return template;
 	}
-	
+
 	private BufferedReader getReader(ServletContext context, InputStream is, String res) throws Exception {
 		BufferedReader br = null;
 		InputStreamReader isr = null;
@@ -328,7 +328,7 @@ public abstract class AbstractMailer implements Mailer {
 		}
 		return br;
 	}
-	
+
 	/**
 	 * See {@link Mailer#mail(String[], String, Map, String, BeetRootHTTPSession)}.
 	 */

@@ -7,7 +7,7 @@
 
 <Configuration status="error" name="BeetRootConfig">
 	<Properties>
-		<Property name="basePath">servers/${env:SERVER_NAME}/logs</Property>
+		<Property name="basePath">${sys:catalina.base}/logs</Property>
 	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">

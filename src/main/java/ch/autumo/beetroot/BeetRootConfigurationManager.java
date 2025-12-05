@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot;
 
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -59,28 +59,28 @@ public class BeetRootConfigurationManager {
 
 	/** Application version. */
 	public static String appVersion = "x.y.z";
-	
+
 	private static BeetRootConfigurationManager manager = null;
 	private static String rootPath = null;
 
 	private static boolean isInitialized = false;
-	
+
 	private ServletContext servletContext = null;
 	protected boolean isWithinDesktop = false;
-	
+
 	/** Full path of configuration file without configuration file name. */
 	private String fullConfigBasePath = null;
 	/** Configuration file name. */
 	private String cfgFileName = null;
-	
+
 	private Properties generalProps = null;
 	private Properties htmlInputMap = null;
 	private Properties languageMap = null;
 	private boolean translateTemplates = false;
 	private boolean extendedRoles = true;
 	private boolean csrf = true;
-	
-	
+
+
 	static {
 		// Root-path.
     	rootPath = System.getProperty("ROOTPATH");
@@ -106,16 +106,16 @@ public class BeetRootConfigurationManager {
 			appVersion = "x.y.z";
 		}
     }
-	
+
 	/**
 	 * Private constructor.
 	 */
 	private BeetRootConfigurationManager() {
 	}
-	
+
 	/**
 	 * Get configuration manager.
-	 * 
+	 *
 	 * @return manager
 	 */
 	public static synchronized BeetRootConfigurationManager getInstance() {
@@ -127,36 +127,36 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Get application version.
-	 *  
+	 *
 	 * @return application version
 	 */
 	public static String getAppVersion() {
 		return appVersion;
 	}
-	
+
 	/**
 	 * Has this configuration manager been initialized?
-	 *  
+	 *
 	 * @return true if so, otherwise false
 	 */
 	public static boolean isInitialized() {
 		return isInitialized;
 	}
-	
+
 	/**
 	 * Return true, if this configuration manager runs within a servlet
 	 * otherwise false.
-	 * 
+	 *
 	 * @return true is is within servlet context
 	 */
 	public boolean runsWithinServletContext() {
 		return servletContext != null;
 	}
-	
+
 	/**
 	 * Return true, if this configuration manager runs within a desktop
 	 * otherwise false.
-	 * 
+	 *
 	 * @return true is is within desktop context
 	 */
 	public boolean runsWithinDesktopContext() {
@@ -165,16 +165,16 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Returns true if it doesn't run server-side.
-	 * 
+	 *
 	 * @return false if server-side
 	 */
 	public boolean isRemote() {
 		return this.runsWithinDesktopContext() || runsWithinServletContext();
 	}
-	
+
 	/**
 	 * Update or add a value to the internal properties.
-	 * 
+	 *
 	 * @param key key
 	 * @param value vane
 	 * @return old value if any or null
@@ -186,22 +186,22 @@ public class BeetRootConfigurationManager {
 		}
 		return (String) this.generalProps.put(key, value);
 	}
-	
+
 	/**
 	 * Initialize with path 'ROOTPATH/&lt;given-path-and-file&gt;'.
 	 * No resource paths!
-	 * 
+	 *
 	 * @param relativePath relative path
 	 * @throws Exception exception
 	 */
 	public void initialize(String relativePath) throws Exception {
 		this.initializeWithFullPath(rootPath + relativePath);
 	}
-	
+
 	/**
 	 * Initialize with standard configuration path 'ROOTPATH/cfg/beetroot.cfg'.
 	 * No resource paths!
-	 * 
+	 *
 	 * @throws Exception exception
 	 */
 	public void initialize() throws Exception {
@@ -211,7 +211,7 @@ public class BeetRootConfigurationManager {
 	/**
 	 * Initialize with absolute path.
 	 * Resource path works too!
-	 * 
+	 *
 	 * @param absolutePath absolute path
 	 * @param servletContext true, if it runs in a servlet context
 	 * @throws Exception exception
@@ -220,11 +220,11 @@ public class BeetRootConfigurationManager {
 		this.initializeWithFullPath(absolutePath);
 		this.servletContext = servletContext;
 	}
-	
+
 	/**
 	 * Customized initialization with specific full configuration file path.
 	 * Resource path works too!
-	 * 
+	 *
 	 * @param configFilePath full path to specific full configuration file path
 	 * @throws Exception exception
 	 */
@@ -245,7 +245,7 @@ public class BeetRootConfigurationManager {
 			if (!dir.exists() || !dir.isDirectory()) {
 	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is invalid! Check starting script of java process.");
 				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
-			}		
+			}
 		}
 		generalProps = new Properties();
 		String file = configFilePath;
@@ -259,7 +259,7 @@ public class BeetRootConfigurationManager {
 			int i = file.lastIndexOf("/");
 			if (i != -1)
 				fullConfigBasePath = file.substring(0, i + 1);
-			else 
+			else
 				fullConfigBasePath = file;
 		}
 		// fullConfigBasePath always ends with a '/'
@@ -325,7 +325,7 @@ public class BeetRootConfigurationManager {
 				final InputStream is = BeetRootConfigurationManager.class.getResourceAsStream(file);
 				if (is == null)
 					throw new FileNotFoundException("Language file could not be loaded during the streaming attempt.");
-				isr = new InputStreamReader(is, StandardCharsets.UTF_8);				
+				isr = new InputStreamReader(is, StandardCharsets.UTF_8);
 				this.languageMap.load(isr);
 			}
 		} catch (IOException e) {
@@ -334,14 +334,14 @@ public class BeetRootConfigurationManager {
 		} finally {
 			if (isr != null)
 				isr.close();
-		}		
+		}
 		isInitialized = true;
 	}
-	
+
 	/**
 	 * Initialize with desktop configuration which must have been created
 	 * beforehand by the desktop application!
-	 *  
+	 *
 	 * @param desktopCfgFile only the file name without path, e.g. 'myapp.cfg'
 	 * @param appName application name
 	 * @throws Exception exception
@@ -384,7 +384,7 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Get language.
-	 * 
+	 *
 	 * @param langCode language code
 	 * @return full language name
 	 */
@@ -394,10 +394,10 @@ public class BeetRootConfigurationManager {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get HTML input map type.
-	 * 
+	 *
 	 * @param columnName column name
 	 * @return HTML input map type or null
 	 */
@@ -411,10 +411,10 @@ public class BeetRootConfigurationManager {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get HTML input map pattern.
-	 * 
+	 *
 	 * @param columnName column name
 	 * @return HTML input map pattern or null
 	 */
@@ -431,10 +431,10 @@ public class BeetRootConfigurationManager {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the full base path, where the base configuration is.
-	 * 
+	 *
 	 * @return base path
 	 */
 	public String getFullConfigBasePath() {
@@ -443,13 +443,13 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Returns the file name of the base configuration.
-	 * 
+	 *
 	 * @return file name
 	 */
 	public String getConfigFileName() {
 		return cfgFileName;
 	}
-	
+
 	/**
 	 * Translated templates?
 	 * @return true if templates should be translated
@@ -457,7 +457,7 @@ public class BeetRootConfigurationManager {
 	public boolean translateTemplates() {
 		return this.translateTemplates;
 	}
-	
+
 	/**
 	 * Use extended roles?
 	 * @return true if extended roles should be used
@@ -465,7 +465,7 @@ public class BeetRootConfigurationManager {
 	public boolean useExtendedRoles() {
 		return this.extendedRoles;
 	}
-	
+
 	/**
 	 * Use CSRF?
 	 * @return true if CSRF should be used
@@ -473,20 +473,20 @@ public class BeetRootConfigurationManager {
 	public boolean useCsrf() {
 		return this.csrf;
 	}
-	
+
 	/**
 	 * Get app root path.
-	 * 
+	 *
 	 * @return root path
 	 */
-	
+
 	public String getRootPath() {
 		return rootPath;
 	}
-	
+
 	/**
 	 * Get a string value.
-	 * 
+	 *
 	 * @param key key
 	 * @return string value
 	 */
@@ -502,7 +502,7 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Get a string value or default value if non-existent.
-	 * 
+	 *
 	 * @param key key
 	 * @param defaultVal default value
 	 * @return string value
@@ -514,10 +514,10 @@ public class BeetRootConfigurationManager {
 		else
 			return defaultVal;
 	}
-	
+
 	/**
 	 * Get a string value; no warning if value is not available.
-	 * 
+	 *
 	 * @param key key
 	 * @return string value
 	 */
@@ -527,10 +527,10 @@ public class BeetRootConfigurationManager {
 			return v.trim();
 		return null;
 	}
-	
+
 	/**
 	 * Get all keys starting with a specific key-prefix.
-	 * 
+	 *
 	 * @param keyPrefix key prefix, e.g. 'dispatcher_'
 	 * @return collected values
 	 */
@@ -544,10 +544,10 @@ public class BeetRootConfigurationManager {
 		}
 		return collectedKeys.toArray(new String[collectedKeys.size()]);
 	}
-	
+
 	/**
 	 * Get all values starting with a specific key-prefix.
-	 * 
+	 *
 	 * @param keyPrefix key prefix, e.g. 'dispatcher_'
 	 * @return collected values
 	 */
@@ -561,10 +561,10 @@ public class BeetRootConfigurationManager {
 		}
 		return collectedVals.toArray(new String[collectedVals.size()]);
 	}
-	
+
 	/**
 	 * Get integer value.
-	 * 
+	 *
 	 * @param key key
 	 * @return integer value
 	 */
@@ -579,7 +579,7 @@ public class BeetRootConfigurationManager {
 
 	/**
 	 * Get integer value.
-	 * 
+	 *
 	 * @param key key
 	 * @param defaultVal default value or default value if non-existent.
 	 * @return integer value
@@ -590,10 +590,10 @@ public class BeetRootConfigurationManager {
 			return defaultVal;
 		return Integer.valueOf(v);
 	}
-	
+
 	/**
 	 * Get integer value; no warning if value is not available.
-	 * 
+	 *
 	 * @param key key
 	 * @return integer value
 	 */
@@ -606,9 +606,9 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
-	 * Get yes (true) or no (false), or the default value if the 
+	 * Get yes (true) or no (false), or the default value if the
 	 * configuration is missing.
-	 * 
+	 *
 	 * @param key key
 	 * @param defaultVal default value
 	 * @return true or false
@@ -621,11 +621,11 @@ public class BeetRootConfigurationManager {
 		val = val.trim();
 		return val.equalsIgnoreCase(Constants.YES);
 	}
-	
+
 	/**
 	 * Get yes (true) or no (false), if the configuration is messed up false
 	 * is returned.
-	 * 
+	 *
 	 * @param key key
 	 * @return true or false
 	 */
@@ -637,12 +637,12 @@ public class BeetRootConfigurationManager {
 		}
 		val = val.trim();
 		return val.equalsIgnoreCase(Constants.YES);
-	}	
+	}
 
 	/**
 	 * Get yes (true) or no (false), if the configuration is messed up false
 	 * is returned. No warning if key is missing.
-	 * 
+	 *
 	 * @param key key
 	 * @return true or false
 	 */
@@ -652,12 +652,12 @@ public class BeetRootConfigurationManager {
 			return false;
 		val = val.trim();
 		return val.equalsIgnoreCase(Constants.YES);
-	}	
-	
+	}
+
 	/**
 	 * Decode encrypted value, if it is encrypted by beetRoot standards!
 	 * See 'encoder.sh'.
-	 * 
+	 *
 	 * @param key key
 	 * @param app secure application
 	 * @return encrypted value
@@ -672,11 +672,11 @@ public class BeetRootConfigurationManager {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * App-roles for the simple role-management
 	 * (1 role per user, stored in user table).
-	 * 
+	 *
 	 * Get web app roles.
 	 * @return web app roles
 	 */
@@ -688,7 +688,7 @@ public class BeetRootConfigurationManager {
 	 * Get comma-separated values, e.g. 'a,b,c'.
 	 * If the configuration is messed up an empty
 	 * array is returned. No warning if key is missing.
-	 * 
+	 *
 	 * @param key key
 	 * @return values
 	 */
@@ -704,12 +704,12 @@ public class BeetRootConfigurationManager {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Get comma-separated values, e.g. 'a,b,c'.
 	 * If no values are found an empty array
 	 * is returned.
-	 * 
+	 *
 	 * @param key key
 	 * @return values
 	 */
@@ -745,7 +745,7 @@ public class BeetRootConfigurationManager {
 		}*/
 		return Arrays.asList(arr);
 	}
-	
+
 	/**
 	 * Get servlet context
 	 * @return servlet context or null
@@ -767,11 +767,11 @@ public class BeetRootConfigurationManager {
 
 	// Load XML module configuration
 	//------------------------------------------------------------------------------
-	
+
 	/**
 	 * Get XML module root configuration.
 	 * No resource paths!
-	 *  
+	 *
 	 * @param xmlConfigFile only the file name, path is concluded by ROOTPATH and cfg-directory
 	 * @param moduleName module name
 	 * @return XML doc root
@@ -779,11 +779,11 @@ public class BeetRootConfigurationManager {
 	public static Document getXMLModuleConfig(String xmlConfigFile, String moduleName) {
 		return getXMLModuleConfigWithFullPath(rootPath + Constants.CONFIG_PATH + xmlConfigFile, moduleName);
 	}
-	
+
 	/**
 	 * Get XML module root configuration.
 	 * No resource paths!
-	 *  
+	 *
 	 * @param xmlRelativePath relative path that is concluded with ROOTPATH
 	 * @param moduleName module name
 	 * @return XML doc root
@@ -794,11 +794,11 @@ public class BeetRootConfigurationManager {
     		rootPath += OS.FILE_SEPARATOR;
     	return getXMLModuleConfigWithFullPath(rootPath + xmlRelativePath, moduleName);
 	}
-	
+
 	/**
 	 * Get XML module root configuration. The given path can be a resource too, but make sure
 	 * there are no mixed path separators, e.g. "/\"!
-	 *  
+	 *
 	 * @param xmlConfigFilePath the full configuration file path
 	 * @param moduleName module name
 	 * @return XML doc root
@@ -815,7 +815,7 @@ public class BeetRootConfigurationManager {
 			final File cfg = new File(xmlConfigFilePath);
 			if (cfg.exists())
 				doc = db.parse(new File(xmlConfigFilePath));
-			else 
+			else
 				doc = db.parse(BeetRootConfigurationManager.class.getResourceAsStream(xmlConfigFilePath));
 			doc.getDocumentElement().normalize();
 			final String module = doc.getDocumentElement().getNodeName();
@@ -826,5 +826,5 @@ public class BeetRootConfigurationManager {
 		}
 		return doc;
 	}
-	
+
 }

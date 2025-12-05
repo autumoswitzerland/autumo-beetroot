@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot.server;
 
@@ -79,14 +79,14 @@ public abstract class BaseServer {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
 
-	
+
 	private static String rootPath = null;
 
 	private BeetRootConfigurationManager configMan = null;
-	
+
 	/** Modules/Dispatchers. */
 	private Map<String, Dispatcher> dispatchers = new HashMap<>();
-	
+
 	/** Default or SSL. */
 	protected ServerSocketFactory serverSocketFactory = null;
 	/** Administration interface listener. */
@@ -99,62 +99,62 @@ public abstract class BaseServer {
 	/** Filer server. */
     private FileServer fileServer = null;
 	protected boolean startFileServer = false;
-	
+
 	/** Filer storage interface. */
 	private FileStorage fileStorage = null;
-	
+
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
-	
+
     private BeetRootWebServer webServer = null;
 	protected boolean startWebServer = true;
 	private int portWebServer = -1;
 
 	private boolean sslSockets = false;
 	private boolean sha3Com = false;
-	
+
 	protected String name = null;
-	
+
 	private int serverTimeout = -1;
-	
+
 	// start time
 	private long beetRootStart = 0;
-	
+
 	private boolean hookShutdown = false;
-	
+
 	// colored text strings
 	protected static String ansiServerName = null;
 	protected static String ansiErrServerName = null;
-	
+
 	// custom operations if any
 	private final List<String> customOperations = new ArrayList<>();
-	
+
 	static {
-    	
+
     	rootPath = System.getProperty("ROOTPATH");
-    	
+
     	if (rootPath == null || rootPath.length() == 0)
     		rootPath = "." + Helper.FILE_SEPARATOR;
-    	
+
     	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
     		rootPath += Helper.FILE_SEPARATOR;
     }
-		
+
 	/**
 	 * Create a base server.
-	 * 
+	 *
 	 * @param params start or stop
 	 */
 	public BaseServer(String params[]) {
-		
+
 		// start stop-watch
 		beetRootStart = System.currentTimeMillis();
 
-		
+
     	// If not already defined
 		if (System.getProperty("https.protocols") == null)
 			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3");
-		
+
 		// Read general configuration
 		configMan = BeetRootConfigurationManager.getInstance();
 		// Must !
@@ -167,41 +167,41 @@ public abstract class BaseServer {
 			e.printStackTrace();
 			Helper.fatalExit();
 		}
-		
+
 		//------------------------------------------------------------------------------
 		// Scheme:
 		//      beetroot.sh <operation>
 		// E.g  beetroot.sh start|stop|health
 		//------------------------------------------------------------------------------
-    	
+
 		if (params.length == 0 || (params[0].equals("-help") || params[0].equals("-h"))) {
 			System.out.println(this.getHelpText());
 			Helper.normalExit();
 		}
-		
+
 		// check args length
 		if (params.length < 1) {
 			System.out.println(this.getHelpText());
 			Helper.invalidArgumentsExit();
 		}
 
-		
+
 		// OPERATION
 		final String operation = params[0].trim().toLowerCase();
-		
+
 		// Check custom operations
 		final String cops[] = this.getValidCustomOperations();
 		if (cops != null && cops.length > 0) {
 			for (int i = 0; i < cops.length; i++)
 				customOperations.add(cops[i].trim().toLowerCase());
 		}
-		
+
 		// validate given operation with all possible operations (standard and custom operations)
 		if (! (params[0].equals("start") || params[0].equals("stop") || params[0].equals("health") || customOperations.contains(params[0])) ) {
-			
+
 			System.out.println(this.getHelpText());
 			System.out.println("Valid server operations are 'health', 'start' or 'stop'!");
-			
+
 			if (customOperations.size() > 0) {
 				String strCops = "";
 				for (Iterator<String> iterator = customOperations.iterator(); iterator.hasNext();) {
@@ -216,45 +216,45 @@ public abstract class BaseServer {
 			System.out.println("");
 			Helper.invalidArgumentsExit();
 		}
-		
+
 		//------------------------------------------------------------------------------
-    	
+
     	if (rootPath == null || rootPath.length() == 0) {
 			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
 			Helper.invalidArgumentsExit();
     	}
-	    	
+
 		// check root path
     	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
     		rootPath += Helper.FILE_SEPARATOR;
-	    
+
 		final File dir = new File(rootPath);
 		if (!dir.exists() || !dir.isDirectory()) {
 			System.err.println("ERROR: Specified '<root-path>' is invalid! See 'beetroot.sh -h'.");
 			Helper.invalidArgumentsExit();
-		}		
-		
+		}
+
 		//------------------------------------------------------------------------------
 
 		this.name = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_SERVER_NAME);
 		ansiServerName = Colors.darkCyan("["+ name +"]");
 		ansiErrServerName = Colors.red("["+ name +"]");
-		
+
 		Thread.currentThread().setName(this.name + "-MainThread");
-		
-		
+
+
 		//------------------------------------------------------------------------------
-		
+
 		// configure logging
 		String logCfgFile = System.getProperty("log4j2.configurationFile");
 		// check if it has been overwritten with the 'log4j.configuration' parameter
 		if (logCfgFile == null)
 			logCfgFile = configMan.getString("ws_log_cfg");
-		
+
 		this.initializeLogging(logCfgFile);
-		
+
 		//------------------------------------------------------------------------------
-		
+
 		// Some infos
 		if (operation.equalsIgnoreCase("start")) {
 			LOG.info("Server starting...");
@@ -267,15 +267,15 @@ public abstract class BaseServer {
 		}
 
 		//------------------------------------------------------------------------------
-		
+
 		// Flush the messages that have been collected before log-system initialization
 		LogBuffer.flushToLogger(LOG);
-		
+
 		//------------------------------------------------------------------------------
-		
+
 		// DB manager initialization if not yet done!
 		try {
-			
+
 			final BeetRootDatabaseManager dbMan = BeetRootDatabaseManager.getInstance();
 			if (!dbMan.isInitialized()) {
 				BeetRootDatabaseManager.getInstance().initialize();
@@ -295,34 +295,34 @@ public abstract class BaseServer {
 			final String h2Features = BeetRootDatabaseManager.getInstance().getH2Url().getFeatures();
 			LOG.info("H2 features: '{}'.", h2Features);
 		}
-		
-		
+
+
 		//------------------------------------------------------------------------------
 
 		// Initialize the log event appender
 		LogEventAppender.initializeAppender();
-		
+
 		//------------------------------------------------------------------------------
 
 		// read some undocumented settings if available
 		serverTimeout = configMan.getIntNoWarn("server_timeout"); // in seconds !
-		
-		
+
+
 		//------------------------------------------------------------------------------
-		
+
 		// SSL sockets?
 		final String mode = configMan.getString(Constants.KEY_ADMIN_COM_ENC);
 		if (mode != null && mode.equalsIgnoreCase("ssl"))
 			sslSockets = true;
 		if (mode != null && mode.equalsIgnoreCase("sha3"))
 			sha3Com = true;
-		
+
 		// read config params
 		String v = null;
 		try {
-			
+
 			portAdminServer = configMan.getInt(Constants.KEY_ADMIN_PORT);
-			
+
 			if (portAdminServer == -1) {
 				LOG.error("Admin server port not specified!");
 				System.err.println(ansiErrServerName + " Admin server port not specified!");
@@ -333,45 +333,45 @@ public abstract class BaseServer {
 			System.err.println(ansiErrServerName + " Admin server port has an invalid value: '" + v + "' !");
 			Helper.fatalExit();
 		}
-		
+
 		try {
-			
+
 			portWebServer = configMan.getInt(Constants.KEY_WS_PORT);
-			
+
 		} catch (Exception e) {
 			LOG.error("Web server port has an invalid value: '" + v + "'!", e);
 			System.err.println(ansiErrServerName + " Web server port has an invalid value: '" + v + "'!");
 			Helper.fatalExit();
 		}
-		
+
 		startWebServer = configMan.getYesOrNo(Constants.KEY_WS_START);
 
-				
+
 		//------------------------------------------------------------------------------
-		
-		
+
+
 		// Evaluate operation
-		
+
 		if (operation.equalsIgnoreCase("health")) {
-			
+
 			this.sendServerCommand(Communicator.CMD_HEALTH);
-			
+
 		} else if (operation.equalsIgnoreCase("start")) {
-			
+
 			this.startServer();
-			
+
 			// SHUTDOWN HOOK (Ctrl-C)
-			final Runtime runtime = Runtime.getRuntime();    
-			runtime.addShutdownHook(this.getShutDownHook());    
-			
+			final Runtime runtime = Runtime.getRuntime();
+			runtime.addShutdownHook(this.getShutDownHook());
+
 		} else if (operation.equalsIgnoreCase("stop")) {
-			
+
 			this.sendServerCommand(Communicator.CMD_STOP);
-			
+
 			LOG.info("STOP command sent.");
 			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " STOP command sent.");
-			
+
 		} else {
 			// custom operation called, what to do?
 			if (customOperations.size() > 0) { // if no custom ops, no call!
@@ -382,7 +382,7 @@ public abstract class BaseServer {
 
 	/**
 	 * Initialize logging. Can be overwritten.
-	 * 
+	 *
 	 * @param logCfgFile logging config file
 	 */
 	protected void initializeLogging(String logCfgFile) {
@@ -397,41 +397,41 @@ public abstract class BaseServer {
 			Helper.fatalExit();
 		}
 	}
-	
+
 	/**
 	 * Get argument help text.
-	 * 
+	 *
 	 * @return argument help text
 	 */
 	public String getHelpText() {
 		return Help.TEXT;
 	}
-		
+
 	/**
 	 * Get server name.
-	 * 
+	 *
 	 * @return server name
 	 */
 	public String getServerName() {
 		return this.name;
 	}
-	
+
 	/**
 	 * Get root path of this server.
-	 * 
+	 *
 	 * @return root path
 	 */
 	protected static String getRootPath() {
 		return rootPath;
 	}
-		
+
 	/**
 	 * Start server and web server if configured.
 	 */
 	protected void startServer() {
-		
+
 		final boolean start = this.beforeStart();
-		// start pre-condition ok? 
+		// start pre-condition ok?
 		if (!start) {
 			LOG.warn("Server stopped by before-start hook!");
 			if (!LOG.isWarnEnabled())
@@ -441,59 +441,59 @@ public abstract class BaseServer {
 
 		// Server dispatcher initialization
 		this.initializeDispatchers();
-		
+
 		// Protocol if web server is used
 		final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
-		
+
 		// Start web server
 		if (startWebServer) {
 			try {
-				
+
 				LOG.info("Starting internal web server...");
 				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " Starting internal web server...");
-				
+
 				try {
-					Class.forName("javax.servlet.ServletOutputStream");
+					Class.forName("jakarta.servlet.ServletOutputStream");
 				} catch (ClassNotFoundException e1) {
 					LOG.error("Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
 					System.err.println(ansiErrServerName + " Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
 					System.err.println(ansiErrServerName + " Shutting down!");
 					Helper.fatalExit();
 				}
-				
+
 				try {
 					Class.forName("jakarta.mail.Authenticator");
 				} catch (ClassNotFoundException e1) {
 					LOG.warn("NOTE: It seems you haven't installed Jakarta Mail; you'll not be able to reset your password!");
 					LOG.warn("      Check documentation for installing the Jakarta Mail libs.");
-				}				
-				
+				}
+
 				webServer = new BeetRootWebServer(portWebServer);
 				webServer.setBaseServer(this);
-				
+
 				if (https) {
 					webServer.makeSecure(NanoHTTPD.makeSSLSocketFactory(SSL.getKeystoreFile(), SSL.getKeystorePw()), null);
 					LOG.info("Web-Server communication is SSL (TLS) secured!");
 					if (!LOG.isInfoEnabled())
 						System.out.println(ansiServerName + " Web-Server communication is SSL (TLS) secured!");
 				}
-				
+
 				webServer.start(false);
-				
+
 				if (https)
 					LOG.info("HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
 				else
 					LOG.info("HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
-					
+
 				if (!LOG.isInfoEnabled())
 					if (https)
 						System.out.println(ansiServerName + " HTTP web-server started on port "+portWebServer+" (https://localhost:" + portWebServer +")");
 					else
 						System.out.println(ansiServerName + " HTTP web-server started on port "+portWebServer+" (http://localhost:" + portWebServer +")");
-				
+
 			} catch (Exception e) {
-	
+
 				LOG.error("Cannot start web-server on port "+portWebServer+" - Already running? Stopping.", e);
 				System.err.println(ansiErrServerName + " Cannot start web-server on port "+portWebServer+" - Already running? Stopping.");
 				Helper.fatalExit();
@@ -506,7 +506,7 @@ public abstract class BaseServer {
 				LOG.info("Client-Server communication (with file transfers) is SSL secured!");
 				if (!LOG.isInfoEnabled())
 					System.out.println(ansiServerName + " Client-Server communication (with file transfers) is SSL secured!");
-		        
+
 			} catch (Exception e) {
 				LOG.error("Cannot make server secure (SSL)! Stopping.", e);
 				System.err.println(ansiErrServerName + " Cannot make server secure (SSL)! Stopping.");
@@ -515,7 +515,7 @@ public abstract class BaseServer {
 		} else {
 	        this.serverSocketFactory = new DefaultServerSocketFactory();
 		}
-		
+
 		final String comMode = BeetRootConfigurationManager.getInstance().getString(Constants.KEY_ADMIN_COM_MODE, "sockets");
 		if (comMode.equalsIgnoreCase("web")) {
 			final String prot = https ? "HTTPS" : "HTTP";
@@ -537,7 +537,7 @@ public abstract class BaseServer {
 			if (!LOG.isInfoEnabled())
 				System.out.println(ansiServerName + " Client-Server communication is SHA3-256 encrypted.");
 		}
-		
+
 		// Start file server?
 		startFileServer = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_ADMIN_FILE_SERVER, Constants.NO);
 		if (startFileServer) {
@@ -572,29 +572,29 @@ public abstract class BaseServer {
 					System.out.println(ansiServerName + " File server started. Ports: " + fileServer.portFileServer + ", " + fileServer.portFileReceiver + ".");
             }
 		}
-		
+
 		// Admin listener and server thread
 		adminListener = new AdminListener(portAdminServer);
 		final Thread server = new Thread(adminListener);
 		server.setName(this.name+"-Server");
 		server.start();
-		
+
 		LOG.info("Admin listener started on port "+portAdminServer+".");
 		if (!LOG.isInfoEnabled())
 			System.out.println(ansiServerName + " Admin listener started on port "+portAdminServer+".");
 
 		this.afterStart();
-		
+
 		// Processing time
 		final long beetRoot = System.currentTimeMillis();
 		final long duration = beetRoot - beetRootStart;
 		final String startup = OS.getReadableDuration(duration, TimeUnit.SECONDS);
-		
+
 		LOG.info("Server started - startup time: " + startup + ".");
 		if (!LOG.isInfoEnabled())
 			System.out.println(ansiServerName + " Server started - startup time: " + startup + ".");
 	}
-	
+
 	/**
 	 * Stop server and web server if configured.
 	 */
@@ -633,7 +633,7 @@ public abstract class BaseServer {
 	/**
 	 * Internal delete method if no file-storage has been configured.
 	 * -&gt; Must be overwritten if this internal module is used.
-	 * 
+	 *
 	 * @param uniqueFileId unique file ID
 	 * @param domain domain or null
      * @return true if at least one (of all versions) has been found and deleted
@@ -642,11 +642,11 @@ public abstract class BaseServer {
 	protected boolean delete(String uniqueFileId, String domain) throws Exception {
 		throw new IllegalAccessError("Can't delete files, since no file-storage has been configured and neither an implementation (delete) has been provided!");
 	}
-	
+
 	/**
 	 * Internal find-file method if no file-storage has been configured.
 	 * -&gt; Must be overwritten if this internal module is used.
-	 * 
+	 *
 	 * @param uniqueFileId unique file ID
 	 * @param domain domain or null
 	 * @return Download for the server to queue
@@ -659,7 +659,7 @@ public abstract class BaseServer {
 	/**
 	 * Internal file-store method if no file-storage has been configured.
 	 * -&gt; Must be overwritten if this internal module is used.
-	 * 
+	 *
 	 * @param file file
 	 * @param name file name
 	 * @param user user or null
@@ -670,12 +670,12 @@ public abstract class BaseServer {
 	protected String store(File file, String name, String user, String domain) throws Exception {
 		throw new IllegalAccessError("Can't store files, since no file-storage has been configured and neither an implementation (store) has been provided!");
 	}
-	
+
 	/**
 	 * OS shutdown hook. Don't overwrite this, unless you know
 	 * exactly what you are doing. This implementation calls
 	 * all methods necessary to properly stop the server.
-	 * 
+	 *
 	 * @return thread for runtime shutdown hook.
 	 */
 	protected Thread getShutDownHook() {
@@ -699,7 +699,7 @@ public abstract class BaseServer {
 			}
 		};
 	}
-	
+
 	/**
 	 * Shutdown thread pool.
 	 */
@@ -719,7 +719,7 @@ public abstract class BaseServer {
 	        Thread.currentThread().interrupt(); // Restore interrupt status
 	    }
 	}
-	
+
 	/**
 	 * Initialize dispacther-modules.
 	 */
@@ -743,14 +743,14 @@ public abstract class BaseServer {
 				LOG.error("Cannot create server dispatcher '"+currDisp+"'! Stopping.", ex);
 				System.err.println(ansiErrServerName + " Cannot create server dispatcher '"+currDisp+"'! Stopping.");
 				Helper.fatalExit();
-			}			
+			}
 		}
 	}
-	
+
     /**
      * You can send internal server commands to be send to the running server!
      * Internal server commands are always send over sockets.
-     * 
+     *
      * @param command server command
      */
 	private void sendServerCommand(String command) {
@@ -763,9 +763,9 @@ public abstract class BaseServer {
 
 	/**
 	 * You can send local server commands to be send to the running server
-	 * for possible custom operations. You might want to force them over sockets, 
+	 * for possible custom operations. You might want to force them over sockets,
 	 * see {@link ServerCommand#forceSockets()}.
-	 * 
+	 *
 	 * @param command server command
 	 */
 	protected void sendServerCommand(ServerCommand command) {
@@ -775,44 +775,44 @@ public abstract class BaseServer {
 			LOG.error("Send "+command.getCommand()+" server command failed!", e);
 		}
 	}
-	
+
 	/**
 	 * Return a list of valid custom operations
-	 * 
+	 *
 	 * @return custom operations possible
 	 */
 	protected String[] getValidCustomOperations() {
 		return null;
 	}
-	
+
 	/**
 	 * Custom operation has been defined when starting the server,
 	 * we possibly want to do something else. Overwrite if needed.
 	 * Of you overwrite, you have to implement
 	 * {@link #customOperation(String, String[])}!
-	 * 
+	 *
 	 * @param operation the operation = params[0], 1st argument
 	 * 			of all program arguments
 	 * @param params all program arguments
 	 */
 	protected void customOperation(String operation, String params[]) {
 	}
-	
+
 	/**
 	 * This method is called when a server command has been received.
 	 * At this point security checks have been made.
-	 * 
+	 *
 	 * Usually mustn't be overwritten, because configured module/component
-	 * dispatchers do the work beside internal commands. 
-	 * 
+	 * dispatchers do the work beside internal commands.
+	 *
 	 * @param command received server command
 	 * @return client answer
 	 */
 	public ClientAnswer processServerCommand(ServerCommand command) {
-		
+
 		// --- 1. Internal commands without components/modules
 		if (command.getDispatcherId().equals(ServerCommand.DISPATCHER_ID_INTERNAL)) {
-			
+
 			// Shutdown
 			if (command.getCommand().equals(Communicator.CMD_STOP)) {
 				return new StopAnswer();
@@ -823,18 +823,18 @@ public abstract class BaseServer {
 			}
 			// File request (for download)
 			if (command.getCommand().equals(Communicator.CMD_FILE_REQUEST)) {
-				
+
 				if (startFileServer) {
-					
+
 					final String fileId = command.getFileId();
 					Download download = null;
-					
+
 					String domain = "default";
 					if (command.getDomain() != null)
 						domain = command.getDomain();
-					
+
 					if (fileId.equals(PingDownloadRequest.PING_FILE_ID)) {
-						
+
 						try {
 							final Path path = OS.createTemporaryFile(PingDownloadRequest.PING_FILE_PREFIX);
 							download = new Download(fileId, path.getFileName().toString(), path.toFile(), domain);
@@ -843,15 +843,15 @@ public abstract class BaseServer {
 							System.err.println(BaseServer.ansiErrServerName + " Find file request failed for file ID '"+fileId+"'!");
 							download = null;
 						}
-						
+
 					} else { // Default case, really find a file!
-						
+
 						try {
 							if (fileStorage != null)
 								download = fileStorage.findFile(fileId, domain);
 							else
 								download = this.findFile(fileId, domain);
-							
+
 						} catch (Exception e) {
 							LOG.error("Find file request failed for file ID '"+fileId+"'!", e);
 							System.err.println(BaseServer.ansiErrServerName + " Find file request failed for file ID '"+fileId+"'!");
@@ -859,17 +859,17 @@ public abstract class BaseServer {
 						}
 					}
 
-					if (download != null) { 
+					if (download != null) {
 						fileServer.addToDownloadQueue(download);
 						return new ClientAnswer(download.getFileName(), download.getFileId());
 					} else {
 						return new ClientAnswer("No file found with unique file ID '" + fileId + "'!", ClientAnswer.TYPE_FILE_NOK);
 					}
-					
+
 				} else {
 					LOG.error("A client requested a file, but file server is not running!");
 					return new ClientAnswer("File server is not running!", ClientAnswer.TYPE_FILE_NOK);
-				}			
+				}
 			}
 			// File receive request (for upload)
 			if (command.getCommand().equals(Communicator.CMD_FILE_RECEIVE_REQUEST)) {
@@ -877,59 +877,59 @@ public abstract class BaseServer {
 					String user = null;
 					if (command.getObject() != null)
 						user = command.getObject().toString();
-					
+
 					String domain = "default";
 					if (command.getDomain() != null)
 						domain = command.getDomain();
-					
-					final String fileNameCheckSum[] = command.getEntity().split(Upload.ENTITY_DIVIDER_FILENAME_CHECKSUM); 
+
+					final String fileNameCheckSum[] = command.getEntity().split(Upload.ENTITY_DIVIDER_FILENAME_CHECKSUM);
 					final String fileName = fileNameCheckSum[0];
 					final String checkSum = fileNameCheckSum[1];
-					final Upload upload = new Upload(command.getId(), fileName, checkSum, user, domain); 
+					final Upload upload = new Upload(command.getId(), fileName, checkSum, user, domain);
 					fileServer.addToUploadQueue(upload);
 					return new ClientAnswer(command.getEntity(), "FILE", command.getId());
 				}
 			}
 			// File delete
 			if (command.getCommand().equals(Communicator.CMD_FILE_DELETE)) {
-				
+
 				boolean success = false;
 				try {
 					String domain = "default";
 					if (command.getDomain() != null)
 						domain = command.getDomain();
-					
+
 					if (fileStorage != null)
 						success = fileStorage.delete(command.getFileId(), domain);
 					else
 						success = this.delete(command.getFileId(), domain);
-				
+
 				} catch (Exception e) {
 					LOG.error("Delete file failed for file ID '"+command.getFileId()+"'!", e);
 					System.err.println(BaseServer.ansiErrServerName + " Delete file failed for file ID '"+command.getFileId()+"'!");
 					success = false;
 				}
-				
-				if (success) 
+
+				if (success)
 					return new ClientAnswer("Success", command.getFileId());
 				else
 					return new ClientAnswer("Delete file failed for file ID '" + command.getFileId() + "'!", ClientAnswer.TYPE_FILE_NOK);
 			}
 		// --- 2. Module/component dispatchers
-		} else { 
-			
+		} else {
+
 			final String did = command.getDispatcherId();
 			final Dispatcher dispatcher = dispatchers.get(did);
 			if (dispatcher != null) {
-				
+
 				// dispatch server command
 				return dispatcher.dispatch(command);
-				
+
 			} else {
 				LOG.error("A client send a server command with invalid dispatcher ID '"+did+"'!");
 			}
 		}
-		
+
 		// standard answer = OK
 		return new ClientAnswer();
 	}
@@ -937,7 +937,7 @@ public abstract class BaseServer {
 	/**
 	 * Overwrite to do something before starting the server.
 	 * Handle exceptions by your own!
-	 * 
+	 *
 	 * @return true id server should be started,
 	 * 		otherwise false; e.g. a pre-condition is not met
 	 */
@@ -948,7 +948,7 @@ public abstract class BaseServer {
 	 * Handle exceptions by your own!
 	 */
 	protected abstract void afterStart();
-	
+
 	/**
 	 * Overwrite to do something before stopping the server.
 	 * Handle exceptions by your own!
@@ -964,8 +964,8 @@ public abstract class BaseServer {
 	/**
 	 * Prints out the health status of this server.
 	 * Overwrite if necessary.
-	 * 
-	 * @param hasNoIssues any pre-existing issues for the overall state; 
+	 *
+	 * @param hasNoIssues any pre-existing issues for the overall state;
 	 * 			false if there are issues!
 	 * @return overall state, true if good
 	 */
@@ -985,7 +985,7 @@ public abstract class BaseServer {
 			} catch (Exception e) {
 			}
 			try {
-				final File file = ClientFileTransfer.getFile(pingDownloadRequest.getFileId(), PingDownloadRequest.PING_FILE_PREFIX + "del.tmp");			
+				final File file = ClientFileTransfer.getFile(pingDownloadRequest.getFileId(), PingDownloadRequest.PING_FILE_PREFIX + "del.tmp");
 				isFileDownloadPortListening = file != null && file.exists();
 				file.delete();
 			} catch (Exception e) {
@@ -999,7 +999,7 @@ public abstract class BaseServer {
 			} catch (Exception e) {
 			}
 			try {
-				answer = ClientFileTransfer.sendFile(pingUploadRequest.getFile());			
+				answer = ClientFileTransfer.sendFile(pingUploadRequest.getFile());
 				isFileUploadPortListening = answer != null && answer.getType() > 0;
 			} catch (Exception e) {
 				isFileUploadPortListening = false;
@@ -1010,10 +1010,10 @@ public abstract class BaseServer {
 		}
 		hasNoIssues = hasNoIssues && isFileDownloadPortListening;
 		hasNoIssues = hasNoIssues && isFileUploadPortListening;
-		
+
 		if (startWebServer) {
 			final boolean https = BeetRootConfigurationManager.getInstance().getYesOrNo(Constants.KEY_WS_HTTPS);
-			final String url = ((https) ? "https" : "http") + "://localhost:" + this.portWebServer; 
+			final String url = ((https) ? "https" : "http") + "://localhost:" + this.portWebServer;
 			isWebServerPortListening = Web.pingWebsite(url);
 		} else {
 			isWebServerPortListening = true;
@@ -1024,12 +1024,12 @@ public abstract class BaseServer {
 			LOG.info("Server is running and healthy.");
 		else
 			LOG.info("Server has issues, see below!");
-		
+
 		if (isAdminPortListening)
 			LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): Started");
 		else
 			LOG.info("* Admin-Interface (Port: " + this.portAdminServer + "): ERROR; Port not listening!");
-		
+
 		if (startFileServer) {
 			if (isFileDownloadPortListening)
 				LOG.info("* File-Server [Download] (Port: " + fileServer.portFileServer + "): Started");
@@ -1046,8 +1046,8 @@ public abstract class BaseServer {
 			else
 				LOG.info("* Web-Server (Port: " + this.portWebServer + "): ERROR; Port not listening!");
 		}
-		
-		
+
+
 		// No output coloring here, because we don't want to risk if unparsed ASCII coloring
 		// messes up the logging of a probe, e.g. Windows service manager logs.
 		if (!LOG.isInfoEnabled()) {
@@ -1079,23 +1079,23 @@ public abstract class BaseServer {
 		}
 		return hasNoIssues;
 	}
-	
+
 	/**
 	 * Admin server listener for operation signals.
 	 */
 	private final class AdminListener implements Runnable {
-	
+
 		private int listenerPort = -1;
-		
+
 		/**
 		 * Create admin listener on specific port.
-		 * 
+		 *
 		 * @param listenerPort listener port
 		 */
 		public AdminListener(int listenerPort) {
 			this.listenerPort = listenerPort;
 			// Communication is encrypted through the command message (cmd),
-			// by SSL sockets (ssl) or it is not (none) 
+			// by SSL sockets (ssl) or it is not (none)
 			try {
 				serverSocket = BaseServer.this.serverSocketFactory.create(this.listenerPort);
 				if (serverTimeout > 0) // shouldn't be set, should be endless, just for testing purposes
@@ -1106,7 +1106,7 @@ public abstract class BaseServer {
 				Helper.fatalExit();
 			}
 		}
-		
+
 		@Override
 		public void run() {
 			// Server main loop
@@ -1127,12 +1127,12 @@ public abstract class BaseServer {
                         clientExecutorService.execute(() -> {
                             Thread.currentThread().setName(threadName);
                             try {
-                            	handler.run();								
+                            	handler.run();
 							} catch (Exception e) {
 								LOG.error("Error handling client: " + threadName, e);
 				                throw new RuntimeException("Error handling client: " + threadName, e);
 							}
-                        });			
+                        });
 					}
 		        } catch (IOException e) {
 		        	if (!BaseServer.this.serverStop) {
@@ -1148,8 +1148,8 @@ public abstract class BaseServer {
 	                        LOG.error("Failed to recreate server socket after it was closed.", e);
 	                    }
 		        	}
-	            }				
-            } 
+	            }
+            }
 			if (!hookShutdown) {
 				// loop has been broken by STOP command.
 				Communicator.safeClose(serverSocket);
@@ -1159,7 +1159,7 @@ public abstract class BaseServer {
 				shutDownExecutorService();
 			}
 		}
-	}	
+	}
 
 	/**
 	 * Client handler for every request.
@@ -1171,13 +1171,13 @@ public abstract class BaseServer {
 
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * @param clientSocket client socket
 		 */
 		private ClientHandler(Socket clientSocket) {
 			this.clientSocket = clientSocket;
 		}
-		
+
 		@Override
 		public void run() {
 			ServerCommand command = null;
@@ -1185,17 +1185,17 @@ public abstract class BaseServer {
 				in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 				// server command from client received
 				command = Communicator.readCommand(in);
-			
+
 				// Correct server name?
 				final String serverName = command.getServerName();
 				if (!serverName.equals(BaseServer.this.getServerName())) {
 					LOG.error("Server command: Wrong server name received, command is ignored!");
 					return;
 				}
-				
+
 				// execute command
 				final ClientAnswer answer = BaseServer.this.processServerCommand(command);
-	
+
 				// Health status request?
 				if (answer instanceof HealthAnswer) {
 					LOG.info("[HEALTH] signal received, printing server's health state to console.");
@@ -1203,7 +1203,7 @@ public abstract class BaseServer {
 					BaseServer.this.printHealthStatus(true);
 					return;
 				}
-				
+
 				// Shutdown received?
 				if (answer instanceof StopAnswer) {
 					LOG.info("[STOP] signal received! Shutting down...");
@@ -1216,10 +1216,10 @@ public abstract class BaseServer {
 					Communicator.safeClose(serverSocket);
 					return;
 				}
-				
+
 				// We have to answer -> get output-stream to client
 	            sendResponse(answer);
-			
+
 			} catch (UtilsException e) {
 				LOG.error("Admin server couldn't decode server command from a client; someone or something is sending false messages!");
 				LOG.error("  -> Either the secret key seed doesn't match or different encrypt modes");
@@ -1232,9 +1232,9 @@ public abstract class BaseServer {
 			} finally {
 				Communicator.safeClose(in);
 	        	Communicator.safeClose(clientSocket);
-	        }			
+	        }
 		}
-		
+
 	    /**
 	     * Sends the answer to the client using the output stream.
 	     */
@@ -1249,9 +1249,9 @@ public abstract class BaseServer {
 	        } finally {
 	            Communicator.safeClose(out);
 	        }
-	    }		
+	    }
 	}
-	
+
 	/**
 	 * Help class for shell script.
 	 */
@@ -1300,7 +1300,7 @@ public abstract class BaseServer {
     			"    " + USAGE0					 														+ OS.LINE_SEPARATOR +
     			"    " + USAGE1					 														+ OS.LINE_SEPARATOR +
     			"" 																						+ OS.LINE_SEPARATOR +
-    			"";    	
+    			"";
 	}
-	
+
 }

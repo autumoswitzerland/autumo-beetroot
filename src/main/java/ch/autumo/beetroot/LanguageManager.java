@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2024 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot;
 
@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.slf4j.Logger;
@@ -51,16 +51,16 @@ import ch.autumo.beetroot.utils.web.Web;
 public class LanguageManager {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(LanguageManager.class.getName());
-	
+
 	public static final String DEFAULT_LANG = "en";
-	
+
 	private static final String URL_LANG_TAG = ":lang";
     private static final String BUNDLE_BASE_LOC = "web/lang/";
-	
+
     public static final String LANG_GRP_APP = "app";
 	public static final String LANG_GRP_TMPL = "tmpl";
 	public static final String LANG_GRP_PW = "pw";
-	
+
 	private static final Map<String, String> GROUPS = new HashMap<>();
 	static {
 		GROUPS.put(LANG_GRP_APP,  "lang");
@@ -72,42 +72,42 @@ public class LanguageManager {
 
     // Pattern to match 2 or 3 character language codes only
 	private static final Pattern HTTP_HEADER_LANG_PATTERN = Pattern.compile("([a-zA-Z]{2,3})(?:-[a-zA-Z]{2})?(?:;q=([0-9.]+))?");
-	
+
 	private static String defaultLang = DEFAULT_LANG;
-	
-	private static LanguageManager instance = null;	
-	
+
+	private static LanguageManager instance = null;
+
 	private static String langs[] = null;
 
-	
+
 	/**
 	 * Private constructor.
 	 */
 	private LanguageManager() {
 	}
-	
+
 	/**
-	 * Is the language manager initialized? 
+	 * Is the language manager initialized?
 	 * @return true if so
 	 */
 	public static boolean isInitialized() {
 		return instance != null;
 	}
-	
+
 	/**
 	 * Access language manager.
-	 * 
+	 *
 	 * @return DB manager
 	 */
 	public static synchronized LanguageManager getInstance() {
-		
+
         if (instance == null) {
-        	
+
         	instance = new LanguageManager();
 
         	// Context
         	final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-        	
+
         	// 0. Configuration languages
         	langs = BeetRootConfigurationManager.getInstance().getSepValues("web_languages");
         	if (langs.length > 0)
@@ -129,72 +129,72 @@ public class LanguageManager {
             		loaders.put(key, new URLClassLoader(urls));
         		}
         	}
-        	
+
         	// Load defaults (as fallback) and translations for every group ( = directory name)
         	for (Map.Entry<String, String> group : GROUPS.entrySet()) {
 
         		// Note: group.getValue() is for every group 'lang'.
-        		
+
         		final String groupType = group.getKey();
         		final ClassLoader loader = loaders.get(groupType);
-        		
+
         		// All group types except translations for templates, unless this is explicitly activated!
         		if (!groupType.equals(LANG_GRP_TMPL) || BeetRootConfigurationManager.getInstance().translateTemplates()) {
-        		
+
 	            	// 1. Default language bundles (e.g. lang_default.properties, pw_default.properties, tmpl_lang_default.properties)
-		        	ResourceBundle defaultBundle = null;	        	
+		        	ResourceBundle defaultBundle = null;
 		        	final Locale defaultLocale = Locale.getDefault();
-		        	
+
 		        	for (int i = 0; i < langs.length; i++) {
-		        		
+
 		            	// a. Within servlets
 		            	if (context != null) {
 	            			defaultBundle = PreprocessingResourceBundle.getBundle(
-	            					groupType, 
-	            					group.getValue(), 
-	            					defaultLocale, 
+	            					groupType,
+	            					group.getValue(),
+	            					defaultLocale,
 	            					loader
 	            				);
 		            		if (defaultBundle == null)
 		            			defaultBundle = PreprocessingResourceBundle.getBundle(
-		            					groupType, 
-		            					BUNDLE_BASE_LOC + groupType + "/" + group.getValue(), 
-		            					defaultLocale, 
+		            					groupType,
+		            					BUNDLE_BASE_LOC + groupType + "/" + group.getValue(),
+		            					defaultLocale,
 		            					Thread.currentThread().getContextClassLoader()
 		            				);
 		            		DEF_BUNDLE_PER_GROUP.put(langs[i], defaultBundle);
-		            		
+
 		            	// b. Within server
 		            	} else {
 	                		defaultBundle = PreprocessingResourceBundle.getBundle(
-	                				groupType, 
-	                				BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), 
+	                				groupType,
+	                				BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(),
 	                				defaultLocale
 	                			);
 	                		DEF_BUNDLE_PER_GROUP.put(langs[i], defaultBundle);
-		            	}	
-		            	
+		            	}
+
 					}
-	        	
-	        	
+
+
 		        	// 2. Bundles for languages, we do not want to let RB's determine languages
 		        	//    for bundles in case a language is not present; this only works well
 		        	//    on desktop where a desktop locale (fallback) makes sense!
 	            	//    These are the defined language bundles (e.g. lang_en.properties, pw_en.properties, tmpl_lang_en.properties)
 		        	ResourceBundle bundle = null;
 		        	for (int i = 0; i < langs.length; i++) { // configuration languages
-		        		
+
 		        		// NOTICE: Only language-specific supported, without countries
 		        		final Locale locale = new Locale(langs[i]);
-		        		
+
 		        		// a. Within servlets
 		        		if (context != null) {
 		        			try {
 			                	bundle = PreprocessingResourceBundle.getBundle(
-			                			groupType, 
-			                			group.getValue(), 
-			                			locale, 
-			                			loader, 
+			                			groupType,
+			                			group.getValue(),
+			                			locale,
+			                			loader,
 			                			ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
 			                		);
 							} catch (MissingResourceException e) {
@@ -203,44 +203,44 @@ public class LanguageManager {
 		                	if (bundle == null) {
 		            			try {
 			            			bundle = PreprocessingResourceBundle.getBundle(
-			            					groupType, 
-			            					BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), 
-			            					locale, Thread.currentThread().getContextClassLoader(), 
+			            					groupType,
+			            					BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(),
+			            					locale, Thread.currentThread().getContextClassLoader(),
 			            					ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
 			            				);
 		    					} catch (MissingResourceException e) {
 									LOG.warn("Language '{}' has been configured, but no template translation for group '{}' file found -> default translations file will be used!", langs[i], group.getValue(), e);
 		    					}
 		                	}
-		                	
+
 		        		// b. Within server
 		        		} else {
 		        			try {
 	                    		bundle = PreprocessingResourceBundle.getBundle(
-	                    				groupType, 
-	                    				BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(), 
+	                    				groupType,
+	                    				BUNDLE_BASE_LOC + groupType + "/"  + group.getValue(),
 	                    				locale, ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
 	                    			);
 							} catch (MissingResourceException e) {
 								LOG.warn("Language '{}' has been configured, but no template translation for group '{}' file found -> default translations file will be used!", langs[i], group.getValue(), e);
 							}
 		        		}
-	        		
-	        		
+
+
 	        			// 3. Assign found language or default; default is what is configured!
 	        			Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(groupType);
 	        			if (langBundles == null)
 	        				langBundles = new HashMap<String, ResourceBundle>();
-	        			
+
 		        		if (bundle == null) {
 		        			langBundles.put(langs[i], DEF_BUNDLE_PER_GROUP.get(langs[i]));
 		        		}
 		        		else {
 		        			langBundles.put(langs[i], bundle);
 		        		}
-		        		
+
 	        			BUNDLE_GROUPS.put(groupType, langBundles);
-	        			
+
 	        		}
 				}
         	}
@@ -251,12 +251,12 @@ public class LanguageManager {
 	/**
 	 * Translate method for the template engine. Translations will be
 	 * HTML escaped with the following characters "&lt;&gt;&amp;\&#39;".
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param userSession the user session
 	 * @return translated text
@@ -264,16 +264,16 @@ public class LanguageManager {
 	public String translateTemplate(String key, Session userSession) {
 		return this.translateTemplate(key, userSession, null);
 	}
-	
+
 	/**
 	 * Translate method for the template engine. Translations will be
 	 * HTML escaped with the following characters "&lt;&gt;&amp;\&#39;".
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param userSession the user session
 	 * @param values place-holder values
@@ -283,21 +283,21 @@ public class LanguageManager {
 		final String lang = userSession.getUserLang();
 		return translateTemplate(key, lang, values);
 	}
-		
+
 	/**
 	 * Translate method for the template engine. Translations will be
 	 * HTML escaped with the following characters "&lt;&gt;&amp;\&#39;".
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param lang language
 	 * @param values placeholder values
 	 * @return translated text
-	 */	
+	 */
 	public String translateTemplate(String key, String lang, String values[]) {
 		return this.translateTemplate(key, lang, values, true);
 	}
@@ -306,12 +306,12 @@ public class LanguageManager {
 	 * Translate method for the template engine. If escape is true,
 	 * Translations will be HTML escaped with the following characters
 	 * "&lt;&gt;&amp;\&#39;".
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param session HTTP session or null (default language is used)
 	 * @param values place-holder values
@@ -327,16 +327,16 @@ public class LanguageManager {
 		}
 		return translateTemplate(key, lang, values, escape);
 	}
-	
+
 	/**
 	 * Translate method for the template engine. If escape is true,
 	 * Translations will be fully HTML.
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param session HTTP session or null (default language is used)
 	 * @param values place-holder values
@@ -351,17 +351,17 @@ public class LanguageManager {
 		}
 		return translateTemplateFullEscape(key, lang, values);
 	}
-    
+
 	/**
 	 * Translate method for the template engine. If escape is true,
 	 * Translations will be HTML escaped with the following characters
 	 * "&lt;&gt;&amp;\&#39;".
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param userSession the user session
 	 * @param values place-holder values
@@ -372,23 +372,23 @@ public class LanguageManager {
 		final String lang = userSession.getUserLang();
 		return translateTemplate(key, lang, values, escape);
 	}
-	
+
 	/**
 	 * Translate method for the template engine. If escape is true,
 	 * Translations will be HTML escaped with the following characters
 	 * "&lt;&gt;&amp;\&#39;".
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param lang language
 	 * @param values placeholder values
 	 * @param escape if true, basic HTML escaping is applied
 	 * @return translated text
-	 */	
+	 */
 	public String translateTemplate(String key, String lang, String values[], boolean escape) {
 		final Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(LANG_GRP_TMPL);
 		ResourceBundle bundle = langBundles.get(lang);
@@ -418,21 +418,21 @@ public class LanguageManager {
 		else
 			return formatted;
 	}
-	
+
 	/**
 	 * Translate method for the template engine. If escape is true,
 	 * Translations will be fully HTML escaped.
-	 * 
+	 *
 	 * It is internally used only.
-	 * 
+	 *
 	 * Template language files are place in the directory:
 	 * 'web/lang/tmpl'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param lang language
 	 * @param values placeholder values
 	 * @return translated text
-	 */	
+	 */
 	public String translateTemplateFullEscape(String key, String lang, String values[]) {
 		final Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(LANG_GRP_TMPL);
 		ResourceBundle bundle = langBundles.get(lang);
@@ -449,7 +449,7 @@ public class LanguageManager {
 				return null;
 			}
 		}
-		
+
 		String formatted = null;
 		try {
 			formatted = MessageFormat.format(text, ((Object[]) values));
@@ -460,14 +460,14 @@ public class LanguageManager {
 		}
 		return Web.escapeHtml(formatted);
 	}
-	
+
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param userSession the user session
 	 * @param arguments the arguments to replace in the text with variables
@@ -482,12 +482,12 @@ public class LanguageManager {
 	 * Translate method for the template engine and for
 	 * users of this framework. It HTML escapes special
 	 * characters and 'Umlaute' fully.
-	 * 
+	 *
 	 * Useful for mails.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param userSession the user session
 	 * @param arguments the arguments to replace in the text with variables
@@ -497,15 +497,15 @@ public class LanguageManager {
 		final String lang = userSession.getUserLang();
 		return this.translate(key, lang, true, arguments);
 	}
-	
+
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework. It HTML escapes special
 	 * characters and 'Umlaute' fully.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param session HTTP session or null (default language is used)
 	 * @param arguments the arguments to replace in the text with variables
@@ -520,15 +520,15 @@ public class LanguageManager {
 		}
 		return this.translate(key, lang, true, arguments);
 	}
-	
+
 	/**
 	 * Translate method. It doesn't HTML escapes anything.
-	 * 
+	 *
 	 * Useful for mail.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param session HTTP session or null (default language is used)
 	 * @param arguments the arguments to replace in the text with variables
@@ -543,14 +543,14 @@ public class LanguageManager {
 		}
 		return this.translate(key, lang, false, arguments);
 	}
-	
+
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param lang language code
 	 * @param arguments the arguments to replace in the text with variables
@@ -559,7 +559,7 @@ public class LanguageManager {
 	public String translate(String key, String lang, Object... arguments) {
 		return this.translate(key, lang, false, arguments);
 	}
-	
+
 	private String translate(String key, String lang, boolean fullEscape, Object... arguments) {
 		final Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(LANG_GRP_APP);
 		ResourceBundle bundle = langBundles.get(lang);
@@ -576,7 +576,7 @@ public class LanguageManager {
 				return null;
 			}
 		}
-		
+
 		String formatted = null;
 		try {
 			formatted = MessageFormat.format(text, arguments);
@@ -590,17 +590,17 @@ public class LanguageManager {
 		else
 			return formatted;
 	}
-	
+
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework that returns the default value
 	 * if no translation is found at all.
-	 * 
+	 *
 	 * Should only be used for special cases.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param defaultValue default value
 	 * @param userSession the user session
@@ -611,17 +611,17 @@ public class LanguageManager {
 		final String lang = userSession.getUserLang();
 		return this.translateOrDefVal(key, defaultValue, lang, arguments);
 	}
-	
+
 	/**
 	 * Translate method for the template engine and for
 	 * users of this framework that returns the defaukt value
 	 * if no translation is found at all.
-	 * 
+	 *
 	 * Should only be used for special cases.
-	 * 
+	 *
 	 * General language files are place in the directory:
 	 * 'web/lang/app'; e.g. 'lang_en.properties'.
-	 *  
+	 *
 	 * @param key key associated to text in translation resources
 	 * @param defaultValue default value
 	 * @param lang language code
@@ -652,7 +652,7 @@ public class LanguageManager {
 		}
 		return formatted;
 	}
-	
+
 	/**
 	 * Checks if the given language is configured.
 	 * @param lang language code
@@ -665,10 +665,10 @@ public class LanguageManager {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Remove language from URI.
-	 * 
+	 *
 	 * @param uri URI
 	 * @return laguage code
 	 */
@@ -678,17 +678,17 @@ public class LanguageManager {
 		for (int i = 0; i < langs.length; i++) {
 			if (uri.startsWith("/"+langs[i]+"/")) {
 				lang = langs[i];
-				found = true;	
+				found = true;
 			}
 		}
 		if (found)
 			uri = uri.replace("/"+lang+"/", "/");
 		return uri;
 	}
-	
+
 	/**
 	 * Get language from URI (e.g. 'en', 'de').
-	 * 
+	 *
 	 * @param uri URI
 	 * @return language code as configured
 	 */
@@ -710,7 +710,7 @@ public class LanguageManager {
 	/**
 	 * Get web config resource / template based on language.
 	 * Used when user is not logged in.
-	 * 
+	 *
 	 * @param configResource language template/resource
 	 * @param uri URI
 	 * @return web resource
@@ -723,14 +723,14 @@ public class LanguageManager {
 				res = configResource.replace(URL_LANG_TAG, lang);
 			else
 				res = configResource.replace(URL_LANG_TAG+"/", "");
-		}		
+		}
 		return res;
 	}
-	
+
 	/**
 	 * Get web config resource / template based on language code
 	 * Used when user is not logged in.
-	 * 
+	 *
 	 * @param configResource language template/resource
 	 * @param lang language code
 	 * @return web resource
@@ -738,16 +738,16 @@ public class LanguageManager {
 	public String getResourceByLang(String configResource, String lang) {
 		String res = configResource;
 		if (configResource.contains(URL_LANG_TAG)) {
-			
+
 			res = configResource.replace(URL_LANG_TAG, lang);
-		}		
+		}
 		return res;
-	}	
-	
+	}
+
 	/**
 	 * Get web config resource / template based on no language :)
 	 * Used for general templates usually.
-	 * 
+	 *
 	 * @param configResource language template/resource
 	 * @return web resource
 	 */
@@ -755,14 +755,14 @@ public class LanguageManager {
 		String res = configResource;
 		if (configResource.contains(URL_LANG_TAG+"/")) {
 			res = configResource.replace(URL_LANG_TAG+"/", "");
-		}		
+		}
 		return res;
-	}	
-	
+	}
+
 	/**
 	 * Get web config resource / template based on language.
 	 * Used when user is logged in.
-	 * 
+	 *
 	 * @param configResource language template/resource
 	 * @param userSession user session
 	 * @return web resource
@@ -792,9 +792,9 @@ public class LanguageManager {
 	 * Return block template based on language, and if not existing
 	 * try to get a general block from the 'web/html/blocks' directory
 	 * instead 'web/html/&lt;lang&gt;/blocks'
-	 * 
+	 *
 	 * Used when user is logged in.
-	 * 
+	 *
 	 * @param configResource language template/resource
 	 * @param userSession user session
 	 * @return web resource
@@ -802,10 +802,10 @@ public class LanguageManager {
 	public String getBlockResource(String configResource, Session userSession) {
 		String possibleBlockResource = getResource(configResource, userSession);
 		final File f = new File(possibleBlockResource);
-		
+
 		if (!f.exists()) {
 			if (configResource.contains(":lang/")) {
-				possibleBlockResource = configResource.replace(URL_LANG_TAG+"/", "");	
+				possibleBlockResource = configResource.replace(URL_LANG_TAG+"/", "");
 			} else {
 				possibleBlockResource = configResource;
 			}
@@ -815,7 +815,7 @@ public class LanguageManager {
 
 	/**
 	 * Get configured languages.
-	 * 
+	 *
 	 * @return languages codes
 	 */
 	public String[] getConfiguredLanguages() {
@@ -824,7 +824,7 @@ public class LanguageManager {
 
 	/**
 	 * Retrieve language when user is not or possibly not logged in.
-	 * 
+	 *
 	 * @param session HTTP session or null (default language is used)
 	 * @return found language
 	 */
@@ -841,7 +841,7 @@ public class LanguageManager {
 	    User user = userSession.getUser();
 	    if (user != null)  {
 	    	final String dbLang = user.getLang();
-	    	// Special/initial case: We have a DB user, but no language, 
+	    	// Special/initial case: We have a DB user, but no language,
 	    	// so initially set the detected language for him!
 	    	if (dbLang == null) {
 		    	LanguageManager.getInstance().updateLanguage(lang, userSession);
@@ -850,13 +850,13 @@ public class LanguageManager {
 	    		lang = dbLang;
 	    	}
 	    }
-		return lang;		
+		return lang;
 	}
-	
+
 	/**
 	 * Get language from the header of the HTTP session and use it
 	 * if available in beetRoot, otherwise return default language.
-	 * 
+	 *
 	 * @param session beetRoot HTTP session
 	 * @return found language
 	 */
@@ -895,14 +895,14 @@ public class LanguageManager {
 		}
 		return LanguageManager.DEFAULT_LANG;
 	}
-	
+
 	/**
-	 * Get language. First from session, then DB, 
+	 * Get language. First from session, then DB,
 	 * then use default language if not found earlier.
 	 * @param userSession user session
 	 * @return language code
 	 */
-	
+
 	public String getLanguage(Session userSession) {
 		String lang = userSession.getUserLang();
 		if (lang == null || lang.length() == 0) {
@@ -913,7 +913,7 @@ public class LanguageManager {
 	}
 
 	/**
-	 * Get language from DB. First from DB, 
+	 * Get language from DB. First from DB,
 	 * then use default language if not found earlier.
 	 * @param userSession user session
 	 * @return language code
@@ -922,7 +922,7 @@ public class LanguageManager {
 		String lang = null;
 		//from db
 		Integer uid = (Integer) userSession.getUserId();
-		
+
 		if (uid != null) {
 			try {
 				lang = BeetRootDatabaseManager.getInstance().getLanguage(uid.intValue());
@@ -934,7 +934,7 @@ public class LanguageManager {
 			lang = DEFAULT_LANG;
 		return lang;
 	}
-	
+
 	/**
 	 * Update user language.
 	 * @param newLanguage new language code
@@ -943,7 +943,7 @@ public class LanguageManager {
 	public void updateLanguage(String newLanguage, Session userSession) {
 		Integer uid = (Integer) userSession.getUserId();
 		if (uid != null) {
-		
+
 			try {
 				BeetRootDatabaseManager.getInstance().updateLanguage(newLanguage, uid.intValue());
 			} catch (Exception e) {
@@ -954,7 +954,7 @@ public class LanguageManager {
 
 	/**
 	 * Load translations for password checks.
-	 * 
+	 *
 	 * @param session HTTP session
 	 * @return properties with validation messages
 	 */
@@ -976,5 +976,5 @@ public class LanguageManager {
 		}
 		return properties;
 	 }
-	
+
 }

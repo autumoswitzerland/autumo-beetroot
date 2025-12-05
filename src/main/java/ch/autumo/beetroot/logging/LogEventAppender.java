@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2024 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot.logging;
 
@@ -44,17 +44,17 @@ import ch.autumo.beetroot.handler.properties.Property;
 public class LogEventAppender extends AbstractAppender {
 
 	/** Default log size . */
-	public static int DEFAULT_LOG_SIZE = 100;
-	
+	public static final int DEFAULT_LOG_SIZE = 100;
+
 	private static int size = DEFAULT_LOG_SIZE;
 	private static LogEventList<LogEvent> logEvents = new LogEventList<>(size);
 
 	private static boolean isInitialized = false;
-	
-    
+
+
     /**
      * Log event appender.
-     *  
+     *
      * @param name name
      * @param filter filter
      */
@@ -66,7 +66,7 @@ public class LogEventAppender extends AbstractAppender {
     public static LogEventAppender createAppender(@PluginAttribute("name") String name) {
         return new LogEventAppender(name, null);
     }
-    
+
     @Override
     public void append(LogEvent event) {
         logEvents.add(event);
@@ -74,7 +74,7 @@ public class LogEventAppender extends AbstractAppender {
 
     /**
      * Get all collected log events.
-     * 
+     *
      * @return log events
      */
     public static List<LogEvent> getLogEvents() {
@@ -86,22 +86,22 @@ public class LogEventAppender extends AbstractAppender {
      * This call must be made!
      */
 	public static void initializeAppender() {
-		
+
 		if (isInitialized)
 			return;
-		
+
 		String sSize;
 		try {
 			sSize = BeetRootDatabaseManager.getInstance().getProperty("log.size");
 			if (sSize != null) {
 				try {
-					size = Integer.valueOf(sSize).intValue();
+					size = Integer.parseInt(sSize);
 				} catch (Exception e) {
 					size = DEFAULT_LOG_SIZE;
 				}
 			} else {
 				size = DEFAULT_LOG_SIZE;
-			}	
+			}
 		} catch (Exception e) {
 			size = DEFAULT_LOG_SIZE;
 		}
@@ -110,7 +110,7 @@ public class LogEventAppender extends AbstractAppender {
 		final LogEvent tempEvents[] = logEvents.toArray(new LogEvent[logEvents.size()]);
 		logEvents = new LogEventList<>(size);
 		logEvents.addAll(Arrays.asList(tempEvents));
-		
+
 		// Install CRUD update listener for settings
 		EventHandler.getInstance().addUpdateListener(Property.class, new UpdateListener() {
 			@Override
@@ -123,7 +123,7 @@ public class LogEventAppender extends AbstractAppender {
 				if (prop.getName().equals("log.size")) {
 					int val = size;
 					try {
-						val = Integer.valueOf(prop.getValue()).intValue();	
+						val = Integer.parseInt(prop.getValue());
 					} catch (Exception e) {
 					}
 					if (val != size) {
@@ -134,8 +134,8 @@ public class LogEventAppender extends AbstractAppender {
 				}
 			}
 		});
-		
+
 		isInitialized = true;
-	} 
-	
+	}
+
 }

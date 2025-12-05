@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 
+<!--
   beetRoot logging configuration (log4j2 behind SLF4j)
   Version: 3.1 - 2024 autumo GmbH
  -->
 
 <Configuration status="error" name="BeetRootConfig">
 	<Properties>
-		<Property name="basePath">${sys:catalina.base}/logs</Property>
+		<!-- TODO: Adjust base path for log file. -->
+		<Property name="basePath">logs</Property>
 	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">

@@ -8,6 +8,11 @@ In general, you should always save your changes/customizations in the following 
 - `gen/` : In case you adjusted the templates used by PLANT
 - `db/h2/db/` : Your H2 DB, if you use H2 and this location
 
+## Release 3.2.0
+
+- Update JAR libraries
+- **Upgrade to Java 17**. Due to certain CVE vulnerabilities, we can no longer support some libraries compatible with lower Java versions. Therefore, Java 17 is now mandatory for autumo BeetRoot.
+
 ## Release 3.1.5
 
 - Update JAR libraries

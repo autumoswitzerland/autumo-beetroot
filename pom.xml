@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<name>autumo-beetroot</name>
 	<groupId>ch.autumo.beetroot</groupId>
 	<artifactId>autumo-beetroot</artifactId>
-	<version>3.1.5</version>
+	<version>3.2.0</version>
 	<packaging>jar</packaging>
 
 	<licenses>
@@ -23,14 +23,14 @@
 			<organizationUrl>https://autumo.ch</organizationUrl>
 		</developer>
 	</developers>
-  
+
 	<scm>
 		<connection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</connection>
 		<developerConnection>scm:git:https://github.com/autumoswitzerland/autumo-beetroot.git</developerConnection>
 		<url>https://github.com/autumoswitzerland/autumo-beetroot</url>
 		<tag>master</tag>
 	</scm>
-	
+
 	<!-- Local repository as long as autumo-beetroot and nanohttpd-BEETROOT are not published in maven central. -->
 	<repositories>
 		<repository>
@@ -38,57 +38,57 @@
 			<url>file://${project.basedir}/lib/repo</url>
 		</repository>
 	</repositories>
-	
+
 	<properties>
-	
+
 		<localrepo>${project.basedir}/lib/repo</localrepo>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	
-		<version.maven.antrun.plugin>3.1.0</version.maven.antrun.plugin>
-		<version.maven.compiler.plugin>3.13.0</version.maven.compiler.plugin>
-		<version.maven.dependency.plugin>3.7.0</version.maven.dependency.plugin>
-		<version.maven.jar.plugin>3.4.2</version.maven.jar.plugin>
-		<version.maven.javadoc.plugin>3.10.0</version.maven.javadoc.plugin>
-		<version.maven.resources.plugin>3.3.1</version.maven.resources.plugin>
-		<version.maven.surefire.plugin>3.5.0</version.maven.surefire.plugin>
-		
+
+		<version.maven.antrun.plugin>3.2.0</version.maven.antrun.plugin>
+		<version.maven.compiler.plugin>3.14.1</version.maven.compiler.plugin>
+		<version.maven.dependency.plugin>3.9.0</version.maven.dependency.plugin>
+		<version.maven.jar.plugin>3.5.0</version.maven.jar.plugin>
+		<version.maven.javadoc.plugin>3.12.0</version.maven.javadoc.plugin>
+		<version.maven.resources.plugin>3.4.0</version.maven.resources.plugin>
+		<version.maven.surefire.plugin>3.5.4</version.maven.surefire.plugin>
+
 		<version.nanohttpd>BEETROOT-2.3.5</version.nanohttpd>
-		<version.hikaricp>6.0.0</version.hikaricp>
+		<version.hikaricp>7.0.2</version.hikaricp>
 		<version.jcolor>5.5.1</version.jcolor>
-		<version.angus.activation>2.0.2</version.angus.activation>
-		<version.bcprov.jdk15on>1.70</version.bcprov.jdk15on>
-		<version.commons.cli>1.9.0</version.commons.cli>
-		<version.commons.codec>1.17.1</version.commons.codec>
+		<version.angus.activation>2.0.3</version.angus.activation>
+		<version.bcprov-jdk18on>1.83</version.bcprov-jdk18on>
+		<version.commons.cli>1.11.0</version.commons.cli>
+		<version.commons.codec>1.20.0</version.commons.codec>
 		<version.commons.dbutils>1.8.1</version.commons.dbutils>
-		<version.commons.io>2.17.0</version.commons.io>
-		<version.commons.text>1.12.0</version.commons.text>
-		<version.core>3.5.3</version.core>
-		<version.h2>2.3.232</version.h2>
-		<version.httpclient>4.5.14</version.httpclient>
-		<version.httpcore>4.4.16</version.httpcore>
-		<version.jakarta.activation.api>2.1.3</version.jakarta.activation.api>
-		<version.jakarta.mail>2.0.1</version.jakarta.mail>
-		<version.javase>3.5.3</version.javase>
+		<version.commons.io>2.21.0</version.commons.io>
+		<version.commons.text>1.14.0</version.commons.text>
+		<version.zxing.core>3.5.4</version.zxing.core>
+		<version.h2>2.4.240</version.h2>
+		<version.httpclient>4.5.14</version.httpclient> <!-- HTTP/1.1 -->
+		<version.httpcore>4.4.16</version.httpcore> <!-- HTTP/1.1 -->
+		<version.jakarta.activation.api>2.1.4</version.jakarta.activation.api>
+		<version.jakarta.mail>2.0.2</version.jakarta.mail>
+		<version.javase>3.5.4</version.javase>
 		<version.javax.mail.api>1.6.2</version.javax.mail.api>
 		<version.javax.servlet.api>4.0.1</version.javax.servlet.api>
-		<version.json>20240303</version.json>
-		<version.jsoup>1.18.1</version.jsoup>
+		<version.json>20250517</version.json>
+		<version.jsoup>1.21.2</version.jsoup>
 		<version.junit>4.13.2</version.junit>
-		<version.log4j.api>2.24.0</version.log4j.api>
-		<version.log4j.core>2.24.0</version.log4j.core>
-		<version.log4j.slf4j.impl>2.24.0</version.log4j.slf4j.impl>
-		<version.mariadb.java.client>3.4.1</version.mariadb.java.client>
-		<version.passay>1.6.5</version.passay>
-		<version.postgresql>42.7.7</version.postgresql>
-		<version.spring.security.crypto>5.8.13</version.spring.security.crypto>
+		<version.log4j.api>2.25.2</version.log4j.api>
+		<version.log4j.core>2.25.2</version.log4j.core>
+		<version.log4j.slf4j.impl>2.25.2</version.log4j.slf4j.impl>
+		<version.mariadb.java.client>3.5.6</version.mariadb.java.client>
+		<version.passay>1.6.6</version.passay>
+		<version.postgresql>42.7.8</version.postgresql>
+		<version.spring.security.crypto>7.0.0</version.spring.security.crypto> <!-- Java 17-->
 		<version.totp>1.0</version.totp>
-		<version.twilio>10.5.2</version.twilio>
-		
+		<version.twilio>11.1.0</version.twilio>
+
 	</properties>
-	
+
 	<build>
 		<plugins>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -121,23 +121,33 @@
 				        </configuration>
 				    </execution>
 				</executions>
-			</plugin>			
+			</plugin>
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${version.maven.compiler.plugin}</version>
 				<configuration>
-					<release>11</release>
+					<release>17</release>
 			        <annotationProcessorPaths>
+					    <path>
+					        <groupId>org.apache.logging.log4j</groupId>
+					        <artifactId>log4j-api</artifactId>
+					        <version>${version.log4j.api}</version>
+					    </path>
 			            <path>
 			                <groupId>org.apache.logging.log4j</groupId>
 			                <artifactId>log4j-core</artifactId>
 			                <version>${version.log4j.core}</version>
 			            </path>
 			        </annotationProcessorPaths>
+				    <compilerArgs>
+				        <!-- Optional, only to make the warnings disappear. -->
+				        <arg>-Alog4j.graalvm.groupId=org.apache.logging.log4j</arg>
+				        <arg>-Alog4j.graalvm.artifactId=log4j-core</arg>
+				    </compilerArgs>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 			    <artifactId>maven-resources-plugin</artifactId>
 			    <version>${version.maven.resources.plugin}</version>
@@ -173,7 +183,7 @@
 			                    </resource>
 			                </resources>
 			            </configuration>
-			        </execution>			        
+			        </execution>
 					<execution>
 			            <id>copy-mime-types</id>
 			            <phase>generate-sources</phase>
@@ -225,10 +235,10 @@
 								</resource>
 							</resources>
 			            </configuration>
-			        </execution>			        
+			        </execution>
 			    </executions>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 			    <version>${version.maven.dependency.plugin}</version>
@@ -246,7 +256,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -270,7 +280,7 @@
 	                </additionalClasspathElements>
 	            </configuration>
 	        </plugin>
-        
+
 		</plugins>
 	</build>
 
@@ -287,21 +297,21 @@
 		</dependency>
 
 		<!-- Logging -->
-  	
+
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-slf4j-impl</artifactId>
 		    <version>${version.log4j.slf4j.impl}</version>
 		    <scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-api</artifactId>
 		    <version>${version.log4j.api}</version>
 		    <scope>provided</scope>
 		</dependency>
-		
+
 	  	<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-core</artifactId>
@@ -310,7 +320,7 @@
 		</dependency>
 
 		<!-- Apache Commons -->
-  	
+
 		<dependency>
 		    <groupId>commons-cli</groupId>
 		    <artifactId>commons-cli</artifactId>
@@ -347,7 +357,7 @@
 		</dependency>
 
 		<!-- Apache HTTP -->
-		
+
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
@@ -379,21 +389,21 @@
 		</dependency>
 
 		<!-- OTP -->
-		
+
 		<dependency>
 		    <groupId>de.taimos</groupId>
 		    <artifactId>totp</artifactId>
 		    <version>${version.totp}</version>
 		    <scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>com.google.zxing</groupId>
 		    <artifactId>core</artifactId>
-		    <version>${version.core}</version>
+		    <version>${version.zxing.core}</version>
 		    <scope>provided</scope>
 		</dependency>
-				
+
 		<dependency>
 		    <groupId>com.google.zxing</groupId>
 		    <artifactId>javase</artifactId>
@@ -420,7 +430,7 @@
 		</dependency>
 
 		<!-- Colors -->
-  
+
 		<dependency>
     		<groupId>com.diogonunes</groupId>
     		<artifactId>JColor</artifactId>
@@ -436,14 +446,14 @@
 		    <version>${version.jakarta.activation.api}</version>
 		    <scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>org.eclipse.angus</groupId>
 		    <artifactId>angus-activation</artifactId>
 		    <version>${version.angus.activation}</version>
 		    <scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>jakarta.mail</artifactId>
@@ -461,9 +471,9 @@
 		<!-- Servlet API -->
 
 		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>javax.servlet-api</artifactId>
-		    <version>${version.javax.servlet.api}</version>
+		    <groupId>jakarta.servlet</groupId>
+		    <artifactId>jakarta.servlet-api</artifactId>
+		    <version>5.0.0</version>
 		    <scope>provided</scope>
 		</dependency>
 
@@ -472,17 +482,16 @@
 		<dependency>
     		<groupId>org.springframework.security</groupId>
     		<artifactId>spring-security-crypto</artifactId>
-		    <version>${version.spring.security.crypto}</version> <!-- Java 11-->
+		    <version>${version.spring.security.crypto}</version>
 		    <scope>provided</scope>
 		</dependency>
 
 		<!-- Cryptography -->
 
-		<!-- CVE-2023-33201: LDAP is not used! -->
 		<dependency>
 		    <groupId>org.bouncycastle</groupId>
-		    <artifactId>bcprov-jdk15on</artifactId>
-		    <version>${version.bcprov.jdk15on}</version>
+		    <artifactId>bcprov-jdk18on</artifactId>
+		    <version>${version.bcprov-jdk18on}</version>
 		    <scope>provided</scope>
 		</dependency>
 
@@ -501,7 +510,7 @@
 		    <version>${version.h2}</version>
 		    <scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 		    <groupId>org.postgresql</groupId>
 		    <artifactId>postgresql</artifactId>
@@ -509,23 +518,23 @@
 		    <scope>provided</scope>
 		</dependency>
 		<!-- com.impossibl.pgjdbc-ng : pgjdbc-ng : x.y.z -->
-		
+
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>${version.mariadb.java.client}</version>               
+			<version>${version.mariadb.java.client}</version>
 		    <scope>provided</scope>
 		</dependency>
 
 		<!-- Testing -->
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
-        				
+
 	</dependencies>
 
 </project>

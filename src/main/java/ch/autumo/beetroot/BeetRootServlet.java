@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +13,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * autumo beetRoot servlet allowing the beetRoot template
@@ -47,17 +47,17 @@ public class BeetRootServlet extends AbstractBeetRootServlet {
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		this.service(req, resp);
 	}
-	
+
 	@Override
 	public synchronized void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
-		
+
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
-		
+
 		// session management; get the right session for this service call
 		final BeetRootHTTPSession currSession = this.findOrCreateHttpSession(request);
 		// work !
 		currSession.executeForServlet(super.getBeetRootService(), request, response);
 	}
-	
+
 }

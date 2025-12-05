@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot.plant;
 
@@ -28,10 +28,10 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,41 +51,41 @@ public class Plant {
 	protected static final Logger LOG = LoggerFactory.getLogger(Plant.class.getName());
 
 	private static final String CR = OS.LINE_SEPARATOR;
-	
+
 	private String tableNames[] = null;
 	private String singleEntity = null;
-	
+
 	private File webDir = null;
 
-	
+
 	public Plant() {
 	}
 
 	private String getBanner() {
-		final String banner = CR + CR + 
+		final String banner = CR + CR +
 				" __________.____       _____    __________________" + CR +
 				" \\______   \\    |     /  _  \\   \\      \\__    ___/" + CR +
 				"  |     ___/    |    /  /_\\  \\  /   |   \\|    |" + CR +
-				"  |    |   |    |___/    |    \\/    |    \\    |" + CR + 
-				"  |____|   |_______ \\____|__  /\\____|__  /____|" + CR +  
+				"  |    |   |    |___/    |    \\/    |    \\    |" + CR +
+				"  |____|   |_______ \\____|__  /\\____|__  /____|" + CR +
 				"                   \\/       \\/         \\/";
 		return Helper.createBanner(banner, Attribute.BRIGHT_GREEN_TEXT());
 	}
-	
+
 	private String getDescription() {
-		final String all = 
+		final String all =
 				Colors.darkCyan(" PLANT "+ BeetRootConfigurationManager.getAppVersion()) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
-				+ " (c) 2024 autumo Ltd. Switzerland";
+				+ " (c) 2025 autumo Ltd. Switzerland";
 		return all;
 	}
-	
+
 	private Options makeOptions() {
 		final Options options = new Options();
 		options.addOption(makeOption("config", false, "Optional configuration file path (if it's not default 'cfg/beetroot.cfg')"));
 		return options;
 	}
-	
+
 	private Option makeOption(String argName, boolean required, String desc) {
 		final Option localOption = new Option(argName, true, desc);
 		localOption.setRequired(required);
@@ -93,11 +93,15 @@ public class Plant {
 		return localOption;
 	}
 
-	private void usage() {
-		final int width = 80;
+	private void usage() throws Exception {
 		final String usage = "java "+Plant.class.getName()+" <config>";
-		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp(width, usage, null, makeOptions(), null);
+
+		Options options = makeOptions();
+		HelpFormatter formatter = HelpFormatter.builder().get();
+		String header = "BeetRoot Generator for creating CRUD views";
+		String footer = "Exit.";
+		formatter.printHelp(usage, header, options, footer, true);
+
 		this.printLine();
 		System.out.println("Exit.");
 	}
@@ -111,20 +115,20 @@ public class Plant {
 	}
 
 	private void initialize(CommandLine aCmdline) throws Exception {
-		
+
 		final String argsList[] = aCmdline.getArgs();
-		
+
 		if (argsList.length > 1) {
 			usage();
 			Helper.invalidArgumentsExit();
 		}
-        
+
 		// DB connection manager
 		BeetRootDatabaseManager.getInstance().initialize();
 	}
 
 	private int readParameters(boolean askRetry) throws Exception {
-		
+
 		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String val = null;
 
@@ -142,43 +146,37 @@ public class Plant {
 					this.singleEntity = null;
 					return 1;
 				}
-				
+
 			} while (!val.equalsIgnoreCase("y") && !val.equalsIgnoreCase("n"));
 
 			return -1;
-			
+
 		} else {
-			
+
 			List<String> tableList = new ArrayList<String>();
-			Connection conn = null;
-			Statement stmt = null;
-			try {
-				conn = BeetRootDatabaseManager.getInstance().getConnection();
-				stmt = conn.createStatement();
-			
-				String statement = null;
-				
-				if (BeetRootDatabaseManager.getInstance().isMysqlDb() || BeetRootDatabaseManager.getInstance().isMariaDb() || BeetRootDatabaseManager.getInstance().isH2Db())
-					statement = "SHOW TABLES";
-				else if (BeetRootDatabaseManager.getInstance().isPostgreDb() || BeetRootDatabaseManager.getInstance().isPostgreDbWithNGDriver())  
-					statement = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'";
-				else if (BeetRootDatabaseManager.getInstance().isOracleDb())
-					statement = "SELECT table_name FROM user_tables ORDER BY table_name";
-				else
-					statement = "SHOW TABLES";
-				
-				final ResultSet rs = stmt.executeQuery(statement);
-				while (rs.next())
-					tableList.add(rs.getString(1));
-				rs.close();
-					
-			} finally {
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
+			String statement;
+			if (BeetRootDatabaseManager.getInstance().isMysqlDb() ||
+			    BeetRootDatabaseManager.getInstance().isMariaDb() ||
+			    BeetRootDatabaseManager.getInstance().isH2Db()) {
+			    statement = "SHOW TABLES";
+			} else if (BeetRootDatabaseManager.getInstance().isPostgreDb() ||
+			           BeetRootDatabaseManager.getInstance().isPostgreDbWithNGDriver()) {
+			    statement = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'";
+			} else if (BeetRootDatabaseManager.getInstance().isOracleDb()) {
+			    statement = "SELECT table_name FROM user_tables ORDER BY table_name";
+			} else {
+			    statement = "SHOW TABLES";
 			}
-			
+
+			try (Connection conn = BeetRootDatabaseManager.getInstance().getConnection();
+			     Statement stmt = conn.createStatement();
+			     ResultSet rs = stmt.executeQuery(statement)) {
+			    while (rs.next()) {
+			        tableList.add(rs.getString(1));
+			    }
+
+			}
+
 			int size = tableList.size();
 			tableNames = tableList.toArray(new String[size]);
 
@@ -190,7 +188,7 @@ public class Plant {
 				System.out.println(Colors.darkYellow("Input entity name") + ": ");
 				for (int j = 0; j < tableNames.length; j++) {
 					System.out.println("  ["+(j+1)+"] = "+tableNames[j]);
-				} 
+				}
 				System.out.println("  [all] = All tables !");
 				System.out.println(Colors.darkYellow("Other functions") + ": ");
 				System.out.println("  [t] = Translate templates");
@@ -229,11 +227,11 @@ public class Plant {
 			*/
 
 			if (val.equals("all")) {
-				
+
 				System.out.println("");
 				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
 				System.out.print("Generate CRUD templates and code for ALL (!) entities (y/n) ?): ");
-				
+
 				String answer = br.readLine().trim();
 				if (answer != null && answer.trim().equalsIgnoreCase("y"))
 					return 10;
@@ -241,7 +239,7 @@ public class Plant {
 					return -1;
 
 			} else if (val.equals("t")) {
-				
+
 				System.out.println("");
 				System.out.println(Colors.darkYellow("NOTE") + ": Translate the HTML templates (add, edit, view and index) as well as the column titles in the 'columns.cfg'");
 				System.out.println("files. This should only be done once for a specific folder; all subfolders will also be processed recursively.");
@@ -271,15 +269,15 @@ public class Plant {
 				if (answer != null && (answer.trim().equalsIgnoreCase("y") || answer.equals("")))
 					return 20;
 				else
-					return -1;				
-				
+					return -1;
+
 			} else {
-				
+
 				singleEntity = tableNames[d-1];
 				System.out.println("");
 				System.out.println(Colors.darkYellow("NOTE") + ": This will overwrite existing generated sources (HTML, java & columns.cfg)!");
 				System.out.print("Generate CRUD templates and code for entity '" + singleEntity + "' (y/n, enter = y) ?): ");
-	
+
 				String answer = br.readLine();
 				if (answer != null && (answer.trim().equalsIgnoreCase("y") || answer.equals("")))
 					return 1;
@@ -293,28 +291,28 @@ public class Plant {
     private void execute() throws Exception {
 
 		System.out.println("");
-    	
+
 		// ---- HTML
-		
+
     	this.process(new Fertilizer(singleEntity, "gen/html/index.html", "web/html/", "html"));
     	this.process(new Fertilizer(singleEntity, "gen/html/view.html", "web/html/", "html"));
     	this.process(new Fertilizer(singleEntity, "gen/html/edit.html", "web/html/", "html"));
     	this.process(new Fertilizer(singleEntity, "gen/html/add.html", "web/html/", "html"));
 
-    	
+
 		// ---- columns.cfg
-    	
+
     	this.process(new Fertilizer(singleEntity, "columns.cfg", "web/html/", "cfg"));
-    	
-    	
+
+
 		// ---- Java
-    	
+
     	String src = "src/";
     	String srcMainJava = "src/main/java/";
     	final File srcMainJavaDir = new File(srcMainJava);
     	if (srcMainJavaDir.exists() && srcMainJavaDir.isDirectory())
     		src = srcMainJava;
-    	
+
     	Fertilizer fertilizer = null;
     	fertilizer = new Fertilizer(singleEntity, "gen/java/IndexHandler.java", src, "java");
     	this.process(fertilizer);
@@ -328,10 +326,10 @@ public class Plant {
     	this.process(fertilizer);
     	fertilizer = new Fertilizer(singleEntity, "gen/java/Entity.java", src, "java");
     	this.process(fertilizer);
-    	
-    	
+
+
 		// ---- Router
-    	
+
 		System.out.println("");
 		System.out.println(Colors.darkYellow("  Add the following lines to your beetRoot routing configuration 'routing.xml'"));
 		System.out.println(Colors.darkYellow("  and into the right 'package'-section (change package name if necessary):\n"));
@@ -346,7 +344,7 @@ public class Plant {
 		System.out.println("        <Route path=\"/:lang/"+fertilizer.lowerEntityPlural+"/delete\" handler=\""+fertilizer.upperEntityPlural+"DeleteHandler\" name=\""+fertilizer.lowerEntityPlural+"\" />");
 		System.out.println("    </Package>");
 		System.out.println("");
-		
+
 		/* Old:
 		System.out.println(Colors.darkYellow("  Add the following lines to your beetRoot Router:\n"));
 		System.out.println(
@@ -359,13 +357,13 @@ public class Plant {
 				+ "");
     	*/
     }
-    
+
 	private void process(Fertilizer fertilizer) throws Exception {
 		fertilizer.write(fertilizer.parse());
 	}
 
 	public final int run(String[] args) {
-		
+
 		CommandLine line = null;
 
 		System.out.println(getBanner());
@@ -378,29 +376,33 @@ public class Plant {
 			line = new DefaultParser().parse(makeOptions(), args);
 		} catch (ParseException exp) {
 			System.err.println(Colors.red("Couldn't read program argument.") + " Reason: " + exp.getMessage());
-			usage();
+			try {
+				usage();
+			} catch (Exception e) {
+				System.err.println(Colors.red("FATAL: Usage error.") + " Reason: " + e.getMessage());
+			}
 			Helper.invalidArgumentsExit();
 		}
 
 		int a = 0;
 		try {
-			
+
 			this.initialize(line);
 
 			do { // loop for more entities
-			
+
 				a = this.readParameters(false);
 				if (a == 1) {
-					
+
 					System.out.println("");
-					
+
 					this.execute();
-					
+
 					System.out.println(Colors.green("Entity '"+singleEntity+"' processed."));
 					System.out.println("");
-					
+
 				} else if (a == 10) {
-					
+
 					System.out.println("");
 					for (int i = 0; i < tableNames.length; i++) {
 						singleEntity = tableNames[i];
@@ -408,22 +410,22 @@ public class Plant {
 						System.out.println(Colors.green("Entity '"+singleEntity+"' processed."));
 					}
 					System.out.println("");
-					
+
 				} else if (a == 20) {
-					
+
 					System.out.println("");
-					
+
 					final TemplateLanguageProcessor tlp = new TemplateLanguageProcessor();
 					tlp.process(webDir.getAbsolutePath(), "web/lang/");
-					
+
 					System.out.println("");
-					
+
 				} else {
-					
+
 					// finish!
-					
+
 				}
-				
+
 			} while (this.readParameters(true) == 1);
 
 		} catch (IllegalArgumentException e) {
@@ -457,7 +459,7 @@ public class Plant {
 			System.out.println("- Add entity to menu or admin menu and overwrite 'hasAccess' method for every");
 			System.out.println("  handler if necessary.");
 		} else {
-			
+
 		}
 		// overwrite method access
 		System.out.println("");
@@ -473,10 +475,10 @@ public class Plant {
 			BeetRootConfigurationManager.getInstance().initialize(args[0].trim());
 		else
 			BeetRootConfigurationManager.getInstance().initialize();
-		
+
 		final Plant generator = new Plant();
 		final int exit = generator.run(args);
 		System.exit(exit);
 	}
-	
+
 }
