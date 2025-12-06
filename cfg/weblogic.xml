@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 
+<!--
   beetRoot Specific Web configuration for WebLogic
   Version: 2.0 - 2022 autumo GmbH
  -->
@@ -12,7 +12,9 @@
 	<servlet-descriptor>
 		<servlet-name>beetroot</servlet-name>
 	</servlet-descriptor>
- 
+
+ 	<context-root>/beetroot</context-root>
+
 	<session-descriptor>
 		<cookie-name>__SESSION_ID__</cookie-name>
 	    <persistent-store-type>memory</persistent-store-type>
@@ -23,6 +25,7 @@
 	<container-descriptor>
         <prefer-application-packages>
             <package-name>org.apache.logging.log4j.*</package-name>
+            <package-name>org.slf4j.*</package-name>
         </prefer-application-packages>
     </container-descriptor>
 

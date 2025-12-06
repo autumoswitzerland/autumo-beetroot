@@ -138,20 +138,25 @@ public class Web {
         return uri;
     }
 
-	/**
-	 * Get servlets context's real path.
-	 *
-	 * @param context servlet context
-	 * @return real path
-	 */
-	public static String getRealPath(ServletContext context) {
+    /**
+     * Returns the real filesystem path of the web application's root directory.
+     *
+     * Note: This only works for exploded (unpacked) web applications.
+     * If the application is packaged in a WAR and not exploded, this method may return null.
+     *
+     * @param context the ServletContext
+     * @return the absolute filesystem path ending with a file separator, or null if unavailable
+     */
+    public static String getRealPath(ServletContext context) {
 
-		String cp = context.getRealPath("/");
-		if (!cp.endsWith(Helper.FILE_SEPARATOR))
-			cp += Helper.FILE_SEPARATOR;
+        String cp = context.getRealPath("/");
+        if (cp == null)
+            return null;
+        if (!cp.endsWith(Helper.FILE_SEPARATOR))
+            cp += Helper.FILE_SEPARATOR;
 
-		return cp;
-	}
+        return cp;
+    }
 
 	/**
 	 * Remove unnecessary HTML tags, but preserve line-breaks.

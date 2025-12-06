@@ -20,8 +20,7 @@
 
 # Vars
 VERSION=3.2.0
-SLF4J_SIMPLE_VERSION=2.0.17 # Jetty 12.1. with Servlet Spec 4.0 (https://jetty.org/download.html)
-LOG4J_WEB_VERSION=2.25.2
+SLF4J_SIMPLE_VERSION=2.0.17 # Jetty
 
 
 
@@ -357,14 +356,10 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	cp ../cfg/web-weblogic.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/logging-web-weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
-	# Enrich logging implementation
-	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-web/${LOG4J_WEB_VERSION}/log4j-web-${LOG4J_WEB_VERSION}.jar)
 	# change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=7001/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
-	# Use Javax for mailing
-	sed -i '' 's/mail_implementation=.*/mail_implementation=javax/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	sed -i '' 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
-	# Pack it
+	# Pack it for open directory deployment
 	mkdir beetroot/
 	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/
 	zip -r "beetroot-weblogic.zip" beetroot/ \

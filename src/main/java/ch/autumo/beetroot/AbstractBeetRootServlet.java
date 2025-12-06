@@ -17,14 +17,10 @@
  */
 package ch.autumo.beetroot;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 import org.slf4j.Logger;
@@ -33,6 +29,10 @@ import org.slf4j.LoggerFactory;
 import ch.autumo.beetroot.logging.LoggingFactory;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.web.Web;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -45,7 +45,7 @@ public class AbstractBeetRootServlet extends HttpServlet {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractBeetRootServlet.class.getName());
 
 	private BeetRootService beetRootService = null;
-	private Map<String, BeetRootHTTPSession> sessions = new ConcurrentHashMap<String, BeetRootHTTPSession>();
+	private Map<String, BeetRootHTTPSession> sessions = new ConcurrentHashMap<>();
 
 
 	@Override
@@ -54,6 +54,27 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		super.init(config);
 
 		final String webAppRoot = Web.getRealPath(config.getServletContext());
+
+		if (webAppRoot == null || !new File(webAppRoot).isDirectory()) {
+
+	        System.err.println("**************************************************");
+	        System.err.println("beetRoot cannot run: application is not deployed ");
+    		System.err.println("as an exploded directory. Please deploy the ");
+	        System.err.println("application as an exploded WAR or in an unpacked ");
+	        System.err.println("directory.");
+	        System.err.println("Note: Some containers like Tomcat or Jetty extract ");
+	        System.err.println("WARs automatically, but others (like WebLogic) ");
+	        System.err.println("require an explicit exploded deployment.");
+	        System.err.println("**************************************************");
+
+	        throw new ServletException(
+	            "BeetRoot cannot run: application is not deployed as an exploded directory. " +
+	            "Please deploy as an exploded WAR or unpacked directory. " +
+	            "Note: Tomcat and Jetty extract WARs automatically; other containers may not."
+	        );
+		}
+
+
 		final String configFilePath = config.getInitParameter("beetRootConfig");
 		final String beetRootServiceClass = config.getInitParameter("beetRootServiceClass");
 

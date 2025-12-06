@@ -2136,31 +2136,47 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	        return Response.newFixedLengthResponse(getStatus(), getMimeType(), getHtml);
 
 
-		} catch (Exception e) {
+		} catch (Exception e1) {
+
+			String err1 = "-";
+			String err2 = "-";
+
 			// The framework user might have messed up things!
 			String res = getResource();
 			if (res == null)
 				res = session.getUri();
-			String err1 = this.getTemplateEngineErrorTitle(userSession, res);
-			String err2 = err1 + "<br><br>" + getTemplateEngineErrorMessage(userSession, res);
-			LOG.error(err1, e);
-			final String custExInfo[] = this.getCustomizedExceptionInformation(userSession);
-			if (custExInfo != null) {
-				if (custExInfo.length == 2) {
-					err1 = custExInfo[0];
-					err2 = custExInfo[1];
-				} else {
-					LOG.warn("Your customized exception handler information needs 2 arguments: "
-							+"[title][message], but it has '{}'; correct the return value of "
-							+"'getCustomizedExceptionInformation' in your code!", custExInfo.length);
+
+			try {
+				err1 = this.getTemplateEngineErrorTitle(userSession, res);
+				err2 = err1 + "<br><br>" + getTemplateEngineErrorMessage(userSession, res);
+
+				LOG.error(err1, e1);
+
+				final String custExInfo[] = this.getCustomizedExceptionInformation(userSession);
+				if (custExInfo != null) {
+					if (custExInfo.length == 2) {
+						err1 = custExInfo[0];
+						err2 = custExInfo[1];
+					} else {
+						LOG.warn("Your customized exception handler information needs 2 arguments: "
+								+"[title][message], but it has '{}'; correct the return value of "
+								+"'getCustomizedExceptionInformation' in your code!", custExInfo.length);
+					}
 				}
+			} catch (Exception e2) {
+				// This is a critical point in the startup process. If something goes wrong in the framework initialization,
+				// at least we will receive a notification (hopefully).
+				System.err.println("TECH-FATAL (Original)  : "+ e1.getMessage());
+				System.err.println("TECH-FATAL (Follow-up) : "+ e2.getMessage());
 			}
+
 			final HandlerResponse errStat = new HandlerResponse(HandlerResponse.STATE_NOT_OK, err1);
 			try {
 				return serveHandler(session, new ErrorHandler(Status.INTERNAL_ERROR, err1, err2), errStat);
 			} catch (Exception excalibur) {
 				// At this point we cannot do anything anymore ... *sniff*
-				LOG.error("TECH-FATAL:"+excalibur.getMessage(), excalibur);
+				LOG.error("TECH-FATAL : " + excalibur.getMessage(), excalibur);
+				System.err.println("TECH-FATAL : " + excalibur.getMessage());
 				excalibur.printStackTrace();
 				return Response.newFixedLengthResponse(Status.INTERNAL_ERROR, "text/html", err1);
 			}

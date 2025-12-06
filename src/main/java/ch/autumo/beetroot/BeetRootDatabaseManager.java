@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 package ch.autumo.beetroot;
 
@@ -44,32 +44,32 @@ import ch.autumo.beetroot.utils.system.OS;
 
 /**
  * Database manager.
- * 
+ *
  * Supported databases: H2, MySQL, MariaDB, Oracle, PostgreSQL and
  * unsupported databases.
  */
 public class BeetRootDatabaseManager {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootDatabaseManager.class.getName());
-	
+
 	public static final String POOL_NAME_POSTFIX = "-DB-Pool";
-	
+
 	public static final String CFG_KEY_DS_EXT_JNDI = "db_ds_ext_jndi";
 	public static final String CFG_KEY_DS_INT_DSCN = "db_ds_int_dataSourceClassName";
-	
-	private static BeetRootDatabaseManager instance = null;	
+
+	private static BeetRootDatabaseManager instance = null;
 	private static boolean isInitialized = false;
-	
+
 	private HikariDataSource dataSource = null;
-	
+
 	private String dsExternalJndi = null;
 	private String dataSourceClassName = null;
 	private String dataSourceDriverClassName = null;
-	
+
 	private String url = null;
 	private String user = null;
 	private String pass = null;
-	
+
 	private boolean isH2Db = false;
 	private boolean isMysqlDb = false;
 	private boolean isMariaDb = false;
@@ -77,31 +77,31 @@ public class BeetRootDatabaseManager {
 	private boolean isPostgreDb = false;
 	private boolean isPostgreNGDb = false;
 	private boolean isUnsupported = false;
-	
+
 	private H2Url h2Url = null;
-	
-	
+
+
 	/**
 	 * Private constructor.
 	 */
 	private BeetRootDatabaseManager() {
 	}
-	
+
 	/**
 	 * Access DB manager.
-	 * 
+	 *
 	 * @return DB manager
 	 */
 	public static synchronized BeetRootDatabaseManager getInstance() {
         if (instance == null)
         	instance = new BeetRootDatabaseManager();
- 
+
         return instance;
     }
-	
+
 	/**
 	 * Has this database manager been initialized?
-	 *  
+	 *
 	 * @return true if so, otherwise false
 	 */
 	public boolean isInitialized() {
@@ -110,44 +110,42 @@ public class BeetRootDatabaseManager {
 
 	/**
 	 * Initialize DB manager.
-	 * 
+	 *
 	 * @param webAppRootPath Web app root path
 	 * @throws Exception exception
 	 */
 	public void initialize(String webAppRootPath) throws Exception {
-		
+
 		String webAppRootWithoutSlash = webAppRootPath;
 		if (webAppRootPath.endsWith(Helper.FILE_SEPARATOR))
 			webAppRootWithoutSlash = webAppRootPath.substring(0, webAppRootPath.length() - 1);
 
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
-		
+
 		this.url = configMan.getString("db_url");
 
-		// Might NULL be here, lets continue for a while... 
-		if (this.url != null && 
-			this.url.length() > 0 && 
-			this.url.contains(Constants.KEY_DB_URL_WEB_CONTEXT_PATH)) {
+		// Might NULL be here, lets continue for a while...
+		if (this.url != null && !this.url.isEmpty() && this.url.contains(Constants.KEY_DB_URL_WEB_CONTEXT_PATH)) {
 				this.url = this.url.replace(Constants.KEY_DB_URL_WEB_CONTEXT_PATH, webAppRootWithoutSlash);
 		}
-		
+
 		this.initialize();
 	}
-	
+
 	/**
 	 * Initialize DB manager.
-	 * 
+	 *
 	 * @throws Exception exception
 	 */
 	public void initialize() throws Exception {
-		
+
 		if (isInitialized) {
     		LOG.warn("Initialisation of database manager is called more than once!");
     		return;
 		}
-		
+
 		final BeetRootConfigurationManager configMan = BeetRootConfigurationManager.getInstance();
-		
+
 		/** this is an undocumented configuration key: it allows to use unsupported databases! */
 		final String driverClass = configMan.getStringNoWarn("db_driver");
 		if (driverClass != null && driverClass.length() != 0) {
@@ -157,27 +155,27 @@ public class BeetRootDatabaseManager {
 
 		// default parameters
 		final boolean pwEncoded = configMan.getYesOrNo(Constants.KEY_ADMIN_PW_ENC);
-		
+
 		if (this.url == null) {
 			// Not yet initialized by a web-app context
 			this.url = configMan.getString("db_url");
-			
-			// If the URL is still Null, this is not OK! 
+
+			// If the URL is still Null, this is not OK!
 			// We still need a JDBC-prefix 'jdbc:<db-name>';
-			// it is used internally to determine what DB is 
+			// it is used internally to determine what DB is
 			// used for specific vendor-operations.
 			if (this.url == null || this.url.length() == 0) {
 				throw new Exception("'db_url' is not specified; at least 'jdbc:<db-name>' is required if a sole external JNDI or an own internal data source is used for vendor specific operations!");
 			}
 		}
-		
+
 		this.user = configMan.getString("db_user");
 		this.pass = pwEncoded ? configMan.getDecodedString("db_password", SecureApplicationHolder.getInstance().getSecApp()) : configMan.getString("db_password");
-		
-		
+
+
 		// if external JNDI data-source provides a JDBC URL, we still must beetRoot
 		// to know what data-base is used, at least 'jdbc:[DB-identifier]' must be provided!
-		
+
 		// Is H2 db?
 		isH2Db = url.startsWith(Constants.JDBC_H2_DB);
 		// Is mysql db?
@@ -190,8 +188,8 @@ public class BeetRootDatabaseManager {
 		isPostgreDb = url.startsWith(Constants.JDBC_POSTGRE_DB);
 		// Is Postgre NG db?
 		isPostgreNGDb = url.startsWith(Constants.JDBC_POSTGRE_NG_DB);
-		
-		
+
+
 		// only used if no external JNDI data-source is provided and the internal
 		// data-source needs a pre-defined driver class
 		if (isH2Db) {
@@ -221,12 +219,12 @@ public class BeetRootDatabaseManager {
 			dataSourceClassName = "com.impossibl.postgres.jdbc.PGDataSource";
 			dataSourceDriverClassName = "com.impossibl.postgres.jdbc.PGDriver";
 		}
-		
+
 		this.initializePool();
-		
+
 		isInitialized = true;
 	}
-	
+
 	private void initializePool() throws Exception {
 		// Hikari data-source
 		dataSource = new HikariDataSource();
@@ -234,14 +232,14 @@ public class BeetRootDatabaseManager {
 		final Properties dsProps = new Properties();
 		// read additional configuration parameters
 		final BeetRootConfigurationManager cm = BeetRootConfigurationManager.getInstance();
-		
+
 		// 1. external JNDI and data-source?
 		dsExternalJndi = cm.getStringNoWarn(CFG_KEY_DS_EXT_JNDI);
 		if (dsExternalJndi != null && dsExternalJndi.length() > 0) {
 			LOG.info("External JNDI data-source '{}' has been configured.", dsExternalJndi);
 			// check if we still have a JDBC-URL prefix for determining the DB type for beetRoot
 			if (url == null || url.length() == 0)
-				throw new Exception("External JNDI data-source '"+dsExternalJndi+"' has been configured, but no JDBC-URL-prefix within 'db_url' " 
+				throw new Exception("External JNDI data-source '"+dsExternalJndi+"' has been configured, but no JDBC-URL-prefix within 'db_url' "
 									+ "configuration parameterhas been defined! "
 									+ OS.LINE_SEPARATOR +
 									"It is used at least for determining what database is used; scheme 'jdbc:<database-id>'.");
@@ -250,10 +248,10 @@ public class BeetRootDatabaseManager {
 			// --> All done!
 			return;
 		}
-		
+
 		// 2. set pool name for internal data-source
 		dataSource.setPoolName(cm.getString(Constants.KEY_SERVER_NAME) + POOL_NAME_POSTFIX);
-		
+
 		// 3 optional settings?
 		final String poolConfigKeys[] = cm.getKeys("db_pool_");
 		for (int i = 0; i < poolConfigKeys.length; i++) {
@@ -264,7 +262,7 @@ public class BeetRootDatabaseManager {
 		}
 		if (dsProps.size() > 0)
 			dataSource.setDataSourceProperties(dsProps);
-		
+
 		// 4. own defined data-source?
 		final String dscn = cm.getStringNoWarn(CFG_KEY_DS_INT_DSCN);
 		if (dscn != null && dscn.length() > 0) {
@@ -280,14 +278,14 @@ public class BeetRootDatabaseManager {
 			// In his case, we are finished too!
 			return;
 		}
-				
+
 		// 5. Default initialization with JDBC URL and driver class
 		dataSource.setJdbcUrl(url);
 		dataSource.setUsername(user);
 		dataSource.setPassword(pass);
 		dataSource.setDriverClassName(dataSourceDriverClassName);
 	}
-	
+
 	/**
 	 * Resource database pool resources. Should be called when a container
 	 * life-cycle or a server ends!
@@ -312,19 +310,19 @@ public class BeetRootDatabaseManager {
 		}
 		isInitialized = false;
 	}
-	
+
 	/**
 	 * Get the data source.
-	 * 
+	 *
 	 * @return data source
 	 */
 	public DataSource getDataSource() {
 		return dataSource;
 	}
-	
+
 	/**
 	 * Get an new DB connection.
-	 * 
+	 *
 	 * @return DB connection
 	 * @throws SQLException SQL exception
 	 */
@@ -334,13 +332,13 @@ public class BeetRootDatabaseManager {
 
 	/**
 	 * Get an new global DB connection.
-	 * 
+	 *
 	 * You have to roll back or commit the transaction, before you retire
 	 * it with {@link #retireGlobalConnection(Connection)}. If you use {@link DB}
 	 * roll-backs are done automatically and you'll receive an {@link SQLException}.
-	 * 
+	 *
 	 * Don't close it by yourself!
-	 * 
+	 *
 	 * @return global DB connection
 	 * @throws SQLException SQL exception
 	 */
@@ -352,9 +350,9 @@ public class BeetRootDatabaseManager {
 
 	/**
 	 * Retire a global DB connection.
-	 * 
+	 *
 	 * @see #getGlobalConnection()
-	 * 
+	 *
 	 * @throws SQLException SQL exception
 	 */
 	public void retireGlobalConnection(Connection conn) throws SQLException {
@@ -370,7 +368,7 @@ public class BeetRootDatabaseManager {
 	public H2Url getH2Url() {
 		return h2Url;
 	}
-	
+
 	public boolean isH2Db() {
 		return isH2Db;
 	}
@@ -394,14 +392,14 @@ public class BeetRootDatabaseManager {
 	public boolean isPostgreDbWithNGDriver() {
 		return isPostgreNGDb;
 	}
-	
+
 	public boolean isUnsupported() {
 		return isUnsupported;
 	}
-	
+
 	/**
 	 * Reset users token.
-	 * 
+	 *
 	 * @param dbId user id
 	 * @throws Exception exception
 	 */
@@ -424,7 +422,7 @@ public class BeetRootDatabaseManager {
 
 	/**
 	 * Count amount of records of an entity / table in database.
-	 * 
+	 *
 	 * @param entity entity
 	 * @return amount of records
 	 * @throws SQLException SQL exception
@@ -432,7 +430,7 @@ public class BeetRootDatabaseManager {
 	public int countRecords(String entity) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
-		ResultSet set = null; 
+		ResultSet set = null;
 		int amount = -1;
 		try {
 			String stmtStr = "SELECT count(1) AS amount FROM " + entity;
@@ -440,7 +438,7 @@ public class BeetRootDatabaseManager {
 			stmt = conn.createStatement();
 			set = stmt.executeQuery(stmtStr);
 			boolean found = set.next();
-			
+
 			if (found)
 				amount = set.getInt("amount");
 			else
@@ -453,13 +451,13 @@ public class BeetRootDatabaseManager {
 			if (conn != null)
 				conn.close();
 		}
-		return amount;		
+		return amount;
 	}
 
 	/**
 	 * Get property On/Off value from database (table 'properties').
 	 * If the value isn't found, false is returned.
-	 * 
+	 *
 	 * @param name On/Off switch name
 	 * @return true (On) or false (Off, null or any other value not "on" or "On")
 	 * @throws SQLException SQL exception
@@ -471,9 +469,9 @@ public class BeetRootDatabaseManager {
 
 	/**
 	 * Get property value from database (table 'properties').
-	 * If the value isn't found or an exception occurs, the 
+	 * If the value isn't found or an exception occurs, the
 	 * default value is returned.
-	 * 
+	 *
 	 * @param name name/key
 	 * @param defValue default value
 	 * @return value for name/key
@@ -492,10 +490,10 @@ public class BeetRootDatabaseManager {
 	/**
 	 * Get property value from database (table 'properties').
 	 * If the value isn't found, null is returned.
-	 * 
+	 *
 	 * It throws a NullPointerException if value is not found in
 	 * database.
-	 * 
+	 *
 	 * @param name name/key
 	 * @return value for name/key as integer
 	 * @throws SQLException SQL exception
@@ -504,11 +502,11 @@ public class BeetRootDatabaseManager {
 		final String v = this.getProperty(name);
 		return Integer.parseInt(v);
 	}
-	
+
 	/**
 	 * Get property value from database (table 'properties').
 	 * If the value isn't found, null is returned.
-	 * 
+	 *
 	 * @param name name/key
 	 * @return value for name/key
 	 * @throws SQLException SQL exception
@@ -516,7 +514,7 @@ public class BeetRootDatabaseManager {
 	public String getProperty(String name) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
-		ResultSet set = null; 
+		ResultSet set = null;
 		String value = null;
 		try {
 			conn = instance.getConnection();
@@ -536,7 +534,7 @@ public class BeetRootDatabaseManager {
 		}
 		return value;
 	}
-	
+
 	/**
 	 * Get language for user.
 	 * @param userId user id
@@ -591,7 +589,7 @@ public class BeetRootDatabaseManager {
 
 	/**
 	 * Describe table columns for given table.
-	 * 
+	 *
 	 * @param table database table
 	 * @return list of DB fields with table column descriptions
 	 * @throws SQLException SQL exception
@@ -659,16 +657,16 @@ public class BeetRootDatabaseManager {
 				final String type = rs.getString(2);
 				final String nullable = rs.getString(3).toLowerCase();
 				final String unique = rs.getString(4); // Unique 'UNI', Primary (PRI) or NULL!
-				final String defVal = rs.getString(5); 
+				final String defVal = rs.getString(5);
 				final DBField dbField = new DBField(
 					name,
 					type,
 					nullable.equals("yes") || nullable.equals("y") ? true : false,
-					unique == null || !unique.toLowerCase().startsWith("uni") ? false : true, 
+					unique == null || !unique.toLowerCase().startsWith("uni") ? false : true,
 					defVal
 				);
 				fields.add(dbField);
-			}			
+			}
 		} finally {
 			try {
 				if (rs != null)
@@ -679,10 +677,10 @@ public class BeetRootDatabaseManager {
 					conn.close();
 			} catch (SQLException e) {
 			}
-		}			
+		}
 		return fields;
 	}
-	
+
 	public String getUrl() {
 		return url;
 	}
@@ -702,5 +700,5 @@ public class BeetRootDatabaseManager {
 	public String getDataSourceClassName() {
 		return dataSourceClassName;
 	}
-	
+
 }

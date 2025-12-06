@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import jakarta.servlet.ServletContext;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,6 +48,7 @@ import ch.autumo.beetroot.utils.Helper;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.security.Security;
 import ch.autumo.beetroot.utils.system.OS;
+import jakarta.servlet.ServletContext;
 
 
 /**
@@ -209,134 +210,199 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
-	 * Initialize with absolute path.
-	 * Resource path works too!
+	 * Initialize configuration from a specified path, optionally using a ServletContext.
 	 *
-	 * @param absolutePath absolute path
-	 * @param servletContext true, if it runs in a servlet context
-	 * @throws Exception exception
+	 * This variant allows the configuration to be loaded from the WAR if 'servletContext' is provided.
+	 * It delegates the actual loading logic to the main {@link #initializeWithFullPath(String)} method
+	 * and then sets servletContext for later supplementary resource loading.
+	 *
+	 * The configuration file can be:
+	 * 1. An external file on the filesystem
+	 * 2. A resource inside the WAR (if servletContext is not null)
+	 * 3. A resource on the classpath
+	 *
+	 * The method sets 'fullConfigBasePath' and 'cfgFileName' according to the resolved location
+	 * of the configuration file.
+	 *
+	 * @param configFilePath path to the configuration file (absolute, relative in WAR, or classpath)
+	 * @param servletContext the ServletContext, or null if running outside a servlet environment
+	 * @throws Exception if the configuration file cannot be found or read
 	 */
-	public void initializeWithFullPath(String absolutePath, ServletContext servletContext) throws Exception {
-		this.initializeWithFullPath(absolutePath);
+	public void initializeWithFullPath(String configFilePath, ServletContext servletContext) throws Exception {
 		this.servletContext = servletContext;
+		this.initializeWithFullPath(configFilePath);
 	}
 
 	/**
-	 * Customized initialization with specific full configuration file path.
-	 * Resource path works too!
+	 * Initialize configuration from a specified path, optionally using a servlet context.
 	 *
-	 * @param configFilePath full path to specific full configuration file path
-	 * @throws Exception exception
+	 * This method attempts to load the configuration file from three possible locations:
+	 * 1. External file on the filesystem.
+	 * 2. Resource inside the WAR if 'servletContext' is provided.
+	 * 3. Classpath fallback if neither of the above is found.
+	 *
+	 * The base path of the configuration file (`fullConfigBasePath`) is calculated robustly
+	 * for filesystem files using canonical paths, and normalized for resources inside the
+	 * WAR or on the classpath to ensure consistent relative path handling. This ensures
+	 * relative paths, nested directories, or "."/ ".." references are handled correctly.
+	 *
+	 * After loading the main configuration, certain core properties are extracted and stored:
+	 * - CSRF usage
+	 * - Extended roles
+	 * - Template translation
+	 *
+	 * Additionally, optional or mandatory supplementary property files such as the HTML input map
+	 * and 'languages.cfg' are loaded using the same three-case handling.
+	 *
+	 * @param configFilePath path to the configuration file (absolute path, relative path in WAR, or classpath resource)
+	 * @param servletContext the ServletContext, or null if running outside a servlet environment
+	 * @throws Exception if the main configuration file cannot be found or read, or if mandatory supplementary files fail to load
 	 */
 	public synchronized void initializeWithFullPath(String configFilePath) throws Exception {
+
 		if (isInitialized) {
     		LOG.warn("WARNING: Initialisation of configuration manager is called more than once!");
     		return;
 		}
-		if (servletContext == null) {
-	    	if (rootPath == null || rootPath.length() == 0) {
-	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
-				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
-	    	}
-			// check root path
-	    	if (!rootPath.endsWith(Helper.FILE_SEPARATOR))
-	    		rootPath += Helper.FILE_SEPARATOR;
-			final File dir = new File(rootPath);
-			if (!dir.exists() || !dir.isDirectory()) {
-	    		LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is invalid! Check starting script of java process.");
-				throw new Exception("Specified '-DROOTPATH' is non-existant! Check starting script of java process.");
-			}
-		}
-		generalProps = new Properties();
-		String file = configFilePath;
-		File f = new File(file);
-		if (f.exists()) {
-			// Get path only
-			fullConfigBasePath = f.getParent();
-			if (!fullConfigBasePath.endsWith(Helper.FILE_SEPARATOR))
-				fullConfigBasePath += Helper.FILE_SEPARATOR;
-		} else {
-			int i = file.lastIndexOf("/");
-			if (i != -1)
-				fullConfigBasePath = file.substring(0, i + 1);
-			else
-				fullConfigBasePath = file;
-		}
-		// fullConfigBasePath always ends with a '/'
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-			if (f.exists())
-				generalProps.load(fis);
-			else
-				generalProps.load(BeetRootConfigurationManager.class.getResourceAsStream(file));
-		} catch (IOException e) {
-    		LogBuffer.log(LogLevel.ERROR, "Couldn't read general server configuration '{}' !", file, e);
-			throw new Exception("Couldn't read general server configuration '" + file + "' !");
-		} finally {
-			if (fis != null)
-				fis.close();
-		}
-		// set file name
-		cfgFileName = new File(file).getName();
-		// load some main props separately
-		this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
-		if (this.csrf)
-    		LogBuffer.log(LogLevel.INFO, "CSRF activated.");
-		this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
-		this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
-		if (this.translateTemplates)
-    		LogBuffer.log(LogLevel.INFO, "Web templates are translated.");
-		// HTML Input map
-		fis = null;
+
+
+	    // 0. ROOTPATH (only required if servletContext is null)
+	    if (servletContext == null) {
+	        if (rootPath == null || rootPath.isEmpty()) {
+	            LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is non-existent! Check starting script of Java process.");
+	            throw new Exception("Specified '-DROOTPATH' is non-existent! Check starting script of Java process.");
+	        }
+	        if (!rootPath.endsWith(Helper.FILE_SEPARATOR)) rootPath += Helper.FILE_SEPARATOR;
+	        File dir = new File(rootPath);
+	        if (!dir.exists() || !dir.isDirectory()) {
+	            LogBuffer.log(LogLevel.ERROR, "Specified '-DROOTPATH' is invalid! Check starting script of Java process.");
+	            throw new Exception("Specified '-DROOTPATH' is invalid! Check starting script of Java process.");
+	        }
+	    }
+
+
+	    generalProps = new Properties();
+	    InputStream is = null;
+
+
+		// 1. Load configuration file, handle 3 cases: external file, from WAR, or classpath fallback
+	    try {
+	        File f = new File(configFilePath);
+            if (f.exists()) {
+                // Case 1: External file on filesystem
+                try (FileInputStream fis = new FileInputStream(f)) {
+                    generalProps.load(fis);
+                }
+                cfgFileName = f.getName();
+                // Canonical path for robust handling of relative paths
+                File parentFile = f.getParentFile();
+                fullConfigBasePath = (parentFile != null) ? parentFile.getCanonicalPath() + Helper.FILE_SEPARATOR
+                                                          : "." + Helper.FILE_SEPARATOR;
+
+            } else if (servletContext != null) {
+                // Case 2: Load resource from WAR via ServletContext
+                is = servletContext.getResourceAsStream("/" + configFilePath.replaceAll("^/+", ""));
+                if (is == null) throw new FileNotFoundException("Configuration file not found in WAR: " + configFilePath);
+                generalProps.load(is);
+                cfgFileName = new File(configFilePath).getName();
+
+                // Use canonical path-like calculation for WAR resources
+                String parent = new File(configFilePath).getParent();
+                fullConfigBasePath = (parent != null && !parent.isEmpty())
+                                     ? "/" + parent.replaceAll("^/+", "") + "/"
+                                     : "/";
+
+            } else {
+                // Case 3: Fallback to classpath resource
+                is = BeetRootConfigurationManager.class.getResourceAsStream("/" + configFilePath.replaceAll("^/+", ""));
+                if (is == null) throw new FileNotFoundException("Configuration file not found on classpath: " + configFilePath);
+                generalProps.load(is);
+                cfgFileName = new File(configFilePath).getName();
+
+                String parent = new File(configFilePath).getParent();
+                fullConfigBasePath = (parent != null && !parent.isEmpty())
+                                     ? "/" + parent.replaceAll("^/+", "") + "/"
+                                     : "/";
+            }
+	    } catch (IOException e) {
+	        LogBuffer.log(LogLevel.ERROR, "Couldn't read general server configuration '{}'!", configFilePath, e);
+	        throw new Exception("Couldn't read general server configuration '" + configFilePath + "'!", e);
+	    } finally {
+	        if (is != null) try { is.close(); } catch (IOException ignored) {}
+	    }
+
+
+	    // 2. Store some main props separately
+	    this.csrf = getYesOrNo(Constants.KEY_WS_USE_CSRF_TOKENS, Constants.YES);
+	    if (this.csrf) {
+	    	LogBuffer.log(LogLevel.INFO, "CSRF activated.");
+	    }
+	    this.extendedRoles = getYesOrNo(Constants.KEY_WS_USE_EXT_ROLES, Constants.YES);
+	    this.translateTemplates = getYesOrNo(Constants.KEY_WEB_TRANSLATIONS, Constants.NO);
+	    if (this.translateTemplates) {
+	    	LogBuffer.log(LogLevel.INFO, "Web templates are translated.");
+	    }
+
+
+	    // 3. Load HTML map if available (same 3-case handling)
 		final String htmlMap = getString(Constants.KEY_WEB_INPUT_MAP);
-		if (htmlMap != null && htmlMap.length() != 0) {
-			final File mapFile = new File(htmlMap);
-			try {
-				this.htmlInputMap = new Properties();
-				if (mapFile.exists()) {
-					fis = new FileInputStream(mapFile);
-					this.htmlInputMap.load(fis);
-				} else {
-					final InputStream is = BeetRootConfigurationManager.class.getResourceAsStream(htmlMap);
-					this.htmlInputMap.load(is);
-					if (is == null)
-						throw new FileNotFoundException("The HTML input map file could not be loaded during the streaming attempt.");
-				}
-			} catch (IOException e) {
-				htmlInputMap = null;
-	    		LogBuffer.log(LogLevel.ERROR, "Couldn't read additionl HTML input mapping file '{}' !", htmlMap, e);
-				throw new Exception("Couldn't read additionl HTML input mapping file '" + htmlMap + "' !");
-			} finally {
-				if (fis != null)
-					fis.close();
-			}
+		if (htmlMap != null && !htmlMap.isEmpty()) {
+			this.htmlInputMap = loadPropertiesResource(htmlMap, "HTML input map", true);
 		}
-		// Languages
-        InputStreamReader isr = null;
-		file = fullConfigBasePath + "languages.cfg";
-		f = new File(file);
-		try {
-			this.languageMap = new Properties();
-			if (f.exists()) {
-				isr = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
-				this.languageMap.load(isr);
-			} else {
-				final InputStream is = BeetRootConfigurationManager.class.getResourceAsStream(file);
-				if (is == null)
-					throw new FileNotFoundException("Language file could not be loaded during the streaming attempt.");
-				isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-				this.languageMap.load(isr);
-			}
-		} catch (IOException e) {
-			this.languageMap = null;
-    		LogBuffer.log(LogLevel.WARN, "Couldn't read languages file '{}' !", file, e);
-		} finally {
-			if (isr != null)
-				isr.close();
-		}
-		isInitialized = true;
+
+
+	    // 4. Load languages.cfg (same 3-case handling)
+		this.languageMap = loadPropertiesResource(fullConfigBasePath + "languages.cfg", "languages", false);
+
+
+	    isInitialized = true;
 	}
+
+	/**
+	 * Utility method to load a properties file from file system, WAR, or classpath.
+	 *
+	 * This method handles three loading cases consistently:
+	 * 1. External file on the filesystem.
+	 * 2. Resource from WAR if 'servletContext' is available.
+	 * 3. Classpath fallback.
+	 *
+	 * Streams are safely closed and exceptions are logged. Optional files
+	 * do not throw exceptions if missing, but mandatory files will.
+	 *
+	 * @param path path to the properties file (filesystem or resource)
+	 * @param desc description of the properties file (used for logging and exceptions)
+	 * @param optional true if the file is optional; false if it must exist
+	 * @return the loaded Properties object, or null if optional and not found
+	 * @throws Exception if a mandatory file cannot be found or read
+	 */
+	private Properties loadPropertiesResource(String path, String desc, boolean optional) throws Exception {
+	    Properties props = new Properties();
+	    InputStream is = null;
+	    try {
+	        File f = new File(path);
+	        if (f.exists()) {
+	            try (FileInputStream fis = new FileInputStream(f); Reader reader = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+	                props.load(reader);
+	            }
+	        } else if (servletContext != null) {
+	            is = servletContext.getResourceAsStream("/" + path.replaceAll("^/+", ""));
+	            if (is == null && !optional) throw new FileNotFoundException(desc + " file not found in WAR: " + path);
+	            if (is != null) try (Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) { props.load(reader); }
+	        } else {
+	            is = BeetRootConfigurationManager.class.getResourceAsStream("/" + path);
+	            if (is == null && !optional) throw new FileNotFoundException(desc + " file not found on classpath: " + path);
+	            if (is != null) try (Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) { props.load(reader); }
+	        }
+	        return props;
+	    } catch (IOException e) {
+	        LogBuffer.log(optional ? LogLevel.WARN : LogLevel.ERROR, "Couldn't read {} file '{}'", desc, path, e);
+	        if (!optional) throw new Exception("Couldn't read " + desc + " file '" + path + "'!", e);
+	    } finally {
+	        if (is != null) try { is.close(); } catch (IOException ignored) {}
+	    }
+	    return null;
+	}
+
 
 	/**
 	 * Initialize with desktop configuration which must have been created
@@ -776,8 +842,8 @@ public class BeetRootConfigurationManager {
 	 * @param moduleName module name
 	 * @return XML doc root
 	 */
-	public static Document getXMLModuleConfig(String xmlConfigFile, String moduleName) {
-		return getXMLModuleConfigWithFullPath(rootPath + Constants.CONFIG_PATH + xmlConfigFile, moduleName);
+	public Document getXMLModuleConfig(String xmlConfigFile, String moduleName) {
+		return this.getXMLModuleConfigWithFullPath(rootPath + Constants.CONFIG_PATH + xmlConfigFile, moduleName);
 	}
 
 	/**
@@ -788,11 +854,11 @@ public class BeetRootConfigurationManager {
 	 * @param moduleName module name
 	 * @return XML doc root
 	 */
-	public static Document getXMLModuleConfigRelative(String xmlRelativePath, String moduleName) {
+	public Document getXMLModuleConfigRelative(String xmlRelativePath, String moduleName) {
 		// check root path
     	if (!rootPath.endsWith(OS.FILE_SEPARATOR))
     		rootPath += OS.FILE_SEPARATOR;
-    	return getXMLModuleConfigWithFullPath(rootPath + xmlRelativePath, moduleName);
+    	return this.getXMLModuleConfigWithFullPath(rootPath + xmlRelativePath, moduleName);
 	}
 
 	/**
@@ -803,7 +869,8 @@ public class BeetRootConfigurationManager {
 	 * @param moduleName module name
 	 * @return XML doc root
 	 */
-	public static Document getXMLModuleConfigWithFullPath(String xmlConfigFilePath, String moduleName) {
+	public Document getXMLModuleConfigWithFullPath(String xmlConfigFilePath, String moduleName) {
+
 		Document doc = null;
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		try {
@@ -812,15 +879,33 @@ public class BeetRootConfigurationManager {
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			// parse XML file
 			final DocumentBuilder db = dbf.newDocumentBuilder();
-			final File cfg = new File(xmlConfigFilePath);
-			if (cfg.exists())
-				doc = db.parse(new File(xmlConfigFilePath));
-			else
-				doc = db.parse(BeetRootConfigurationManager.class.getResourceAsStream(xmlConfigFilePath));
-			doc.getDocumentElement().normalize();
+
+			InputStream is = null;
+	        File cfg = new File(xmlConfigFilePath);
+
+	        if (cfg.exists()) {
+	            // Case 1: external file
+	            is = new FileInputStream(cfg);
+	        } else if (servletContext != null) {
+	            // Case 2: WAR resource via ServletContext
+	            is = servletContext.getResourceAsStream("/" + xmlConfigFilePath.replaceAll("^/+", ""));
+	            if (is == null)
+	                throw new FileNotFoundException("XML module configuration not found in WAR: " + xmlConfigFilePath);
+	        } else {
+	            // Case 3: classpath fallback
+	            is = BeetRootConfigurationManager.class.getResourceAsStream("/" + xmlConfigFilePath.replaceAll("^/+", ""));
+	            if (is == null)
+	                throw new FileNotFoundException("XML module configuration not found on classpath: " + xmlConfigFilePath);
+	        }
+
+	        doc = db.parse(is);
+	        doc.getDocumentElement().normalize();
+
 			final String module = doc.getDocumentElement().getNodeName();
-			if (!module.equalsIgnoreCase(moduleName))
+			if (!module.equalsIgnoreCase(moduleName)) {
 				throw new IllegalAccessException("Module '"+moduleName+"' is not a valid module name; here '"+module+"' would be right!");
+			}
+
 		} catch (Exception e) {
 			LOG.error("Couldn't load module XML configuration from '"+xmlConfigFilePath+"'!", e);
 		}
