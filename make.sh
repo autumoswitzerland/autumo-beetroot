@@ -20,6 +20,7 @@
 
 # Vars
 VERSION=3.2.0
+VERSION_SERVLET_API=6.1.0
 
 
 
@@ -198,8 +199,6 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp -R ../lib/repo autumo-beetRoot-$VERSION/lib/
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF/lib
 	cp ../lib/*.jar autumo-beetRoot-web-$VERSION/WEB-INF/lib/
-	# Servlet API not needed in web-containers!
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet-api*.jar
 
 
 	# make empty dirs
@@ -295,12 +294,14 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 # ---- Create Product
 # -----------------------------
 
-	echo "-> Create PRODUCT..."
+	echo "-> Build product..."
 
 
-	# -- Replace unique secret key (seed)
+	# -- 1. Standalone Server
+	# Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" autumo-beetRoot-${VERSION}/cfg/beetroot.cfg
-
+	# The web application server needs a servlet API JAR
+	(cd autumo-beetRoot-${VERSION}/lib && curl -LO https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/${VERSION_SERVLET_API}/jakarta.servlet-api-${VERSION_SERVLET_API}.jar)
 	# Create archive
 	zip -r "autumo-beetRoot-${VERSION}.zip" autumo-beetRoot-${VERSION} \
 		-x "*/.gitignore" \
@@ -308,16 +309,15 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 		-x "*/__MACOSX"
 
 
+	# -- 2. Generic Web Build
 	# Enter working directory
 	cd autumo-beetRoot-web-${VERSION}
 	# Add servlet context variable to db url
 	sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
-
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
 	# Leave working directory
 	cd ..
-
 	# Create archive
 	zip -r "autumo-beetRoot-web-${VERSION}.zip" autumo-beetRoot-web-${VERSION} \
 		-x "*/.gitignore" \
@@ -325,9 +325,7 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 		-x "*/__MACOSX"
 
 
-	# -- BUILD container products
-
-	# -- 1. Tomcat
+	# -- 3. Tomcat
 	# Copy config
 	cp ../cfg/logging-web-tomcat.xml autumo-beetRoot-web-$VERSION/logging.xml
 	# Enter working directory
@@ -345,7 +343,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# Leave working directory
 	cd ..
 
-	# -- 2. WebLogic
+
+	# -- 4. WebLogic
 	# Copy config
 	cp ../cfg/web-weblogic.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
@@ -356,9 +355,6 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# Pack it for open directory deployment
 	mkdir beetroot/
 	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/
-	# Replace Servlet API 6.1 with 5.0
-	rm beetroot/WEB-INF/lib/jakarta.servlet-api-6.1.0.jar
-	(cd beetroot/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/5.0.0/jakarta.servlet-api-5.0.0.jar)
 	# ZIP it (for WebLogc staging, open directory deployment)
 	zip -r "beetroot-weblogic.zip" beetroot/ \
 		-x "*/.gitignore" \
@@ -370,7 +366,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/lib/log4j-web-*.jar
 
-	# -- 3. Jetty
+
+	# -- 5. Jetty
 	# Copy config
 	cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml

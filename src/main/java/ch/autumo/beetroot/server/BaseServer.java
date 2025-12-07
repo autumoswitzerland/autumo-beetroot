@@ -456,8 +456,8 @@ public abstract class BaseServer {
 				try {
 					Class.forName("jakarta.servlet.ServletOutputStream");
 				} catch (ClassNotFoundException e1) {
-					LOG.error("Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
-					System.err.println(ansiErrServerName + " Cannot start stand-alone web-server without Javax Servlet API! Check documentation for installing the Javax Servlet libs.");
+					LOG.error("Cannot start standalone web-server without Jakarta Servlet API! Check documentation for installing the Jakarta servlet libs.");
+					System.err.println(ansiErrServerName + " Cannot start stand-alone web-server without Jakarta Servlet API! Check documentation for installing the Jakarta servlet libs.");
 					System.err.println(ansiErrServerName + " Shutting down!");
 					Helper.fatalExit();
 				}
