@@ -57,18 +57,20 @@ public class AbstractBeetRootServlet extends HttpServlet {
 
 		if (webAppRoot == null || !new File(webAppRoot).isDirectory()) {
 
-	        System.err.println("**************************************************");
-	        System.err.println("beetRoot cannot run: application is not deployed ");
-    		System.err.println("as an exploded directory. Please deploy the ");
-	        System.err.println("application as an exploded WAR or in an unpacked ");
-	        System.err.println("directory.");
-	        System.err.println("Note: Some containers like Tomcat or Jetty extract ");
-	        System.err.println("WARs automatically, but others (like WebLogic) ");
-	        System.err.println("require an explicit exploded deployment.");
-	        System.err.println("**************************************************");
+			System.err.println("");
+	        System.err.println("******************************************************");
+	        System.err.println("* beetRoot cannot run: application is not deployed   *");
+    		System.err.println("* as an exploded directory. Please deploy the        *");
+	        System.err.println("* application as an exploded WAR or in an unpacked   *");
+	        System.err.println("* directory.                                         *");
+	        System.err.println("* Note: Some containers like Tomcat or Jetty extract *");
+	        System.err.println("* WARs automatically, but others (like WebLogic)     *");
+	        System.err.println("* require an explicit exploded deployment.           *");
+	        System.err.println("******************************************************");
+			System.err.println("");
 
 	        throw new ServletException(
-	            "BeetRoot cannot run: application is not deployed as an exploded directory. " +
+	            "beetRoot cannot run: application is not deployed as an exploded directory. " +
 	            "Please deploy as an exploded WAR or unpacked directory. " +
 	            "Note: Tomcat and Jetty extract WARs automatically; other containers may not."
 	        );
