@@ -13,7 +13,6 @@
 3. Start developing/customizing: [autumo beetRoot 3.x - Quickstart Video][video-url].
 
 
-<br>
 As much as we love [Gradle](https://gradle.org/), for this project we'll stick with [Maven](https://maven.apache.org/) for now.
 The quickstart setup is also effortless and very fast!
 

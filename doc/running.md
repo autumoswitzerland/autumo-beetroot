@@ -36,16 +36,16 @@ beetRoot can be run in two modes:
 	```
 
 	Pressing `CTRL-C` also works as a stop signal for the server.
-	
+	or example JNDI c
 All batch files and shell scripts are located in the `bin` directory.
 
 ## Servlet Web Containers
 
-autumo BeetRoot, starting with version 3.2.0, uses the Servlet 6.1 API (part of [Jakarta EE 11](https://jakarta.ee/specifications/platform/11/) along with HTTP/1.1, both of which are stable and well-established standards. It requires Java 17 as a minimum version, a necessary update to eliminate several security vulnerabilities (CVEs) that were tied to Java 11 due to dependencies on certain libraries.
+autumo BeetRoot, starting with version [3.2.0](https://github.com/autumoswitzerland/autumo-beetroot/releases/tag/v3.2.0), uses the Jakarta EE specification for servlets ([Jakarta EE 11](https://jakarta.ee/specifications/platform/11/)) along with HTTP/1.1, both of which are stable and well-established standards. It requires Java 17 as a minimum version, a necessary update to eliminate several security vulnerabilities (CVEs) that were tied to Java 11 due to dependencies on certain libraries.
 
-For the latest WebLogic version 15.1, the Servlet API 5.0 is still required, and the delivered WebLogic package exceptionally includes this version.  
+For the latest WebLogic version 15.1, Servlet API 5.0 is still required, and beetRoot is fully compatible with this API version. In addition, beetRoot also runs with Servlet API 6.0 and 6.1 on Tomcat and Jetty.
 
-**Note**: It is mandatory to run the beetRoot application extracted from its web container distribution archives (Tomcat and Jetty extract them automatically). This also allows you to make changes on the fly to HTML templates and model configurations (e.g., `columns.cfg` for each entity).
+**Note**: The beetRoot application must be run in its extracted form from the web container distribution archives (Tomcat and Jetty perform extraction automatically). This also allows you to apply on-the-fly changes to HTML templates and model configurations (e.g., `columns.cfg` for each entity). For WebLogic, an open-directory (staging) deployment is mandatory.
 
 The following web containers are supported.
 
@@ -127,7 +127,7 @@ For further instructions, see: [Jetty 12.1 Operations Guide](https://jetty.org/d
 
 ### Oracle WebLogic
 
-beetRoot now runs on latest WebLogic [15.x](https://docs.oracle.com/en/middleware/standalone/weblogic-server/15.1.1/), which supports Jakarta EE 9. If you are still using WebLogic [14.1](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/index.html), you must stick with beetRoot version [3.1.5](https://github.com/autumoswitzerland/autumo-beetroot/releases/tag/v3.1.5) (Servlet API 4.0). As mentioned earlier, the beetRoot package for WebLogic is specifically bundled with the Servlet API 5.0.
+beetRoot now runs on latest WebLogic [15.x](https://docs.oracle.com/en/middleware/standalone/weblogic-server/15.1.1/), which supports Jakarta EE 9. If you are still using WebLogic [14.1](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/index.html), you must stick with beetRoot version [3.1.5](https://github.com/autumoswitzerland/autumo-beetroot/releases/tag/v3.1.5) (Servlet API 4.0). The WebLogic distribution of beetRoot runs on WebLogic 15.1, even though it still uses Servlet API 5.0.
 
 We strongly recommend using the [WLST](https://docs.oracle.com/en/middleware/standalone/weblogic-server/15.1.1/wlstc/reference.html) (WebLogic Scripting Tool) to deploy beetRoot. Applications must be deployed as an exploded WAR or in an unpacked directory, as beetRoot requires an explicit exploded deployment in WebLogic.
 
@@ -147,7 +147,7 @@ We strongly recommend using the [WLST](https://docs.oracle.com/en/middleware/sta
 	startApplication('beetroot')
 	```
 
-With WebLogic, it makes sense to use its services to manage resources such as mail services and database connections, which are fully supported by beetRoot. You can configure mail sessions and data sources via JNDI. For example JNDI configurations, see [beetroot.cfg](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/cfg/beetroot.cfg).
+With WebLogic, it makes sense to use its services to manage resources such as mail services and database connections, which are fully supported by beetRoot. You can configure mail sessions and data sources via JNDI; see [beetroot.cfg](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/cfg/beetroot.cfg) (`db_ds_ext_jndi` and `mail_session_name`) for more details on JNDI configurations.
 
 **Note**: The WebLogic package is preconfigured to use WebLogic services, including mail sessions and JNDI data sources. Simply customize `mail_session_name` and `db_ds_ext_jndi` in `beetroot.cfg` as needed, and set up the corresponding services in WebLogic using WLST or the WebLogic Remote Console UI—which, in our opinion, doesn’t always work reliably 🫢.
 

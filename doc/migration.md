@@ -12,7 +12,7 @@ In general, you should always save your changes/customizations in the following 
 
 - Update JAR libraries
 - **Upgrade to Java 17**. Due to certain CVE vulnerabilities, we can no longer support some libraries compatible with lower Java versions. Therefore, Java 17 is now mandatory for autumo beetRoot.
-- Check [Running](running.md) for compatible web containers (Tomcat, Jetty, WebLogic, etc.)
+- Check [Running](running.md) for setting different web containers (Tomcat, Jetty, WebLogic, etc.) or the standalone web application server.
 
 ## Release 3.1.5
 

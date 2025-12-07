@@ -1,11 +1,17 @@
 # Configuration and Passwords
 
-Take a look at `cfg/beetroot.cfg`. Each configuration parameter is explained. You can run beetRoot with ALL passwords encrypted if you want; define whether passwords used in the configuration file should be encrypted. The same applies to passwords stored in the beetRoot database table `users` and other tables consisting of `password` columns.
+Take a look at `cfg/beetroot.cfg`. Each configuration parameter is documented there.  
+You can run beetRoot with **all passwords encrypted** if desired; simply define whether the passwords used in the configuration file should be stored in encrypted form.  
+The same applies to passwords in the beetRoot database tables, such as the `users` table or any other table containing a `password` column.
 
-There are two configuration variables for this: `admin_pw_encoded` & `db_pw_encoded` (yes/no).
+There are two configuration variables controlling this:
 
-For security reasons, you should first change the secret key seed (`secret_key_seed`) and then generate new passwords with the tool `pwencoder.sh/pwencoder.bat`.
-If you do this, you will need to change the initial encrypted password for the beetRoot user `admin` in the database to regain access!
+- `admin_pw_encoded`  
+- `db_pw_encoded`  
+(values: `yes` / `no`)
+
+For security reasons, you should first change the `secret_key_seed` and then generate new passwords using the `pwencoder.sh` / `pwencoder.bat` tool.  
+After doing so, you must update the initial encrypted password of the beetRoot `admin` user in the database; otherwise, you will no longer be able to log in.
 
 **NOTE**: All passwords are **`beetroot`** in the beginning!
 

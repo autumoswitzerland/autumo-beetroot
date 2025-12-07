@@ -1,35 +1,32 @@
 # Mailing
 
-Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation as originally defined by the [JavaMail project](https://javaee.github.io/javamail).
+Mailing supports Eclipse's Jakarta (`jakarta.mail`) as well as Oracle's JavaMail (`javax.mail`) implementation, as originally defined by the [JavaMail project](https://javaee.github.io/javamail).
 
-By default, Jakarta is used. This possibly must be switched to JavaMail in certain environments that don't "interact" well with Jakarta. E.g., WebLogic uses Oracle's
-original implementation when using their mail-sessions as it should be done in that container. When using JavaMail, such a mail-session must be specified in the beetRoot configuration.
+By default, Jakarta is used; some environments or application servers may require the Javax implementation instead.
 
-Check the configuration `cfg/beetroot.cfg` for further mailing options. Some of them can be even overwritten by the application "Settings"; check the "Settings" page in the beetRoot Web application.
+You can also use a JNDI mail session. To do so, configure `mail_session_name` in `cfg/beetroot.cfg`. This value can be overridden via a database property: add a JNDI name using the property key `mail.session.name` to the `properties` database table, or configure it through the web app settings.
 
 ## Mail Templates
 
-Mail templates are located in the following directories and follow the same lookup-patterns as for HTML templates:
+As with HTML templates (see [Translations](translations.md)), you can use different templates in the language-specific directories, or use translation tags within email templates—which is the recommended approach. Both methods can be used simultaneously.
 
-HTML format:
+Mail templates are located in the following directories and follow the same lookup order as HTML templates:
 
-  - web/html/en/email
-  - web/html/de/email
-  - web/html/email
-  - etc.
+**HTML format:**
 
-Text format:
+1. `web/html/<user-lang>/email/<template>.html`
+2. `web/html/<default-lang>/email/<template>.html` (first language defined by `web_languages` in `beetroot.cfg`)
+3. `web/html/email/<translated-template>.html`
 
-  - txt/html/en/email
-  - txt/html/de/email
-  - txt/html/email
-  - etc.
+**Text format:**
 
-beetRoot can send both HTML and text emails. Formats are configured with the parameter `mail_formats`.
+1. `web/txt/<user-lang>/email/<template>.txt`
+2. `web/txt/<default-lang>/email/<template>.txt` (first language defined by `web_languages` in `beetroot.cfg`)
+3. `web/txt/email/<translated-template>.txt`
 
+beetRoot can send both HTML and text emails. Formats are configured with the parameter `mail_formats`. We recommend using templates with translation placeholders rather than translating the templates themselves; translating the templates usually only makes sense for minor translation patches.
 
-**NOTE**: Java mail doesn't allow sending HTML with a head nor body-tag, hence you only are able to define HTML templates with tags that would be inside of a the body-tag. It is specification!
-
+**NOTE:** JavaMail does not allow sending HTML with a `<head>` or `<body>` tag. Therefore, HTML templates should only include tags that would normally appear inside the `<body>` tag. This is a specification requirement.
 
 <br>
 <br>

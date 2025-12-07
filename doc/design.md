@@ -2,10 +2,10 @@
 
 All you need for this, is located here:
 
-- web/css/*
-- web/font/*
-- web/img/*
-- web/js/*
+- `web/css/*`
+- `web/font/*`
+- `web/img/*`
+- `web/js/*`
 
 These resources are straightly routed by the user's URL request, e.g.:
 

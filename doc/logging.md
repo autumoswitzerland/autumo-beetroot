@@ -1,29 +1,30 @@
 # Logging
 
-beetRoot uses [SLF4j](https://slf4j.org) with [log4j2](https://logging.apache.org/log4j). For the standalone and Tomcat wep-app version, the log4j2 
-implementation is used and the default configuration `cfg/logging.xml` (standalone) and/or `logging.xml` (in Tomcat web application servlet directory) 
-is read for that purpose. If you want to specify your own logging configuration, adjust it this way:
+beetRoot uses [SLF4j](https://slf4j.org) with [log4j2](https://logging.apache.org/log4j/2.12.x/index.html). 
 
-- Standalone: Define a runtime parameter in the shell/bash script when starting Java:
+- **Standalone Web Application Server**:  
+  The default configuration `cfg/logging.xml` is used, which you can customize as needed. If you want to provide your own `log4j2` configuration, specify a runtime parameter in the shell/bash script when starting beetRoot:
+   
+    `-Dlog4j2.configurationFile=file:<log-cfg-path>/myLogConfig.xml`
 
-	`-Dlog4j2.configurationFile=file:<log-cfg-path>/myLogConfig.xml`
+- **Tomcat with beetRoot**:  
+  The default configuration `WEB-INF/log4j2.xml` within the web archive is used. When deployed by Tomcat, you can customize it as needed or specify your log file in `WEB-INF/web.xml` using the following parameter:
+  
+    `beetRootLogConfig`
 
-- Tomcat web application: Define your logfile in the `WEB-INF/web.xml`: parameter:
 
-	`beetRootLogConfig`
+- **Jetty with beetRoot:**  
+  Jetty searches for a `log4j2.xml` file, which should be located in the `resources` directory of the Jetty base directory. Any additional logging configurations should be specified within these files:
+  
+    - `jetty-home-12.x.x/<base>/resources/java-logging.properties`
+    - `jetty-home-12.x.x/<base>/resources/java-util-logging.properties`
 
-- As for Jetty, they stand above all that "log framework soup" and they just simply use a SLF4j implementation that needs no further configuration. Hence, the library `slf4j.simple-x.y.z.jar` is packed into `beetroot-jetty.war`. The only concern is to add your package to the the Jetty basic logging configuration in `{JETTY_BASE}/resources/jetty-logging.properties`:
+  For detailed logging configuration for Jetty see [Running](running.md).
 
-	```properties
-		## Configure a level for specific logger
-		ch.autumo.beetroot.LEVEL=INFO
-	```
+- **WebLogic with beetRoot:**  
+  WebLogic also looks for the `log4j2.xml` file. In this case, the file is already correctly placed in the WebLogic distribution at `WEB-INF/log4j2.xml` and is properly read when using an open-directory deployment (staging), which is mandatory for WebLogic deployment. No further logging configuration is required for WebLogic.
 
-- Nothing changes in Weblogic and log4j2 is used.
-
-Any web container-specific logging configuration points to the correct logging directories with container-specific environment variables, so you usually have nothing to change unless you want to change the logfile name and default destination.
-
-**NOTE**: All logging levels are set to `INFO` in the beginning!
+**NOTE:** All logging levels are set to `INFO` by default.
 
 
 <br>
