@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Copyright (c) 2023 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +13,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 
 
 /**
- * References - CSS style-sheets with URLs in it. 
+ * References - CSS style-sheets with URLs in it.
  * Always use single quotes ' for urls!
- * 
+ *
  * This file is translated by beetRoot depending
  * on the execution environment; server or servlet.
  */
@@ -89,9 +89,33 @@ body {
 }
 
 .log-container {
-	background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/img/cornflowers.webp');	
+	background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/img/back/1.webp');
     background-repeat: no-repeat;
-	background-position: 0 -580px;
+	background-position: 0 0px;
+}
+
+/**
+ * Background fader
+ */
+:root {
+    --bg-1: url('/img/back/1.webp');
+    --bg-2: url('/img/back/2.webp');
+    --bg-3: url('/img/back/3.webp');
+    --bg-4: url('/img/back/4.webp');
+    --bg-5: url('/img/back/5.webp');
+    --bg-count: 5;
+}
+.bg-fader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: 0 0px;
+    opacity: 0;
+    transition: opacity 0.5s linear;
+    pointer-events: none;
 }
 
 /**

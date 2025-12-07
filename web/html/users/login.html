@@ -1,4 +1,7 @@
 <div class="users form large-12 medium-12 columns content log-container">
+
+	<div class="bg-fader"></div>
+
     <div class="log-container-2">
         <div class="column large-6 log-left">
             <form method="POST">
@@ -62,4 +65,31 @@
             </div>
         </div>
     </div>
+
 </div>
+
+<script>
+	// Background fader
+	const images = [];
+	const styles = getComputedStyle(document.documentElement);
+	const count = parseInt(styles.getPropertyValue('--bg-count'), 10);
+	for (let i = 1; i <= count; i++) {
+	    const url = styles.getPropertyValue(`--bg-${i}`).trim();
+	    images.push(url.replace(/^url\(["']?/, '').replace(/["']?\)$/, ''));
+	}
+	let currentIndex = 0;
+	function switchBackground() {
+	    const fader = document.querySelector('.bg-fader');
+	    const container = document.querySelector('.log-container');
+	    const nextIndex = (currentIndex + 1) % images.length;
+	    fader.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${images[nextIndex]}')`;
+		    fader.style.opacity = 1;
+	    fader.style.opacity = 1;
+	    setTimeout(() => {
+	        container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${images[nextIndex]}')`;
+	        fader.style.opacity = 0;
+	        currentIndex = nextIndex;
+	    }, 500);
+	}
+	setInterval(switchBackground, 12000);
+</script>

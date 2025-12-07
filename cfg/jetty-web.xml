@@ -6,6 +6,6 @@
   Version: 2.1 - 2025 autumo GmbH
  -->
 
-<Configure class="org.eclipse.jetty.ee9.webapp.WebAppContext">
+<Configure class="org.eclipse.jetty.ee11.webapp.WebAppContext">
 	<Set name="contextPath">/beetroot</Set>
 </Configure>

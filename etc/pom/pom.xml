@@ -45,7 +45,8 @@
 		<version.javax.mail.api>1.6.2</version.javax.mail.api>
 		<version.jakarta.activation.api>2.1.4</version.jakarta.activation.api>
 		<version.jakarta.mail>2.0.2</version.jakarta.mail>
-		<version.jakarta.servlet.api>5.0.0</version.jakarta.servlet.api>
+		<!-- For WebLogic 15.1 (still EE9) we overwrite this version with 5.0.0 during make -->
+		<version.jakarta.servlet.api>6.1.0</version.jakarta.servlet.api>
 		<version.javase>3.5.4</version.javase>
 		<version.json>20250517</version.json>
 		<version.jsoup>1.21.2</version.jsoup>
@@ -216,7 +217,7 @@
 
 	  	<dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-jakarta-web</artifactId>  <!-- EE9 -->
+		    <artifactId>log4j-jakarta-web</artifactId>  <!-- For WebLogic, EE9 -->
 		    <version>${version.log4j}</version>
 		    <scope>provided</scope>
 		</dependency>

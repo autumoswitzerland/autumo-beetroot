@@ -8,6 +8,7 @@
 
 Distributions are available here: [Releases](https://github.com/autumoswitzerland/autumo/releases) - they can be generated with the make shell-script `make.sh` too.
 
+For instructions on setting up and running beetRoot on any platform, see [Running](running.md).
 
 <br>
 <br>

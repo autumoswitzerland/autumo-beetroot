@@ -240,7 +240,8 @@ configuration key to get to know the possibilities and the extensive features of
 - User sessions are saved when servers are stopped
 - Entities can be deployed via JSON REST API
 - Language management (template translations and/or separate templates for each language)
-- Tested on Apache Tomcat 10, Eclipse Jetty 12.1 and Oracle Weblogic 15.1
+- Tested on Apache Tomcat 10 & 11, Eclipse Jetty 12.1 and Oracle Weblogic 15.1
+- Fulfills the Jakarta EE 11 specification and is based on the Servlet API 6.1 (Servlet API 5.0 for WebLogic distribution).
 - SMS and phone call interfaces
 - Mailing including mail templates
 - Database connection pooling (HikariCP, with internal and external JNDI data sources)

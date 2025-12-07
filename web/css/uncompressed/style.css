@@ -239,12 +239,6 @@ h5 {
 	color: #ffffff;
 	float: right;
 }
-
-.imglang {
-	margin-right: 10px;
-	margin-bottom: 3px;
-}
-
 #servicecontent {
 	background-color: hsla(0, 0%, 27%, 0.6);
 }
@@ -565,8 +559,38 @@ div.message.warning:before {
 /**
  * Dropdown menu.
  */
+#langmenu, #mainmenu {
+	top: 0;
+	height: 60px;
+}
+#langmenu {
+	width: 40px;
+}
+#imglangmenu {
+	margin-left: 10px;
+}
 .dropdown-content {
+	display: none;
+	position: absolute;
 	right: 0px;
+	top: 60px;
+	background-color: #f1f1f1;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+/* Links inside the dropdown */
+.dropdown-content a {
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+	font-weight: lighter;
+	font-size: 1.2rem;
+}
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+	background-color: #ddd
 }
 .dropdown_main {
 	width: 100px;
@@ -617,62 +641,30 @@ div.message.warning:before {
 .dropbtn:hover, .dropbtn:focus {
 	width: 100px;
 	height: 58px;
-	margin-top: -8px;
 	background-color: #3498DB;
 }
 .dropbtnimg {
-	margin-top: 14px !important;
 	background-repeat: no-repeat;
 	background-position: top;
+    border-radius: 3px;
+    width: 22px;
+    height: 14px;
+    display: inline-block;
+    pointer-events: none;
 }
-.dropbtnimg:hover, .dropbtnimg:focus {
-	height: 58px;
-	top: -13px;
+.dropbtnimg:focus, .dropbtnimg:hover {
 	background-color: #3498DB;
-	background-repeat: no-repeat;
-	background-position: center;
 }
-#langmenu {
-	width: 40px;
-	margin-top: 0px;
-}
-#langmenu:hover, #langmenu:focus {
-	margin-top: 0px;
-}
-#imglangmenu {
-	margin-left: 10px;
-}
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-	display: none;
-	position: absolute;
-	top: 60px;
-	background-color: #f1f1f1;
-	min-width: 160px;
-	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-	z-index: 1;
-}
-/* Links inside the dropdown */
-.dropdown-content a {
-	color: black;
-	padding: 12px 16px;
-	text-decoration: none;
-	display: block;
-	font-weight: lighter;
-	font-size: 1.2rem;
-}
-/* Change color of dropdown links on hover */
-.dropdown-content a:hover {
-	background-color: #ddd
+.imglang {
+	border-radius: 3px;
+	margin-right: 10px;
+	margin-bottom: 3px;
 }
 .menusep {
 	padding: 0;
 	margin: 0;
 }
-/* Show the dropdown menu
- * (use JS to add this class to the .dropdown-content
- * container when the user clicks on the dropdown button)
- */
+
 .show {
 	display: block;
 }
@@ -1282,11 +1274,11 @@ button {
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     word-wrap: break-word;
-    white-space: normal;    
+    white-space: normal;
 }
 #modal-message {
-	font-weight: 200; 
-	font-size: 1.4rem; 
+	font-weight: 200;
+	font-size: 1.4rem;
 	color: #dddddd !important;
 }
 .modal-buttons {

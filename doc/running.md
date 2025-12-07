@@ -41,7 +41,9 @@ All batch files and shell scripts are located in the `bin` directory.
 
 ## Servlet Web Containers
 
-autumo BeetRoot, starting with version 3.2.0, uses the Servlet 5.0 API (part of [Jakarta EE 9](https://jakarta.ee/specifications/platform/9/) along with HTTP/1.1, both of which are stable and well-established standards. It requires Java 17 as a minimum version, a necessary update to eliminate several security vulnerabilities (CVEs) that were tied to Java 11 due to dependencies on certain libraries.
+autumo BeetRoot, starting with version 3.2.0, uses the Servlet 6.1 API (part of [Jakarta EE 11](https://jakarta.ee/specifications/platform/11/) along with HTTP/1.1, both of which are stable and well-established standards. It requires Java 17 as a minimum version, a necessary update to eliminate several security vulnerabilities (CVEs) that were tied to Java 11 due to dependencies on certain libraries.
+
+For the latest WebLogic version 15.1, the Servlet API 5.0 is still required, and the delivered WebLogic package exceptionally includes this version.  
 
 **Note**: It is mandatory to run the beetRoot application extracted from its web container distribution archives (Tomcat and Jetty extract them automatically). This also allows you to make changes on the fly to HTML templates and model configurations (e.g., `columns.cfg` for each entity).
 
@@ -49,21 +51,61 @@ The following web containers are supported.
 
 ### Apache Tomcat
 
-1. You must use version [10.1.x](https://tomcat.apache.org/download-10.cgi).
+1. You can use version 10 or 11; we recommend [11.0.x](https://tomcat.apache.org/download-11.cgi).
 
 2. Place `beetroot.war` into the `webapps/` folder. Start Tomcat, then open your browser and navigate to `http://localhost:8080/beetroot`.
 
 ### Eclipse Jetty
 
-1. You can use the latest Jetty web container [12.1.x](https://jetty.org/download.html), as it supports all required servlet APIs. To set up Jetty for BeetRoot, use the following command:
+1. You can use the latest Jetty web container [12.1.x](https://jetty.org/download.html), as it supports all required servlet APIs. To set up Jetty for beetRoot, create a base directory at a location of your choice (e.g. `jetty-home-12.x.x/base`) and execute the following command inside that directory:
 
 	```bash
-	$ java -jar $JETTY_HOME/start.jar --add-modules=server,http,ee9-deploy
+	$ java -jar $JETTY_HOME/start.jar --add-modules=server,http,ee11-deploy
+	```
+	
+	Make sure the environment variable `JETTY_HOME` is set; it should point to the `jetty-home-12.x.x` directory. Also, set the environment variable `JETTY_BASE` to point to the base directory you created. 
+
+3. For proper [Log4j 2 logging](https://logging.apache.org/log4j/2.12.x/index.html) via [SLF4J](https://www.slf4j.org/), you unfortunately need to provide your own `log4j2.xml` file. Jetty does not automatically read Log4j2 configurations from standard locations within the web archive. Therefore, create this file in your base directory at `resources/log4j2.xml`: 
+
+	```xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<Configuration status="error" name="BeetRootConfig">
+		<Properties>
+			<Property name="basePath">${sys:jetty.base}/logs</Property>
+		</Properties>
+		<Appenders>
+			<Console name="console" target="SYSTEM_OUT">
+				<PatternLayout pattern="%-5p %d{yyyyMMdd-HH:mm:ss.SSS} [%-26.26t] %-30.30c{1.1.1.*} : %.-1000m%ex%n" />
+	        </Console>
+			<RollingFile name="file"
+				fileName="${basePath}/beetroot.log"
+				filePattern="${basePath}/beetroot-%d{yyyyMMdd}.log">
+				<PatternLayout pattern="%-5p %d{yyyyMMdd-HH:mm:ss.SSS} [%-26.26t] %-30.30c{1.1.1.*} : %.-1000m%ex%n" />
+				<Policies>
+					<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+					<SizeBasedTriggeringPolicy size="10MB" />
+				</Policies>
+				<!-- Max 10 files will be created everyday -->
+				<DefaultRolloverStrategy max="10">
+					<Delete basePath="${basePath}" maxDepth="10">
+						<!-- Delete all files older than 30 days -->
+						<IfLastModified age="30d" />
+					</Delete>
+				</DefaultRolloverStrategy>
+			</RollingFile>
+		</Appenders>
+		<Loggers>
+			<Logger name="ch.autumo.beetroot" level="info" additivity="false">
+				<AppenderRef ref="file" />
+			</Logger>
+			<Root level="info" additivity="false">
+				<AppenderRef ref="file" />
+			</Root>
+		</Loggers>
+	</Configuration>
 	```
 
-2. Place `beetroot-jetty.war` into the `webapps/` folder of your Jetty base directory. Start Jetty, then open your browser and navigate `http://localhost:8080/beetroot`.
-
-3. After the setup, you may want to adjust the logging configuration in `jetty-home-12.x.x/<base>/resources/java-logging.properties`:
+4. You may want to adjust the logging configuration in `jetty-home-12.x.x/<base>/resources/java-logging.properties`:
 
 	```properties
 	## Set logging levels from: ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF
@@ -72,24 +114,26 @@ The following web containers are supported.
 	ch.autumo.LEVEL=INFO
 	```
 
-4. You also may want to inform Jetty about the SLF4J bridge by adding or editing `jetty-home-12.x.x/<base>/resources/java-util-logging.properties`:
+5. You also need to inform Jetty about the SLF4J bridge by adding or editing `jetty-home-12.x.x/<base>/resources/java-util-logging.properties`:
 
 	```properties
 	handlers=org.slf4j.bridge.SLF4JBridgeHandler
 	.level=FINEST
 	```
 
+6. Place `beetroot-jetty.war` into the `webapps/` folder of your Jetty base directory. Start Jetty, then open your browser and navigate `http://localhost:8080/beetroot`.
+
 For further instructions, see: [Jetty 12.1 Operations Guide](https://jetty.org/docs/jetty/12.1/operations-guide/begin/index.html).
 
 ### Oracle WebLogic
 
-beetRoot now runs on WebLogic [15.x](https://docs.oracle.com/en/middleware/standalone/weblogic-server/15.1.1/), which supports Jakarta EE 9. If you are still using WebLogic [14.1](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/index.html), you must stick with beetRoot version [3.1.5](https://github.com/autumoswitzerland/autumo-beetroot/releases/tag/v3.1.5) (Servlet API 4.0).
+beetRoot now runs on latest WebLogic [15.x](https://docs.oracle.com/en/middleware/standalone/weblogic-server/15.1.1/), which supports Jakarta EE 9. If you are still using WebLogic [14.1](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/index.html), you must stick with beetRoot version [3.1.5](https://github.com/autumoswitzerland/autumo-beetroot/releases/tag/v3.1.5) (Servlet API 4.0). As mentioned earlier, the beetRoot package for WebLogic is specifically bundled with the Servlet API 5.0.
 
 We strongly recommend using the [WLST](https://docs.oracle.com/en/middleware/standalone/weblogic-server/15.1.1/wlstc/reference.html) (WebLogic Scripting Tool) to deploy beetRoot. Applications must be deployed as an exploded WAR or in an unpacked directory, as beetRoot requires an explicit exploded deployment in WebLogic.
 
 1. For the open directory of beetRoot use `beetroot-weblogic.zip` and we suggest to unpack it into the `stage` directory of WebLogic's admin server. 
 
-2. Deployment with WLST:
+2. Deployment with WLST (example):
 
 	```
 	connect('user','pass','t3://localhost:7001')
@@ -105,7 +149,7 @@ We strongly recommend using the [WLST](https://docs.oracle.com/en/middleware/sta
 
 With WebLogic, it makes sense to use its services to manage resources such as mail services and database connections, which are fully supported by beetRoot. You can configure mail sessions and data sources via JNDI. For example JNDI configurations, see [beetroot.cfg](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/cfg/beetroot.cfg).
 
-**Note**: The WebLogic package is preconfigured to use WebLogic services, including mail sessions and JNDI data sources. Simply customize `mail_session_name` and `db_ds_ext_jndi` in `beetroot.cfg`.
+**Note**: The WebLogic package is preconfigured to use WebLogic services, including mail sessions and JNDI data sources. Simply customize `mail_session_name` and `db_ds_ext_jndi` in `beetroot.cfg` as needed, and set up the corresponding services in WebLogic using WLST or the WebLogic Remote Console UI—which, in our opinion, doesn’t always work reliably 🫢.
 
 For more information on installing Oracle WebLogic and deploying web applications, visit [Oracle](https://www.oracle.com/java/weblogic/).
 

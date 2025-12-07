@@ -2,8 +2,8 @@
 
 ###############################################################################
 #
-#  beetRoot product packager.
-#  Version: 4.9
+#  beetRoot Product Packager.
+#  Version: 5.0
 #
 #  Notes:
 #   -
@@ -11,7 +11,7 @@
 #------------------------------------------------------------------------------
 #
 #  Copyright 2025 autumo GmbH
-#  Date: 2025-11-04
+#  Date: 2025-12-07
 #
 ###############################################################################
 
@@ -20,7 +20,6 @@
 
 # Vars
 VERSION=3.2.0
-SLF4J_SIMPLE_VERSION=2.0.17 # Jetty
 
 
 
@@ -156,9 +155,6 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	cp ../cfg/languages.cfg autumo-beetRoot-$VERSION/cfg/languages.cfg
 	cp ../cfg/routing.xml autumo-beetRoot-$VERSION/cfg/routing.xml
 
-	#mkdir autumo-beetRoot-$VERSION/doc
-	#cp ../doc autumo-beetRoot-$VERSION/doc
-
 	mkdir autumo-beetRoot-web-$VERSION/WEB-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF
 	mkdir autumo-beetRoot-web-$VERSION/META-INF/etc
@@ -191,14 +187,8 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 
 	echo "-> Making directories and copying..."
 
-	# replace productive passwords!
-	#for file in interfaces/templates/*.ifacex
-	#do
-	#	sed -i '' 's/rest_in_api_key=.*/rest_in_api_key=<YOUR_OWN_API_KEY>/' $file
-	#
-	#done
 
-	# copy libs
+	# Copy libs
 	mkdir autumo-beetRoot-$VERSION/lib
 	cp ../lib/*.jar autumo-beetRoot-$VERSION/lib/
 	mkdir -p autumo-beetRoot-$VERSION/lib/repo/ch/autumo/beetroot/autumo-beetroot/$VERSION
@@ -211,9 +201,6 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# Servlet API not needed in web-containers!
 	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/javax.servlet-api*.jar
 
-
-	#echo "-> Signing libs..."
-	#jarsigner -storepass xxxxx -keystore ../cfg/KeyStore.jks -tsa http://tsa.pki.admin.ch/tsa autumo-beetRoot-$VERSION/lib/autumo-beetroot-${VERSION}.jar autumo.ch
 
 	# make empty dirs
 	mkdir autumo-beetRoot-$VERSION/log
@@ -314,23 +301,24 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" autumo-beetRoot-${VERSION}/cfg/beetroot.cfg
 
-	# create archive
+	# Create archive
 	zip -r "autumo-beetRoot-${VERSION}.zip" autumo-beetRoot-${VERSION} \
 		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
 
 
-
+	# Enter working directory
 	cd autumo-beetRoot-web-${VERSION}
-	# add servlet context variable to db url
+	# Add servlet context variable to db url
 	sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
 
 	# -- Replace unique secret key (seed)
 	sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
+	# Leave working directory
 	cd ..
 
-	# create archive
+	# Create archive
 	zip -r "autumo-beetRoot-web-${VERSION}.zip" autumo-beetRoot-web-${VERSION} \
 		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
@@ -340,57 +328,71 @@ HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
 	# -- BUILD container products
 
 	# -- 1. Tomcat
+	# Copy config
 	cp ../cfg/logging-web-tomcat.xml autumo-beetRoot-web-$VERSION/logging.xml
+	# Enter working directory
 	cd autumo-beetRoot-web-${VERSION}
-	# change port (used for email templates)
+	# Adjust config: Change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=8080/' beetroot.cfg
-	# add servlet name for WAR version!
+	# Adjust config: Add servlet name for WAR version!
 	sed -i '' 's/web_html_ref_pre_url_part=/web_html_ref_pre_url_part=beetroot/' beetroot.cfg
+	# Create Web Archive
 	jar --create --file "beetroot.war" *
+	# Move WAR
 	mv *.war ../
+	# Cleanup
 	rm -f logging.xml
+	# Leave working directory
 	cd ..
 
-
 	# -- 2. WebLogic
-	cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
+	# Copy config
 	cp ../cfg/web-weblogic.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
+	cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	cp ../cfg/logging-web-weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
-	# change port (used for email templates)
+	# Change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=7001/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	sed -i '' 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	# Pack it for open directory deployment
 	mkdir beetroot/
 	cp -R autumo-beetRoot-web-${VERSION}/* beetroot/
+	# Replace Servlet API 6.1 with 5.0
+	rm beetroot/WEB-INF/lib/jakarta.servlet-api-6.1.0.jar
+	(cd beetroot/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/5.0.0/jakarta.servlet-api-5.0.0.jar)
+	# ZIP it (for WebLogc staging, open directory deployment)
 	zip -r "beetroot-weblogic.zip" beetroot/ \
 		-x "*/.gitignore" \
 		-x "*/.DS_Store" \
 		-x "*/__MACOSX"
+	# Cleanup
 	rm -fR beetroot/
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 	rm -f autumo-beetRoot-web-${VERSION}/WEB-INF/lib/log4j-web-*.jar
 
-
 	# -- 3. Jetty
+	# Copy config
 	cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 	cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml
-	# Replace logging implementation!
-	rm autumo-beetRoot-web-$VERSION/WEB-INF/lib/log4j-slf4j-impl-*.jar
-	(cd autumo-beetRoot-web-$VERSION/WEB-INF/lib && curl -LO https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/${SLF4J_SIMPLE_VERSION}/slf4j-simple-${SLF4J_SIMPLE_VERSION}.jar)
-	# no AUTO_SERVER=TRUE switch
+	cp ../cfg/logging-web-jetty.xml autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
+	# Adjust config: No AUTO_SERVER=TRUE switch
 	sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
-	# Change back mailing implementation
+	# Adjust config: Change back mailing implementation
 	sed -i '' 's/mail_implementation=.*/mail_implementation=jakarta/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 	sed -i '' 's/mail_session_name=.*/mail_session_name=/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
-	# change port (used for email templates)
+	# Adjust config: Change port (used for email templates)
 	sed -i '' 's/ws_port=.*/ws_port=8080/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+	# Enter working directory
 	cd autumo-beetRoot-web-${VERSION}
+	# Create Web Archive
 	jar --create --file "beetroot-jetty.war" *
+	# Move WAR
 	mv *.war ../
+	# Leave working directory
 	cd ..
 
 
+	# Remove working directories
 	rm -Rf autumo-beetRoot-$VERSION
 	rm -Rf autumo-beetRoot-web-$VERSION
 
@@ -407,4 +409,3 @@ else
 	echo "Nope! -> make create|clear "
 	echo " "
 fi
-
