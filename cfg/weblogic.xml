@@ -2,7 +2,7 @@
 
 <!--
   beetRoot Specific Web configuration for WebLogic
-  Version: 2.0 - 2022 autumo GmbH
+  Version: 2.1 - 2025 autumo GmbH
  -->
 
 <weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">

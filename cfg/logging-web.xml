@@ -2,7 +2,7 @@
 
 <!--
   beetRoot logging configuration (log4j2 behind SLF4j)
-  Version: 3.1 - 2024 autumo GmbH
+  Version: 3.2 - 2025 autumo GmbH
  -->
 
 <Configuration status="error" name="BeetRootConfig">
@@ -13,7 +13,7 @@
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">
 			<!-- See: https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout -->
-			<PatternLayout pattern="%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-30.30c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n" disableAnsi="false" />
+			<PatternLayout pattern="%-5p %d{yyyyMMdd-HH:mm:ss.SSS} [%-26.26t] %-30.30c{1.1.1.*} : %.-1000m%ex%n" />
         </Console>
 		<RollingFile name="file"
 			fileName="${basePath}/beetroot.log"

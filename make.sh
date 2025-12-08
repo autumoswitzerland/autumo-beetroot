@@ -203,7 +203,6 @@ cp ../cfg/routing.xml autumo-beetRoot-$VERSION/cfg/routing.xml
 mkdir autumo-beetRoot-web-$VERSION/WEB-INF
 mkdir autumo-beetRoot-web-$VERSION/META-INF
 mkdir autumo-beetRoot-web-$VERSION/META-INF/etc
-mkdir autumo-beetRoot-web-$VERSION/META-INF/etc/licenses
 
 cp ../cfg/beetroot_dist.cfg autumo-beetRoot-web-$VERSION/beetroot.cfg
 cp ../cfg/languages.cfg autumo-beetRoot-web-$VERSION/languages.cfg

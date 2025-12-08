@@ -2,7 +2,7 @@
 
 <!--
   beetRoot logging configuration (log4j2 behind SLF4j)
-  Version: 3.1 - 2024 autumo GmbH
+  Version: 3.2 - 2025 autumo GmbH
  -->
 
 <Configuration status="error" name="BeetRootConfig">
