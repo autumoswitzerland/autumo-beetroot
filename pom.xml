@@ -52,7 +52,7 @@
 		<version.maven.resources.plugin>3.4.0</version.maven.resources.plugin>
 		<version.maven.surefire.plugin>3.5.4</version.maven.surefire.plugin>
 
-		<version.nanohttpd>BEETROOT-2.3.5</version.nanohttpd>
+		<version.nanohttpd>BEETROOT-2.3.6</version.nanohttpd>
 		<version.hikaricp>7.0.2</version.hikaricp>
 		<version.jcolor>5.5.1</version.jcolor>
 		<version.angus.activation>2.0.3</version.angus.activation>

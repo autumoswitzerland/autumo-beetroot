@@ -63,7 +63,7 @@ The following web containers are supported.
 	$ java -jar $JETTY_HOME/start.jar --add-modules=server,http,ee11-deploy
 	```
 	
-	Make sure the environment variable `JETTY_HOME` is set; it should point to the `jetty-home-12.x.x` directory. Also, set the environment variable `JETTY_BASE` to point to the base directory you created. 
+	Make sure the environment variable `JETTY_HOME` is set; it should point to the `jetty-home-12.x.x` directory. Also, set the environment variable `JETTY_BASE` to point to the base directory you created.
 
 3. For proper [Log4j 2 logging](https://logging.apache.org/log4j/2.12.x/index.html) via [SLF4J](https://www.slf4j.org/), you unfortunately need to provide your own `log4j2.xml` file. Jetty does not automatically read Log4j2 configurations from standard locations within the web archive. Therefore, create this file in your base directory at `resources/log4j2.xml`: 
 
@@ -122,6 +122,8 @@ The following web containers are supported.
 	```
 
 6. Place `beetroot-jetty.war` into the `webapps/` folder of your Jetty base directory. Start Jetty, then open your browser and navigate `http://localhost:8080/beetroot`.
+
+**Note**: Keep in mind that Jetty, by default, extracts the WAR into a temporary directory. When the server is restarted, this directory is deleted and a new one is created. Therefore, you cannot apply patches in this default mode, nor will any data stored inside the internal H2 database persist. If you require a persistent deployment, you must configure Jetty to run the application in exploded WAR mode.
 
 For further instructions, see: [Jetty 12.1 Operations Guide](https://jetty.org/docs/jetty/12.1/operations-guide/begin/index.html).
 

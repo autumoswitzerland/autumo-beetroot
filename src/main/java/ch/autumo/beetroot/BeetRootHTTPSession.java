@@ -17,6 +17,7 @@
  */
 package ch.autumo.beetroot;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,10 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-
 import org.nanohttpd.protocols.http.HTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.NanoHTTPD.ResponseException;
@@ -50,6 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.handler.ErrorHandler;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 /**
  * BeetRoot HTTP session.
@@ -60,12 +60,18 @@ public class BeetRootHTTPSession extends HTTPSession {
 
 	static {
 
-		int kBytes = BeetRootConfigurationManager.getInstance().getInt("ws_response_buffer_size");
+		int kBytes = BeetRootConfigurationManager.getInstance().getInt("ws_upload_buffer_size");
+		if (kBytes == -1) {
+			LOG.warn("Using 16 kBytes for upload buffer size.");
+			kBytes = 16;
+		}
+		UPLOAD_BUFFER_SIZE = kBytes * 1024;
+
+		kBytes = BeetRootConfigurationManager.getInstance().getInt("ws_response_buffer_size");
 		if (kBytes == -1) {
 			LOG.warn("Using 16 kBytes for response buffer size.");
 			kBytes = 16;
 		}
-
 		RESPONSE_BUFFER_SIZE = kBytes * 1024;
 		System.setProperty("ch.autumo.beetroot.respDownBufSizeKB", "" + kBytes);
 
@@ -74,15 +80,18 @@ public class BeetRootHTTPSession extends HTTPSession {
 			LOG.warn("Using 8 kBytes for response download buffer size.");
 			kBytesDown = 8;
 		}
-
 		RESPONSE_DOWNLOAD_BUFFER_SIZE = kBytesDown * 1024;
+
 	}
 
-	// buffer size
-	public static final long RESPONSE_BUFFER_SIZE;
+	// Upload buffer size.
+	public static final int UPLOAD_BUFFER_SIZE;
 
-	// download buffer size
-	public static final long RESPONSE_DOWNLOAD_BUFFER_SIZE;
+	// Response buffer size.
+	public static final int RESPONSE_BUFFER_SIZE;
+
+	// Download response buffer size.
+	public static final int RESPONSE_DOWNLOAD_BUFFER_SIZE;
 
     private String externalSessionId;
 
@@ -170,7 +179,7 @@ public class BeetRootHTTPSession extends HTTPSession {
             	if (downHeaderVal != null) {
             		response.setContentType(r.getMimeType());
             		response.setHeader("Content-disposition", downHeaderVal);
-            		final byte[] buffer = new byte[Long.valueOf(RESPONSE_BUFFER_SIZE).intValue()];
+            		final byte[] buffer = new byte[RESPONSE_BUFFER_SIZE];
             		int numBytesRead;
                     while ((numBytesRead = r.getData().read(buffer)) > 0) {
                         response.getOutputStream().write(buffer, 0, numBytesRead);
@@ -278,14 +287,18 @@ public class BeetRootHTTPSession extends HTTPSession {
 			if (partName.startsWith("MAX") || partName.startsWith("_"))
 				continue LOOP;
 
-			int size = (int) part.getSize();
-			InputStream inputStream = part.getInputStream();
-			byte[] bytes = new byte[inputStream.available()];
-			inputStream.read(bytes);
+			final InputStream inputStream = part.getInputStream();
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			byte[] buffer = new byte[UPLOAD_BUFFER_SIZE];
+			int read;
+			while ((read = inputStream.read(buffer)) != -1) {
+			    baos.write(buffer, 0, read);
+			}
+			byte[] bytes = baos.toByteArray();
 
-            ByteBuffer fbuf = ByteBuffer.wrap(bytes, 0, bytes.length);
-           	final String path = saveTmpFile(fbuf, 0, size, part.getSubmittedFileName());
-            files.put(partName, path);
+			final ByteBuffer fbuf = ByteBuffer.wrap(bytes, 0, bytes.length);
+			final String path = saveTmpFile(fbuf, 0, bytes.length, part.getSubmittedFileName());
+			files.put(partName, path);
 
 			List<String> values = super.parms.get(partName);
             if (values == null) {
