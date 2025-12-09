@@ -103,8 +103,9 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		}
 		// logCfgFile = null ->
 		// 2.2 For WebLogic, log4j2-logging will be initialized
-		//     by the log4j-web-jar and the listener defined in web.xml.
-		// 2.3 Jetty uses simpler logging that can be bridged with slf4j-simple.
+		//     by the log4j-jakarta-web.jar and the listener defined in web.xml.
+		// 2.3 Jetty uses a slf4j-bridge for log4j, log4j2.xml should be placed
+		//     into '<jetty-base>/resources'.
 
 
 		// 3. DB connection manager
