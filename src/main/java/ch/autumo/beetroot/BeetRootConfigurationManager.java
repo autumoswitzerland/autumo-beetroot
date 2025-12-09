@@ -255,7 +255,6 @@ public class BeetRootConfigurationManager {
 	 * and 'languages.cfg' are loaded using the same three-case handling.
 	 *
 	 * @param configFilePath path to the configuration file (absolute path, relative path in WAR, or classpath resource)
-	 * @param servletContext the ServletContext, or null if running outside a servlet environment
 	 * @throws Exception if the main configuration file cannot be found or read, or if mandatory supplementary files fail to load
 	 */
 	public synchronized void initializeWithFullPath(String configFilePath) throws Exception {
