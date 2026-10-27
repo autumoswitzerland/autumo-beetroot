@@ -72,9 +72,9 @@ public class LogHandler extends NoConfigHandler {
 	public LogHandler(String entity) {
 		super(entity);
 		this.layout = PatternLayout.newBuilder()
-                .withPattern(LOG_PATTERN)
-                .withCharset(StandardCharsets.UTF_8)
-                .withDisableAnsi(false)
+                .setPattern(LOG_PATTERN)
+                .setCharset(StandardCharsets.UTF_8)
+                .setDisableAnsi(false)
                 .build();
 	}
 

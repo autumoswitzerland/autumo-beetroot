@@ -17,7 +17,7 @@
 
 
 # Vars
-VERSION=3.2.0
+VERSION=3.3.0
 VERSION_SERVLET_API=6.1.0
 LOGFILE="make.log"
 
