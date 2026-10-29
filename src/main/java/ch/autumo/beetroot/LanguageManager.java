@@ -563,6 +563,12 @@ public class LanguageManager {
 
 	private String translate(String key, String lang, boolean fullEscape, Object... arguments) {
 		final Map<String, ResourceBundle> langBundles = BUNDLE_GROUPS.get(LANG_GRP_APP);
+		// Callers may pass an unknown language, e.g. when the request carries no
+		// language at all: translate with the default language instead of failing
+		// with a 'null' lookup.
+		if (lang == null || lang.length() == 0) {
+			lang = DEFAULT_LANG;
+		}
 		ResourceBundle bundle = langBundles.get(lang);
 		String text = null;
 		try {

@@ -29,6 +29,11 @@
 
 {#thememenu}
 
+        <button type="button" id="sidebar-toggle" class="sidebar-toggle" hidden
+                aria-expanded="true" title="{$l.blocks.menu.4}"
+                data-label-hide="{$l.blocks.menu.4}"
+                data-label-show="{$l.blocks.menu.5}"><span class="sidebar-toggle-icon"></span></button>
+
         <div class="top-bar-section refresh_section">
             <input type="checkbox" name="cb_log_refresh" id="cb_log_refresh" onchange="refresh();">
             <label class="refresh_section_label" for="cb_log_refresh">
@@ -40,8 +45,6 @@
 		</div>
 
     </nav>
-
-{#message}
 
 	<div class="container clearfix">
 

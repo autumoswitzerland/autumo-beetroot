@@ -9,17 +9,20 @@
                 <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
             </form>
             <a href="/{$lang}/tasks/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.tasks.edit.confirm_message.3,{$displayName}}" data-form-name="post_tasks_delete_{$id}">
+                <span class="ph ph-trash" aria-hidden="true"></span>
                 {$l.tasks.edit.2}
             </a>
         </li>
         <li>
             <a href="/{$lang}/tasks" class="side-nav-item">
+                <span class="ph ph-checks" aria-hidden="true"></span>
                 {$l.tasks.edit.4}
             </a>
         </li>
     </ul>
 </nav>
 <div class="tasks form large-10 medium-8 columns content">
+	{#message}
     <div class="tasks form content">
         <form method="post" accept-charset="utf-8" action="/{$lang}/tasks/edit?id={$id}">
             <div style="display: none;">

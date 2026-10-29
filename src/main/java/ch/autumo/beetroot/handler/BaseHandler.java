@@ -1065,6 +1065,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			if (sc!= null)
 				sc.close();
 		}
+
 		return sb.toString();
 	}
 
@@ -1170,13 +1171,6 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					if (user != null) {
 						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/menu_theme.html", userSession);
 						text = parseAndGetSubResource(text, currRessource, "{#thememenu}", session, origId);
-					} else {
-						text = "";
-					}
-				} else if (text.contains("{#message}")) {
-					if (this.hasAnyMessage()) {
-						currRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/message.html", userSession);
-						text = parseAndGetSubResource(text, currRessource, "{#message}", session, origId);
 					} else {
 						text = "";
 					}
@@ -1347,6 +1341,20 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 
 				sb.append(text + "\n");
+			}
+
+			// The message block may appear anywhere - in the layout or in any page
+			// template: resolve all occurrences once the document is assembled.
+			String assembled = sb.toString();
+			if (assembled.contains("{#message}")) {
+				if (this.hasAnyMessage()) {
+					final String msgRessource = LanguageManager.getInstance().getBlockResource("web/html/:lang/blocks/message.html", userSession);
+					assembled = parseAndGetSubResource(assembled, msgRessource, "{#message}", session, origId);
+				} else {
+					assembled = assembled.replace("{#message}", "");
+				}
+				sb.setLength(0);
+				sb.append(assembled);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -1641,9 +1649,9 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					// Show login or logout?
 					if (text.contains(TAG_LOGIN_OR_LOGOUT)) {
 						if (userroles.size() > 0)
-							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/"+TAG_LANG+"/users/logout\">"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
+							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/"+TAG_LANG+"/users/logout\"><span class=\"ph ph-sign-out\" aria-hidden=\"true\"></span>"+LanguageManager.getInstance().translate("base.name.logout", userSession)+"</a>");
 						else
-							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/"+TAG_LANG+"/users/login\">"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
+							text = text.replace(TAG_LOGIN_OR_LOGOUT, "<a href=\"/"+TAG_LANG+"/users/login\"><span class=\"ph ph-sign-in\" aria-hidden=\"true\"></span>"+LanguageManager.getInstance().translate("base.name.login", userSession)+"</a>");
 					}
 					break;
 				case "{#adminmenu}":

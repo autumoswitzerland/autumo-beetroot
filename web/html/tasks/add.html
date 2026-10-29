@@ -5,12 +5,14 @@
         </li>
         <li>
             <a href="/{$lang}/tasks" class="side-nav-item">
+                <span class="ph ph-checks" aria-hidden="true"></span>
                 {$l.tasks.add.2}
             </a>
         </li>
     </ul>
 </nav>
 <div class="tasks form large-10 medium-8 columns content">
+	{#message}
     <div class="tasks form content">
         <form method="post" accept-charset="utf-8" action="/tasks/add">
             <div style="display: none;">

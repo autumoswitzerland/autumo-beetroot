@@ -470,6 +470,10 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    	else
 	    		userSession.setUserLang(dbUserLang);
 	    }
+	    // The session language is final now: also use it for the messages of
+	    // this request. Without it a request whose URI carries no language
+	    // (e.g. a failed login on /users/login) translates with 'null'.
+	    userLang = userSession.getUserLang();
 
 
 	    // Are we running in a servlet context?

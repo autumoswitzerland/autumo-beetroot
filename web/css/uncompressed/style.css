@@ -17,6 +17,93 @@
  */
 
 
+/**
+ * Design tokens.
+ *
+ * One place for the colours of the design. The values are the ones the rules
+ * used before, so the appearance does not change; theme-dark.css only
+ * redefines these variables for the dark theme.
+ */
+:root {
+	/* text and links */
+	--text: #0e4e74;
+	--link: #0e4e74;
+	--link-hover: #1cc7ff;
+	--button-hover-fg: #1cc7ff;
+	--label: #0e4e74;
+	--label-bg: transparent;
+	--legend: #146fa6;
+	--legend-bg: #f8f8f8;
+	--h1: #222222;
+	--heading-3: #0e4e74;
+	--heading-4: #0e4e74;
+	--heading-4-err: #0e4e74;
+	--heading-3-light: #a2eeff;
+	--heading-5: #0093e6;
+	--actions-text: #222222;
+
+	/* side menu */
+	--sidebar-bg: #e0e0e0;
+	--nav-link: #0e4e74;
+	--nav-heading: #0077aa;
+	--nav-label: #0e4e74;
+	--nav-label-bg: transparent;
+	--nav-hover: rgba(45, 199, 254, 0.10);
+	--nav-active: rgba(45, 199, 254, 0.16);
+
+	/* surfaces */
+	--body-bg: #666666;
+	--surface: #f8f8f8;
+	--container-line: #666666;
+
+	/* tables */
+	--table-bg: #f8f8f8;
+	--table-line: #cbcbcc;
+	--table-th: #146fa6;
+	--table-th-head: #222222;
+	--table-cell: #222222;
+	--table-hover: rgba(45, 199, 254, 0.07);
+
+	/* lists */
+	--list-bg: #eeeeee;
+	--list-border: #cccccc;
+	--list-item-fg: #555555;
+	--list-item-bg: #cccccc;
+	--list-item-border: #bbbbbb;
+
+	/* pagination */
+	--pager-text: #222222;
+	--pager-link: #0e4e74; /* blue instead of grey */
+	--pager-link-hover: #2dc7fe;
+	--pager-active-fg: #0e4e74;
+	--pager-active-bg: #cfe3f0; /* light blue instead of grey */
+	--pager-active-border: #9fc4da;
+	--pager-border: #b9d3e4;
+	--pager-bg: #e8f1f7;
+	--pager-hover-bg: rgba(14, 78, 116, 0.08);
+	--pager-disabled: rgba(0, 0, 0, 0.28);
+
+	/* drop down and tooltip */
+	--dropdown-bg: #f1f1f1;
+	--dropdown-fg: #000000;
+	--dropdown-hover-bg: #dddddd;
+	--dropdown-link-bg: transparent;
+	--tooltip-bg: #eaf3f8;
+	--tooltip-fg: #222222;
+	--tooltip-border: #b9d3e4;
+	--tooltip-shadow: 0 4px 14px rgba(14, 78, 116, 0.16);
+
+	/* footer */
+	--footer-bg: #222222;
+	--footer-fg: #ffffff;
+
+	/* message card */
+	--message-info: #0b5b68;
+	--message-success: #0f6b4f;
+	--message-error: #a11f2b;
+	--message-warning: #8a4a06;
+}
+
 
 header {
 	font-size: 60px;
@@ -33,8 +120,43 @@ header .header-title {
 }
 
 .container {
+	display: grid;
+	grid-template-columns: 1fr; /* below 40em the side menu is stacked */
 	overflow: hidden;
-	padding-bottom: 30px;
+}
+/* Same breakpoints and widths as the grid classes of the templates. */
+@media (min-width: 40em) {
+	.container {
+		grid-template-columns: 33.3333% minmax(0, 1fr);
+	}
+}
+@media (min-width: 64.0625em) {
+	.container {
+		grid-template-columns: 16.6667% minmax(0, 1fr);
+	}
+}
+/* The clearfix pseudo elements would become grid items of their own. */
+.container::before,
+.container::after {
+	display: none;
+}
+/*
+ * A page without a side menu (login, logout) uses the whole width. :has() is
+ * needed here because some page templates end with a <script> element, so the
+ * content is not the only child of the container.
+ */
+.container:not(:has(> #actions-sidebar, > #service-sidebar)) {
+	grid-template-columns: 1fr;
+}
+/* The grid defines the widths now, not the grid classes of Foundation. */
+#actions-sidebar,
+#service-sidebar {
+	width: auto;
+	max-width: none;
+}
+.container > .content {
+	width: auto;
+	min-width: 0;
 }
 .container-email {
 	overflow: hidden;
@@ -45,22 +167,35 @@ form {
 	display: block;
 }
 
+/*
+ * Sticky footer: the page is a flex column as tall as the viewport, the
+ * container takes the free height and the footer sits at the bottom.
+ */
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+.container {
+	flex: 1 0 auto;
+}
 .footerwrapper {
 	clear: both;
 	padding: 0;
 	margin: 0;
+	flex: 0 0 auto;
 }
 .footerline {
-	margin-bottom: 0px;
-	padding-top: 10px;
-	padding-bottom: 8px;
-	padding-right: 20px;
-	font-size: 1.0rem;
-	font-weight: 300;
-	color: #ffffff;
-	background-color: #222222;
-	text-align: right;
-	width: 100%;
+    min-height: 64px;
+    width: 100%;
+    padding-right: 20px;
+    margin: 0;
+    font-size: 1.0rem;
+    font-weight: 100;
+    color: var(--footer-fg);
+    background-color: var(--footer-bg);
+    text-align: right;
+    line-height: 64px;
 }
 .footerline a {
 	color: #247fb6;
@@ -70,7 +205,7 @@ form {
 }
 .footerlogo {
 	margin-top: -3px;
-	height: 50px;
+	height: 32px;
 }
 
 strong, b {
@@ -82,7 +217,7 @@ p {
 	font-size: 1.0rem;
 	line-height: 1.8rem;
 	padding-bottom: 0px;
-	color: #0e4e74;
+	color: var(--text);
 }
 
 li {
@@ -91,7 +226,7 @@ li {
 }
 
 ul.pagination li {
-	color: #222;
+	color: var(--pager-text);
 	font-size: 0.875rem;
 	height: 2.4rem;
 	margin-left: 0.3125rem;
@@ -102,17 +237,38 @@ ul.pagination li {
     flex-wrap: wrap;
 }
 .list-group {
+	border-radius: 8px;
     min-height: 200px;
-	background-color: #eeeeee;
-    border: 1px solid #cccccc;
+	background-color: var(--list-bg);
+    border: 1px solid var(--list-border);
     padding: 10px;
 }
 .list-group-item {
-	color: #555555;
-	background-color: #cccccc;
-	border: 1px solid #bbbbbb;
+	color: var(--list-item-fg);
+	background-color: var(--list-item-bg);
+	border: 1px solid var(--list-item-border);
+	border-radius: 8px;
+	padding: 0.5rem 1rem;
 	cursor: pointer;
-	font-weight: lighter;
+	font-weight: 100;
+	list-style-type: none;
+}
+/* Radii of a list: rounded at the top and the bottom, square in between. */
+.list-group-item + .list-group-item {
+	border-radius: 0;
+}
+.list-group-item:first-child:not(:last-child) {
+	border-radius: 8px 8px 0 0;
+}
+.list-group-item:last-child:not(:first-child) {
+	border-radius: 0 0 8px 8px;
+}
+/* Selected item of the role assignment (web/js/assignments.js sets 'active'). */
+.list-group-item.active {
+	z-index: 2;
+	color: #ffffff;
+	background-color: #0d6efd;
+	border-color: #0d6efd;
 }
 .btn-arrow {
     display: flex;
@@ -125,12 +281,13 @@ ul.pagination li {
 label {
 	font-size: 1.2em;
 	font-weight: normal;
-	color: #0e4e74;
+	color: var(--label);
+	background-color: var(--label-bg);
 }
 
 input {
 	font-size: 1.2em;
-	font-weight: 100;
+	font-weight: 200;
 }
 input[type=color],
 input[type=date],
@@ -184,49 +341,51 @@ input[type="checkbox"]:hover {
 
 legend {
 	font-size: 1.8rem;
-	font-weight: 100;
-	color: #146fa6;
+	font-weight: 200;
+	color: var(--legend);
+	background-color: var(--legend-bg);
 }
 
 h1 {
+	color: var(--h1);
 	margin-top: 13px !important;
 	font-size: 2.0rem !important;
 	font-weight: 100 !important;
 	line-height: 1.0 !important;
 }
 h1 a {
-	font-weight: 100 !important;
+	font-weight: 200 !important;
 }
 h3 {
 	font-size: 2.0rem;
 	line-height: 2.0;
-	color: #0e4e74;
-	font-weight: 100;
+	color: var(--heading-3);
+	font-weight: 200;
 }
 h3.light {
 	font-size: 2.0rem;
 	line-height: 2.0;
-	color: #A2EEFF;
-	font-weight: 100;
+	color: var(--heading-3-light);
+	font-weight: 200;
 }
 h4 {
 	font-size: 1.6rem;
 	line-height: 1.6;
-	color: #0e4e74;
-	font-weight: 100;
+	color: var(--heading-4);
+	font-weight: 200;
 }
 h5 {
 	padding-top: 8px;
 	font-size: 1.1rem;
 	line-height: 1.1;
-	color: #0093E6;
+	color: var(--heading-5);
 }
 
 .maintitle {
 	font-size: 3.0rem;
 	line-height: 1.7;
 	color: #ffffff;
-	font-weight: 100;
+	font-weight: 200;
 	margin-top: 10px;
 	margin-left: 12px;
 }
@@ -246,7 +405,7 @@ h5 {
 	margin-top: 20px;
 }
 #service-sidebar {
-	background: #222222;
+	background: var(--sidebar-bg);
 }
 .servicemenu {
 	position: relative;
@@ -400,134 +559,135 @@ h5 {
 }
 
 .side-nav li a:not(.button) {
-	color: #0e4e74;
+	display: flex;             /* glyph and text share one line box */
+	align-items: center;       /* ... and are centred top to bottom */
+	gap: 0.5rem;
+	padding: 0.55rem 0.875rem;
+	border-left: 3px solid transparent;
+	border-radius: 0 6px 6px 0;
+	transition: background-color 150ms ease, border-color 150ms ease;
+}
+/* Phosphor glyph in front of a side menu entry. */
+.side-nav .ph {
+	flex: 0 0 auto;
+	width: 1.1em;
+	font-size: 1rem;
+	line-height: 1;
+	text-align: center;
+	opacity: 0.85;
 }
 .side-nav li a:not(.button):hover {
 	color: #1cc7ff;
+	background-color: var(--nav-hover);
+	border-left-color: var(--nav-hover);
+}
+/*
+ * The page that is open (set by web/js/sidebar.js). Only the entries of the
+ * side menu are marked - never the action links inside a table.
+ */
+.side-nav li a[aria-current="page"] {
+	color: var(--nav-link);
+	font-weight: 500;
+	background-color: var(--nav-active);
+	border-left-color: #2dc7fe;
 }
 .side-nav li.heading {
-	color: #146fa6;
+	color: var(--nav-heading);
 	font-weight: normal;
 	text-transform: uppercase;
-	padding: 0.4375rem 0.875rem;
-	font-size: 1.2rem;
+	letter-spacing: 0.05em;
+	padding: 0.35rem 0.875rem 0.5rem;
+	font-size: 1.1rem; /* 17.6px, larger than the entries (16px) */
 }
 .side-nav li {
-	font-size: 1.2rem;
+	font-size: 1rem; /* 16px */
 }
 .side-nav a {
-	font-size: 1.2rem;
-	font-weight: lighter;
+	font-size: 1rem;
+	font-weight: 300;
 }
 .side-nav li div {
 	margin-top: 36px;
 	margin-left: 14px;
 	margin-right: 10px;
 	font-size: 1.0rem;
-	font-weight: 100;
+	font-weight: 200;
 }
 .side-nav li div label {
-	font-weight: 100;
-	color: #0e4e74;
+	font-weight: 200;
+	color: var(--nav-label);
+	background-color: var(--nav-label-bg);
 }
 
+/**
+ * Message of a request (web/html/blocks/message.html).
+ *
+ * A card at the top of the content column, not a full width strip between the
+ * top bar and the page: same offset as the side menu, rounded, tinted and
+ * clickable to dismiss it. The icon is a Phosphor glyph (see refs.css).
+ */
 div.message {
-	display: block;
-	padding-top: 1px;
+	position: relative;
+	box-sizing: border-box;
+	margin: 0 0 1.25rem 0;
+	padding: 0.7rem 1rem 0.7rem 2.9rem;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
 	text-align: left;
-	font-size: 1.2rem;
-	font-weight: 400;
-	line-height: 1.8em;
-	padding-left: 14px;
-	margin-left: 0px;
+	color: var(--message-info);
+	background-color: rgba(13, 202, 240, 0.14);
+	border: 1px solid rgba(13, 202, 240, 0.75);
+	border-radius: 8px;
 	cursor: pointer;
-	color: #444444;
-	background-color: #0dcaf0;
-	right: 15px;
-	z-index: 999;
 	overflow: hidden;
-	transition: height 300ms ease-out 0s;
 }
+/* Dismissed by a click (onclick in the block): gone, no leftover edge. */
 div.message.hidden {
-	height: 0;
-	margin-top: -1px;
+	display: none;
 }
+/* The glyph, vertically centred at the left edge of the card. */
 div.message::before {
-	font-size: 1.2rem;
+	position: absolute;
+	left: 0.9rem;
+	top: 50%;
+	transform: translateY(-50%);
+	margin: 0;
+	padding: 0;
+	font-family: 'Phosphor', sans-serif;
+	font-size: 1.3rem;
 	font-weight: 400;
-	margin-left: 18px;
-	margin-right: 10px;
-	padding-top: 0px;
-	padding-left: 9px;
-	padding-right: 9px;
-	padding-bottom: 0px;
-	content: "i";
-	color: #0dcaf0;
-	background-color: #ffffff;
-	border-radius: 12px;
-	-moz-border-radius: 12px;
-	-webkit-border-radius: 12px;
+	line-height: 1;
+	color: inherit;
+	background: none;
+	border-radius: 0;
+	content: "\e2ce"; /* Phosphor: info */
 }
 div.message.success {
-	background-color: #20c997;
-	color: #444444;
+	color: var(--message-success);
+	background-color: rgba(32, 201, 151, 0.14);
+	border-color: rgba(32, 201, 151, 0.75);
 }
-div.success::before {
-	font-size: 1.2rem;
-	font-weight: 400;
-	margin-left: 18px;
-	margin-right: 10px;
-	padding-top: 0px;
-	padding-left: 3px;
-	padding-right: 5px;
-	padding-bottom: 0px;
-	color: #20c997;
-	content: "✓";
-	background-color: #ffffff;
-	border-radius: 12px;
-	-moz-border-radius: 12px;
-	-webkit-border-radius: 12px;
+div.message.success::before {
+	content: "\e184"; /* Phosphor: check-circle */
 }
 div.message.error {
-	background-color: #dc3545;
-	color: #fff;
+	color: var(--message-error);
+	background-color: rgba(220, 53, 69, 0.14);
+	border-color: rgba(220, 53, 69, 0.8);
 }
-div.message.error:before {
-	font-size: 1.0rem;
-	font-weight: 400;
-	margin-left: 18px;
-	margin-right: 10px;
-	padding-top: 1px;
-	padding-left: 6px;
-	padding-right: 6px;
-	padding-bottom: 1px;
-	color: #dc3545;
-	content: "✘";
-	background-color: #ffffff;
-	border-radius: 12px;
-	-moz-border-radius: 12px;
-	-webkit-border-radius: 12px;
+div.message.error::before {
+	content: "\e4f8"; /* Phosphor: x-circle */
 }
 div.message.warning {
-	background-color: #fd7e14;
-	color: #ffffff;
+	color: var(--message-warning);
+	background-color: rgba(253, 126, 20, 0.14);
+	border-color: rgba(253, 126, 20, 0.8);
 }
-div.message.warning:before {
-	font-size: 1.2rem;
-	font-weight: 400;
-	margin-left: 18px;
-	margin-right: 10px;
-	padding-top: 0px;
-	padding-left: 9px;
-	padding-right: 9px;
-	padding-bottom: 0px;
-	color: #fd7e14;
-	content: "!";
-	background-color: #ffffff;
-	border-radius: 12px;
-	-moz-border-radius: 12px;
-	-webkit-border-radius: 12px;
+div.message.warning::before {
+	content: "\e4e0"; /* Phosphor: warning */
 }
+
 
 /**
  * Refresh elements.
@@ -566,6 +726,10 @@ div.message.warning:before {
 #langmenu {
 	width: 40px;
 }
+/* The open language menu is 2px wider than the other drop downs. */
+#dropdown_lang {
+	min-width: 162px;
+}
 #imglangmenu {
 	margin-left: 10px;
 }
@@ -574,14 +738,15 @@ div.message.warning:before {
 	position: absolute;
 	right: 0px;
 	top: 60px;
-	background-color: #f1f1f1;
+	background-color: var(--dropdown-bg);
 	min-width: 160px;
 	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 	z-index: 1;
 }
 /* Links inside the dropdown */
 .dropdown-content a {
-	color: black;
+	background-color: var(--dropdown-link-bg);
+	color: var(--dropdown-fg);
 	padding: 12px 16px;
 	text-decoration: none;
 	display: block;
@@ -589,8 +754,22 @@ div.message.warning:before {
 	font-size: 1.2rem;
 }
 /* Change color of dropdown links on hover */
+/* Glyphs of the paginator (first/previous/next/last). */
+.pagination .ph {
+	font-size: 0.95rem;
+	line-height: 1;
+	vertical-align: -0.1em;
+}
+/* Glyphs of the main menu entries (the language menu keeps its flags). */
+.dropdown-content .ph {
+	width: 1.1em;
+	margin-right: 0.5rem;
+	font-size: 1rem;
+	text-align: center;
+	opacity: 0.85;
+}
 .dropdown-content a:hover {
-	background-color: #ddd
+	background-color: var(--dropdown-hover-bg)
 }
 .dropdown_main {
 	width: 100px;
@@ -646,7 +825,7 @@ div.message.warning:before {
 .dropbtnimg {
 	background-repeat: no-repeat;
 	background-position: top;
-    border-radius: 3px;
+    border-radius: 4px; /* flags keep a small radius */
     width: 22px;
     height: 14px;
     display: inline-block;
@@ -656,7 +835,7 @@ div.message.warning:before {
 	background-color: #3498DB;
 }
 .imglang {
-	border-radius: 3px;
+	border-radius: 4px;
 	margin-right: 10px;
 	margin-bottom: 3px;
 }
@@ -678,10 +857,14 @@ video {
 }
 
 a:hover {
-	color: #1cc7ff;
+	color: var(--link-hover);
+}
+/* No browser focus frame around links (the design keeps the colour). */
+a:focus {
+	outline: none;
 }
 a {
-	color: #0e4e74;
+	color: var(--link);
 }
 
 .row {
@@ -689,6 +872,7 @@ a {
 }
 
 .actions {
+	color: var(--actions-text);
     font-weight: 500;
 }
 .actions.columns {
@@ -739,19 +923,39 @@ a {
 	filter: brightness(1.5);
 }
 
-ul.pagination li a {
-	color: rgba(0, 0, 0, 0.54);
+ul.pagination li a,
+ul.pagination li button {
+	color: var(--pager-link);
 	font-weight: lighter;
+	border-radius: 8px; /* same radius as every other control */
 }
 ul.pagination li a:hover {
-	color: #2DC7FE;
+	color: var(--pager-link-hover);
+}
+/* Hover of the page numbers: a subtle tint instead of Foundation's light grey. */
+ul.pagination li:hover a,
+ul.pagination li a:focus {
+	background-color: var(--pager-hover-bg);
+}
+/* First/previous/next/last that are not available: no box, muted text. */
+ul.pagination li.disabled,
+ul.pagination li.disabled:hover,
+ul.pagination li.disabled a,
+ul.pagination li.disabled:hover a {
+	background-color: transparent;
+	border: 0;
+	color: var(--pager-disabled);
+	cursor: default;
+	box-shadow: none;
 }
 ul.pagination li.active a {
 	font-weight: 300;
 	font-size: 1.2rem;
-	background-color: #666666;
-	color: #ddd!important;
+	background-color: var(--pager-active-bg);
+	color: var(--pager-active-fg)!important;
 	cursor: default;
+	/* 1px frame without a layout shift */
+	box-shadow: inset 0 0 0 1px var(--pager-active-border);
 }
 ul.pagination .disabled:hover a {
 	background: none;
@@ -767,8 +971,8 @@ ul.pagination .disabled:hover a {
 }
 .paginator p {
 	margin-top: -16px;
-	font-size: 1.2rem;
-	font-weight: lighter;
+	font-size: 1rem; /* 16px instead of 19.2px */
+	font-weight: 200; /* Inter Extra Light */
 	text-align: right;
 	color: rgba(0, 0, 0, 0.54);
 }
@@ -778,14 +982,14 @@ ul.pagination .disabled:hover a {
 	line-height: 1.2rem;
 }
 .prev {
-	border: 1px solid #bbbbbb;
+	border: 1px solid var(--pager-border);
 	border-radius: 8px;
-	background-color: #dddddd;
+	background-color: var(--pager-bg);
 }
 .next {
-	border: 1px solid #bbbbbb;
+	border: 1px solid var(--pager-border);
 	border-radius: 8px;
-	background-color: #dddddd;
+	background-color: var(--pager-bg);
 }
 .asc:after {
 	content: " \2193";
@@ -836,26 +1040,26 @@ input[type=checkbox], input[type=radio] {
 	color: #6F6F6F;
 }
 .view .columns.strings {
-	border-radius: 3px;
+	border-radius: 8px;
 	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.24);
 	margin-right: 0.7rem;
 }
 .view .numbers {
 	background-color: #B7E3EC;
 	color: #FFF;
-	border-radius: 3px;
+	border-radius: 8px;
 	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.24);
 	margin-right: 0.7rem;
 }
 .view .columns.dates {
-	border-radius: 3px;
+	border-radius: 8px;
 	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.24);
 	margin-right: 0.7rem;
 	background-color: #DCE47E;
 	color: #fff;
 }
 .view .columns.booleans {
-	border-radius: 3px;
+	border-radius: 8px;
 	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.24);
 	margin-right: 0.7rem;
 	background-color: #8D6E65;
@@ -882,7 +1086,7 @@ input[type=checkbox], input[type=radio] {
 	background-repeat: repeat-x;
 	margin-bottom: 18px;
 	padding: 7px 14px;
-	border-radius: 3px;
+	border-radius: 8px;
 	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.24);
 }
 .notice, p.notice {
@@ -907,7 +1111,7 @@ pre {
 	padding: 30px;
 	color: #626262;
 	background-color: #B7E3EC;
-	border-radius: 3px;
+	border-radius: 8px;
 	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.24);
 	margin-bottom: 2em;
 }
@@ -958,7 +1162,7 @@ pre {
 }
 
 #actions-sidebar {
-	background: #e0e0e0;
+	background: var(--sidebar-bg);
 }
 
 .index table {
@@ -969,7 +1173,7 @@ pre {
 }
 table {
 	font-weight: 300;
-	background: #f8f8f8; /** light-theme background */
+	background: var(--table-bg); /** light-theme background */
 	margin-bottom: 1.25rem;
 	border: none;
 	table-layout: fixed;
@@ -980,9 +1184,10 @@ table thead {
 }
 table thead tr th {
 	font-weight: normal;
+	color: var(--table-th-head);
 }
 table tr {
-	border-bottom: 1px solid #cbcbcc;
+	border-bottom: 1px solid var(--table-line);
 }
 table thead tr {
 	border-bottom: 1px solid #146fa6;
@@ -991,7 +1196,7 @@ table tr th {
 	font-weight: normal;
 	padding: 0.5625rem 0.625rem;
 	font-size: 0.875rem;
-	color: #146fa6;
+	color: var(--table-th);
 	text-align: left;
 	border-bottom: 2px solid #146fa6;
 	vertical-align: bottom;
@@ -999,7 +1204,13 @@ table tr th {
 table tr:nth-of-type(even) {
 	background: none;
 }
-table td {
+/* Row hover: helps orientation in wide tables. */
+table tbody tr:hover {
+	background-color: var(--table-hover);
+}
+table tbody tr td,
+table tr td {
+	color: var(--table-cell);
 	vertical-align: top;
 	word-break: break-all;
 }
@@ -1028,7 +1239,7 @@ fieldset {
 	margin: 1.125rem 0;
 }
 fieldset legend {
-    background: #f8f8f8; /** light-theme background */
+    background: var(--legend-bg);
 	border-bottom: 2px solid #146fa6;
 	padding-bottom: 8px;
 	width: 100%;
@@ -1051,9 +1262,65 @@ button {
 	margin-right: 20px;
 	border-radius: 8px;
 	background: #0e4e74;
+	cursor: pointer;
+}
+
+/*
+ * Button classes of the role assignment (web/html/users/snippets/roles.html);
+ * they used to come from bootstrap.min.css.
+ */
+.btn {
+	display: inline-block;
+	padding: 0.375rem 0.75rem;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	text-align: center;
+	vertical-align: middle;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: none;
+}
+.btn-primary {
+	color: #ffffff;
+	background-color: #0077bb;
+	border-color: #0d6efd;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+	background-color: #0b5ed7;
+	border-color: #0a58ca;
+}
+.btn-secondary {
+	color: #ffffff;
+	background-color: #6c757d;
+	border-color: #6c757d;
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+	background-color: #5c636a;
+	border-color: #565e64;
+}
+.mb-2 {
+	margin-bottom: 0.5rem;
+}
+
+/*
+ * Wide tables scroll inside their box instead of pushing the page.
+ * (The wrappers in the templates existed, but no stylesheet defined the class.)
+ */
+.table-responsive {
+	width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
 .button {
 	border-radius: 8px;
+}
+.button:hover,
+.button:focus {
+	color: var(--button-hover-fg);
 }
 .right {
     margin-right:20px;
@@ -1217,22 +1484,24 @@ button {
  * Content.
  */
 .content {
-	padding: 2rem;
-	background-color: #f8f8f8; /** light-theme background */
+	/* The old equal-height hack cancelled the bottom padding: kept at 0 so the
+	   page looks exactly as before. */
+	padding: 2rem 2rem 0 2rem;
+	background-color: var(--surface); /** light-theme background */
 }
 .content h3 {
-	color: #0e4e74;
+	color: var(--heading-3);
 	padding-bottom: 0.5rem;
 	margin-bottom: 20px;
 }
 .content h4 {
-	color: #0e4e74;
+	color: var(--heading-4);
 	padding-bottom: 0.5rem;
 	margin-bottom: 20px;
 	border-bottom: 2px solid #0e4e74;
 }
 .content h4.errMSg {
-	color: #0e4e74;
+	color: var(--heading-4-err);
 	padding-bottom: 0.5rem;
 	margin-bottom: 20px;
 	border: 0;
@@ -1244,14 +1513,28 @@ button {
 	margin-bottom: 10px;
 	border-bottom: 0px;
 }
-/* Force equal height by overflowing */
-.content, #actions-sidebar, #service-sidebar {
-	margin-bottom: -99999px;
-	padding-bottom: 99999px;
-}
-
-.ui-tooltip {
-	background-color: #cccccc;
+/**
+ * Tooltip (jQuery UI tooltip, see blocks/script.html).
+ *
+ * A small card instead of the flat jQuery UI box: a 1 px line, the radius of
+ * the other controls (8 px) and a tinted surface of the current theme, so it
+ * sits in front of the page without looking like a system hint. The values
+ * come from the tooltip tokens, theme-dark.css only redefines them.
+ *
+ * The tooltip element carries the classes ui-tooltip ui-widget ui-widget-content;
+ * jQuery UI's own `.ui-widget.ui-widget-content` is more specific, so the three
+ * classes are repeated here to win regardless of the order of the style sheets.
+ */
+.ui-tooltip.ui-widget.ui-widget-content {
+	padding: 0.4rem 0.65rem;
+	color: var(--tooltip-fg);
+	background-color: var(--tooltip-bg);
+	border: 1px solid var(--tooltip-border);
+	border-radius: 8px;
+	box-shadow: var(--tooltip-shadow);
+	font-family: inherit;
+	font-size: 0.9rem;
+	line-height: 1.45;
 }
 
 .modal {
@@ -1269,7 +1552,7 @@ button {
     margin: 15% auto;
     padding: 32px;
     width: 400px;
-    border-radius: 10px;
+    border-radius: 8px;
     text-align: left;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -1291,7 +1574,7 @@ button {
     margin-right: 0px;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
     border: none;
     color: white;
 }
@@ -1383,4 +1666,285 @@ button {
   50% {
     opacity: 1;
   }
+}
+
+/**
+ * Collapsible side menu (web/js/sidebar.js).
+ *
+ * Only the collapsed state is styled; while the menu is shown every rule of
+ * the page design applies unchanged (same column widths, same distances).
+ */
+body.sidebar-collapsed #actions-sidebar,
+body.sidebar-collapsed #service-sidebar {
+	display: none;
+}
+
+/* The freed width belongs to the content: one column while the menu is hidden. */
+body.sidebar-collapsed .container {
+	grid-template-columns: 1fr;
+}
+
+/**
+ * The toggle in the top bar: left of the theme switcher, no background, and the
+ * three bars as large as the icon of the theme switcher (32px). The bars are
+ * drawn with CSS so the size does not depend on the font.
+ */
+.top-bar > .sidebar-toggle {
+	float: left;
+	position: relative;
+	top: 0;
+	display: flex;
+	align-items: center; /* the three bars are centred top to bottom */
+	justify-content: flex-start; /* left aligned like the theme icon: 18px to the right */
+	width: 40px; /* 22px icon + 18px distance to the right, like the theme switcher */
+	height: 60px; /* full height of the top bar: the bars are centred top to bottom */
+	margin: 0 0 0 16px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	color: #ffffff;
+	line-height: 0;
+	cursor: pointer;
+}
+/* Hover only: after a click the button keeps the focus, and a :focus colour
+   would make the bars stay light blue with the mouse already gone. */
+.top-bar > .sidebar-toggle:hover {
+	background: transparent;
+	color: #9adeda;
+}
+.top-bar > .sidebar-toggle:focus:not(:focus-visible) {
+	outline: none;
+}
+.top-bar > .sidebar-toggle[hidden] {
+	display: none; /* only pages with a side menu get the button */
+}
+.sidebar-toggle-icon,
+.sidebar-toggle-icon::before,
+.sidebar-toggle-icon::after {
+	display: block;
+	width: 22px;
+	height: 2px;
+	border-radius: 1px;
+	background-color: currentColor;
+}
+.sidebar-toggle-icon {
+	position: relative;
+	margin: 0;
+}
+.sidebar-toggle-icon::before,
+.sidebar-toggle-icon::after {
+	content: "";
+	position: absolute;
+	left: 0;
+}
+.sidebar-toggle-icon::before {
+	top: -6px;
+}
+.sidebar-toggle-icon::after {
+	top: 6px;
+}
+@media print {
+	.sidebar-toggle,
+	#actions-sidebar,
+	#service-sidebar {
+		display: none;
+	}
+}
+
+/**
+ * Phosphor glyphs for the templates.
+ *
+ * Usage in a template:  <span class="ph ph-check ph-ok"></span>
+ *                       <span class="ph ph-x ph-fail"></span>
+ *                       <span class="ph ph-dot ph-warn"></span>
+ *
+ * The font is declared in refs.css (@font-face 'Phosphor'), the code points
+ * are the ones of phosphor-codepoints.properties (autumo-ui).
+ */
+.ph {
+	display: inline-block;
+	font-family: 'Phosphor', sans-serif;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	vertical-align: middle;
+	speak: never;
+	/* Phosphor only ships the regular weight: the stroke makes it a bit bolder */
+	-webkit-text-stroke: 0.6px currentColor;
+}
+.ph-check::before {
+	content: "\e182"; /* check */
+}
+.ph-x::before {
+	content: "\e4f6"; /* x */
+}
+.ph-dot::before {
+	content: "\e3ee"; /* record - filled circle */
+	font-size: 1.15em;  /* the glyph is drawn small inside its box */
+}
+.ph-info::before {
+	content: "\e2ce"; /* info */
+}
+.ph-warning::before {
+	content: "\e4e0"; /* warning */
+}
+/* Menu icons (see phosphor-codepoints.properties of autumo-ui). */
+.ph-caret-double-left::before {
+	content: "\e128"; /* caret-double-left */
+}
+.ph-caret-left::before {
+	content: "\e138"; /* caret-left */
+}
+.ph-caret-right::before {
+	content: "\e13a"; /* caret-right */
+}
+.ph-caret-double-right::before {
+	content: "\e12a"; /* caret-double-right */
+}
+.ph-sign-out::before {
+	content: "\e42a"; /* sign-out */
+}
+.ph-sign-in::before {
+	content: "\e428"; /* sign-in */
+}
+.ph-monitor::before {
+	content: "\e32e"; /* monitor */
+}
+.ph-chart-line::before {
+	content: "\e154"; /* chart-line */
+}
+.ph-house::before {
+	content: "\e2c2"; /* house */
+}
+.ph-users::before {
+	content: "\e4d6"; /* users */
+}
+.ph-user::before {
+	content: "\e4c2"; /* user */
+}
+.ph-user-plus::before {
+	content: "\e4d0"; /* user-plus */
+}
+.ph-shield::before {
+	content: "\e40a"; /* shield */
+}
+.ph-checks::before {
+	content: "\e53a"; /* checks */
+}
+.ph-list::before {
+	content: "\e2f0"; /* list */
+}
+.ph-list-dashes::before {
+	content: "\e2f4"; /* list-dashes */
+}
+.ph-sliders::before {
+	content: "\e432"; /* sliders */
+}
+.ph-plus::before {
+	content: "\e3d4"; /* plus */
+}
+.ph-trash::before {
+	content: "\e4a6"; /* trash */
+}
+.ph-pencil-simple::before {
+	content: "\e3b4"; /* pencil-simple */
+}
+.ph-arrow-left::before {
+	content: "\e058"; /* arrow-left */
+}
+.ph-gear::before {
+	content: "\e270"; /* gear */
+}
+.ph-key::before {
+	content: "\e2d6"; /* key */
+}
+.ph-lock::before {
+	content: "\e2fa"; /* lock */
+}
+.ph-magnifying-glass::before {
+	content: "\e30c"; /* magnifying-glass */
+}
+/* Colours of the design: success, error, warning. */
+.ph-ok {
+	color: #198754;
+}
+.ph-fail {
+	color: #c3232d;
+}
+.ph-warn {
+	color: #fd7e14;
+}
+.ph-muted {
+	color: #5b6b77;
+}
+
+/**
+ * Status glyphs of the tables (yesStatus, noStatus, ...Status).
+ *
+ * They used to be PNGs from /img/status/; now they are Phosphor glyphs with
+ * the colours of the design. The font is declared in refs.css.
+ */
+.yesStatus::before,
+.noStatus::before,
+.greenStatus::before,
+.orangeStatus::before,
+.redStatus::before,
+.miniGreenStatus::before,
+.miniOrangeStatus::before,
+.miniRedStatus::before {
+	display: inline-block;
+	font-family: 'Phosphor', sans-serif;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	speak: never;
+	/* Phosphor only ships the regular weight: the stroke makes it a bit bolder */
+	-webkit-text-stroke: 0.6px currentColor;
+}
+.yesStatus::before {
+	content: "\e182"; /* check */
+	font-size: 18px;
+	color: #198754;
+}
+.noStatus::before {
+	content: "\e4f6"; /* x */
+	font-size: 18px;
+	color: #c3232d;
+}
+/* Check and x are drawn with thin lines: they get a stronger contour. */
+.yesStatus::before,
+.noStatus::before,
+.ph-check::before,
+.ph-x::before {
+	-webkit-text-stroke: 1.1px currentColor;
+}
+.greenStatus::before {
+	content: "\e3ee"; /* record - filled circle */
+	font-size: 20px;
+	color: #198754;
+}
+.orangeStatus::before {
+	content: "\e3ee";
+	font-size: 20px;
+	color: #fd7e14;
+}
+.redStatus::before {
+	content: "\e3ee";
+	font-size: 20px;
+	color: #c3232d;
+}
+.miniGreenStatus::before {
+	content: "\e3ee";
+	font-size: 16px;
+	color: #198754;
+}
+.miniOrangeStatus::before {
+	content: "\e3ee";
+	font-size: 16px;
+	color: #fd7e14;
+}
+.miniRedStatus::before {
+	content: "\e3ee";
+	font-size: 16px;
+	color: #c3232d;
 }

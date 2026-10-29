@@ -12,45 +12,124 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
-
-
 
 
 /**
- * Dark theme. Remove from 'head.html'-block
- * if you want to have the bright theme.
+ * Dark theme.
+ *
+ * Only the design tokens of style.css are redefined - every rule of the
+ * application uses them. The few rules below are the exceptions a token cannot
+ * express: the background image, the browser widgets (auto-fill, calendar
+ * icon), the form fields that override Foundation, and some accent borders.
  */
+:root {
+	/* text and links */
+	--text: #0093e6;
+	--link: #0093e6;
+	--link-hover: #2dc7fe;
+	--button-hover-fg: #ffffff;
+	--label: #07b;
+	--label-bg: #222222;
+	--legend: #dddddd;
+	--legend-bg: #222222;
+	--h1: #dddddd;
+	--heading-3: #2dc7fe;
+	--heading-3-light: #2dc7fe;
+	--heading-4-err: #0093e6;
+	--heading-5: #a2eeff;
+	--actions-text: #07b;
+
+	/* side menu */
+	--sidebar-bg: #111111;
+	--nav-link: #07b;
+	--nav-heading: #11618e;
+	--nav-label: #07b;
+	--nav-label-bg: #111111;
+	--nav-hover: rgba(255, 255, 255, 0.06);
+	--nav-active: rgba(255, 255, 255, 0.10);
+
+	/* surfaces */
+	--body-bg: #444444;
+	--surface: #222222;
+	--container-line: #000000;
+
+	/* tables */
+	--table-bg: #222222;
+	--table-line: #444444;
+	--table-th: #0093e6;
+	--table-th-head: #07b;
+	--table-cell: #dddddd;
+	--table-hover: rgba(255, 255, 255, 0.03); /* barely visible, just enough for orientation */
+
+	/* lists */
+	--list-bg: #444444;
+	--list-border: #333333;
+	--list-item-fg: #cccccc;
+	--list-item-bg: #666666;
+	--list-item-border: #444444;
+
+	/* pagination */
+	--pager-text: #444444;
+	--pager-link: #aaaaaa;
+	--pager-link-hover: #0093e6;
+	--pager-active-fg: #aaaaaa; /* stays light: the rule in style.css is !important */
+	--pager-active-bg: #444444;
+	--pager-active-border: #5a5a5a;
+	--pager-border: #444444;
+	--pager-bg: #1d1d1d;
+	--pager-hover-bg: rgba(255, 255, 255, 0.08);
+	--pager-disabled: #6b6b6b;
+
+	/* drop down and tooltip */
+	--dropdown-bg: #555555;
+	--dropdown-fg: #cccccc;
+	--dropdown-hover-bg: #666666;
+	--dropdown-link-bg: #555555;
+	--tooltip-bg: #2b2f33;
+	--tooltip-fg: #e2e6ea;
+	--tooltip-border: #3d4150;
+	--tooltip-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+
+	/* footer */
+	--footer-bg: #111111;
+	--footer-fg: #0e4e77;
+
+	/* message card */
+	--message-info: #a6f0ff;
+	--message-success: #7ef0c0;
+	--message-error: #ffb3ba;
+	--message-warning: #ffd08a;
+
+	/* form fields (the values override Foundation's defaults) */
+	--input-bg: #2b2f33;
+	--input-border: #3d4150;
+	--input-fg: #e2e6ea;
+	--input-autofill-shadow: #2b2f33;
+}
+
 body {
 	background: url('/img/tiles-back-dark.png');
-	background-color: #444444;
+	background-color: var(--body-bg);
 }
-legend { 
-    background-color: #222222 !important;
-    color: #dddddd;
-}
-label {
-    background-color: #222222 !important;
-    color: #07b;
-}
-input {
-    background-color: #333333 !important;
-    border-color: #444444 !important;
-    color: #dddddd !important;
-}
-select {
-    background-color: #333333 !important;
-    border-color: #444444 !important;
-    color: #dddddd !important;
-}
+
+input,
+select,
 textarea {
-    background-color: #333333 !important;
-    border-color: #444444 !important;
-    color: #dddddd !important;
+	background-color: var(--input-bg) !important;
+	border-color: var(--input-border) !important;
+	color: var(--input-fg) !important;
 }
+
+input:focus, select:focus, textarea:focus {
+	border-color: #2dc7fe;
+	box-shadow: 0 0 0 3px rgba(45, 199, 254, 0.14);
+	outline: none;
+}
+
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
+input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
@@ -58,168 +137,42 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-	caret-color: #dddddd;
-    background-color: #333333 !important;
+	caret-color: var(--input-fg);
+	background-color: var(--input-bg) !important;
+	border-color: var(--input-border) !important;
+	color: var(--input-fg) !important;
 	box-shadow: inset 0 1px 2px rgb(51, 51, 51);
-	border-color: #444444 !important;
-	color: #dddddd !important;
-    -webkit-text-fill-color: #dddddd;
-	-webkit-box-shadow: 0 0 0px 1000px #333333 inset;
-  	transition: background-color 5000s ease-in-out 0s;    
+	-webkit-text-fill-color: var(--input-fg);
+	-webkit-box-shadow: 0 0 0px 1000px var(--input-autofill-shadow) inset;
+	transition: background-color 5000s ease-in-out 0s;
 }
+
 ::-webkit-calendar-picker-indicator {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23bbbbbb" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>') !important;
-  cursor: pointer;
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23bbbbbb" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>') !important;
+	cursor: pointer;
 }
 
-div.message {
-    background-color: rgb(114, 206, 232);
-}
-table {
-    background-color: #222222;
-}
-table tr th {
-    color: #0093E6;
-}
-table tr td {
-    color: #dddddd;
-}
-table tr {
-    border-bottom: 1px solid #444444;
-}
-table thead tr th, table thead tr td {
-	color: #07b;
-}
+/* The old dark theme forced the paragraph colour (it also covered .paginator p
+   and p.error); the token keeps that behaviour. */
 p {
-    color: #0093E6 !important;
+	color: var(--text) !important;
 }
 
-ul.pagination li.active a {
-    color: #444444;
-}
-ul.pagination li a:hover {
-	color: #0093E6 !important;
-}
-ul.pagination li  {
-    color: #444444;
-}
-ul.pagination li a {
-    color: #aaaaaa;
+/* Dark-only accents of the footer. */
+.footerline {
+	border-top: 1px solid #000000;
+	border-bottom: 1px solid #000000;
 }
 
-.list-group {
-    min-height: 200px;
-	background-color: #444444;
-    border: 1px solid #333333;
-    padding: 10px;
-}
-.list-group-item {
-	background-color: #666666;
-	border: 1px solid #444444;
-	color: #cccccc;
-}
-
-.content {
-    background-color: #222222;
-}
-.container {
-    border-bottom: 1px solid #000000;
-}
-#servicecontent {
-    background-color: hsla(0, 0%, 15%, 0.6);
-}
-#service-sidebar {
-    background: #111;
-}
-
-.prev {
-    border: 1px solid #aaaaaa;
-	border-radius: 8px;
-	background-color: #1D1D1D !important;
-}
-.next {
-    border: 1px solid #aaaaaa;
-	border-radius: 8px;
-	background-color: #1D1D1D !important;
-}
-
-#actions-sidebar {
-    background-color: #111111;
-}
-.side-nav li.heading {
-    color: #0093E6 !important;
-}
-.side-nav li a:not(.button) {
-    color: #07b;
-}
-.side-nav li div label {
-	background-color: #111111 !important;
-	color: #07b;
-}
+/* Accents that a token of style.css does not cover. */
 .side-nav li div input {
-    border: 1px solid #333333 !important;
+	border: 1px solid #333333 !important;
 	background-color: #222222 !important;
 }
-
-a {
-    color: #0093E6;
-    text-decoration: none;
-}
-.button:hover {
-    color: #ffffff !important;
-}
-a:hover {
-    color: #2DC7FE !important;
-}
-.actions {
-    color: #07b;
-}
-
-h1 {
-    color: #dddddd !important;
-}
-h3 {
-    color: #2DC7FE !important;
-}
-h5 {
-	color: #A2EEFF !important;
-}
-
 .refresh_section_label {
 	background-color: #07b !important;
 }
-
-.content h4.errMsg {
-    color: #0093E6 !important;
-    padding-bottom: 0.5rem !important;
-    margin-bottom: 20px !important;
-    border: 0;
-}
-.dropdown-content {
-    background-color: #555555;
-}
-.dropdown-content a {
-    background-color: #555555;
-    color: #cccccc;
-}
-.dropdown-content a:hover {
-    background-color: #666666;
-}
 .menusep {
-    border: 1px solid #222222;
-    border-width: 1px 0 0;
+	border: 1px solid #222222;
+	border-width: 1px 0 0;
 }
-
-.ui-tooltip {
-	color: #ffffff;
-	background-color: #222222;
-	border-color: #ff0000;
-}
-
-.footerline {
-	background-color: #111111;
-	color: #0E4E77 !important;
-	border-top: 1px solid #000000;	
-	border-bottom: 1px solid #000000;	
-}
-

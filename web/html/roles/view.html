@@ -5,6 +5,7 @@
         </li>
         <li>
             <a href="/{$lang}/roles/edit?id={$id}" class="side-nav-item">
+                <span class="ph ph-pencil-simple" aria-hidden="true"></span>
                 {$l.roles.view.2}
             </a>
         </li>
@@ -14,22 +15,26 @@
                 <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
             </form>
             <a href="/{$lang}/roles/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.roles.view.confirm_message.4,{$displayName}}" data-form-name="post_roles_delete_{$id}">
+                <span class="ph ph-trash" aria-hidden="true"></span>
                 {$l.roles.view.3}
             </a>
         </li>
         <li>
             <a href="/{$lang}/roles" class="side-nav-item">
+                <span class="ph ph-shield" aria-hidden="true"></span>
                 {$l.roles.view.5}
             </a>
         </li>
         <li>
             <a href="/{$lang}/roles/add" class="side-nav-item">
+                <span class="ph ph-plus" aria-hidden="true"></span>
                 {$l.roles.view.6}
             </a>
         </li>
     </ul>
 </nav>
 <div class="roles view large-10 medium-8 columns content">
+	{#message}
     <h3>
         {$l.roles.view.7,{$displayName}}
     </h3>

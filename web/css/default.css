@@ -40,7 +40,7 @@ nav {
 	margin-top: -1px;
 }
 .container {
-	border-bottom: 1px solid #666666;
+	border-bottom: 1px solid var(--container-line);
 }
 footer {
 	margin-top: 14px;
@@ -121,20 +121,20 @@ a.login {
 	height: 100%;
 }
 .log-left {
-	padding-top: 78px;
-	padding-bottom: 78px;
+	padding-top: 32px;
+	padding-bottom: 48px;
 }
 .log-right {
-	padding-top: 110px;
 	padding-left: 24px;
-	padding-bottom: 78px;
+	padding-top: 64px;
+	padding-bottom: 48px;
 }
 .log-info-box {
 	text-align: center;
 	padding: 24px 12px 24px 12px;
 	margin-right: 20px;
 	border: 0px solid #444444;
-	border-radius: 12px;
+	border-radius: 8px;
 	font-weight: lighter;
 	height: 100%;
 }
@@ -146,7 +146,7 @@ a.login {
 .log-info-box a {
 	color: #ffaf65;
 }
-.log-info-box a:hover, a:focus {
+.log-info-box a:hover, .log-info-box a:focus {
 	color: #ffffff !important;
 }
 .log-info-box img {

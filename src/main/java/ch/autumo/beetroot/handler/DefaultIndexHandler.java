@@ -539,12 +539,12 @@ public class DefaultIndexHandler extends BaseHandler {
 		String options = "";
 		
 		if (page > 1)
-			options += "				<li class=\"first\"><a href=\"/"+lang+"/"+getEntity()+"/index?page=1\">&lt;&lt; first</a></li>\n";            
+			options += "				<li class=\"first\"><a href=\"/"+lang+"/"+getEntity()+"/index?page=1\" title=\"first\" aria-label=\"first\"><span class=\"ph ph-caret-double-left\" aria-hidden=\"true\"></span></a></li>\n";            
 		
 		if (page == 1)
-			options += "				<li class=\"prev disabled\"><a href=\"\" onclick=\"event.preventDefault();\">&lt; previous</a></li>\n";
+			options += "				<li class=\"prev disabled\"><a href=\"\" onclick=\"event.preventDefault();\" title=\"previous\" aria-label=\"previous\"><span class=\"ph ph-caret-left\" aria-hidden=\"true\"></span></a></li>\n";
 		else if (page > 1)
-			options += "				<li class=\"prev\"><a rel=\"prev\" href=\"/"+lang+"/"+getEntity()+"/index?page="+(page-1)+"\">&lt; previous</a></li>\n";            
+			options += "				<li class=\"prev\"><a rel=\"prev\" href=\"/"+lang+"/"+getEntity()+"/index?page="+(page-1)+"\" title=\"previous\" aria-label=\"previous\"><span class=\"ph ph-caret-left\" aria-hidden=\"true\"></span></a></li>\n";            
 		
 		
 		for (int i = 0; i < pages; i++) {
@@ -557,12 +557,12 @@ public class DefaultIndexHandler extends BaseHandler {
 		
 		
 		if (page == pages)
-			options += "				<li class=\"next disabled\"><a href=\"\" onclick=\"event.preventDefault();\">next &gt;</a></li>\n";
+			options += "				<li class=\"next disabled\"><a href=\"\" onclick=\"event.preventDefault();\" title=\"next\" aria-label=\"next\"><span class=\"ph ph-caret-right\" aria-hidden=\"true\"></span></a></li>\n";
 		else if (page < pages)
-			options += "				<li class=\"next\"><a rel=\"next\" href=\"/"+lang+"/"+getEntity()+"/index?page="+(page+1)+"\">next &gt;</a></li>\n";            
+			options += "				<li class=\"next\"><a rel=\"next\" href=\"/"+lang+"/"+getEntity()+"/index?page="+(page+1)+"\" title=\"next\" aria-label=\"next\"><span class=\"ph ph-caret-right\" aria-hidden=\"true\"></span></a></li>\n";            
 
 		if (page < pages)
-			options += "				<li class=\"last\"><a href=\"/"+lang+"/"+getEntity()+"/index?page="+pages+"\">last &gt;&gt;</a></li>\n";            
+			options += "				<li class=\"last\"><a href=\"/"+lang+"/"+getEntity()+"/index?page="+pages+"\" title=\"last\" aria-label=\"last\"><span class=\"ph ph-caret-double-right\" aria-hidden=\"true\"></span></a></li>\n";            
 		
 		
 		return 	  "    <div class=\"paginator\">\n"

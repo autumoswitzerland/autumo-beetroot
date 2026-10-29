@@ -6,6 +6,7 @@
         {$if-role=Administrator,Operator:}
         <li>
             <a href="/{$lang}/tasks/edit?id={$id}" class="side-nav-item">
+                <span class="ph ph-pencil-simple" aria-hidden="true"></span>
                 {$l.tasks.view.2}
             </a>
         </li>
@@ -15,18 +16,21 @@
                 <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
             </form>
             <a href="/{$lang}/tasks/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.tasks.view.confirm_message.4,{$displayName}}" data-form-name="post_tasks_delete_{$id}">
+                <span class="ph ph-trash" aria-hidden="true"></span>
                 {$l.tasks.view.3}
             </a>
         </li>
         {$endif-role;}
         <li>
             <a href="/{$lang}/tasks" class="side-nav-item">
+                <span class="ph ph-checks" aria-hidden="true"></span>
                 {$l.tasks.view.5}
             </a>
         </li>
         {$if-role=Administrator,Operator:}
         <li>
             <a href="/{$lang}/tasks/add" class="side-nav-item">
+                <span class="ph ph-plus" aria-hidden="true"></span>
                 {$l.tasks.view.6}
             </a>
         </li>
@@ -34,6 +38,7 @@
     </ul>
 </nav>
 <div class="tasks view large-10 medium-8 columns content">
+	{#message}
     <h3>
         {$l.tasks.view.7,{$displayName}}
     </h3>

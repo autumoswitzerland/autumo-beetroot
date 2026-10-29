@@ -30,7 +30,7 @@
 body {
 	background: url('/img/tiles-back.png');
 	background-repeat: repeat;
-	background-color: #666666;
+	background-color: var(--body-bg);
 }
 
 /**
@@ -119,185 +119,56 @@ body {
 }
 
 /**
- * Status images
+ * Fonts.
+ *
+ * Inter as variable font: one file covers every weight from 100 to 900, so the
+ * sixteen static Aileron files are not needed anymore. The faces are declared
+ * in this file on purpose - beetRoot rewrites the url() references here for a
+ * servlet context.
  */
-.redStatus {
-	background-image: url('/img/status/redStatus32.png');
-	background-repeat: no-repeat;
-	background-size: 30px;
-	background-position: 6px 3px;
+
+@font-face {
+    font-family: 'InterVariable';
+    src: url('/font/InterVariable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
 }
-.orangeStatus {
-	background: url('/img/status/orangeStatus32.png');
-	background-repeat: no-repeat;
-	background-size: 30px;
-	background-position: 6px 3px;
+
+@font-face {
+    font-family: 'InterVariable';
+    src: url('/font/InterVariable-Italic.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
 }
-.greenStatus {
-	background: url('/img/status/greenStatus32.png');
-	background-repeat: no-repeat;
-	background-size: 30px;
-	background-position: 6px 3px;
+
+/* Static fallbacks for browsers without variable font support. */
+@font-face {
+    font-family: 'Inter';
+    src: url('/font/Inter-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
-.miniRedStatus {
-	background-image: url('/img/status/miniRedStatus16.png');
-	background-repeat: no-repeat;
-	background-size: 16px;
-	background-position: 0px 0px;
-}
-.miniOrangeStatus {
-	background: url('/img/status/miniOrangeStatus16.png');
-	background-repeat: no-repeat;
-	background-size: 16px;
-	background-position: 0px 0px;
-}
-.miniGreenStatus {
-	background: url('/img/status/miniGreenStatus16.png');
-	background-repeat: no-repeat;
-	background-size: 16px;
-	background-position: 0px 0px;
-}
-.yesStatus {
-	background-image: url('/img/status/yes.png');
-	background-repeat: no-repeat;
-	background-size: 16px;
-	background-position: 0.5625rem 0.625rem;
-}
-.noStatus {
-	background: url('/img/status/no.png');
-	background-repeat: no-repeat;
-	background-size: 16px;
-	background-position: 0.5625rem 0.625rem;
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/font/Inter-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
 }
 
 /**
- * Fonts.
+ * Phosphor Icons (https://phosphoricons.com), MIT licence, see
+ * web/font/Phosphor-LICENSE.txt. Glyphs are addressed by their code point,
+ * the mapping is in phosphor-codepoints.properties of autumo-ui.
  */
-
 @font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Black.woff2') format('woff2');
-    font-weight: 900;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Regular.woff2') format('woff2');
+    font-family: 'Phosphor';
+    src: url('/font/Phosphor.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-LightItalic.woff2') format('woff2');
-    font-weight: 300;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-SemiBoldItalic.woff2') format('woff2');
-    font-weight: 600;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Italic.woff2') format('woff2');
-    font-weight: normal;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Heavy.woff2') format('woff2');
-    font-weight: 900;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Bold.woff2') format('woff2');
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-HeavyItalic.woff2') format('woff2');
-    font-weight: 900;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Thin.woff2') format('woff2');
-    font-weight: 100;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-UltraLightItalic.woff2') format('woff2');
-    font-weight: 200;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-BlackItalic.woff2') format('woff2');
-    font-weight: 900;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-UltraLight.woff2') format('woff2');
-    font-weight: 200;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-ThinItalic.woff2') format('woff2');
-    font-weight: 100;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-BoldItalic.woff2') format('woff2');
-    font-weight: bold;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-Light.woff2') format('woff2');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Aileron';
-    src: url('/font/Aileron-SemiBold.woff2') format('woff2');
-    font-weight: 600;
-    font-style: normal;
-    font-display: swap;
+    font-display: block;
 }

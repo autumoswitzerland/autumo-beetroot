@@ -17,7 +17,7 @@ Also, in this case, you never have to reference a servlet name in any HTML templ
 
 A few words about existing stylesheets (see directory `web/css/uncompressed` for uncompressed versions):
 
-  - `base.min.css`, `bootstrap.min.css`, `foundation.min.css`: Base styles, this is something you don't want to change in most cases unless you create your own page design from scratch; In this case, you could get rid of them all.
+  - `base.min.css`, `foundation.min.css`: Base styles, this is something you don't want to change in most cases unless you create your own page design from scratch; In this case, you could get rid of them all.
 
   - `web/css/password-strength.min.css`: Password validator/strength script.
 

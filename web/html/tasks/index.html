@@ -5,7 +5,8 @@
             {$l.tasks.index.4}
         </li>
         <li>
-            <a href="/{$lang}/tasks/add">
+            <a href="/{$lang}/tasks/add" class="side-nav-item">
+                <span class="ph ph-plus" aria-hidden="true"></span>
                 {$l.tasks.index.2}
             </a>
         </li>
@@ -13,23 +14,24 @@
     </ul>
 </nav>
 <div class="tasks index large-10 medium-8 columns content">
+	{#message}
     <h3>
         {$l.tasks.index.3}
     </h3>
     <div class="table-responsive">
         <table>
             <colgroup>
-                <col span="1" style="width: 15%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 5%;" />
-                <col span="1" style="width: 15%;" />
-                <col span="1" style="width: 15%;" />
                 <col span="1" style="width: 10%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 5%;" />
+                <col span="1" style="width: 15%;" />
+                <col span="1" style="width: 15%;" />
+                <col span="1" style="width: 15%;" />
             </colgroup>
             <thead>
                 <tr>

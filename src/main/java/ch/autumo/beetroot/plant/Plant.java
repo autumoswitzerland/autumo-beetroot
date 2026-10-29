@@ -76,7 +76,7 @@ public class Plant {
 		final String all =
 				Colors.darkCyan(" PLANT "+ BeetRootConfigurationManager.getAppVersion()) + " - BeetRoot Generator for creating operable CRUD views" + CR
 				+ " based on database entities." + CR
-				+ " (c) 2025 autumo Ltd. Switzerland";
+				+ " (c) 2026 autumo Ltd. Switzerland";
 		return all;
 	}
 

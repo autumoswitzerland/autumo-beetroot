@@ -10,18 +10,21 @@
                 <input type="hidden" name="_csrfToken" value="{$csrfToken}" />
             </form>
             <a href="/{$lang}/users/delete?id={$id}" class="dialogLink side-nav-item" data-confirm-message="{$l.users.edit.confirm_message.3,{$displayName}}" data-form-name="post_users_delete_{$id}">
+                <span class="ph ph-trash" aria-hidden="true"></span>
                 {$l.users.edit.2}
             </a>
         </li>
         {$endif-role;}
         <li>
             <a href="/{$lang}/users" class="side-nav-item">
+                <span class="ph ph-users" aria-hidden="true"></span>
                 {$l.users.edit.4}
             </a>
         </li>
     </ul>
 </nav>
 <div class="users form large-10 medium-8 columns content">
+	{#message}
     <div class="users form content">
         <form method="post" accept-charset="utf-8" action="/{$lang}/users/edit?id={$id}">
             <div style="display: none;">
