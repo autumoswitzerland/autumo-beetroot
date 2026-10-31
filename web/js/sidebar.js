@@ -16,6 +16,8 @@
  */
 
 
+const sidebar_app = document.currentScript.dataset.app || "beetRoot";
+
 /**
  * Collapsible side menu (the left column of a page).
  *
@@ -27,7 +29,7 @@
 (function () {
 	'use strict';
 
-	var STORAGE_KEY = 'sidebar.visibility';
+	var STORAGE_KEY = sidebar_app + '.sidebar.visibility';
 	var COLLAPSED_CLASS = 'sidebar-collapsed';
 
 	function sidebar() {

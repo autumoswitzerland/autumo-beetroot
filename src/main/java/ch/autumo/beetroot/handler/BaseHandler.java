@@ -44,8 +44,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.servlet.ServletContext;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.request.Method;
@@ -78,6 +76,7 @@ import ch.autumo.beetroot.utils.database.DB;
 import ch.autumo.beetroot.utils.security.Security;
 import ch.autumo.beetroot.utils.web.Web;
 import jakarta.activation.MimeType;
+import jakarta.servlet.ServletContext;
 
 
 /**
@@ -156,6 +155,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final String TAG_THEME			= "{$theme}";
 	private static final String TAG_ANTITHEME		= "{$antitheme}";
 	private static final String TAG_SERVLETNAME		= "{$servletName}";
+	private static final String TAG_SERVER_NAME		= "{$serverName}";
 
 	// Tags for sub-resource
 	private static final String TAG_REDIRECT_INDEX		= "{$redirectIndex}";
@@ -205,6 +205,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 	protected boolean insertServletNameInTemplateRefs = false;
 	protected String servletName = null;
+	protected String serverName = null;
 
 	private String successMessage = null;
 	private String warningMessage = null;
@@ -271,6 +272,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 			pattern_location_rev = Pattern.compile("location='/"+servletName+"http");
 		}
 
+		serverName = BeetRootConfigurationManager.getInstance().getString("server_name");
+		if (serverName == null || serverName.length() == 0) {
+			serverName = "beetRoot";
+		}
 
 		// Get template resource
 		final String templateResource = getResource();
@@ -1279,6 +1284,10 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 					text = text.replace(TAG_SERVLETNAME, "/"+servletName);
 				} else {
 					text = text.replace(TAG_SERVLETNAME, "");
+				}
+				// Server name
+				if (text.contains(TAG_SERVER_NAME)) {
+					text = text.replace(TAG_SERVER_NAME, serverName);
 				}
 
 

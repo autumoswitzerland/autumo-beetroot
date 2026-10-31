@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2024 autumo Ltd. Switzerland, Michael Gasche
+ * Copyright (c) 2026 autumo Ltd. Switzerland, Michael Gasche
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
  */
 
 
+const app = document.currentScript.dataset.app || "beetRoot";
+
 $(document).ready(function() {
 	// Header
-	var headerShow = localStorage.getItem("header.visibility");
+	var headerShow = localStorage.getItem(app + ".header.visibility");
 	if (headerShow != null) {
 		if (headerShow == "false") {
 			document.getElementById('header').style.display = "none";
@@ -28,9 +30,9 @@ $(document).ready(function() {
 });
 function hideHeader() {
 	$('header').fadeOut(300, function(){ document.getElementById('header').style.display = "none";});
-	localStorage.setItem("header.visibility", "false");
+	localStorage.setItem(app + ".header.visibility", "false");
 }
 function showHeader() {
 	document.getElementById('header').style.display = "flex";
-	localStorage.setItem("header.visibility", "true");
+	localStorage.setItem(app + ".header.visibility", "true");
 }

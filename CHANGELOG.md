@@ -15,7 +15,7 @@ The first release documented in this file is 3.3.0.
   state kept in `localStorage` (`web/js/sidebar.js`).
 - Design tokens (`:root` in `web/css/uncompressed/style.css`) for colours,
   radii and spacing; `web/css/theme-dark.css` only redefines them.
-- Phosphor icon font (`web/font/Phosphor.ttf`, MIT) with the `.ph-*` classes and
+- Phosphor icon font 2.1.2 (`web/font/Phosphor.woff2`, MIT) with the `.ph-*` classes and
   icons for the table status columns, the paginator, the main menu and the side
   menu entries.
 - The `{#message}` block can be placed in the layout or in any page template.

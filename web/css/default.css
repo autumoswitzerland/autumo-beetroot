@@ -102,32 +102,40 @@ a.login {
 	color: #07b;
 }
 
-.dropdown-content a {
-	padding: 6px 16px;
-}
-
-.log-container legend{
-	background-color: transparent !important;
-}
-.log-container label{
-	background-color: transparent !important;
-}
-.log-container input{
-	opacity: 0.5;
-}
-.log-container-2 {
-	justify-content: center;
+.container.clearfix .log-container {
 	align-items: center;
+}
+.log-container-1 {
+	display: flex;
+	align-items: center;
+	width: 100%;
 	height: 100%;
 }
-.log-left {
-	padding-top: 32px;
-	padding-bottom: 48px;
+.log-container-2 {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	margin-top: 28px;
+	margin-bottom: 56px;
 }
-.log-right {
-	padding-left: 24px;
-	padding-top: 64px;
-	padding-bottom: 48px;
+.log-container-2 > .log-left,
+.log-container-2 > .log-right {
+	float: none;
+	min-width: 400px;
+	flex: 1 1 400px;
+}
+.log-container-2 > .log-right {
+    padding-top: 36px;
+}
+
+.log-container legend {
+	background-color: transparent !important;
+}
+.log-container label {
+	background-color: transparent !important;
+}
+.log-container input {
+	opacity: 0.5;
 }
 .log-info-box {
 	text-align: center;

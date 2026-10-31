@@ -1211,7 +1211,6 @@ table tbody tr:hover {
 table tbody tr td,
 table tr td {
 	color: var(--table-cell);
-	vertical-align: top;
 	word-break: break-all;
 }
 .related table {
@@ -1484,9 +1483,7 @@ button {
  * Content.
  */
 .content {
-	/* The old equal-height hack cancelled the bottom padding: kept at 0 so the
-	   page looks exactly as before. */
-	padding: 2rem 2rem 0 2rem;
+	padding: 2rem;
 	background-color: var(--surface); /** light-theme background */
 }
 .content h3 {
@@ -1779,7 +1776,7 @@ body.sidebar-collapsed .container {
 	content: "\e4f6"; /* x */
 }
 .ph-dot::before {
-	content: "\e3ee"; /* record - filled circle */
+	content: "\ecde"; /* dot */
 	font-size: 1.15em;  /* the glyph is drawn small inside its box */
 }
 .ph-info::before {
@@ -1896,6 +1893,7 @@ body.sidebar-collapsed .container {
 	font-family: 'Phosphor', sans-serif;
 	font-style: normal;
 	font-weight: normal;
+	vertical-align: middle !important;
 	line-height: 1;
 	speak: never;
 	/* Phosphor only ships the regular weight: the stroke makes it a bit bolder */
@@ -1919,32 +1917,32 @@ body.sidebar-collapsed .container {
 	-webkit-text-stroke: 1.1px currentColor;
 }
 .greenStatus::before {
-	content: "\e3ee"; /* record - filled circle */
+	content: "\ecde"; /* dot */
 	font-size: 20px;
 	color: #198754;
 }
 .orangeStatus::before {
-	content: "\e3ee";
+	content: "\ecde";
 	font-size: 20px;
 	color: #fd7e14;
 }
 .redStatus::before {
-	content: "\e3ee";
+	content: "\ecde";
 	font-size: 20px;
 	color: #c3232d;
 }
 .miniGreenStatus::before {
-	content: "\e3ee";
+	content: "\ecde";
 	font-size: 16px;
 	color: #198754;
 }
 .miniOrangeStatus::before {
-	content: "\e3ee";
+	content: "\ecde";
 	font-size: 16px;
 	color: #fd7e14;
 }
 .miniRedStatus::before {
-	content: "\e3ee";
+	content: "\ecde";
 	font-size: 16px;
 	color: #c3232d;
 }

@@ -2,6 +2,8 @@
 <script>
 	$(document).ready(function() {
 
+		const app = "{$serverName}";
+
 		// Tooltips
 		$(function() {
 		    $(document).tooltip();
@@ -10,7 +12,7 @@
 		prepareYear();
 
 		// Refresh log
-		var refreshState = localStorage.getItem("log.refresh");
+		var refreshState = localStorage.getItem(app + ".log.refresh");
 		if (refreshState != null) {
 			if (refreshState == "true") {
 				$("#cb_log_refresh").prop("checked", true);
@@ -28,6 +30,9 @@
 		    var div1 = document.getElementById('return-to-bottom');
 		    var div2 = document.getElementById('return-to-top');
 		    var dottedLine = document.getElementById('dottedLine');
+			if (!div1 || !div2 || !dottedLine) {
+			    return;
+			}
 		    var div1Rect = div1.getBoundingClientRect();
 		    var div2Rect = div2.getBoundingClientRect();
 		    var div1Bottom = div1Rect.bottom + window.scrollY;
@@ -44,12 +49,16 @@
 		    interval: null,
 		    seconds: {$logRefreshTime},
 		    start: function () {
+				if (this.interval !== null) {
+				    this.stop();
+				}
+				this.seconds = {$logRefreshTime};
 		        var self = this;
 		        var span = document.getElementById('timer');
 		        span.textContent = ' (' + this.seconds + 's)';
 		        this.interval = setInterval(function () {
 		            self.seconds--;
-		            if (self.seconds == 0) {
+					if (self.seconds <= 0) {
 		                location.reload();
 		                // scroll down
 		                $('body,html').animate({ scrollTop: $(document).height() }, 500);
@@ -59,18 +68,19 @@
 		    },
 		    stop: function () {
 		        window.clearInterval(this.interval)
+				this.interval = null;
 		    }
 		}
 	function refresh() {
 		if ($('#cb_log_refresh').is(':checked')) {
-			localStorage.setItem("log.refresh", "true");
+			localStorage.setItem(app + ".log.refresh", "true");
 			timer.start();
 		} else {
-			localStorage.setItem("log.refresh", "false");
+			localStorage.setItem(app + ".log.refresh", "false");
 			timer.stop();
 		}
 	}
 
 </script>
 
-<script src="/js/header.js"></script>
+<script src="/js/header.js" data-app="{$serverName}"></script>

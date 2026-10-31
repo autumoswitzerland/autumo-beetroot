@@ -161,13 +161,13 @@ body {
 }
 
 /**
- * Phosphor Icons (https://phosphoricons.com), MIT licence, see
+ * Phosphor Icons 2.1.2 (https://phosphoricons.com), MIT licence, see
  * web/font/Phosphor-LICENSE.txt. Glyphs are addressed by their code point,
  * the mapping is in phosphor-codepoints.properties of autumo-ui.
  */
 @font-face {
     font-family: 'Phosphor';
-    src: url('/font/Phosphor.ttf') format('truetype');
+    src: url('/font/Phosphor.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: block;
