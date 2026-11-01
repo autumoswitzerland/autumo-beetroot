@@ -65,6 +65,16 @@ the database model! The client-server framework supports encrypted communication
 as well as HTTP/HTTPS tunneling, provides an interface for downloading and uploading files
 and can be extended with your own (distributed) modules.
 
+> **Disclaimer:**
+>
+> beetRoot was developed entirely without AI. It is the work of an engineer with many 
+> years of experience developing software frameworks, who eventually grew tired of the 
+> oversized and overly complicated Java web frameworks available at the time.
+>
+> Starting with version 3.2.0, AI tools are used selectively to assist with minor improvements,
+> bug fixes and code cleanups. The architecture, design philosophy and overall direction of 
+> the framework remain the work of its creator.
+
 [![autumo beetRoot 3.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-login.webp)][video-url]
 
 [![autumo beetRoot 3.x - Quickstart](https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/autumo-beetroot-screen.webp)][video-url]
