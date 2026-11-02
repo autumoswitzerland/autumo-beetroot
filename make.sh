@@ -21,6 +21,9 @@ VERSION=3.3.0
 VERSION_SERVLET_API=6.1.0
 LOGFILE="make.log"
 
+# Stop at the first failing step instead of continuing with an incomplete product.
+set -e
+
 
 # Portable in-place sed: GNU sed (Linux) takes no backup suffix, BSD sed (macOS) needs ''.
 sed_inplace() {
@@ -71,6 +74,10 @@ then
     show_usage
     exit 1
 fi
+
+
+# The product directory is git-ignored and therefore absent in a fresh checkout.
+mkdir -p product
 
 
 # ------------------------------------------------
@@ -182,6 +189,10 @@ fi
 # go to product
 cd product
 
+# remove stale working directories from an interrupted previous run
+rm -rf autumo-beetRoot-${VERSION}
+rm -rf autumo-beetRoot-web-${VERSION}
+
 # make working directory
 mkdir autumo-beetRoot-$VERSION
 mkdir autumo-beetRoot-web-$VERSION
@@ -224,7 +235,11 @@ cp ../cfg/context.xml autumo-beetRoot-web-$VERSION/META-INF/context.xml
 cp ../cfg/web.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 
 cp ../LICENSE.md autumo-beetRoot-web-$VERSION/META-INF/etc/
-cp ../etc/licenses/*.* autumo-beetRoot-web-$VERSION/META-INF/etc/licenses/
+if [ -d ../etc/licenses ]
+then
+	mkdir -p autumo-beetRoot-web-$VERSION/META-INF/etc/licenses
+	cp ../etc/licenses/*.* autumo-beetRoot-web-$VERSION/META-INF/etc/licenses/
+fi
 
 
 # -----------------------------
@@ -336,13 +351,13 @@ cp ../doc/migration/*.md autumo-beetRoot-$VERSION/doc/migration/
 
 cp ../README.md autumo-beetRoot-$VERSION/
 cp ../LICENSE.md autumo-beetRoot-$VERSION/
-cp ../THIRDPARTYLICENSES.html autumo-beetRoot-$VERSION/
+cp ../THIRDPARTYLICENSES.md autumo-beetRoot-$VERSION/
 # Copy dev pom.xml
 cp ../etc/pom/pom.xml autumo-beetRoot-$VERSION/
 
 cp ../README.md autumo-beetRoot-web-$VERSION/
 cp ../LICENSE.md autumo-beetRoot-web-$VERSION/
-cp ../THIRDPARTYLICENSES.html autumo-beetRoot-web-$VERSION/
+cp ../THIRDPARTYLICENSES.md autumo-beetRoot-web-$VERSION/
 
 
 # -----------------------------
