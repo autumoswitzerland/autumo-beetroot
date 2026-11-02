@@ -3,15 +3,15 @@
 ###############################################################################
 #
 #  beetRoot Product Packager.
-#  Version: 5.0
+#  Version: 6.0
 #
 #  Notes:
 #   -
 #
 #------------------------------------------------------------------------------
 #
-#  Copyright 2025 autumo GmbH
-#  Date: 2025-12-08
+#  Copyright 2026 autumo GmbH
+#  Date: 2026-11-02
 #
 ###############################################################################
 
@@ -20,6 +20,19 @@
 VERSION=3.3.0
 VERSION_SERVLET_API=6.1.0
 LOGFILE="make.log"
+
+
+# Portable in-place sed: GNU sed (Linux) takes no backup suffix, BSD sed (macOS) needs ''.
+sed_inplace() {
+	local script="$1"
+	local file="$2"
+
+	if sed --version >/dev/null 2>&1; then
+		sed -i "$script" "$file"
+	else
+		sed -i '' "$script" "$file"
+	fi
+}
 
 # Logfile
 if [ "$1" = "create" ]
@@ -129,7 +142,7 @@ echo "----------------------------------------"
 # ---- Create unique secret key
 # -----------------------------
 
-HEX=`hexdump -vn16 -e'4/4 "%08x" 1 "\n"' /dev/urandom`
+HEX=`openssl rand -hex 16`
 
 
 # -----------------------------
@@ -343,7 +356,7 @@ echo ""
 
 # -- 1. Standalone Server
 # Replace unique secret key (seed)
-sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" autumo-beetRoot-${VERSION}/cfg/beetroot.cfg
+sed_inplace "s/secret_key_seed=.*/secret_key_seed=$HEX/" autumo-beetRoot-${VERSION}/cfg/beetroot.cfg
 # The web application server needs a servlet API JAR
 (cd autumo-beetRoot-${VERSION}/lib && curl -LO https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/${VERSION_SERVLET_API}/jakarta.servlet-api-${VERSION_SERVLET_API}.jar)
 # Create archive
@@ -362,9 +375,9 @@ echo ""
 # Enter working directory
 cd autumo-beetRoot-web-${VERSION}
 # Add servlet context variable to db url
-sed -i '' 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
+sed_inplace 's|db_url=jdbc:h2.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot|' beetroot.cfg
 # -- Replace unique secret key (seed)
-sed -i '' "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
+sed_inplace "s/secret_key_seed=.*/secret_key_seed=$HEX/" beetroot.cfg
 # Leave working directory
 cd ..
 # Create archive
@@ -385,9 +398,9 @@ cp ../cfg/logging-web-tomcat.xml autumo-beetRoot-web-$VERSION/logging.xml
 # Enter working directory
 cd autumo-beetRoot-web-${VERSION}
 # Adjust config: Change port (used for email templates)
-sed -i '' 's/ws_port=.*/ws_port=8080/' beetroot.cfg
+sed_inplace 's/ws_port=.*/ws_port=8080/' beetroot.cfg
 # Adjust config: Add servlet name for WAR version!
-sed -i '' 's/web_html_ref_pre_url_part=/web_html_ref_pre_url_part=beetroot/' beetroot.cfg
+sed_inplace 's/web_html_ref_pre_url_part=/web_html_ref_pre_url_part=beetroot/' beetroot.cfg
 # Create Web Archive
 jar --create --file "beetroot.war" *
 echo "-> WAR created."
@@ -410,8 +423,8 @@ cp ../cfg/web-weblogic.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 cp ../cfg/weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/weblogic.xml
 cp ../cfg/logging-web-weblogic.xml autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
 # Change port (used for email templates)
-sed -i '' 's/ws_port=.*/ws_port=7001/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
-sed -i '' 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+sed_inplace 's/ws_port=.*/ws_port=7001/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+sed_inplace 's/mail_session_name=.*/mail_session_name=beetRootMailSession/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 # Pack it for open directory deployment
 mkdir beetroot/
 cp -R autumo-beetRoot-web-${VERSION}/* beetroot/
@@ -438,12 +451,12 @@ cp ../cfg/web-jetty.xml autumo-beetRoot-web-$VERSION/WEB-INF/web.xml
 cp ../cfg/jetty-web.xml autumo-beetRoot-web-$VERSION/WEB-INF/jetty-web.xml
 cp ../cfg/logging-web-jetty.xml autumo-beetRoot-web-${VERSION}/WEB-INF/log4j2.xml
 # Adjust config: No AUTO_SERVER=TRUE switch
-sed -i '' 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+sed_inplace 's|db_url=jdbc:h2:.*|db_url=jdbc:h2:[WEB-CONTEXT-PATH]/db/h2/db/beetroot;IFEXISTS=TRUE|' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 # Adjust config: Change back mailing implementation
-sed -i '' 's/mail_implementation=.*/mail_implementation=jakarta/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
-sed -i '' 's/mail_session_name=.*/mail_session_name=/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+sed_inplace 's/mail_implementation=.*/mail_implementation=jakarta/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+sed_inplace 's/mail_session_name=.*/mail_session_name=/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 # Adjust config: Change port (used for email templates)
-sed -i '' 's/ws_port=.*/ws_port=8080/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
+sed_inplace 's/ws_port=.*/ws_port=8080/' autumo-beetRoot-web-${VERSION}/beetroot.cfg
 # Enter working directory
 cd autumo-beetRoot-web-${VERSION}
 # Create Web Archive
