@@ -220,7 +220,7 @@ configuration key to get to know the possibilities and the extensive features of
 * [JQuery](https://jquery.com)
 * [SheetJS](https://sheetjs.com/)
 * [Pixabay](web/img/back/README.md)
-* ...and some more; see [THIRDPARTYLICENSES.html](https://htmlpreview.github.io/?https://github.com/autumoswitzerland/autumo-beetroot/blob/master/THIRDPARTYLICENSES.html)
+* ...and some more; see [THIRDPARTYLICENSES.md](THIRDPARTYLICENSES.md)
 
 
 
@@ -286,6 +286,6 @@ Your donation helps to develop autumo beetRoot further. Thank you!
 
 <br>
 <br>
-Copyright 2025, autumo Ltd., Switzerland
+Copyright 2026, autumo Ltd., Switzerland
 
 <p align="right"><a href="#top">&uarr;</a></p>
