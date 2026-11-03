@@ -40,6 +40,9 @@ import ch.autumo.beetroot.utils.Helper;
  */
 public class SessionManager {
 	
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(SessionManager.class.getName());
 	
 	// Singleton instance

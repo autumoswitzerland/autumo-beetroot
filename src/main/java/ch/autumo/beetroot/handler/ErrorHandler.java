@@ -33,6 +33,13 @@ public class ErrorHandler extends BaseHandler {
 	private String title = null;
 	private String message = null;
 	
+	/**
+	 * Creates the error handler.
+	 *
+	 * @param status the HTTP status
+	 * @param title the error title
+	 * @param message the error message
+	 */
 	public ErrorHandler(Status status, String title, String message) {
 		this.status = status;
 		this.title = title;

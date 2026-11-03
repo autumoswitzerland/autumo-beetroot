@@ -60,6 +60,9 @@ public abstract class Model implements Entity {
 
     private static final long serialVersionUID = 1L;
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(Model.class.getName());
     
 	/**
@@ -116,6 +119,13 @@ public abstract class Model implements Entity {
 	@Column (name = "id")
 	private int id;
 	
+	
+	/**
+	 * Default constructor.
+	 */
+	public Model() {
+	}
+
 	/**
 	 * Get the ID.
 	 * 
@@ -245,6 +255,7 @@ public abstract class Model implements Entity {
 	/**
 	 * Save this entity bean to database.
 	 * 
+	 * @param conn the database connection
 	 * @return generated id or -1 if entity couldn't be saved or 
 	 * 			the pseudo id -2 for many-to-many relation tables 
 	 * 			that have no id

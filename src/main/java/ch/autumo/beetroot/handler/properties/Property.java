@@ -15,50 +15,108 @@ public class Property extends Model {
 
     private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Default constructor.
+	 */
+	public Property() {
+	}
+	
+    /**
+     * The created value.
+     */
     @Nullable
     @Column (name = "created")
     private java.sql.Timestamp created;
 
+    /**
+     * Returns the created value.
+     *
+     * @return the created value
+     */
     public java.sql.Timestamp getCreated() {
         return created;
     }
 
+    /**
+     * Sets the created value.
+     *
+     * @param created the new created value
+     */
     public void setCreated(java.sql.Timestamp created) {
         this.created = created;
     }
 
+    /**
+     * The name value.
+     */
     @Unique
     @Column (name = "name")
     private String name;
 
+    /**
+     * Returns the name value.
+     *
+     * @return the name value
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name value.
+     *
+     * @param name the new name value
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * The modified value.
+     */
     @Nullable
     @Column (name = "modified")
     private java.sql.Timestamp modified;
 
+    /**
+     * Returns the modified value.
+     *
+     * @return the modified value
+     */
     public java.sql.Timestamp getModified() {
         return modified;
     }
 
+    /**
+     * Sets the modified value.
+     *
+     * @param modified the new modified value
+     */
     public void setModified(java.sql.Timestamp modified) {
         this.modified = modified;
     }
 
+    /**
+     * The value value.
+     */
     @Nullable
     @Column (name = "value")
     private String value;
 
+    /**
+     * Returns the value value.
+     *
+     * @return the value value
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Sets the value value.
+     *
+     * @param value the new value value
+     */
     public void setValue(String value) {
         this.value = value;
     }

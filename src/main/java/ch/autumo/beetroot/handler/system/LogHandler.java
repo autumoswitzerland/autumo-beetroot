@@ -67,7 +67,9 @@ public class LogHandler extends NoConfigHandler {
 
 
 	/**
-	 * @param entity
+	 * Creates the log handler.
+	 *
+	 * @param entity the entity name
 	 */
 	public LogHandler(String entity) {
 		super(entity);
@@ -162,6 +164,12 @@ public class LogHandler extends NoConfigHandler {
 		}
 	}
 
+    /**
+     * Formats the log event.
+     *
+     * @param event the log event
+     * @return the formatted log line
+     */
     public String format(LogEvent event) {
         String formattedMessage = layout.toSerializable(event);
         // Post-process the formattedMessage if needed

@@ -37,6 +37,9 @@ import ch.autumo.beetroot.utils.system.OS;
  */
 public class FileTransfer {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(FileTransfer.class.getName());
 	
 	/** file server default port */
@@ -62,6 +65,12 @@ public class FileTransfer {
 		bufferLen = bufferLen * 1024;
 	}		
 	
+	
+	/**
+	 * Default constructor.
+	 */
+	public FileTransfer() {
+	}
 	
 	// Server-side
 	//------------------------------------------------------------------------------

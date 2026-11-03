@@ -27,6 +27,12 @@ import ch.autumo.beetroot.server.message.ServerCommand;
  */
 public class RemoteLog implements Log {
 
+	/**
+	 * Default constructor.
+	 */
+	public RemoteLog() {
+	}
+	
 	@Override
 	public ClientAnswer getLog() throws Exception {
 		final ClientAnswer answer = ClientCommunicator.sendServerCommand(new ServerCommand(LogDispatcher.ID, "-"));

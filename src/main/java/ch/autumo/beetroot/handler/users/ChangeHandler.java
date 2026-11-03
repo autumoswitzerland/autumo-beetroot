@@ -42,12 +42,20 @@ import ch.autumo.beetroot.utils.security.Security;
  */
 public class ChangeHandler extends BaseHandler {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(ChangeHandler.class.getName());
 	
 	private String entity = null;
 	
 	private int userid = -1;
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ChangeHandler(String entity) {
 		this.entity = entity;
 	}

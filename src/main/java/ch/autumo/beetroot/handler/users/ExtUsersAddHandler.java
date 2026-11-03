@@ -33,10 +33,21 @@ import ch.autumo.beetroot.handler.usersroles.UserRole;
  */
 public class ExtUsersAddHandler extends UsersAddHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ExtUsersAddHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the error message
+	 */
 	public ExtUsersAddHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

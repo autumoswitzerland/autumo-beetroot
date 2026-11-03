@@ -41,8 +41,16 @@ public class UsersViewHandler extends DefaultViewHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UsersViewHandler.class.getName());
 	
+	/**
+	 * User name of the user shown in the view.
+	 */
 	protected String userName = null;
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public UsersViewHandler(String entity) {
 		super(entity);
 	}

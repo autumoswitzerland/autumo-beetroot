@@ -25,10 +25,21 @@ import ch.autumo.beetroot.handler.DefaultEditHandler;
  */
 public class TasksEditHandler extends DefaultEditHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public TasksEditHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public TasksEditHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

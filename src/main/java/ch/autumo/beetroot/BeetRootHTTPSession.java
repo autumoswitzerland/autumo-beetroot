@@ -56,6 +56,9 @@ import jakarta.servlet.http.Part;
  */
 public class BeetRootHTTPSession extends HTTPSession {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootHTTPSession.class.getName());
 
 	static {
@@ -84,22 +87,45 @@ public class BeetRootHTTPSession extends HTTPSession {
 
 	}
 
-	// Upload buffer size.
+	/**
+	 * Upload buffer size.
+	 */
 	public static final int UPLOAD_BUFFER_SIZE;
 
-	// Response buffer size.
+	/**
+	 * Response buffer size.
+	 */
 	public static final int RESPONSE_BUFFER_SIZE;
 
-	// Download response buffer size.
+	/**
+	 * Download response buffer size.
+	 */
 	public static final int RESPONSE_DOWNLOAD_BUFFER_SIZE;
 
     private String externalSessionId;
 
 
+	/**
+	 * Creates the HTTP session.
+	 *
+	 * @param httpd the server
+	 * @param tempFileManager the temporary file manager
+	 * @param inputStream the input stream
+	 * @param outputStream the output stream
+	 */
 	public BeetRootHTTPSession(NanoHTTPD httpd, ITempFileManager tempFileManager, InputStream inputStream, OutputStream outputStream) {
 		super(httpd, tempFileManager, inputStream, outputStream);
 	}
 
+    /**
+     * Creates the HTTP session for a client address.
+     *
+     * @param httpd the server
+     * @param tempFileManager the temporary file manager
+     * @param inputStream the input stream
+     * @param outputStream the output stream
+     * @param inetAddress the client address
+     */
     public BeetRootHTTPSession(NanoHTTPD httpd, ITempFileManager tempFileManager, InputStream inputStream, OutputStream outputStream, InetAddress inetAddress) {
     	super(httpd, tempFileManager, inputStream, outputStream, inetAddress);
     }
@@ -118,6 +144,11 @@ public class BeetRootHTTPSession extends HTTPSession {
     	this.externalSessionId = externalSessionId;
     }
 
+    /**
+     * Returns the session id of the external servlet container.
+     *
+     * @return the external session id
+     */
     public String getExternalSessionId() {
 		return externalSessionId;
 	}

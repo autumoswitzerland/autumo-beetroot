@@ -28,7 +28,10 @@ import java.util.Set;
 
 
 /**
- * Field-set does some typical ordering for fields shown in an UI.
+ * A set that provides a predefined ordering of fields for display in a user
+ * interface.
+ *
+ * @param <K> the type of fields stored in this set
  */
 public class FieldSet<K> implements Set<K> {
 	
@@ -37,6 +40,11 @@ public class FieldSet<K> implements Set<K> {
 	
     private final Set<K> keySet;
 
+    /**
+     * Creates the field set.
+     *
+     * @param keySet the key set
+     */
     public FieldSet(Set<K> keySet) {
         this.keySet = keySet;
     }

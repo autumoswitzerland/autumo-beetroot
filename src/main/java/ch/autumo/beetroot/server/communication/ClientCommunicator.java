@@ -72,6 +72,12 @@ public class ClientCommunicator extends Communicator {
 	}
 	
 	/**
+	 * Default constructor.
+	 */
+	public ClientCommunicator() {
+	}
+	
+	/**
 	 * Re-initialize client communicator.
 	 */
 	public static void reInit() {

@@ -39,6 +39,9 @@ import ch.autumo.beetroot.server.message.ServerCommand;
  */
 public class Communicator {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(Communicator.class.getName());
 
 	/** Max. message size: 512 kBytes */
@@ -72,7 +75,13 @@ public class Communicator {
 	 * HTTP Header accept with 'application/json; charset=utf-8'.
 	 */
 	public static final String[] HTTP_HEADER_CONTENTTYPE_JSON_UTF8 = new String[] {"Content-Type", "application/json; charset=UTF-8"};
-	
+
+
+	/**
+	 * Default constructor.
+	 */
+	public Communicator() {
+	}
 	
 	// Server-side
 	//------------------------------------------------------------------------------

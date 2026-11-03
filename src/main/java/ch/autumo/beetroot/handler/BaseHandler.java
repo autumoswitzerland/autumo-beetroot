@@ -129,7 +129,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final String FILE_HTML_ACTION_ADD	= "add.html";
 	private static final String FILE_CFG_COLUMNS		= "/columns.cfg";
 
-	// Precision HTML input types
+	/** Precision HTML input types. */
 	protected static final List<String> PRECISION_INPUT_TYPES = Arrays.asList(STR_EMAIL, STR_PASSWORD, "search", "tel", "text", "url");
 
 
@@ -143,6 +143,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final Pattern PATTERN_SCRIPT	= Pattern.compile("\\{#script.*\\}");
 
 	// Tags
+	/** Langiage tag prefix. */
 	public static final String TAG_PREFIX_LANG		= "{$l.";
 	private static final String TAG_IG 				= "{$id}";
 	private static final String TAG_DBID			= "{$dbid}";
@@ -174,8 +175,17 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	private static final String CHAR_RIGHT_CURLY_BRACKET	= "}";
 	private static final String CHAR_SPACE					= " ";
 
+	/**
+	 * Message type info.
+	 */
 	public static final int MSG_TYPE_INFO = 0;
+	/**
+	 * Message type warning.
+	 */
 	public static final int MSG_TYPE_WARN = 1;
+	/**
+	 * Message type error.
+	 */
 	public static final int MSG_TYPE_ERR = -1;
 
 	// Link reference reverse patterns
@@ -187,24 +197,39 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 
 	private StringBuilder buffer = new StringBuilder();
 
+	/** Column data map holding the columns.cfg-data of the current processing entity. */
 	protected TreeMap<Integer, String> columns = null;
+	/** Column data map holding the columns.cfg-data for initial fields used by the add-template. */
 	protected Map<String, String> initialValues = null;
+	/** Column data array holding the columns.cfg-data for unique fields. */
 	protected String uniqueFields[] = null;
+	/** Column data list holding the columns.cfg-data for transient fields. */
 	protected List<String> transientFields = new ArrayList<>();
 
+	/** Empty bean, used for creating an new entity instance. */
 	protected Entity emptyBean = null;
 
 	private String displayNameValue = null;
 
 	private int currentEntityDbId = -1;
 
+	/** Current entity to process. */
 	protected String entity = null;
+	/** Current action to process. */
 	protected String action = null;
+	/** HTML head content. */
 	protected String htmlHead = "";
+	/** HTML table data content. */
 	protected String htmlData = "";
 
+	/**
+	 * Insert servlet name inzo template references (links)?
+	 * Necessary when oparting beetRoot within a servlet container.
+	 */
 	protected boolean insertServletNameInTemplateRefs = false;
+	/** Servlet name. */
 	protected String servletName = null;
+	/** Server name. */
 	protected String serverName = null;
 
 	private String successMessage = null;
@@ -2782,6 +2807,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 	 *
 	 * @param text text to parse and return
 	 * @param id HTML element with specific ID
+	 * @param newValue the new value
 	 * @return patched HTML
 	 */
 	public static String patchInputValue(String text, String id, String newValue) {

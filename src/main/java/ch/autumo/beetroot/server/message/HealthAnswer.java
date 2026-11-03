@@ -21,4 +21,9 @@ package ch.autumo.beetroot.server.message;
  * Health answer - only server-side internally used as a marker class.
  */
 public class HealthAnswer extends ClientAnswer {
+	/**
+	 * Default constructor.
+	 */
+	public HealthAnswer() {
+	}
 }

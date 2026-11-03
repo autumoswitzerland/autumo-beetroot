@@ -45,10 +45,21 @@ public class DefaultEditHandler extends BaseHandler {
 	private Map<String, Class<?>> refs = null;
 	
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public DefaultEditHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the error message
+	 */
 	public DefaultEditHandler(String entity, String errMsg) {
 		super(entity);
 		this.addErrorMessage(errMsg);

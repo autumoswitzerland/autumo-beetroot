@@ -25,6 +25,11 @@ import ch.autumo.beetroot.handler.DefaultDeleteHandler;
  */
 public class TasksDeleteHandler extends DefaultDeleteHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public TasksDeleteHandler(String entity) {
 		super(entity);
 	}

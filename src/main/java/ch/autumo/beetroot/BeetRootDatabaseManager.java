@@ -50,11 +50,23 @@ import ch.autumo.beetroot.utils.system.OS;
  */
 public class BeetRootDatabaseManager {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootDatabaseManager.class.getName());
 
+	/**
+	 * Postfix appended to the connection pool name.
+	 */
 	public static final String POOL_NAME_POSTFIX = "-DB-Pool";
 
+	/**
+	 * Configuration key of an external JNDI data source.
+	 */
 	public static final String CFG_KEY_DS_EXT_JNDI = "db_ds_ext_jndi";
+	/**
+	 * Configuration key of the internal data source class name.
+	 */
 	public static final String CFG_KEY_DS_INT_DSCN = "db_ds_int_dataSourceClassName";
 
 	private static BeetRootDatabaseManager instance = null;
@@ -351,6 +363,8 @@ public class BeetRootDatabaseManager {
 	/**
 	 * Retire a global DB connection.
 	 *
+	 * @param conn the connection to retire
+	 *
 	 * @see #getGlobalConnection()
 	 *
 	 * @throws SQLException SQL exception
@@ -365,34 +379,74 @@ public class BeetRootDatabaseManager {
 		}
 	}
 
+	/**
+	 * Returns the parsed H2 URL.
+	 *
+	 * @return the H2 URL
+	 */
 	public H2Url getH2Url() {
 		return h2Url;
 	}
 
+	/**
+	 * Checks whether the database is H2.
+	 *
+	 * @return true if the database is H2
+	 */
 	public boolean isH2Db() {
 		return isH2Db;
 	}
 
+	/**
+	 * Checks whether the database is MySQL.
+	 *
+	 * @return true if the database is MySQL
+	 */
 	public boolean isMysqlDb() {
 		return isMysqlDb;
 	}
 
+	/**
+	 * Checks whether the database is MariaDB.
+	 *
+	 * @return true if the database is MariaDB
+	 */
 	public boolean isMariaDb() {
 		return isMariaDb;
 	}
 
+	/**
+	 * Checks whether the database is Oracle.
+	 *
+	 * @return true if the database is Oracle
+	 */
 	public boolean isOracleDb() {
 		return isOracleDb;
 	}
 
+	/**
+	 * Checks whether the database is PostgreSQL.
+	 *
+	 * @return true if the database is PostgreSQL
+	 */
 	public boolean isPostgreDb() {
 		return isPostgreDb;
 	}
 
+	/**
+	 * Checks whether PostgreSQL is used with the NG driver.
+	 *
+	 * @return true if the NG driver is used
+	 */
 	public boolean isPostgreDbWithNGDriver() {
 		return isPostgreNGDb;
 	}
 
+	/**
+	 * Checks whether the database is unsupported.
+	 *
+	 * @return true if the database is unsupported
+	 */
 	public boolean isUnsupported() {
 		return isUnsupported;
 	}
@@ -681,22 +735,47 @@ public class BeetRootDatabaseManager {
 		return fields;
 	}
 
+	/**
+	 * Returns the JDBC URL.
+	 *
+	 * @return the JDBC URL
+	 */
 	public String getUrl() {
 		return url;
 	}
 
+	/**
+	 * Returns the database user.
+	 *
+	 * @return the database user
+	 */
 	public String getUser() {
 		return user;
 	}
 
+	/**
+	 * Returns the database password.
+	 *
+	 * @return the database password
+	 */
 	public String getPass() {
 		return pass;
 	}
 
+	/**
+	 * Returns the JDBC driver class name.
+	 *
+	 * @return the driver class name
+	 */
 	public String getDriver() {
 		return dataSourceDriverClassName;
 	}
 
+	/**
+	 * Returns the data source class name.
+	 *
+	 * @return the data source class name
+	 */
 	public String getDataSourceClassName() {
 		return dataSourceClassName;
 	}

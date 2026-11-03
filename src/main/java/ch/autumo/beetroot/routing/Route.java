@@ -22,7 +22,13 @@ package ch.autumo.beetroot.routing;
  */
 public class Route {
 
+	/**
+	 * Priority of an explicitly registered route.
+	 */
 	public static final int PRIORITY = 100;
+	/**
+	 * Default route priority.
+	 */
 	public static final int DEFAULT_PRIORITY = 50;
 	
 	private String route = null;
@@ -91,18 +97,43 @@ public class Route {
 		this.initParameter = initParameter;
 	}
 	
+	/**
+	 * Returns the route value.
+	 *
+	 * @return the route value
+	 */
 	public String getRoute() {
 		return route;
 	}
+	/**
+	 * Returns the priority value.
+	 *
+	 * @return the priority value
+	 */
 	public int getPriority() {
 		return priority;
 	}
+	/**
+	 * Sets the priority value.
+	 *
+	 * @param priority the new priority value
+	 */
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
+	/**
+	 * Returns the handler value.
+	 *
+	 * @return the handler value
+	 */
 	public Class<?> getHandler() {
 		return handler;
 	}
+	/**
+	 * Returns the init parameter value.
+	 *
+	 * @return the init parameter value
+	 */
 	public Object[] getInitParameter() {
 		return initParameter;
 	}

@@ -45,6 +45,9 @@ import ch.autumo.beetroot.utils.web.Web;
  */
 public class DefaultIndexHandler extends BaseHandler {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(DefaultIndexHandler.class.getName());
 	
 	private Map<String, Class<?>> refs = null;

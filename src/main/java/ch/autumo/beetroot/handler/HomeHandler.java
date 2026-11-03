@@ -24,10 +24,21 @@ public class HomeHandler extends BaseHandler {
 
 	private String entity = null;
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public HomeHandler(String entity) {
 		this.entity = entity;
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public HomeHandler(String entity, String msg) {
 		this.entity = entity;
 		super.addSuccessMessage(msg);

@@ -41,6 +41,11 @@ public class DefaultViewHandler extends BaseHandler {
 	
 	private Map<String, Class<?>> refs = null;
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public DefaultViewHandler(String entity) {
 		super(entity);
 	}

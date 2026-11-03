@@ -24,7 +24,17 @@ import ch.autumo.beetroot.utils.Helper;
  */
 public abstract class AbstractLogging implements Logging {
 
+	/**
+	 * The root path of the installed open-directory app. 
+	 */
     protected static String rootPath = null;
+
+    /**
+     * Default Constructor.
+     */
+    public AbstractLogging() {
+    }
+    
     static {
     	rootPath = System.getProperty("ROOTPATH");
     	if (rootPath == null || rootPath.length() == 0)

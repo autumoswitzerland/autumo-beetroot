@@ -44,7 +44,9 @@ public class Session implements Serializable {
 	/** Persistent session data; don't put data in this map that isn't necessary when restoring a user session! */
 	private Map<String, Serializable> data = new ConcurrentHashMap<>();
 	
-	// Session ID
+	/**
+	 * The session id value.
+	 */
 	private final String sessionID;
 	
 	// Temporary list with files for uploads - not stored.
@@ -61,10 +63,18 @@ public class Session implements Serializable {
 	// Don't store the user to the session file
 	private transient User user = null;
 
-	// User ID
+	/**
+	 * The user id value.
+	 */
 	private int userId = -1;
 	
+	/**
+	 * The created value.
+	 */
 	private final Date created;
+	/**
+	 * The session refresh time value.
+	 */
 	private long sessionRefreshTime;
 
 	
@@ -635,8 +645,8 @@ public class Session implements Serializable {
 	 * Custom readObject method for de-serialization.
 	 * 
 	 * @param ois object input stream
-	 * @throws IOException
-	 * @throws ClassNotFoundException
+	 * @throws IOException if the session data cannot be read
+	 * @throws ClassNotFoundException if a serialized class cannot be found
 	 */
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject(); // Read non-transient fields

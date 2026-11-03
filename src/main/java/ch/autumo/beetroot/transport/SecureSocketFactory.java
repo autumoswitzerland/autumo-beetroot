@@ -31,6 +31,12 @@ public class SecureSocketFactory implements SocketFactory {
     private SSLSocketFactory sslSocketFactory;
     private String[] sslProtocols;
 	
+    /**
+     * Creates the socket factory.
+     *
+     * @param sslSocketFactory the SSL socket factory
+     * @param sslProtocols the enabled SSL protocols
+     */
     public SecureSocketFactory(SSLSocketFactory sslSocketFactory, String[] sslProtocols) {
         this.sslSocketFactory = sslSocketFactory;
         this.sslProtocols = sslProtocols;

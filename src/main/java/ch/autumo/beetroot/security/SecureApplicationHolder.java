@@ -28,6 +28,9 @@ import ch.autumo.beetroot.Constants;
  */
 public class SecureApplicationHolder {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(SecureApplicationHolder.class.getName());
 	
 	private static SecureApplicationHolder holder = null;

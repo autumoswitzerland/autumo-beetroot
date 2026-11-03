@@ -41,7 +41,13 @@ public class ServerCommand extends AbstractMessage {
 	 */
 	private static transient String mode = null;
 	
+	/**
+	 * Server host; set by the message itself.
+	 */
 	protected static String host = null;
+	/**
+	 * Server port; set by the message itself.
+	 */
 	protected static int port = -1;
 	private static int timeout = -1; // milliseconds
 

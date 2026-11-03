@@ -11,10 +11,21 @@ import ch.autumo.beetroot.handler.DefaultEditHandler;
  */
 public class RolesEditHandler extends DefaultEditHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public RolesEditHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public RolesEditHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

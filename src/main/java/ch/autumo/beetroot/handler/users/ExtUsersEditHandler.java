@@ -37,10 +37,21 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class ExtUsersEditHandler extends UsersEditHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ExtUsersEditHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the error message
+	 */
 	public ExtUsersEditHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

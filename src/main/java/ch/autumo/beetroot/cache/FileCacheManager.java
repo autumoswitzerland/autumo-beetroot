@@ -41,6 +41,9 @@ import ch.autumo.beetroot.Constants;
  */
 public class FileCacheManager {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(FileCacheManager.class.getName());
 
 	// file buffer size
@@ -54,6 +57,9 @@ public class FileCacheManager {
 		
 		MAX_CACHE_SIZE = mBytes * 1024 * 1024;
 	}
+	/**
+	 * Maximum cache size in bytes.
+	 */
 	public static final long MAX_CACHE_SIZE; 
 	
 	private static FileCacheManager instance = null;

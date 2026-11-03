@@ -32,10 +32,21 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class UsersIndexHandler extends DefaultIndexHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public UsersIndexHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public UsersIndexHandler(String entity, String msg) {
 		
 		super(entity);

@@ -16,36 +16,81 @@ public class UserRole extends Model {
 
     private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Default constructor.
+	 */
+	public UserRole() {
+	}
+    
+    /**
+     * The user id value.
+     */
     @Column (name = "user_id")
     private int userId;
 
+    /**
+     * Returns the user id value.
+     *
+     * @return the user id value
+     */
     public int getUserId() {
         return userId;
     }
 
+    /**
+     * Sets the user id value.
+     *
+     * @param userId the new user id value
+     */
     public void setUserId(int userId) {
         this.userId = userId;
     }
 
+    /**
+     * The role id value.
+     */
     @Column (name = "role_id")
     private int roleId;
 
+    /**
+     * Returns the role id value.
+     *
+     * @return the role id value
+     */
     public int getRoleId() {
         return roleId;
     }
 
+    /**
+     * Sets the role id value.
+     *
+     * @param roleId the new role id value
+     */
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
 
+    /**
+     * The created value.
+     */
     @Nullable
     @Column (name = "created")
     private java.sql.Timestamp created;
 
+    /**
+     * Returns the created value.
+     *
+     * @return the created value
+     */
     public java.sql.Timestamp getCreated() {
         return created;
     }
 
+    /**
+     * Sets the created value.
+     *
+     * @param created the new created value
+     */
     public void setCreated(java.sql.Timestamp created) {
         this.created = created;
     }

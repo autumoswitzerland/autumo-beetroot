@@ -28,7 +28,7 @@ public interface Log {
 	 * Get server log.
 	 * 
 	 * @return client answer with all log data
-	 * @throws Exception
+	 * @throws Exception if the log data cannot be retrieved
 	 */
 	public ClientAnswer getLog() throws Exception;
 	

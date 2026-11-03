@@ -16,14 +16,32 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class RolesIndexHandler extends DefaultIndexHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public RolesIndexHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public RolesIndexHandler(String entity, String msg) {
 		super(entity, msg);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 * @param messageType the message type
+	 */
 	public RolesIndexHandler(String entity, String msg, int messageType) {
 		super(entity, msg, messageType);
 	}

@@ -50,6 +50,9 @@ import ch.autumo.beetroot.utils.web.Web;
  */
 public class DB {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(DB.class.getName());
 	
     /**
@@ -67,6 +70,13 @@ public class DB {
 	 */
 	public static final int SORT_BY_VALUE = 1;
 	
+	
+	/**
+	 * Default constructor.
+	 */
+	public DB() {
+	}
+
 	/**
 	 * Get display values: &lt;ID:displayValue&gt;.
 	 * Max. 200 records to be returned.
@@ -936,6 +946,7 @@ public class DB {
 	 * 
 	 * @see #newGlobalConnection()
 	 * 
+	 * @param conn DB connection
 	 * @throws SQLException SQL exception
 	 */
 	public static void retireGlobalConnection(Connection conn) throws SQLException {

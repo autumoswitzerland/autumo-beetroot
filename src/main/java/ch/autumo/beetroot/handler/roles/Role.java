@@ -15,62 +15,133 @@ public class Role extends Model {
 
     private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Default constructor.
+	 */
+	public Role() {
+	}
+
+    /**
+     * The permissions value.
+     */
     @Nullable
     @Column (name = "permissions")
     private String permissions;
 
+    /**
+     * Returns the permissions value.
+     *
+     * @return the permissions value
+     */
     public String getPermissions() {
         return permissions;
     }
 
+    /**
+     * Sets the permissions value.
+     *
+     * @param permissions the new permissions value
+     */
     public void setPermissions(String permissions) {
         this.permissions = permissions;
     }
 
+    /**
+     * The created value.
+     */
     @Nullable
     @Column (name = "created")
     private java.sql.Timestamp created;
 
+    /**
+     * Returns the created value.
+     *
+     * @return the created value
+     */
     public java.sql.Timestamp getCreated() {
         return created;
     }
 
+    /**
+     * Sets the created value.
+     *
+     * @param created the new created value
+     */
     public void setCreated(java.sql.Timestamp created) {
         this.created = created;
     }
 
+    /**
+     * The name value.
+     */
     @Unique
     @Column (name = "name")
     private String name;
 
+    /**
+     * Returns the name value.
+     *
+     * @return the name value
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name value.
+     *
+     * @param name the new name value
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * The description value.
+     */
     @Nullable
     @Column (name = "description")
     private String description;
 
+    /**
+     * Returns the description value.
+     *
+     * @return the description value
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets the description value.
+     *
+     * @param description the new description value
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * The modified value.
+     */
     @Nullable
     @Column (name = "modified")
     private java.sql.Timestamp modified;
 
+    /**
+     * Returns the modified value.
+     *
+     * @return the modified value
+     */
     public java.sql.Timestamp getModified() {
         return modified;
     }
 
+    /**
+     * Sets the modified value.
+     *
+     * @param modified the new modified value
+     */
     public void setModified(java.sql.Timestamp modified) {
         this.modified = modified;
     }

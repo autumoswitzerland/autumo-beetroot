@@ -35,6 +35,11 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class ExtUsersViewHandler extends UsersViewHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ExtUsersViewHandler(String entity) {
 		super(entity);
 	}

@@ -15,150 +15,325 @@ public class Task extends Model {
 
     private static final long serialVersionUID = 1L;
     
+	/**
+	 * Default constructor.
+	 */
+	public Task() {
+	}
+
+	/**
+	 * The monthofyear value.
+	 */
 	@Column(name = "monthofyear")
 	private String monthofyear;
 
+	/**
+	 * Returns the monthofyear value.
+	 *
+	 * @return the monthofyear value
+	 */
 	public String getMonthofyear() {
         return monthofyear;
     }
 
+    /**
+     * Sets the monthofyear value.
+     *
+     * @param monthofyear the new monthofyear value
+     */
     public void setMonthofyear(String monthofyear) {
         this.monthofyear = monthofyear;
     }
 
+	/**
+	 * The created value.
+	 */
 	@Nullable
 	@Column(name = "created")
     private java.sql.Timestamp created;
 
+    /**
+     * Returns the created value.
+     *
+     * @return the created value
+     */
     public java.sql.Timestamp getCreated() {
         return created;
     }
 
+    /**
+     * Sets the created value.
+     *
+     * @param created the new created value
+     */
     public void setCreated(java.sql.Timestamp created) {
         this.created = created;
     }
 
+	/**
+	 * The active value.
+	 */
 	@Column(name = "active")
     private boolean active;
 
+    /**
+     * Returns the active value.
+     *
+     * @return the active value
+     */
     public boolean getActive() {
         return active;
     }
 
+    /**
+     * Sets the active value.
+     *
+     * @param active the new active value
+     */
     public void setActive(boolean active) {
         this.active = active;
     }
 
+	/**
+	 * The minute value.
+	 */
 	@Column(name = "minute")
     private String minute;
 
+    /**
+     * Returns the minute value.
+     *
+     * @return the minute value
+     */
     public String getMinute() {
         return minute;
     }
 
+    /**
+     * Sets the minute value.
+     *
+     * @param minute the new minute value
+     */
     public void setMinute(String minute) {
         this.minute = minute;
     }
 
+	/**
+	 * The dayofmonth value.
+	 */
 	@Column(name = "dayofmonth")
     private String dayofmonth;
 
+    /**
+     * Returns the dayofmonth value.
+     *
+     * @return the dayofmonth value
+     */
     public String getDayofmonth() {
         return dayofmonth;
     }
 
+    /**
+     * Sets the dayofmonth value.
+     *
+     * @param dayofmonth the new dayofmonth value
+     */
     public void setDayofmonth(String dayofmonth) {
         this.dayofmonth = dayofmonth;
     }
 
+	/**
+	 * The path value.
+	 */
 	@Column(name = "path")
     private String path;
 
+    /**
+     * Returns the path value.
+     *
+     * @return the path value
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Sets the path value.
+     *
+     * @param path the new path value
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+	/**
+	 * The hour value.
+	 */
 	@Column(name = "hour")
     private String hour;
 
+    /**
+     * Returns the hour value.
+     *
+     * @return the hour value
+     */
     public String getHour() {
         return hour;
     }
 
+    /**
+     * Sets the hour value.
+     *
+     * @param hour the new hour value
+     */
     public void setHour(String hour) {
         this.hour = hour;
     }
 
+	/**
+	 * The name value.
+	 */
 	@Unique
 	@Column(name = "name")
     private String name;
 
+    /**
+     * Returns the name value.
+     *
+     * @return the name value
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name value.
+     *
+     * @param name the new name value
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+	/**
+	 * The guid value.
+	 */
 	@Nullable
 	@Column(name = "guid")
     private String guid;
 
+    /**
+     * Returns the guid value.
+     *
+     * @return the guid value
+     */
     public String getGuid() {
         return guid;
     }
 
+    /**
+     * Sets the guid value.
+     *
+     * @param guid the new guid value
+     */
     public void setGuid(String guid) {
         this.guid = guid;
     }
 
+	/**
+	 * The dayofweek value.
+	 */
 	@Column(name = "dayofweek")
     private String dayofweek;
 
+    /**
+     * Returns the dayofweek value.
+     *
+     * @return the dayofweek value
+     */
     public String getDayofweek() {
         return dayofweek;
     }
 
+    /**
+     * Sets the dayofweek value.
+     *
+     * @param dayofweek the new dayofweek value
+     */
     public void setDayofweek(String dayofweek) {
         this.dayofweek = dayofweek;
     }
 
+	/**
+	 * The laststatus value.
+	 */
 	@Column(name = "laststatus")
     private boolean laststatus;
 
+    /**
+     * Returns the laststatus value.
+     *
+     * @return the laststatus value
+     */
     public boolean getLaststatus() {
         return laststatus;
     }
 
+    /**
+     * Sets the laststatus value.
+     *
+     * @param laststatus the new laststatus value
+     */
     public void setLaststatus(boolean laststatus) {
         this.laststatus = laststatus;
     }
 
+	/**
+	 * The modified value.
+	 */
 	@Nullable
 	@Column(name = "modified")
     private java.sql.Timestamp modified;
 
+    /**
+     * Returns the modified value.
+     *
+     * @return the modified value
+     */
     public java.sql.Timestamp getModified() {
         return modified;
     }
 
+    /**
+     * Sets the modified value.
+     *
+     * @param modified the new modified value
+     */
     public void setModified(java.sql.Timestamp modified) {
         this.modified = modified;
     }
 
+	/**
+	 * The lastexecuted value.
+	 */
 	@Nullable
 	@Column(name = "lastexecuted")
     private java.sql.Timestamp lastexecuted;
 
+    /**
+     * Returns the lastexecuted value.
+     *
+     * @return the lastexecuted value
+     */
     public java.sql.Timestamp getLastexecuted() {
         return lastexecuted;
     }
 
+    /**
+     * Sets the lastexecuted value.
+     *
+     * @param lastexecuted the new lastexecuted value
+     */
     public void setLastexecuted(java.sql.Timestamp lastexecuted) {
         this.lastexecuted = lastexecuted;
     }

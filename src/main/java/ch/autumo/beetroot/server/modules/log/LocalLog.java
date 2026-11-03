@@ -32,6 +32,12 @@ import ch.autumo.beetroot.server.message.ClientAnswer;
  */
 public class LocalLog implements Log {
 
+	/**
+	 * Default constructor.
+	 */
+	public LocalLog() {
+	}
+
 	@Override
 	public ClientAnswer getLog() throws Exception {
 		

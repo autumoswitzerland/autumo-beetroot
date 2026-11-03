@@ -30,6 +30,11 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class TasksViewHandler extends DefaultViewHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public TasksViewHandler(String entity) {
 		super(entity);
 	}

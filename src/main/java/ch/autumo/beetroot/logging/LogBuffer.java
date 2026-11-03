@@ -30,10 +30,25 @@ public class LogBuffer {
 
     /** List to buffer logs. */
     private static final List<LogEntry> logBuffer = new ArrayList<>();
-	
+
+	/**
+	 * Default constructor.
+	 */
+	public LogBuffer() {
+	}
+
     /** Enum for logging severity levels. */
     public enum LogLevel {
-        INFO, DEBUG, ERROR, WARN, TRACE
+    	/**Log level INFO. */
+        INFO,
+    	/**Log level DEBUG. */
+        DEBUG,
+    	/**Log level ERROR. */
+        ERROR,
+    	/**Log level WARN. */
+        WARN,
+    	/**Log level TRACE. */
+        TRACE
     }
 
     /** Inner class to hold log entry data (message, severity level). */

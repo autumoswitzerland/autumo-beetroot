@@ -21,4 +21,9 @@ package ch.autumo.beetroot.server.message;
  * Stop answer - only server-side internally used as a marker class.
  */
 public class StopAnswer extends ClientAnswer {
+	/**
+	 * Default constructor.
+	 */
+	public StopAnswer() {
+	}
 }

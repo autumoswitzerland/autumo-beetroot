@@ -25,6 +25,11 @@ import ch.autumo.beetroot.Session;
  */
 public class ExtUsersDeleteHandler extends UsersDeleteHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ExtUsersDeleteHandler(String entity) {
 		super(entity);
 	}

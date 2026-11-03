@@ -35,12 +35,22 @@ import org.slf4j.LoggerFactory;
  */
 public class BeetRootClientHandler extends ClientHandler {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootClientHandler.class.getName());
 	
     private final BeetRootWebServer nanoHttpd;
     private final InputStream nanoInputStream;
     private final Socket nanoAcceptSocket;
 	
+    /**
+     * Creates the client handler.
+     *
+     * @param httpd the web server
+     * @param inputStream the input stream
+     * @param acceptSocket the accepted socket
+     */
     public BeetRootClientHandler(BeetRootWebServer httpd, InputStream inputStream, Socket acceptSocket) {
     	
     	super(httpd, inputStream, acceptSocket);

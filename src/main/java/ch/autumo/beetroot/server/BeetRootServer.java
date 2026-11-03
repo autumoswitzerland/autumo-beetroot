@@ -30,6 +30,9 @@ import ch.autumo.beetroot.utils.Helper;
  */
 public class BeetRootServer extends BaseServer {
 	
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootServer.class.getName());
 	
 	/**

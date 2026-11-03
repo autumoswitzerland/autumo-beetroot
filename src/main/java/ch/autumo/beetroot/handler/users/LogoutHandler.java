@@ -27,14 +27,28 @@ public class LogoutHandler extends BaseHandler {
 
 	private String entity = null;
 
+	/**
+	 * Creates the handler.
+	 */
 	public LogoutHandler() {
 		this.entity = "logout";
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public LogoutHandler(String entity) {
 		this.entity = entity;
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public LogoutHandler(String entity, String msg) {
 		this.entity = entity;
 		this.addSuccessMessage(msg);

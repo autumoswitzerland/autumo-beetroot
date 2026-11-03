@@ -28,10 +28,21 @@ import ch.autumo.beetroot.handler.HandlerResponse;
  */
 public class UsersEditHandler extends DefaultEditHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public UsersEditHandler(String entity) {
 		super(entity);
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public UsersEditHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

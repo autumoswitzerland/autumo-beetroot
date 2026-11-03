@@ -62,6 +62,12 @@ public class LogEventAppender extends AbstractAppender {
         super(name, filter, PatternLayout.createDefaultLayout(), true, null);
     }
 
+    /**
+     * Creates the appender.
+     *
+     * @param name the appender name
+     * @return the appender
+     */
     @PluginFactory
     public static LogEventAppender createAppender(@PluginAttribute("name") String name) {
         return new LogEventAppender(name, null);

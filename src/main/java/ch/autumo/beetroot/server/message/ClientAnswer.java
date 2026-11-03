@@ -29,9 +29,21 @@ import ch.autumo.beetroot.utils.security.Security;
  */
 public class ClientAnswer extends AbstractMessage {
 
+	/**
+	 * Answer type: OK.
+	 */
 	public static final int TYPE_OK = 1;
+	/**
+	 * Answer type: file transfer OK.
+	 */
 	public static final int TYPE_FILE_OK = 2;
+	/**
+	 * Answer type: file transfer failed.
+	 */
 	public static final int TYPE_FILE_NOK = -2;
+	/**
+	 * Answer type: error.
+	 */
 	public static final int TYPE_ERROR = -1;
 	
 	private int type = TYPE_OK;

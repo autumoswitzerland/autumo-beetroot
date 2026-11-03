@@ -27,14 +27,28 @@ public class OtpHandler extends BaseHandler {
 
 	private String entity = null;
 	
+	/**
+	 * Creates the handler.
+	 */
 	public OtpHandler() {
 		this.entity = "2FA Code";
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public OtpHandler(String entity) {
 		this.entity = entity;
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public OtpHandler(String entity, String errMsg) {
 		this.entity = entity;
 		this.addErrorMessage(errMsg);

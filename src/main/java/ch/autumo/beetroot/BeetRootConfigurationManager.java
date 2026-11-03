@@ -56,6 +56,9 @@ import jakarta.servlet.ServletContext;
  */
 public class BeetRootConfigurationManager {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootConfigurationManager.class.getName());
 
 	/** Application version. */
@@ -67,6 +70,9 @@ public class BeetRootConfigurationManager {
 	private static boolean isInitialized = false;
 
 	private ServletContext servletContext = null;
+	/**
+	 * Whether the application runs in desktop mode.
+	 */
 	protected boolean isWithinDesktop = false;
 
 	/** Full path of configuration file without configuration file name. */

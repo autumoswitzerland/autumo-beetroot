@@ -11,10 +11,21 @@ import ch.autumo.beetroot.handler.DefaultEditHandler;
  */
 public class PropertiesEditHandler extends DefaultEditHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public PropertiesEditHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public PropertiesEditHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

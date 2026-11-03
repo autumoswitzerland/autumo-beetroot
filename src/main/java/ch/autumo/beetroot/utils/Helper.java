@@ -47,6 +47,12 @@ public class Helper {
 
     
 	/**
+	 * Default constructor.
+	 */
+	public Helper() {
+	}
+
+	/**
 	 * Bytes 2 Hex.
 	 * 
 	 * @param bytes bytes

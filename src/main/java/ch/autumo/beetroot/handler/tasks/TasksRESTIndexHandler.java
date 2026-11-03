@@ -24,10 +24,21 @@ import ch.autumo.beetroot.handler.DefaultRESTIndexHandler;
  */
 public class TasksRESTIndexHandler extends DefaultRESTIndexHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public TasksRESTIndexHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public TasksRESTIndexHandler(String entity, String msg) {
 		super(entity);
 	}

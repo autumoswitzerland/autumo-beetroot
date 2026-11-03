@@ -34,12 +34,26 @@ import ch.autumo.beetroot.utils.web.Web;
  */
 public class ExampleDownloadHandler extends BaseHandler {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(ExampleDownloadHandler.class.getName());
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ExampleDownloadHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public ExampleDownloadHandler(String entity, String msg) {
 		super(entity);
 		this.addSuccessMessage(msg);

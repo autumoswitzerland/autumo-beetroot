@@ -27,6 +27,11 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
  */
 public final class NoContent204Handler extends NoContentAndConfigHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public NoContent204Handler(String entity) {
 		super(entity);
 	}

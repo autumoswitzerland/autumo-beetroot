@@ -46,6 +46,12 @@ public class Constants {
 		MIME_TYPES_MAP = new MimetypesFileTypeMap();
 	}
 	
+	/**
+	 * Default constructor.
+	 */
+	private Constants() {
+	}
+	
 	
 	// General
 	//------------------------------------------------------------------------------

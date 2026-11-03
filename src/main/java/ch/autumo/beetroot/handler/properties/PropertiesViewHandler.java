@@ -18,6 +18,11 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class PropertiesViewHandler extends DefaultViewHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public PropertiesViewHandler(String entity) {
 		super(entity);
 	}

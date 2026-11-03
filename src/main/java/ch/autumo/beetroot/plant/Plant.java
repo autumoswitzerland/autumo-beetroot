@@ -48,6 +48,9 @@ import ch.autumo.beetroot.utils.system.OS;
  */
 public class Plant {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(Plant.class.getName());
 
 	private static final String CR = OS.LINE_SEPARATOR;
@@ -58,6 +61,9 @@ public class Plant {
 	private File webDir = null;
 
 
+	/**
+	 * Creates the generator.
+	 */
 	public Plant() {
 	}
 
@@ -362,6 +368,12 @@ public class Plant {
 		fertilizer.write(fertilizer.parse());
 	}
 
+	/**
+	 * Runs the generator.
+	 *
+	 * @param args the command-line arguments
+	 * @return the exit code
+	 */
 	public final int run(String[] args) {
 
 		CommandLine line = null;
@@ -469,6 +481,12 @@ public class Plant {
 		return 0;
 	}
 
+	/**
+	 * Runs the generator from the command line.
+	 *
+	 * @param args the command-line arguments
+	 * @throws Exception if the generation fails
+	 */
 	public static void main(String[] args) throws Exception {
 
 		if (args.length == 1)

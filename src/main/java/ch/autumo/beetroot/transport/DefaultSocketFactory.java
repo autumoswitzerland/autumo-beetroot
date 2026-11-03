@@ -25,6 +25,12 @@ import java.net.Socket;
  */
 public class DefaultSocketFactory implements SocketFactory {
 
+	/**
+	 * Default constructor.
+	 */
+	public DefaultSocketFactory() {
+	}
+
 	@Override
 	public Socket create(String host, int port) throws IOException {
 		return new Socket(host, port);

@@ -56,6 +56,12 @@ public class Update {
 		GITHUB_REL_URL = BeetRootConfigurationManager.getInstance().getString("github_rel_url", "https://github.com/autumoswitzerland/autumo-beetroot/releases");
 	}
     
+	/**
+	 * Default constructor.
+	 */
+	public Update() {
+	}
+
     /**
      * Fetches the latest release version from the GitHub repository.
      *
@@ -113,6 +119,13 @@ public class Update {
         return false;
     }
     
+    /**
+     * Check current beetRoot version.
+     *
+     * @param latestRelease latest release version
+     * @param currentReleaseVersion current release version
+     * @return true if latest release version is higher than current release version
+     */
     public static int isNewerVersion(String latestRelease, String currentReleaseVersion) {
         // Remove leading 'v' if present
     	latestRelease = latestRelease.startsWith("v") ? latestRelease.substring(1) : latestRelease;
@@ -135,6 +148,11 @@ public class Update {
         return 0;  // If versions are equal
     }
     
+    /**
+     * Runs the update tool from the command line.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String args[]) {
         try {
             //String currentReleaseVersion = "v2.0.1";

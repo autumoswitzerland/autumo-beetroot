@@ -28,6 +28,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
   */
 public class DBField {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(DBField.class.getName());
 	
 	private String name;
@@ -53,22 +56,47 @@ public class DBField {
 		this.defaultVal = defaultVal;
 	}		
 	
+	/**
+	 * Returns the default value.
+	 *
+	 * @return the default value
+	 */
 	public String getDefaultVal() {
 		return defaultVal;
 	}
 	
+	/**
+	 * Returns the field name.
+	 *
+	 * @return the field name
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Returns the field type.
+	 *
+	 * @return the field type
+	 */
 	public String getType() {
 		return type;
 	}
 	
+	/**
+	 * Checks whether the field is unique.
+	 *
+	 * @return true if the field is unique
+	 */
 	public boolean isUnique() {
 		return unique;
 	}
 	
+	/**
+	 * Checks whether the field is nullable.
+	 *
+	 * @return true if the field is nullable
+	 */
 	public boolean isNullable() {
 		return isNullable;
 	}

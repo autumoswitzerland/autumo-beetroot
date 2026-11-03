@@ -22,6 +22,11 @@ package ch.autumo.beetroot.handler;
  */
 public abstract class CustomResponseHandler extends BaseHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public CustomResponseHandler(String entity) {
 		super(entity);
 	}	

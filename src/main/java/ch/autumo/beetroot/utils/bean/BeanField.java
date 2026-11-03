@@ -30,6 +30,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
   */
 public class BeanField {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeanField.class.getName());
 	
 	private String dbName;
@@ -69,30 +72,58 @@ public class BeanField {
 		this.setterMethod = setterMethod;
 	}		
 
+	/**
+	 * Get getter method.
+	 * @return getter method
+	 */
 	public Method getGetterMethod() {
 		return getterMethod;
 	}
 	
+	/**
+	 * Get setter method.
+	 * @return setter method
+	 */
 	public Method getSetterMethod() {
 		return setterMethod;
 	}
 	
+	/**
+	 * Get DB name.
+	 * @return DB name
+	 */
 	public String getDbName() {
 		return dbName;
 	}
 	
+	/**
+	 * Get bean name.
+	 * @return bean name
+	 */
 	public String getBeanName() {
 		return beanName;
 	}
 
+	/**
+	 * Get type.
+	 * @return type
+	 */
 	public Class<?> getType() {
 		return type;
 	}
 	
+	/**
+	 * Is unique?
+	 * @return true if unique
+	 */
 	public boolean isUnique() {
 		return unique;
 	}
 	
+	/**
+	 * Is nullable?
+	 * @return true if nullable
+	 */
 	public boolean isNullable() {
 		return isNullable;
 	}

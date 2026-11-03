@@ -37,6 +37,9 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class EventHandler {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(EventHandler.class.getName());
 	
 	private static EventHandler handler;

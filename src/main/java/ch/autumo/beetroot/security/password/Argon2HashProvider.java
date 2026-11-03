@@ -32,6 +32,9 @@ public class Argon2HashProvider implements PasswordHashProvider {
     
     private Argon2PasswordEncoder encoder = null;
     
+    /**
+     * Constructor.
+     */
 	public Argon2HashProvider() {
 		encoder = new Argon2PasswordEncoder(DEFAULT_SALT_LENGTH, DEFAULT_HASH_LENGTH, DEFAULT_PARALLELISM, DEFAULT_MEMORY, DEFAULT_ITERATIONS);
 	}

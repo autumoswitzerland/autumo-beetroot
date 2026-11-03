@@ -28,6 +28,11 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class SettingsHandler extends NoContentAndConfigHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public SettingsHandler(String entity) {
 		super(entity);
 	}

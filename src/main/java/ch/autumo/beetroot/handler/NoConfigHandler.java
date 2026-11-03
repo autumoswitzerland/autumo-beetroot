@@ -22,6 +22,11 @@ package ch.autumo.beetroot.handler;
  */
 public abstract class NoConfigHandler extends BaseHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public NoConfigHandler(String entity) {
 		super(entity);
 	}

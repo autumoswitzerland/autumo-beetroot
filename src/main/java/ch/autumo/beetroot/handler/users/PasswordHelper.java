@@ -49,6 +49,11 @@ public class PasswordHelper {
 	 */
 	private static Map<String, PasswordValidator> validatorMap = new HashMap<>();
 	
+	/**
+	 * Default constructor.
+	 */
+	public PasswordHelper() {
+	}
 	
 	/**
 	 * Find or create a password validator for the given language.

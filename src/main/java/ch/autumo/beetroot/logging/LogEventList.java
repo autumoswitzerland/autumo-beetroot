@@ -20,12 +20,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Log event list with a maximum size and with shadow copies
  * of log events.
  * 
- * @param <LogEvent>
+ * @param <LogEvent> the log event
  */
 public class LogEventList<LogEvent> extends CopyOnWriteArrayList<LogEvent> {
 	
     private static final long serialVersionUID = 1L;
     
+	/**
+	 * The max size value.
+	 */
 	private int maxSize = 0;
 
 	/**

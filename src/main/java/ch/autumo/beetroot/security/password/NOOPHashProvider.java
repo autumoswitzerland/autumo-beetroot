@@ -22,6 +22,9 @@ package ch.autumo.beetroot.security.password;
  */
 public class NOOPHashProvider implements PasswordHashProvider {
 
+	/**
+	 * Creates the provider.
+	 */
 	public NOOPHashProvider() {
 	}
 

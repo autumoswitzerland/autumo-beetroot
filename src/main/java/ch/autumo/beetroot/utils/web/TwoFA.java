@@ -44,6 +44,12 @@ import de.taimos.totp.TOTP;
 public class TwoFA {
 
 	/**
+	 * Default constructor.
+	 */
+	public TwoFA() {
+	}
+	
+	/**
 	 * Generate a secret user key with specific length.
 	 * Note: Only initially for every user once!
 	 * 

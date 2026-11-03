@@ -29,6 +29,9 @@ import ch.autumo.beetroot.Session;
  */
 public class Error404Handler extends BaseHandler {
 
+	/**
+	 * Creates the handler.
+	 */
 	public Error404Handler() {
 	}
 	

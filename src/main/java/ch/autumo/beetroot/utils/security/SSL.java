@@ -52,6 +52,12 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
 public class SSL {
 
 	/**
+	 * Default constructor.
+	 */
+	public SSL() {
+	}
+	
+	/**
 	 * HTTP/HTTPS socket factory registry.
 	 * 
 	 * Used for http/https tunneling of server command on the client side.

@@ -78,6 +78,12 @@ public abstract class AbstractMailer implements Mailer {
 	protected String from = null;
 
 
+    /**
+     * Default Constructor.
+     */
+    public AbstractMailer() {
+    }
+
 	/**
 	 * Initialize mail configuration; some are store in the returned properties
 	 * and some attributes are initialized.
@@ -136,7 +142,7 @@ public abstract class AbstractMailer implements Mailer {
 	 * @param variables variables
 	 * @param format mail format
 	 * @return replaced template
-	 * @throws Exception
+	 * @throws Exception if template could not be populated
 	 */
 	protected String loadTemplateWithVariables(String templateName, BeetRootHTTPSession session, Map<String, String> variables, String format) throws Exception {
 	    String template = this.loadTemplate(templateName, session, format);

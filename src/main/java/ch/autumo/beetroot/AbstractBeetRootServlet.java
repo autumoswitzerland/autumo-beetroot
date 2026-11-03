@@ -42,11 +42,26 @@ public class AbstractBeetRootServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractBeetRootServlet.class.getName());
 
+	/**
+	 * The beet root service value.
+	 */
 	private BeetRootService beetRootService = null;
+	
+	/**
+	 * beetRoot HTTP sessions.
+	 */
 	private Map<String, BeetRootHTTPSession> sessions = new ConcurrentHashMap<>();
 
+	/**
+	 * Default constructor.
+	 */
+	public AbstractBeetRootServlet() {
+	}
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {

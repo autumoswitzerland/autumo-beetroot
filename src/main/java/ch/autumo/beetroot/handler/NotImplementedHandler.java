@@ -25,6 +25,9 @@ import ch.autumo.beetroot.LanguageManager;
  */
 public class NotImplementedHandler extends BaseHandler {
 
+	/**
+	 * Creates the handler.
+	 */
 	public NotImplementedHandler() {
 	}
 	

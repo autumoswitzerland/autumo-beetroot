@@ -257,18 +257,43 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${version.maven.javadoc.plugin}</version>
 				<configuration>
-					<doclint>all,-missing</doclint>
 					<sourcepath>src/main/java</sourcepath>
-					<stylesheetfile>${basedir}/doc/autumo.css</stylesheetfile>
+
+					<!-- Same appearance as the Gradle build: add the autumo theme on top
+					     of the bundled Javadoc stylesheet instead of replacing it.
+					     Requires the Javadoc tool of JDK 25 or newer. -->
+					<additionalOptions>
+						<additionalOption>--add-stylesheet</additionalOption>
+						<additionalOption>${basedir}/doc/autumo.css</additionalOption>
+					</additionalOptions>
+					
 					<outputDirectory>${basedir}/doc</outputDirectory>
+
+					<!-- US English labels: the standard doclet reads the JVM default locale,
+					     the -locale option only affects the tool messages. -->
+					<additionalJOptions>
+						<additionalJOption>-J-Duser.language=en</additionalJOption>
+						<additionalJOption>-J-Duser.country=US</additionalJOption>
+					</additionalJOptions>
+
+					<doctitle>autumo beetRoot ${project.version} API</doctitle>
+					<windowtitle>autumo beetRoot - Slim &amp; Rapid Java Web Framework</windowtitle>
+
+					<!-- Company and product information on every page. -->
+					<header><![CDATA[<a href="https://products.autumo.ch/" target="_top">autumo GmbH</a> &middot; autumo beetRoot]]></header>
+					<bottom><![CDATA[&copy; 2026 autumo GmbH &middot; <a href="https://products.autumo.ch/" target="_top">products.autumo.ch</a>]]></bottom>
+
+					<encoding>UTF-8</encoding>
+					<charset>UTF-8</charset>
+					<docencoding>UTF-8</docencoding>
 				</configuration>
-			</plugin>
+			</plugin>			
 
 	        <plugin>
 	            <groupId>org.apache.maven.plugins</groupId>

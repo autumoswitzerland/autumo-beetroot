@@ -111,6 +111,11 @@ public class PWEncoder {
 		System.out.println("");
 	}
 	
+	/**
+	 * Runs the encoder from the command line.
+	 *
+	 * @param args the command-line arguments
+	 */
 	public static void main(String args[]) {
 		
 		new PWEncoder(args);

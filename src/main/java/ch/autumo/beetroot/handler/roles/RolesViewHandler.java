@@ -16,6 +16,11 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class RolesViewHandler extends DefaultViewHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public RolesViewHandler(String entity) {
 		super(entity);
 	}

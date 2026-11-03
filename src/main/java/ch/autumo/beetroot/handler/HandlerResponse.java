@@ -26,14 +26,32 @@ import org.nanohttpd.protocols.http.response.Response;
  */
 public class HandlerResponse {
 
+	/**
+	 * Handler state: not OK.
+	 */
 	public static final int STATE_NOT_OK = 0;
+	/**
+	 * Handler state: OK.
+	 */
 	public static final int STATE_OK = 1;
+	/**
+	 * Handler state: warning.
+	 */
 	public static final int STATE_WARNING = 2;
 	
 	//public static final int STATE_RELOAD_OK = 10;
 
+	/**
+	 * Response type: form.
+	 */
 	public static final int TYPE_FORM = 10;
+	/**
+	 * Response type: file upload.
+	 */
 	public static final int TYPE_FILE_UPLOAD = 20;
+	/**
+	 * Response type: file download.
+	 */
 	public static final int TYPE_FILE_DOWNLOAD = 30;
 	
 	private int status = -1;
@@ -140,94 +158,209 @@ public class HandlerResponse {
 		this.object = object;
 	}
 
+	/**
+	 * Returns the id value.
+	 *
+	 * @return the id value
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * Sets the id value.
+	 *
+	 * @param id the new id value
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 	
+	/**
+	 * Returns the status value.
+	 *
+	 * @return the status value
+	 */
 	public int getStatus() {
 		return status;
 	}
 
+	/**
+	 * Sets the status value.
+	 *
+	 * @param status the new status value
+	 */
 	public void setStatus(int status) {
 		this.status = status;
 	}
 
+	/**
+	 * Returns the http response value.
+	 *
+	 * @return the http response value
+	 */
 	public Response getHttpResponse() {
 		return httpResponse;
 	}
 
+	/**
+	 * Returns the title value.
+	 *
+	 * @return the title value
+	 */
 	public String getTitle() {
 		return title;
 	}
 
+	/**
+	 * Sets the title value.
+	 *
+	 * @param title the new title value
+	 */
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
+	/**
+	 * Returns the message value.
+	 *
+	 * @return the message value
+	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	 * Sets the message value.
+	 *
+	 * @param message the new message value
+	 */
 	public void setMessage(String message) {
 		this.message = message;
 	}
 
+	/**
+	 * Returns the exception value.
+	 *
+	 * @return the exception value
+	 */
 	public Exception getException() {
 		return exception;
 	}
 
+	/**
+	 * Sets the exception value.
+	 *
+	 * @param exception the new exception value
+	 */
 	public void setException(Exception exception) {
 		this.exception = exception;
 	}
 
+	/**
+	 * Returns the object value.
+	 *
+	 * @return the object value
+	 */
 	public Object getObject() {
 		return object;
 	}
 
+	/**
+	 * Sets the object value.
+	 *
+	 * @param object the new object value
+	 */
 	public void setObject(Object object) {
 		this.object = object;
 	}
 
+	/**
+	 * Returns the type value.
+	 *
+	 * @return the type value
+	 */
 	public int getType() {
 		return type;
 	}
 
+	/**
+	 * Sets the type value.
+	 *
+	 * @param type the new type value
+	 */
 	public void setType(int type) {
 		this.type = type;
 	}
 
+	/**
+	 * Returns the download file value.
+	 *
+	 * @return the download file value
+	 */
 	public File getDownloadFile() {
 		return downloadFile;
 	}
 
+	/**
+	 * Sets the download file value.
+	 *
+	 * @param downloadFile the new download file value
+	 */
 	public void setDownloadFile(File downloadFile) {
 		this.downloadFile = downloadFile;
 	}
 
+	/**
+	 * Returns the download file name value.
+	 *
+	 * @return the download file name value
+	 */
 	public String getDownloadFileName() {
 		return downloadFileName;
 	}
 
+	/**
+	 * Sets the download file name value.
+	 *
+	 * @param downloadFileName the new download file name value
+	 */
 	public void setDownloadFileName(String downloadFileName) {
 		this.downloadFileName = downloadFileName;
 	}
 	
+	/**
+	 * Returns the download file mime type value.
+	 *
+	 * @return the download file mime type value
+	 */
 	public String getDownloadFileMimeType() {
 		return downloadFileMimeType;
 	}
 
+	/**
+	 * Sets the download file mime type value.
+	 *
+	 * @param downloadFileMimeType the new download file mime type value
+	 */
 	public void setDownloadFileMimeType(String downloadFileMimeType) {
 		this.downloadFileMimeType = downloadFileMimeType;
 	}
 
+	/**
+	 * Returns the saved id value.
+	 *
+	 * @return the saved id value
+	 */
 	public int getSavedId() {
 		return savedId;
 	}
 
+	/**
+	 * Sets the saved id value.
+	 *
+	 * @param savedId the new saved id value
+	 */
 	public void setSavedId(int savedId) {
 		this.savedId = savedId;
 	}

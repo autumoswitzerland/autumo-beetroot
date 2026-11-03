@@ -33,6 +33,12 @@ import ch.autumo.beetroot.BeetRootDatabaseManager;
 public class Time {
 
 	/**
+	 * Default constructor.
+	 */
+	public Time() {
+	}
+
+	/**
 	 * Get readable duration.
 	 * 
 	 * @param durationInMilliseconds duration in ms

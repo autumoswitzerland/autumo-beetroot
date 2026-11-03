@@ -41,6 +41,9 @@ import ch.autumo.beetroot.utils.system.OS;
  */
 public class DummyFileStorage implements FileStorage {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(DummyFileStorage.class.getName());
 	
 	private static String storageLocation;
@@ -53,6 +56,12 @@ public class DummyFileStorage implements FileStorage {
 			storageLocation = tempDir;
 		}
 		LOG.info("Dummy file storage location: '{}'.", storageLocation);
+	}
+	
+	/**
+	 * Default constructor.
+	 */
+	public DummyFileStorage() {
 	}
 	
 	@Override

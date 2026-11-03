@@ -48,6 +48,12 @@ public class OS {
      */
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+
+	/**
+	 * Default constructor.
+	 */
+	public OS() {
+	}
 	
 	/**
 	 * Is Windows?

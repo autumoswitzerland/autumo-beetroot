@@ -34,6 +34,9 @@ public class PBKPD2HashProvider implements PasswordHashProvider {
 	
 	private Pbkdf2PasswordEncoder encoder = null;
 	
+	/**
+	 * Creates the provider.
+	 */
 	public PBKPD2HashProvider() {
 		encoder = new Pbkdf2PasswordEncoder(SecureApplicationHolder.getInstance().getSecApp().getUniqueSecurityKey(), DEFAULT_SALT_LENGTH, DEFAULT_ITERATIONS, DEFAULT_ALGORITHM);
 	}

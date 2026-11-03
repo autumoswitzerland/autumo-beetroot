@@ -82,6 +82,9 @@ import ch.autumo.beetroot.utils.web.Web;
  */
 public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootService {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootWebServer.class.getName());
 
 	/**
@@ -1001,6 +1004,13 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	    return true;
 	}
 
+	/**
+	 * Creates the JSON response for a client answer.
+	 *
+	 * @param session the HTTP session
+	 * @param answer the client answer
+	 * @return the response
+	 */
 	public static Response serverCommandResponse(BeetRootHTTPSession session, ClientAnswer answer) {
 		Status stat = Status.OK;
 		if (answer.getType() == ClientAnswer.TYPE_ERROR)
@@ -1020,6 +1030,14 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 		}
 	}
 
+	/**
+	 * Creates the response by instantiating and calling the given handler.
+	 *
+	 * @param session the HTTP session
+	 * @param handlerClass the handler class
+	 * @param initParameter the handler constructor parameters
+	 * @return the response
+	 */
 	public static Response serverResponse(
 			BeetRootHTTPSession session,
 			Class<?> handlerClass,

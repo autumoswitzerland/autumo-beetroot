@@ -14,148 +14,323 @@ public class User extends Model {
 
     private static final long serialVersionUID = 1L;
     
+	/**
+	 * Default constructor.
+	 */
+	public User() {
+	}
+	    
+    /**
+     * The firstname value.
+     */
     @Column (name = "firstname")
 	private String firstname;
 
+    /**
+     * Returns the firstname value.
+     *
+     * @return the firstname value
+     */
     public String getFirstname() {
         return firstname;
     }
 
+    /**
+     * Sets the firstname value.
+     *
+     * @param firstname the new firstname value
+     */
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 
+    /**
+     * The password value.
+     */
     @Column (name = "password")
     private String password;
 
+    /**
+     * Returns the password value.
+     *
+     * @return the password value
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets the password value.
+     *
+     * @param password the new password value
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * The role value.
+     */
     @Column (name = "role")
     private String role;
 
+    /**
+     * Returns the role value.
+     *
+     * @return the role value
+     */
     public String getRole() {
         return role;
     }
 
+    /**
+     * Sets the role value.
+     *
+     * @param role the new role value
+     */
     public void setRole(String role) {
         this.role = role;
     }
 
+    /**
+     * The lasttoken value.
+     */
     @Column (name = "lasttoken")
     private String lasttoken;
 
+    /**
+     * Returns the lasttoken value.
+     *
+     * @return the lasttoken value
+     */
     public String getLasttoken() {
         return lasttoken;
     }
 
+    /**
+     * Sets the lasttoken value.
+     *
+     * @param lasttoken the new lasttoken value
+     */
     public void setLasttoken(String lasttoken) {
         this.lasttoken = lasttoken;
     }
 
+    /**
+     * The created value.
+     */
     @Column (name = "created")
     private java.sql.Timestamp created;
 
+    /**
+     * Returns the created value.
+     *
+     * @return the created value
+     */
     public java.sql.Timestamp getCreated() {
         return created;
     }
 
+    /**
+     * Sets the created value.
+     *
+     * @param created the new created value
+     */
     public void setCreated(java.sql.Timestamp created) {
         this.created = created;
     }
 
+    /**
+     * The modified value.
+     */
     @Column (name = "modified")
     private java.sql.Timestamp modified;
 
+    /**
+     * Returns the modified value.
+     *
+     * @return the modified value
+     */
     public java.sql.Timestamp getModified() {
         return modified;
     }
 
+    /**
+     * Sets the modified value.
+     *
+     * @param modified the new modified value
+     */
     public void setModified(java.sql.Timestamp modified) {
         this.modified = modified;
     }
 
+    /**
+     * The lang value.
+     */
     @Column (name = "lang")
     private String lang;
 
+    /**
+     * Returns the lang value.
+     *
+     * @return the lang value
+     */
     public String getLang() {
         return lang;
     }
 
+    /**
+     * Sets the lang value.
+     *
+     * @param lang the new lang value
+     */
     public void setLang(String lang) {
         this.lang = lang;
     }
 
+    /**
+     * The email value.
+     */
     @Unique
     @Column (name = "email")
     private String email;
 
+    /**
+     * Returns the email value.
+     *
+     * @return the email value
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Sets the email value.
+     *
+     * @param email the new email value
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * The phone value.
+     */
     @Unique
     @Column (name = "phone")
     private String phone;
 
+    /**
+     * Returns the phone value.
+     *
+     * @return the phone value
+     */
     public String getPhone() {
         return phone;
     }
 
+    /**
+     * Sets the phone value.
+     *
+     * @param phone the new phone value
+     */
     public void setPhone(String phone) {
         this.phone = phone;
     }
     
+    /**
+     * The username value.
+     */
     @Unique
     @Column (name = "username")
     private String username;
 
+    /**
+     * Returns the username value.
+     *
+     * @return the username value
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets the username value.
+     *
+     * @param username the new username value
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * The lastname value.
+     */
     @Column (name = "lastname")
     private String lastname;
 
+    /**
+     * Returns the lastname value.
+     *
+     * @return the lastname value
+     */
     public String getLastname() {
         return lastname;
     }
 
+    /**
+     * Sets the lastname value.
+     *
+     * @param lastname the new lastname value
+     */
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
 
+    /**
+     * The secretkey value.
+     */
     @Column (name = "secretkey")
     private String secretkey;
     
+    /**
+     * Returns the secretkey value.
+     *
+     * @return the secretkey value
+     */
     public String getSecretkey() {
 		return secretkey;
 	}
 	
+    /**
+     * Sets the secretkey value.
+     *
+     * @param secretkey the new secretkey value
+     */
     public void setSecretkey(String secretkey) {
 		this.secretkey = secretkey;
 	}
     
+    /**
+     * The two fa value.
+     */
     @Column (name = "two_fa")
     private boolean twoFa;
     
+    /**
+     * Returns the two fa value.
+     *
+     * @return the two fa value
+     */
     public boolean getTwoFa() {
     	return twoFa;
     }
 
+    /**
+     * Sets the two fa value.
+     *
+     * @param twoFa the new two fa value
+     */
     public void setTwoFa(boolean twoFa) {
     	this.twoFa = twoFa;
     }

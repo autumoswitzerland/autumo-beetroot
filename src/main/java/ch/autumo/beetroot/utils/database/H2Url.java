@@ -32,6 +32,9 @@ import ch.autumo.beetroot.utils.UtilsException;
  */
 public final class H2Url {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(H2Url.class.getName());
 	
 	/** The H2 URL separator separates the URL from the features. */

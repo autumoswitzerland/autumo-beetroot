@@ -41,10 +41,20 @@ public class Download extends FileAction {
 		this.fileId = fileId;
 	}
 
+	/**
+	 * Returns the file id.
+	 *
+	 * @return the file id
+	 */
 	public String getFileId() {
 		return fileId;
 	}
 
+	/**
+	 * Returns the temporary file to download.
+	 *
+	 * @return the file
+	 */
 	public File getFile() {
 		return file;
 	}

@@ -31,10 +31,21 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class TasksIndexHandler extends DefaultIndexHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public TasksIndexHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param msg the message
+	 */
 	public TasksIndexHandler(String entity, String msg) {
 
 		super(entity);

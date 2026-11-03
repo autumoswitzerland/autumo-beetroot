@@ -64,6 +64,8 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 
 /**
+ * Customized Router NanoHTTPD.
+ * 
  * @author vnnv
  * @author ritchieGitHub
  */
@@ -76,16 +78,61 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 	protected static final Logger LOG = LoggerFactory.getLogger(RouterNanoHTTPD.class.getName());
     //private static final Logger LOG = Logger.getLogger(RouterNanoHTTPD.class.getName());
 
+    /**
+     * Responder for a routed URI. The router invokes the method that matches
+     * the HTTP method of the request.
+     */
     public interface UriResponder {
 
+        /**
+         * Handles an HTTP GET request.
+         *
+         * @param uriResource the route that matched the request
+         * @param urlParams the parameters extracted from the URI
+         * @param session the HTTP session
+         * @return the response
+         */
         public Response get(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session);
 
+        /**
+         * Handles an HTTP PUT request.
+         *
+         * @param uriResource the route that matched the request
+         * @param urlParams the parameters extracted from the URI
+         * @param session the HTTP session
+         * @return the response
+         */
         public Response put(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session);
 
+        /**
+         * Handles an HTTP POST request.
+         *
+         * @param uriResource the route that matched the request
+         * @param urlParams the parameters extracted from the URI
+         * @param session the HTTP session
+         * @return the response
+         */
         public Response post(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session);
 
+        /**
+         * Handles an HTTP DELETE request.
+         *
+         * @param uriResource the route that matched the request
+         * @param urlParams the parameters extracted from the URI
+         * @param session the HTTP session
+         * @return the response
+         */
         public Response delete(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session);
 
+        /**
+         * Handles any other HTTP method.
+         *
+         * @param method the HTTP method name
+         * @param uriResource the route that matched the request
+         * @param urlParams the parameters extracted from the URI
+         * @param session the HTTP session
+         * @return the response
+         */
         public Response other(String method, UriResource uriResource, Map<String, String> urlParams, IHTTPSession session);
     }
 
@@ -95,10 +142,31 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      */
     public static abstract class DefaultStreamHandler implements UriResponder {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public DefaultStreamHandler() {
+    	}    	
+    	
+        /**
+         * MIME type of the streamed data.
+         *
+         * @return the MIME type
+         */
         public abstract String getMimeType();
 
+        /**
+         * HTTP status of the response.
+         *
+         * @return the response status
+         */
         public abstract IStatus getStatus();
 
+        /**
+         * Get data input stream.
+         * 
+         * @return data input stream
+         */
         public abstract InputStream getData();
 
         public Response get(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session) {
@@ -128,8 +196,24 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      */
     public static abstract class DefaultHandler extends DefaultStreamHandler {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public DefaultHandler() {
+    	}
+    	
+        /**
+         * Text or HTML content returned by this handler.
+         *
+         * @return the response body
+         */
         public abstract String getText();
 
+        /**
+         * HTTP status of the response.
+         *
+         * @return the response status
+         */
         public abstract IStatus getStatus();
 
         public Response get(UriResource uriResource, Map<String, String> urlParams, IHTTPSession session) {
@@ -147,6 +231,19 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      */
     public static class GeneralHandler extends DefaultHandler {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public GeneralHandler() {
+    	}
+    	
+        /**
+         * Not supported; this handler renders the response in
+         * {@link #get(UriResource, Map, IHTTPSession)}.
+         *
+         * @return never returns
+         * @throws IllegalStateException always
+         */
         @Override
         public String getText() {
             throw new IllegalStateException("this method should not be called");
@@ -186,10 +283,16 @@ public class RouterNanoHTTPD extends NanoHTTPD {
     }
 
     /**
-     * General nanolet to print debug info's as a html page.
+     * Serves static files from a directory that is passed as init parameter.
      */
     public static class StaticPageHandler extends DefaultHandler {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public StaticPageHandler() {
+    	}
+    	
         private static String[] getPathArray(String uri) {
             String array[] = uri.split("/");
             ArrayList<String> pathArray = new ArrayList<String>();
@@ -203,11 +306,23 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
         }
 
+        /**
+         * Not supported; static pages are read from the file system.
+         *
+         * @return never returns
+         * @throws IllegalStateException always
+         */
         @Override
         public String getText() {
             throw new IllegalStateException("this method should not be called");
         }
 
+        /**
+         * Not supported; the MIME type is derived from the file name.
+         *
+         * @return never returns
+         * @throws IllegalStateException always
+         */
         @Override
         public String getMimeType() {
             throw new IllegalStateException("this method should not be called");
@@ -248,6 +363,13 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             }
         }
 
+        /**
+         * Opens the given file as a buffered input stream.
+         *
+         * @param fileOrdirectory the file to open
+         * @return the buffered input stream
+         * @throws IOException if the file cannot be read
+         */
         protected BufferedInputStream fileToInputStream(File fileOrdirectory) throws IOException {
             return new BufferedInputStream(new FileInputStream(fileOrdirectory));
         }
@@ -257,6 +379,12 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      * Handling error 404 - unrecognized urls
      */
     public static class Error404UriHandler extends DefaultHandler {
+
+    	/**
+    	 * Default constructor.
+    	 */
+    	public Error404UriHandler() {
+    	}
 
         public String getText() {
             return "<html><body><h3>Error 404: the requested page doesn't exist.</h3></body></html>";
@@ -278,6 +406,12 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      */
     public static class IndexHandler extends DefaultHandler {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public IndexHandler() {
+    	}
+    	
         public String getText() {
             return "<html><body><h2>Hello world!</h2></body></html>";
         }
@@ -294,7 +428,16 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
     }
 
+    /**
+     * Fallback handler for routes that are registered without an implementation.
+     */
     public static class NotImplementedHandler extends DefaultHandler {
+
+    	/**
+    	 * Default constructor.
+    	 */
+    	public NotImplementedHandler() {
+    	}
 
         public String getText() {
             return "<html><body><h2>The uri is mapped in the router, but no handler is specified. <br> Status: Not implemented!</h2></body></html>";
@@ -311,6 +454,12 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         }
     }
 
+    /**
+     * Removes a leading and a trailing slash from the given URI.
+     *
+     * @param value the URI value, may be {@code null}
+     * @return the normalized URI, or {@code null} if the input was {@code null}
+     */
     public static String normalizeUri(String value) {
         if (value == null) {
             return value;
@@ -325,6 +474,10 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
     }
 
+    /**
+     * A single route: URI pattern, handler class, priority and init parameters.
+     * URI parameters such as {@code :id} are parsed into a regular expression.
+     */
     public static class UriResource implements Comparable<UriResource> {
 
         private static final Pattern PARAM_PATTERN = Pattern.compile("(?<=(^|/)):[a-zA-Z0-9_-]+(?=(/|$))");
@@ -348,11 +501,26 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         /** Patched: autumo-beetroot. */
         private boolean hasLang = false;
         
+        /**
+         * Creates a route with an explicit priority.
+         *
+         * @param uri the URI pattern
+         * @param priority the route priority; lower values match first
+         * @param handler the handler class
+         * @param initParameter constructor parameters for the handler
+         */
         public UriResource(String uri, int priority, Class<?> handler, Object... initParameter) {
             this(uri, handler, initParameter);
             this.priority = priority + uriParams.size() * 1000;
         }
 
+        /**
+         * Creates a route whose priority is derived from its parameter count.
+         *
+         * @param uri the URI pattern
+         * @param handler the handler class
+         * @param initParameter constructor parameters for the handler
+         */
         public UriResource(String uri, Class<?> handler, Object... initParameter) {
             this.handler = handler;
             this.initParameter = initParameter;
@@ -393,6 +561,14 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             return Pattern.compile(patternUri);
         }
 
+        /**
+         * Instantiates the handler of this route and dispatches the request.
+         *
+         * @param urlParams the parameters extracted from the URI
+         * @param session the HTTP session
+         * @return the response, or an internal error response if the handler
+         *         could not be created or invoked
+         */
         public Response process(Map<String, String> urlParams, IHTTPSession session) {
             String error = "General error!";
             if (handler != null) {
@@ -455,14 +631,34 @@ public class RouterNanoHTTPD extends NanoHTTPD {
                     .toString();
         }
 
+        /**
+         * Returns the URI pattern of this route.
+         *
+         * @return the URI pattern, or {@code null} for the not-found route
+         */
         public String getUri() {
             return uri;
         }
 
+        /**
+         * Returns the first init parameter of the requested type.
+         *
+         * @param paramClazz the expected type
+         * @param <T> the parameter type
+         * @return the init parameter, or {@code null} if it is not available
+         */
         public <T> T initParameter(Class<T> paramClazz) {
             return initParameter(0, paramClazz);
         }
 
+        /**
+         * Returns the init parameter at the given index.
+         *
+         * @param parameterIndex the index of the parameter
+         * @param paramClazz the expected type
+         * @param <T> the parameter type
+         * @return the init parameter, or {@code null} if the index is not available
+         */
         public <T> T initParameter(int parameterIndex, Class<T> paramClazz) {
             if (initParameter.length > parameterIndex) {
                 return paramClazz.cast(initParameter[parameterIndex]);
@@ -471,6 +667,13 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             return null;
         }
 
+        /**
+         * Matches a URL against this route.
+         *
+         * @param url the normalized URL
+         * @return the extracted URI parameters, an empty map if the route has no
+         *         parameters, or {@code null} if the URL does not match
+         */
         public Map<String, String> match(String url) {
             Matcher matcher = uriPattern.matcher(url);
             if (matcher.matches()) {
@@ -500,6 +703,11 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             }
         }
 
+        /**
+         * Sets the priority of this route; lower values match first.
+         *
+         * @param priority the priority
+         */
         public void setPriority(int priority) {
             this.priority = priority;
         }
@@ -518,28 +726,70 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         
     }
 
+    /**
+     * Holds the registered routes and defines their processing order.
+     */
     public static interface IRoutePrioritizer {
 
+        /**
+         * Adds a route.
+         *
+         * @param url the URI pattern
+         * @param priority the route priority
+         * @param handler the handler class, may be {@code null}
+         * @param initParameter constructor parameters for the handler
+         */
         void addRoute(String url, int priority, Class<?> handler, Object... initParameter);
 
+        /**
+         * Removes the route with the given URI pattern.
+         *
+         * @param url the URI pattern
+         */
         void removeRoute(String url);
 
+        /**
+         * Returns all routes in processing order.
+         *
+         * @return the routes
+         */
         Collection<UriResource> getPrioritizedRoutes();
 
+        /**
+         * Sets the handler used for routes without an implementation.
+         *
+         * @param notImplemented the handler class
+         */
         void setNotImplemented(Class<?> notImplemented);
     }
 
+    /**
+     * Base implementation of a route prioritizer that owns the route mappings.
+     */
     public static abstract class BaseRoutePrioritizer implements IRoutePrioritizer {
 
+        /** Handler used for routes without an implementation. */
         protected Class<?> notImplemented;
 
+        /** Routes registered with this prioritizer. */
         protected final Collection<UriResource> mappings;
 
+        /**
+         * Creates the prioritizer with the default not-implemented handler.
+         */
         public BaseRoutePrioritizer() {
             this.mappings = newMappingCollection();
             this.notImplemented = NotImplementedHandler.class;
         }
 
+        /**
+         * Adds a route. If no handler is given, the not-implemented handler is used.
+         *
+         * @param url the URI pattern
+         * @param priority the route priority
+         * @param handler the handler class, may be {@code null}
+         * @param initParameter constructor parameters for the handler
+         */
         @Override
         public void addRoute(String url, int priority, Class<?> handler, Object... initParameter) {
             if (url != null) {
@@ -551,6 +801,11 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             }
         }
 
+        /**
+         * Removes the route with the given URI pattern.
+         *
+         * @param url the URI pattern
+         */
         public void removeRoute(String url) {
             String uriToDelete = normalizeUri(url);
             Iterator<UriResource> iter = mappings.iterator();
@@ -563,21 +818,45 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             }
         }
 
+        /**
+         * Returns all routes in processing order.
+         *
+         * @return an unmodifiable view of the routes
+         */
         @Override
         public Collection<UriResource> getPrioritizedRoutes() {
             return Collections.unmodifiableCollection(mappings);
         }
 
+        /**
+         * Sets the handler used for routes without an implementation.
+         *
+         * @param handler the handler class
+         */
         @Override
         public void setNotImplemented(Class<?> handler) {
             notImplemented = handler;
         }
 
+        /**
+         * Creates the collection that holds the routes.
+         *
+         * @return a new, empty route collection
+         */
         protected abstract Collection<UriResource> newMappingCollection();
     }
 
+    /**
+     * Uses the priority that was passed to {@code addRoute} unchanged.
+     */
     public static class ProvidedPriorityRoutePrioritizer extends BaseRoutePrioritizer {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public ProvidedPriorityRoutePrioritizer() {
+    	}    	
+    	
         @Override
         public void addRoute(String url, int priority, Class<?> handler, Object... initParameter) {
             if (url != null) {
@@ -600,20 +879,42 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
     }
 
+    /**
+     * Orders routes by the priority assigned when they were added.
+     */
     public static class DefaultRoutePrioritizer extends BaseRoutePrioritizer {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public DefaultRoutePrioritizer() {
+    	}
+    	
         protected Collection<UriResource> newMappingCollection() {
             return new PriorityQueue<UriResource>();
         }
     }
 
+    /**
+     * Keeps routes in the order in which they were added.
+     */
     public static class InsertionOrderRoutePrioritizer extends BaseRoutePrioritizer {
 
+    	/**
+    	 * Default constructor.
+    	 */
+    	public InsertionOrderRoutePrioritizer() {
+    	}
+    	
         protected Collection<UriResource> newMappingCollection() {
             return new ArrayList<UriResource>();
         }
     }
 
+    /**
+     * Resolves a request URI to a registered route and processes the request
+     * with that route's handler.
+     */
     public static class UriRouter {
 
         private UriResource error404Url;
@@ -635,6 +936,9 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         private String servletName = null;
         
         
+        /**
+         * Creates the router with the default route prioritizer.
+         */
         public UriRouter() {
             this.routePrioritizer = new DefaultRoutePrioritizer();
             
@@ -701,14 +1005,29 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             routePrioritizer.removeRoute(url);
         }
 
+        /**
+         * Sets the handler for URIs that match no route.
+         *
+         * @param handler the handler class
+         */
         public void setNotFoundHandler(Class<?> handler) {
             error404Url = new UriResource(null, 100, handler);
         }
 
+        /**
+         * Sets the handler for routes without an implementation.
+         *
+         * @param handler the handler class
+         */
         public void setNotImplemented(Class<?> handler) {
             routePrioritizer.setNotImplemented(handler);
         }
 
+        /**
+         * Replaces the route prioritizer.
+         *
+         * @param routePrioritizer the new prioritizer
+         */
         public void setRoutePrioritizer(IRoutePrioritizer routePrioritizer) {
             this.routePrioritizer = routePrioritizer;
         }
@@ -718,11 +1037,22 @@ public class RouterNanoHTTPD extends NanoHTTPD {
     /** Patched: autumo-beetroot. */
     protected UriRouter router;
 
+    /**
+     * Creates the server on the given port.
+     *
+     * @param port the port to listen on
+     */
     public RouterNanoHTTPD(int port) {
         super(port);
         router = new UriRouter();
     }
 
+    /**
+     * Creates the server on the given host name and port.
+     *
+     * @param hostname the host name to bind to
+     * @param port the port to listen on
+     */
     public RouterNanoHTTPD(String hostname, int port) {
         super(hostname, port);
         router = new UriRouter();
@@ -735,7 +1065,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      * router.setNotFoundHandler(GeneralHandler.class);
      * </pre>
      */
-
     public void addMappings() {
         router.setNotImplemented(NotImplementedHandler.class);
         router.setNotFoundHandler(Error404UriHandler.class);
@@ -743,22 +1072,51 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         router.addRoute("/index.html", Integer.MAX_VALUE / 2, IndexHandler.class);
     }
     
+    /**
+     * Adds a route with the default priority {@code 100}.
+     *
+     * @param url the URI pattern
+     * @param handler the handler class
+     * @param initParameter constructor parameters for the handler
+     */
     public void addRoute(String url, Class<?> handler, Object... initParameter) {
         router.addRoute(url, 100, handler, initParameter);
     }
 
+    /**
+     * Sets the handler for routes without an implementation.
+     *
+     * @param handler the handler class
+     * @param <T> the responder type
+     */
     public <T extends UriResponder> void setNotImplementedHandler(Class<T> handler) {
         router.setNotImplemented(handler);
     }
 
+    /**
+     * Sets the handler for URIs that match no route.
+     *
+     * @param handler the handler class
+     * @param <T> the responder type
+     */
     public <T extends UriResponder> void setNotFoundHandler(Class<T> handler) {
         router.setNotFoundHandler(handler);
     }
 
+    /**
+     * Removes the route with the given URI pattern.
+     *
+     * @param url the URI pattern
+     */
     public void removeRoute(String url) {
         router.removeRoute(url);
     }
 
+    /**
+     * Replaces the route prioritizer.
+     *
+     * @param routePrioritizer the new prioritizer
+     */
     public void setRoutePrioritizer(IRoutePrioritizer routePrioritizer) {
         router.setRoutePrioritizer(routePrioritizer);
     }

@@ -34,6 +34,9 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
  */
 public class TwilioCaller implements Caller {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(TwilioCaller.class.getName());
 	
 	private String accountSid = null;

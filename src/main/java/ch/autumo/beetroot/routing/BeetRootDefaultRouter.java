@@ -39,10 +39,16 @@ import ch.autumo.beetroot.handler.NotImplementedHandler;
 public class BeetRootDefaultRouter implements Router {
 
 	/**
-	 * Log.
+	 * Logger.
 	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BeetRootDefaultRouter.class.getName());
 
+	/**
+	 * Default constructor.
+	 */
+	public BeetRootDefaultRouter() {
+	}
+	
 	/**
 	 * Get not implemented handler class.
 	 * return not implemented handler class

@@ -33,6 +33,12 @@ public class GUIDGenerator {
 	private static String MACHINE_DESCRIPTOR = getMachineDescriptor();
 	
 	/**
+	 * Default constructor.
+	 */
+	public GUIDGenerator() {
+	}
+
+	/**
 	 * Generates a GUID (48 chars).
 	 * 
 	 * @return The generated GUID.

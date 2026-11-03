@@ -31,6 +31,11 @@ public class NewQRCodeHandler extends BaseHandler {
 
 	private int uid = -1;
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public NewQRCodeHandler(String entity) {
 		this.entity = entity;
 	}

@@ -25,15 +25,31 @@ public class FileAction {
 	private String fileName = null;
 	private String domain = null;
 
+	/**
+	 * Creates the file action.
+	 *
+	 * @param fileName the file name
+	 * @param domain the domain
+	 */
 	public FileAction(String fileName, String domain) {
 		this.fileName = fileName;
 		this.domain = domain;
 	}
 	
+	/**
+	 * Returns the file name.
+	 *
+	 * @return the file name
+	 */
 	public String getFileName() {
 		return fileName;
 	}
 	
+	/**
+	 * Returns the domain.
+	 *
+	 * @return the domain
+	 */
 	public String getDomain() {
 		return domain;
 	}

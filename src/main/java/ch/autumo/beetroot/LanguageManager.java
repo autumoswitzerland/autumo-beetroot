@@ -50,15 +50,30 @@ import ch.autumo.beetroot.utils.web.Web;
  */
 public class LanguageManager {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(LanguageManager.class.getName());
 
+	/**
+	 * Default language.
+	 */
 	public static final String DEFAULT_LANG = "en";
 
 	private static final String URL_LANG_TAG = ":lang";
     private static final String BUNDLE_BASE_LOC = "web/lang/";
 
+    /**
+     * Language group: application.
+     */
     public static final String LANG_GRP_APP = "app";
+	/**
+	 * Language group: template.
+	 */
 	public static final String LANG_GRP_TMPL = "tmpl";
+	/**
+	 * Language group: password.
+	 */
 	public static final String LANG_GRP_PW = "pw";
 
 	private static final Map<String, String> GROUPS = new HashMap<>();

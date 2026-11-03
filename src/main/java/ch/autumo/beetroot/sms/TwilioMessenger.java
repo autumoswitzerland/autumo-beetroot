@@ -34,12 +34,21 @@ import ch.autumo.beetroot.security.SecureApplicationHolder;
  */
 public class TwilioMessenger implements Messenger {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(TwilioMessenger.class.getName());
 	
 	private String accountSid = null;
 	private String authToken = null;
 	private String phoneNumber = null;
 	
+	/**
+	 * Default constructor.
+	 */
+	public TwilioMessenger() {
+	}
+
 	@Override
 	public void init() throws Exception {
 		

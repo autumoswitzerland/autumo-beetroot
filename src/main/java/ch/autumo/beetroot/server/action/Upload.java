@@ -49,14 +49,29 @@ public class Upload extends FileAction {
 		this.user = user;
 	}
 	
+	/**
+	 * Returns the size value.
+	 *
+	 * @return the size value
+	 */
 	public long getSize() {
 		return size;
 	}
 
+	/**
+	 * Returns the user value.
+	 *
+	 * @return the user value
+	 */
 	public String getUser() {
 		return user;
 	}
 
+	/**
+	 * Returns the check sum value.
+	 *
+	 * @return the check sum value
+	 */
 	public String getCheckSum() {
 		return checkSum;
 	}

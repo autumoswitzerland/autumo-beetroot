@@ -42,7 +42,9 @@ import ch.autumo.beetroot.utils.system.GUIDGenerator;
 
 
 /**
- * Security helper methods. 
+ * Security helper methods.
+ * 
+ * TODO: Adapt KEYDATA to file.
  */
 public class Security {
 
@@ -51,6 +53,12 @@ public class Security {
 	/** Initialize HASH provider */
 	private static PasswordHashProvider hashProvider = null;
 
+	/**
+	 * Default constructor.
+	 */
+	public Security() {
+	}
+	
 	/**
 	 * Hash a password with configured HASH algorithm implementation.
 	 * Cannot be reversed.
@@ -277,11 +285,19 @@ public class Security {
 	 * Internal keys.
 	 */
 	public static final class KEYDATA {
+		private KEYDATA() {
+		}
 		private static final byte[] SALT_1 = {
 				(byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
 				(byte) 0x56, (byte) 0x35, (byte) 0xE3, (byte) 0x03
 			};
+		/**
+		 * Length of a 128-bit key in bytes.
+		 */
 		public static final int LEN_3 = 16;	
+		/**
+		 * Length of a 256-bit key in bytes.
+		 */
 		public static final int LEN_4 = 32;
 		private static final int ITER_1 = 65536;
 	}

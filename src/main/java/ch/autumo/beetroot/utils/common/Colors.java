@@ -43,6 +43,12 @@ public final class Colors {
 	}
 	
 	/**
+	 * Default constructor.
+	 */
+	public Colors() {
+	}
+
+	/**
 	 * Colorize text.
 	 * 
 	 * @param text text to colorize

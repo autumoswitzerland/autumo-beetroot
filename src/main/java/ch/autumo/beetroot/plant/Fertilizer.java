@@ -43,11 +43,26 @@ import ch.autumo.beetroot.utils.system.OS;
  */
 public class Fertilizer {
 	
+	/**
+	 * Placeholder for the lower-case entity name.
+	 */
 	public static final String LOWER_ENTITIES_NAME = "##entitiesname##";
+	/**
+	 * Placeholder for the upper-case entity name.
+	 */
 	public static final String UPPER_ENTITIES_NAME = "##Entitiesname##";
+	/**
+	 * Placeholder for the lower-case plural entity name.
+	 */
 	public static final String LOWER_ENTITIES_NAME_PLURAL = "##entitiesname#s#";
+	/**
+	 * Placeholder for the upper-case plural entity name.
+	 */
 	public static final String UPPER_ENTITIES_NAME_PLURAL = "##Entitiesname#s#";
 	
+	/**
+	 * Supported CRUD operations.
+	 */
 	public static final String cruds[] = new String[] {"list", "view", "edit", "add"};
 	private Set<String> fieldNames = null;
 	private int amountOfFields = -1;
@@ -128,12 +143,23 @@ public class Fertilizer {
 		return new Scanner(new File(resource));
 	}
 
+	/**
+	 * Executes the fertilizer.
+	 *
+	 * @throws FertilizerException if the processing fails
+	 */
 	public void execute() throws FertilizerException {
 		
 		final String result = this.parse();
 		this.write(result);
 	}
 	
+	/**
+	 * Writes the generated result.
+	 *
+	 * @param result the generated result
+	 * @throws FertilizerException if writing fails
+	 */
 	public void write(String result) throws FertilizerException {
 		
 		if (!this.outputBaseDir.endsWith("/"))
@@ -175,6 +201,12 @@ public class Fertilizer {
 		}
 	}
 
+	/**
+	 * Parses the templates.
+	 *
+	 * @return the parsed result
+	 * @throws FertilizerException if parsing fails
+	 */
 	public String parse() throws FertilizerException {
 		
 		final StringBuilder result = new StringBuilder();
@@ -560,13 +592,27 @@ public class Fertilizer {
 		return !this.foreignKeyMap.isEmpty();
 	}
 	
+	/**
+	 * Exception thrown when the fertilizer processing fails.
+	 */
 	public class FertilizerException extends Exception {
 
 		private static final long serialVersionUID = 1L;
 
+		/**
+		 * Creates the exception.
+		 *
+		 * @param msg the message
+		 */
 		public FertilizerException(String msg) {
 			super(msg);
 		}
+		/**
+		 * Creates the exception.
+		 *
+		 * @param msg the message
+		 * @param t the cause
+		 */
 		public FertilizerException(String msg, Throwable t) {
 			super(msg, t);
 		}

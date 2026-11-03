@@ -52,6 +52,12 @@ public class JakartaMailer extends AbstractMailer {
 	private static final Logger LOG = LoggerFactory.getLogger(JakartaMailer.class.getName());
 
 	/**
+	 * Default constructor.
+	 */
+	public JakartaMailer() {
+	}
+
+	/**
 	 * Create a custom mail session with authentication or none.
 	 *  
 	 * @param auth authentication?

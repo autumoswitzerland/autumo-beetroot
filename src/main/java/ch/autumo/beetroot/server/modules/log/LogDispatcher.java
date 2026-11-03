@@ -33,12 +33,22 @@ import ch.autumo.beetroot.server.modules.Dispatcher;
  */
 public class LogDispatcher implements Dispatcher {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(LogDispatcher.class.getName());
 	
 	/** Unique ID */
 	public static final String ID = "autumo-beetroot-log"; 
 	
 	private LocalLog localLog = new LocalLog();
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public LogDispatcher() {
+	}
 	
 	@Override
 	public String getId() {

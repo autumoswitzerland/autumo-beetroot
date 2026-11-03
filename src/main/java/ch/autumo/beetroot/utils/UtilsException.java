@@ -28,30 +28,68 @@ public class UtilsException extends IOException {
 
 	private static final long serialVersionUID = 1997384039883172508L;
 	
+	/**
+	 * The code value.
+	 */
 	private int code;
+	/**
+	 * The raw message value.
+	 */
 	private String rawMessage;
 
+	/**
+	 * Creates the exception.
+	 *
+	 * @param message the message
+	 */
 	public UtilsException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Creates the exception.
+	 *
+	 * @param message the message
+	 * @param cause the cause
+	 */
 	public UtilsException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
+	/**
+	 * Creates the exception.
+	 *
+	 * @param message the message
+	 * @param rawMessage raw message
+	 */
 	public UtilsException(String message, String rawMessage) {
 		super(message);
 		this.rawMessage = rawMessage;
 	}
 
+	/**
+	 * Returns the code value.
+	 *
+	 * @return the code value
+	 */
 	public int getCode() {
 		return code;
 	}
 
+	/**
+	 * Returns the raw message value.
+	 *
+	 * @return the raw message value
+	 */
 	public String getRawMessage() {
 		return rawMessage;
 	}
 
+	/**
+	 * Sets the raw message value.
+	 *
+	 * @param rawMessage the new raw message value
+	 */
 	public void setRawMessage(String rawMessage) {
 		this.rawMessage = rawMessage;
 	}

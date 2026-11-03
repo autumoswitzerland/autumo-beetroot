@@ -77,8 +77,10 @@ import ch.autumo.beetroot.utils.web.Web;
  */
 public abstract class BaseServer {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(BaseServer.class.getName());
-
 
 	private static String rootPath = null;
 
@@ -96,8 +98,10 @@ public abstract class BaseServer {
 	/** Administration executor service. */
 	private ExecutorService clientExecutorService = Executors.newCachedThreadPool();
 
-	/** Filer server. */
+	/** File server. */
     private FileServer fileServer = null;
+    
+    /** Start the file server? */
 	protected boolean startFileServer = false;
 
 	/** Filer storage interface. */
@@ -106,13 +110,17 @@ public abstract class BaseServer {
 	private int portAdminServer = -1;
 	private boolean serverStop = false;
 
-    private BeetRootWebServer webServer = null;
+    /** Start web server? */
 	protected boolean startWebServer = true;
+    private BeetRootWebServer webServer = null;
 	private int portWebServer = -1;
 
 	private boolean sslSockets = false;
 	private boolean sha3Com = false;
 
+	/**
+	 * Server name.
+	 */
 	protected String name = null;
 
 	private int serverTimeout = -1;
@@ -122,8 +130,9 @@ public abstract class BaseServer {
 
 	private boolean hookShutdown = false;
 
-	// colored text strings
+	/** Colored text strings: server name. */
 	protected static String ansiServerName = null;
+	/** Colored text strings: server name for errors. */
 	protected static String ansiErrServerName = null;
 
 	// custom operations if any
@@ -1263,6 +1272,14 @@ public abstract class BaseServer {
 		private static final String USAGE = Colors.darkYellow(BEETROOT_PREFIX+SHELL_EXT+" start|stop|health");
 		private static final String USAGE0 = Colors.darkYellow(BEETROOT_PREFIX+SHELL_EXT+" -help");
 		private static final String USAGE1 = Colors.darkYellow(BEETROOT_PREFIX+SHELL_EXT+" -h");
+		
+		/**
+		 * Default constructor.
+		 */
+		public Help() {
+		}
+		
+		/** Help text. */
 		public static final String TEXT =
 				"" 																						+ OS.LINE_SEPARATOR +
 				"" 																						+ OS.LINE_SEPARATOR +

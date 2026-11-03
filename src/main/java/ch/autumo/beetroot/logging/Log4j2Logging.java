@@ -32,6 +32,12 @@ public class Log4j2Logging extends AbstractLogging {
 
 	private boolean initialized = false;
 	
+	/**
+	 * Default constructor.
+	 */
+	public Log4j2Logging() {
+	}
+
 	@Override
 	public void initialize(String path) throws IOException {
 		this.initialize(path, "BeetRootConfig");

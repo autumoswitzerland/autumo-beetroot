@@ -55,6 +55,9 @@ import ch.autumo.beetroot.Constants;
  */
 public abstract class AbstractMessage {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractMessage.class.getName());
 	
 	/** message part separator */
@@ -71,7 +74,7 @@ public abstract class AbstractMessage {
 	/** server name */
 	public static String serverName;
 
-	// Encrypt client-server-com?
+	/** Encrypt client-server-com? */
 	protected static final boolean ENCRYPT;
 	
 	static {
@@ -293,6 +296,7 @@ public abstract class AbstractMessage {
 	 * don't call it.
 	 * 
 	 * @param serializedObject serialized object
+	 * @throws IOException IO exception
 	 */
 	protected void deserializeObject(String serializedObject) throws IOException {
 		final byte data[] = Base64.getDecoder().decode(serializedObject);
@@ -310,6 +314,7 @@ public abstract class AbstractMessage {
 	 * don't call it.
 	 * 
 	 * @return serialized object
+	 * @throws IOException IO exception
 	 */
 	protected String serializeObject() throws IOException {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();

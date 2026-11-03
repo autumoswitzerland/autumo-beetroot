@@ -64,12 +64,21 @@ import ch.autumo.beetroot.utils.UtilsException;
  */
 public class FileServer {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(FileServer.class.getName());
 	
 	/** the base server */
 	private BaseServer baseServer = null;
 	
+	/**
+	 * Port of the file server.
+	 */
 	protected int portFileServer = -1;
+	/**
+	 * Port of the file receiver.
+	 */
 	protected int portFileReceiver = -1;
 	private ServerSocket fileServerSocket = null;
 	private ServerSocket fileReceiverSocket = null;

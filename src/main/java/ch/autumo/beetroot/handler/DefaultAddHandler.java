@@ -56,10 +56,21 @@ public abstract class DefaultAddHandler extends BaseHandler {
 	private Map<String, Class<?>> refs = null;
 
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public DefaultAddHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the error message
+	 */
 	public DefaultAddHandler(String entity, String errMsg) {
 		super(entity);
 		this.addErrorMessage(errMsg);

@@ -27,15 +27,29 @@ public class LoginHandler extends BaseHandler {
 
 	private String entity = null;
 	
+	/**
+	 * Creates the handler.
+	 */
 	public LoginHandler() {
 		this.entity = "login";
 		super.loginMarker(true);
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public LoginHandler(String entity) {
 		this.entity = entity;
 	}
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public LoginHandler(String entity, String errMsg) {
 		this.entity = entity;
 		this.addErrorMessage(errMsg);

@@ -52,6 +52,12 @@ public class JavaxMailer extends AbstractMailer {
 	private static final Logger LOG = LoggerFactory.getLogger(JavaxMailer.class.getName());
 	
 	/**
+	 * Default constructor.
+	 */
+	public JavaxMailer() {
+	}
+
+	/**
 	 * Create a custom mail session with authentication or none.
 	 *  
 	 * @param auth authentication?

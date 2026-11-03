@@ -36,10 +36,21 @@ import ch.autumo.beetroot.utils.web.TwoFA;
  */
 public class UsersAddHandler extends DefaultAddHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public UsersAddHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public UsersAddHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

@@ -50,6 +50,12 @@ public class Beans {
 	private static final SnakeCaseStrategy SNAKE_CASE = new SnakeCaseStrategy();
 	
 	/**
+	 * Default constructor.
+	 */
+	public Beans () {
+	}
+	
+	/**
 	 * Get database table column name by bean property name.
 	 * 
 	 * @param beanPropName bean property name

@@ -13,6 +13,11 @@ import ch.autumo.beetroot.handler.HandlerResponse;
  */
 public class PropertiesDeleteHandler extends DefaultDeleteHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public PropertiesDeleteHandler(String entity) {
 		super(entity);
 	}

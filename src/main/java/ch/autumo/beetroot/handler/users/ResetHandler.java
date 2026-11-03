@@ -43,10 +43,18 @@ import ch.autumo.beetroot.utils.system.GUIDGenerator;
  */
 public class ResetHandler extends BaseHandler {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(ResetHandler.class.getName());
 	
 	private String entity = null;
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ResetHandler(String entity) {
 		this.entity = entity;
 	}

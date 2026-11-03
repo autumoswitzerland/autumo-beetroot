@@ -22,6 +22,9 @@ import jakarta.servlet.ServletContext;
 import ch.autumo.beetroot.BeetRootConfigurationManager;
 
 
+/**
+ * Creates log implementations (local or remote).
+ */
 public class LogFactory {
 
 	private static Log log;
@@ -33,9 +36,10 @@ public class LogFactory {
 	}
 
 	/**
-	 * Get log (local or remote).
+	 * Get log (impl. of the interface).
+	 *
 	 * @return info
-	 * @throws Exception
+	 * @throws Exception if the log cannot be created
 	 */
 	public static synchronized Log getInstance() throws Exception {
 

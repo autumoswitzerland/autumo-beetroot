@@ -33,6 +33,13 @@ public class MIME {
 	/** Allowed archive mime types. */
 	public static List<String> mimeArchiveList;
 	
+	
+	/**
+	 * Default constructor.
+	 */
+	public MIME() {
+	}
+	
 	/**
 	 * Is supported text mime type?
 	 * 

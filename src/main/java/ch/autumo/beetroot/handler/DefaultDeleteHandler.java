@@ -29,6 +29,11 @@ import ch.autumo.beetroot.utils.database.DB;
  */
 public class DefaultDeleteHandler extends BaseHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public DefaultDeleteHandler(String entity) {
 		super(entity);
 	}

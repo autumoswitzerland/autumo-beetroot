@@ -29,10 +29,21 @@ import ch.autumo.beetroot.handler.DefaultAddHandler;
  */
 public class TasksAddHandler extends DefaultAddHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public TasksAddHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public TasksAddHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

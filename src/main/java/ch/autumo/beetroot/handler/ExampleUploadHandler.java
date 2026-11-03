@@ -35,12 +35,26 @@ import ch.autumo.beetroot.Session;
  */
 public class ExampleUploadHandler extends BaseHandler {
 
+	/**
+	 * Logger for this class.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(ExampleUploadHandler.class.getName());
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public ExampleUploadHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the error message
+	 */
 	public ExampleUploadHandler(String entity, String errMsg) {
 		super(entity);
 		this.addSuccessMessage(errMsg);

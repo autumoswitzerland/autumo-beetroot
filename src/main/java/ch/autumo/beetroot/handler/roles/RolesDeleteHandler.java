@@ -12,6 +12,11 @@ import ch.autumo.beetroot.handler.DefaultDeleteHandler;
  */
 public class RolesDeleteHandler extends DefaultDeleteHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public RolesDeleteHandler(String entity) {
 		super(entity);
 	}

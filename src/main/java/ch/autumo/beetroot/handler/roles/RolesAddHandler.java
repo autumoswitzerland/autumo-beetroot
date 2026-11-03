@@ -13,10 +13,21 @@ import ch.autumo.beetroot.handler.DefaultAddHandler;
  */
 public class RolesAddHandler extends DefaultAddHandler {
 	
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public RolesAddHandler(String entity) {
 		super(entity);
 	}
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 * @param errMsg the message
+	 */
 	public RolesAddHandler(String entity, String errMsg) {
 		super(entity, errMsg);
 	}

@@ -26,6 +26,11 @@ import ch.autumo.beetroot.Session;
  */
 public abstract class NoContentButRouteHandler extends BaseHandler {
 
+	/**
+	 * Creates the handler for the given entity.
+	 *
+	 * @param entity the entity name
+	 */
 	public NoContentButRouteHandler(String entity) {
 		super(entity);
 	}	

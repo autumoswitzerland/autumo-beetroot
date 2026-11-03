@@ -22,8 +22,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marks a field as a database column.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Column {
+	/**
+	 * The column name.
+	 *
+	 * @return the column name
+	 */
 	public String name() default "";
 }

@@ -40,6 +40,9 @@ import ch.autumo.beetroot.utils.common.MIME;
  */
 public class FileCache  {
 
+	/**
+	 * Logger.
+	 */
 	protected static final Logger LOG = LoggerFactory.getLogger(FileCache.class.getName());
 	
 	// file buffer size
@@ -53,6 +56,9 @@ public class FileCache  {
 		
 		BUFFER_LIMIT = kBytes * 1024;
 	}
+	/**
+	 * Buffer limit in bytes.
+	 */
 	public static final long BUFFER_LIMIT; 
 	
 	private File file = null;

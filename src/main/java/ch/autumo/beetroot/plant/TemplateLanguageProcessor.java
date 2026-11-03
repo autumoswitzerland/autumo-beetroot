@@ -103,6 +103,12 @@ public class TemplateLanguageProcessor {
     private static int keyCounter = 1;
     private static String currentDirectory = "";
 	
+	/**
+	 * Default constructor.
+	 */
+	public TemplateLanguageProcessor() {
+	}
+
     /**
      * Process.
      * 
