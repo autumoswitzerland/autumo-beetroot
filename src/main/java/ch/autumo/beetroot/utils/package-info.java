@@ -2,7 +2,7 @@
  * beetRoot's utilities:
  * <ul>
  *   <li>Bean processing</li>
- *   <li>ANIS colors</li>
+ *   <li>ANSI colors</li>
  *   <li>Database helper methods</li>
  *   <li>GUID generator</li>
  *   <li>General helper methods</li>
