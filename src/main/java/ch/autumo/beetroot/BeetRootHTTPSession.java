@@ -42,7 +42,7 @@ import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
-import org.nanohttpd.router.RouterNanoHTTPD.UriResource;
+import ch.autumo.beetroot.server.HTTPServer.UriResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

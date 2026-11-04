@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 The first release documented in this file is 3.3.0.
 
+## [Unreleased]
+
+### Changed
+
+- Moved the patched NanoHTTPD router from `org.nanohttpd.router.RouterNanoHTTPD`
+  to `ch.autumo.beetroot.server.HTTPServer` and renamed the class to `HTTPServer`.
+  This is a breaking change for code that imports the old fully qualified name;
+  all internal references and documentation links were updated.
+- Default HTTPS protocols are now restricted to `TLSv1.2,TLSv1.3`; the obsolete
+  `TLSv1` and `TLSv1.1` protocols were removed from `BaseServer`.
+- The `ch.autumo.beetroot.server` package documentation now describes the
+  server implementations.
+
+### Fixed
+
+- Restored the original NanoHTTPD BSD license notice in the moved `HTTPServer`
+  class, alongside the autumo Apache 2.0 header.
+
 ## [3.3.0]
 
 ### Added

@@ -8,6 +8,10 @@ In general, you should always save your changes/customizations in the following 
 - `gen/` : In case you adjusted the templates used by PLANT
 - `db/h2/db/` : Your H2 DB, if you use H2 and this location
 
+## Release 3.4.0
+
+- Update JAR libraries
+
 ## Release 3.3.0
 
 - Update JAR libraries

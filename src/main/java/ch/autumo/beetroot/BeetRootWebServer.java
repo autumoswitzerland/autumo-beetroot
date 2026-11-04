@@ -44,7 +44,7 @@ import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 import org.nanohttpd.protocols.http.threading.IAsyncRunner;
-import org.nanohttpd.router.RouterNanoHTTPD;
+import ch.autumo.beetroot.server.HTTPServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ import ch.autumo.beetroot.utils.web.Web;
 /**
  * The beetRoot Web Server and Template Engine.
  */
-public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootService {
+public class BeetRootWebServer extends HTTPServer implements BeetRootService {
 
 	/**
 	 * Logger for this class.
@@ -1139,7 +1139,7 @@ public class BeetRootWebServer extends RouterNanoHTTPD implements BeetRootServic
 	 * At this point, templates have been parsed and compiled.
 	 * Overwrite this method, if you still need to do something.
 	 * In any case and at the end, it must call
-	 * {@link RouterNanoHTTPD#serve(IHTTPSession)}
+	 * {@link HTTPServer#serve(IHTTPSession)}
 	 *
 	 * @param session HTTP sessiom
 	 * @return response

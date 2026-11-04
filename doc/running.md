@@ -7,7 +7,7 @@ beetRoot can be run in two modes:
 1. **As a standalone server that consists of**:
 
 	- An administration interface for server commands and for executing distributed dispatcher modules.
-	- A web-server that uses a [patched version](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java) of the [RouterNanoHTTPD](https://github.com/NanoHttpd/nanohttpd/blob/master/nanolets/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java) and an [updated version of the NanoHttpd project](https://github.com/autumoswitzerland/nanohttpd) through the provided library `nanohttpd-BEETROOT-a.b.c.jar`.
+	- A web-server that uses the [HTTPServer](https://github.com/autumoswitzerland/autumo-beetroot/blob/master/src/main/java/ch/autumo/beetroot/server/HTTPServer.java) class, a custom further development of the [RouterNanoHTTPD](https://github.com/NanoHttpd/nanohttpd/blob/master/nanolets/src/main/java/org/nanohttpd/router/RouterNanoHTTPD.java), and an [updated version of the NanoHttpd project](https://github.com/autumoswitzerland/nanohttpd) through the provided library `nanohttpd-BEETROOT-a.b.c.jar`.
 	- An optional file-server (storage / find & download).
 
 2. **Inside a servlet container** such as Tomcat, WebLogic or Jetty, which can optionally interact with the standalone server; see [Dispatchers](dispatchers.md).

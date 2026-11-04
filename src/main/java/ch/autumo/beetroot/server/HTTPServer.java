@@ -1,4 +1,18 @@
-package org.nanohttpd.router;
+/**
+ * Copyright (c) 2026 autumo Ltd. Switzerland, Michael Gasche
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /*
  * #%L
@@ -32,6 +46,7 @@ package org.nanohttpd.router;
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+package ch.autumo.beetroot.server;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -64,19 +79,14 @@ import ch.autumo.beetroot.BeetRootHTTPSession;
 import ch.autumo.beetroot.LanguageManager;
 
 /**
- * Customized Router NanoHTTPD.
- * 
- * @author vnnv
- * @author ritchieGitHub
+ * Nano HTTP server.
  */
-public class RouterNanoHTTPD extends NanoHTTPD {
+public class HTTPServer extends NanoHTTPD {
 
 	/**
-	 * Patched: autumo-beetroot.
-     * beetroot logger.
+	 * Logger.
      */
-	protected static final Logger LOG = LoggerFactory.getLogger(RouterNanoHTTPD.class.getName());
-    //private static final Logger LOG = Logger.getLogger(RouterNanoHTTPD.class.getName());
+	protected static final Logger LOG = LoggerFactory.getLogger(HTTPServer.class.getName());
 
     /**
      * Responder for a routed URI. The router invokes the method that matches
@@ -498,7 +508,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
         private final List<String> uriParams = new ArrayList<String>();
 
-        /** Patched: autumo-beetroot. */
         private boolean hasLang = false;
         
         /**
@@ -527,7 +536,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             if (uri != null) {
             	
                 /**
-                 * Patched for autumo-beetroot.
                  * Determine if there are languages or not.
                  */
             	if (uri.startsWith("/:lang/")) {
@@ -573,9 +581,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
             String error = "General error!";
             if (handler != null) {
                 try {
-
-                	
-                    /* Patched: autumo-beetroot */
             		Constructor<?> constructor = null;
                     final Constructor<?> constructors[] = handler.getDeclaredConstructors();
             		int ip = initParameter.length;
@@ -715,8 +720,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         /**
          * Has this URI an language in it or not?
          * Unused atm.
-         * 
-         * Patched: autumo-beetroot.
          * 
          * @return true if this URI has a language route, otherwise false
          */
@@ -923,15 +926,11 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
         /**
          * Is servlet names present?
-         * 
-         * Patched: autumo-beetroot.
          */
         private boolean insertServletNameInTemplateRefs = false;
         
         /**
          * Holder for servlet names.
-         * 
-         * Patched: autumo-beetroot.
          */
         private String servletName = null;
         
@@ -942,7 +941,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         public UriRouter() {
             this.routePrioritizer = new DefaultRoutePrioritizer();
             
-            /** Patched: autumo-beetroot. */
     		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
     		if (servletName != null && servletName.length() != 0)
     			insertServletNameInTemplateRefs = true; 
@@ -961,8 +959,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         public Response process(IHTTPSession session) {
         	
         	/**
-        	 * Patched: autumo-beetroot.
-        	 * 
         	 * Remove language for standard nano route matching.
         	 * Decision what language template should be chosen
         	 * is done by beetroot later.
@@ -989,8 +985,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
         
         /**
          * Add route.
-         * 
-         * Patched: autumo-beetroot.
          * 
          * @param url URL
          * @param priority priority
@@ -1034,7 +1028,6 @@ public class RouterNanoHTTPD extends NanoHTTPD {
 
     }
 
-    /** Patched: autumo-beetroot. */
     protected UriRouter router;
 
     /**
@@ -1042,7 +1035,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      *
      * @param port the port to listen on
      */
-    public RouterNanoHTTPD(int port) {
+    public HTTPServer(int port) {
         super(port);
         router = new UriRouter();
     }
@@ -1053,7 +1046,7 @@ public class RouterNanoHTTPD extends NanoHTTPD {
      * @param hostname the host name to bind to
      * @param port the port to listen on
      */
-    public RouterNanoHTTPD(String hostname, int port) {
+    public HTTPServer(String hostname, int port) {
         super(hostname, port);
         router = new UriRouter();
     }

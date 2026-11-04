@@ -50,9 +50,9 @@ import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.IStatus;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
-import org.nanohttpd.router.RouterNanoHTTPD.DefaultHandler;
-import org.nanohttpd.router.RouterNanoHTTPD.UriResource;
-import org.nanohttpd.router.RouterNanoHTTPD.UriResponder;
+import ch.autumo.beetroot.server.HTTPServer.DefaultHandler;
+import ch.autumo.beetroot.server.HTTPServer.UriResource;
+import ch.autumo.beetroot.server.HTTPServer.UriResponder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -23,9 +23,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (must match VERSION in make.sh, e.g. v3.3.0)'
+        description: 'Release tag (must match VERSION in make.sh, e.g. v3.4.0)'
         required: true
-        default: 'v3.3.0'
+        default: 'v3.4.0'
         type: string
       create_release:
         description: 'Create a GitHub Release from the build artifacts'
