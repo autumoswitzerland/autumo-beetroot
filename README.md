@@ -282,7 +282,7 @@ Enjoy!
 
 Your donation helps to develop autumo beetRoot further. Thank you!
 
-[![paypal](https://products.autumo.ch/img/DonateWithPayPal.png)](https://www.paypal.com/donate/?hosted_button_id=WWDWJG7Z4WJZC)
+[![Donate via PayPal](https://img.shields.io/badge/Donate-PayPal-blue)](https://www.paypal.com/ncp/payment/NZ4CC6SVF9HN8)
 
 <br>
 <br>
