@@ -27,7 +27,7 @@ Note that the images here show only a cropped portion of the original. Please us
   Photo by Hepper
   <img src="https://cdn.pixabay.com/photo/2016/05/25/18/02/maple-1415541_1280.jpg" width="400" alt="Cornflowers at Sunset">
 
-## License
+## License
 
 All images listed above are released under the Pixabay License:
 ✔ free for personal and commercial use
