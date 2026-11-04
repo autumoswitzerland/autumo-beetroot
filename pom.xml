@@ -286,8 +286,8 @@
 					<windowtitle>autumo beetRoot - Slim &amp; Rapid Java Web Framework</windowtitle>
 
 					<!-- Company and product information on every page. -->
-					<header><![CDATA[<a href="https://products.autumo.ch/" target="_top">autumo GmbH</a> &middot; autumo beetRoot]]></header>
-					<bottom><![CDATA[&copy; 2026 autumo GmbH &middot; <a href="https://products.autumo.ch/" target="_top">products.autumo.ch</a>]]></bottom>
+					<header><![CDATA[<a href="https://autumo.ch/" target="_top">autumo GmbH</a> &middot; autumo beetRoot]]></header>
+					<bottom><![CDATA[<img src="resource-files/footer-logo.webp" class="footerlogo" alt="autumo">&copy; 2026 autumo GmbH &middot; <a href="https://products.autumo.ch/" target="_top">products.autumo.ch</a>]]></bottom>
 
 					<encoding>UTF-8</encoding>
 					<charset>UTF-8</charset>

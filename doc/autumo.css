@@ -123,6 +123,74 @@
 }
 
 /*
+ * Customizing.
+ */
+
+.nav-bar-cell1-rev {
+    border-radius: 4px;
+}
+
+#class-summary-tab0,
+#class-summary-tab1,
+#class-summary-tab2,
+.caption span {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+nav.toc a {
+	border-radius: 8px;
+}
+
+.toc {
+	padding-right: 12px;
+}
+
+img[src*="left.svg"],
+img[src*="right.svg"]{
+    filter: brightness(0) invert(0.7) !important;
+}
+
+input#search-input {
+    border-radius: 6px;
+    padding-left: 20px;
+    padding-right: 18px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.nav-content {
+	height: 40px;
+}
+
+.top-nav {
+	height: 40px;
+	padding: 8px 0 8px 0;
+}
+
+.sub-nav {
+	height: 40px;
+	padding: 6px 0 8px 0;
+}
+
+#theme-button {
+	margin-top: 2px;
+}
+
+.footerlogo {
+    float: none;
+    width: auto;
+    max-height: 32px;
+    margin: 0;
+	padding-right: 4px;
+}
+
+.legal-copy small {
+    display: flex;
+    align-items: center;
+}
+
+/*
  * The bundled stylesheet still contains a few hard-coded light colors.
  * These rules align them with the variables above.
  */
