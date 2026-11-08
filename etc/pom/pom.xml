@@ -184,11 +184,18 @@
 		</dependency>
 
 		<!-- NANO-Http -->
-
 		<!-- CVE-2022-21230: Resolved when setting 'ws_tmp_dir' in beetRoot configuration -->
 		<dependency>
 		    <groupId>org.nanohttpd</groupId>
 		    <artifactId>nanohttpd</artifactId>
+		    <version>${version.nanohttpd}</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<!-- NANO-Http WebSockets -->
+		<dependency>
+		    <groupId>org.nanohttpd</groupId>
+		    <artifactId>nanohttpd-websocket</artifactId>
 		    <version>${version.nanohttpd}</version>
 		    <scope>compile</scope>
 		</dependency>

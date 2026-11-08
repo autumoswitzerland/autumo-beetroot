@@ -245,6 +245,52 @@ public class Constants {
 	public static final String KEY_WS_USE_CSRF_TOKENS = "ws_use_csrf_tokens";
 
 	
+	// WebSocket-specific
+	//------------------------------------------------------------------------------
+	
+	/**
+	 * Enable WebSocket support?
+	 */
+	public static final String KEY_WEBSOCKET_ENABLED = "websocket_enabled";
+
+	/**
+	 * WebSocket endpoint path.
+	 */
+	public static final String KEY_WEBSOCKET_PATH = "websocket_path";
+
+	/**
+	 * Socket timeout of upgraded WebSocket connections in seconds.
+	 * 0 means no timeout.
+	 */
+	public static final String KEY_WEBSOCKET_TIMEOUT = "websocket_timeout";
+
+	/**
+	 * Server ping interval for WebSocket connections in seconds.
+	 * 0 disables server pings.
+	 */
+	public static final String KEY_WEBSOCKET_PING_INTERVAL = "websocket_ping_interval";
+
+	/**
+	 * Maximum number of concurrent WebSocket connections.
+	 */
+	public static final String KEY_WEBSOCKET_MAX_CONNECTIONS = "websocket_max_connections";
+
+	/**
+	 * Maximum WebSocket message size in bytes.
+	 */
+	public static final String KEY_WEBSOCKET_MAX_MESSAGE_SIZE = "websocket_max_message_size";
+
+	/**
+	 * Check the Origin header during the WebSocket handshake?
+	 */
+	public static final String KEY_WEBSOCKET_ORIGIN_CHECK = "websocket_origin_check";
+
+	/**
+	 * Optional comma-separated WebSocket Origin whitelist.
+	 */
+	public static final String KEY_WEBSOCKET_ALLOWED_ORIGINS = "websocket_allowed_origins";
+
+	
 	// Web-specific
 	//------------------------------------------------------------------------------
 	

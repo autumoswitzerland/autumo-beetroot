@@ -32,6 +32,7 @@ import ch.autumo.beetroot.BeetRootConfigurationManager;
 import ch.autumo.beetroot.handler.Error404Handler;
 import ch.autumo.beetroot.handler.Handler;
 import ch.autumo.beetroot.handler.NotImplementedHandler;
+import ch.autumo.beetroot.server.websocket.WebSocketAction;
 
 /**
  * Default router.
@@ -93,14 +94,7 @@ public class BeetRootDefaultRouter implements Router {
 
 		final List<Route> routes =  new ArrayList<Route>();
 
-		Document xmlDoc = null;
-
-		final String path = BeetRootConfigurationManager.getInstance().getFullConfigBasePath();
-		try {
-			xmlDoc = BeetRootConfigurationManager.getInstance().getXMLModuleConfigWithFullPath(path + "routing.xml", "Router");
-		} catch (Exception e) {
-			throw new RuntimeException("Couldn' read routing configuration 'cfg/routing.xml'!", e);
-		}
+		final Document xmlDoc = this.loadRoutingDocument();
 
 		// Packages
 		NodeList packages = xmlDoc.getElementsByTagName("Package");
@@ -117,11 +111,10 @@ public class BeetRootDefaultRouter implements Router {
 				throw new RuntimeException("package name is missing for package at index '" + i + "'!");
 			}
 
-			// Routes
+			// Routes; a package may contain only WebSocket actions.
 			final NodeList rts = pe.getElementsByTagName("Route");
 			if (rts.getLength() < 1) {
-				LOG.error("At least one route of must be defined in package at index '" + i + "'!");
-				throw new RuntimeException("At least one route of must be defined in package at index '" + i + "'!");
+				continue;
 			}
 
 			for (int j = 0; j < rts.getLength(); j++) {
@@ -165,6 +158,98 @@ public class BeetRootDefaultRouter implements Router {
 				}
 
 				routes.add(new Route(currPath, handlerClass, currName));
+			}
+		}
+
+		return routes;
+	}
+
+	/**
+	 * Read the routing configuration.
+	 *
+	 * @return routing document
+	 */
+	private Document loadRoutingDocument() {
+		final String path = BeetRootConfigurationManager.getInstance().getFullConfigBasePath();
+		try {
+			return BeetRootConfigurationManager.getInstance()
+					.getXMLModuleConfigWithFullPath(path + "routing.xml", "Router");
+		} catch (Exception e) {
+			throw new RuntimeException("Couldn' read routing configuration 'cfg/routing.xml'!", e);
+		}
+	}
+
+	/**
+	 * Get the WebSocket action routes from {@code cfg/routing.xml}.
+	 *
+	 * <p>
+	 * WebSocket actions are registered inside a {@code <Package>} with
+	 * {@code <WebSocket path="..." handler="..." name="..." />} elements.
+	 * </p>
+	 *
+	 * @return WebSocket action routes
+	 */
+	@Override
+	public List<WebSocketActionRoute> getWebSocketActionRoutes() {
+
+		final List<WebSocketActionRoute> routes = new ArrayList<WebSocketActionRoute>();
+
+		final Document xmlDoc = this.loadRoutingDocument();
+		final NodeList packages = xmlDoc.getElementsByTagName("Package");
+
+		for (int i = 0; i < packages.getLength(); i++) {
+
+			final Element pe = (Element) packages.item(i);
+			String packageName = pe.getAttribute("name");
+			if (packageName == null || packageName.length() == 0) {
+				continue;
+			}
+
+			final NodeList websockets = pe.getElementsByTagName("WebSocket");
+			for (int j = 0; j < websockets.getLength(); j++) {
+
+				final Element we = (Element) websockets.item(j);
+				String currPath = we.getAttribute("path");
+				String currHandler = we.getAttribute("handler");
+				String currName = we.getAttribute("name");
+
+				if (currPath == null || currPath.trim().length() == 0) {
+					LOG.error("Package('" + i + "')-WebSocket('" + j + "'): path is missing!");
+					throw new RuntimeException("Package('" + i + "')-WebSocket('" + j + "'): path is missing!");
+				}
+				if (currPath.contains(":lang")) {
+					LOG.error("Package('" + i + "')-WebSocket('" + j + "'): ':lang' is not supported in WebSocket action paths!");
+					throw new RuntimeException("Package('" + i + "')-WebSocket('" + j + "'): ':lang' is not supported in WebSocket action paths!");
+				}
+				if (currHandler == null || currHandler.trim().length() == 0) {
+					LOG.error("Package('" + i + "')-WebSocket('" + j + "'): handler is missing!");
+					throw new RuntimeException("Package('" + i + "')-WebSocket('" + j + "'): handler is missing!");
+				}
+				if (currName == null || currName.trim().length() == 0) {
+					LOG.error("Package('" + i + "')-WebSocket('" + j + "'): name is missing!");
+					throw new RuntimeException("Package('" + i + "')-WebSocket('" + j + "'): name is missing!");
+				}
+
+				currPath = currPath.trim();
+				currHandler = currHandler.trim();
+				currName = currName.trim().toLowerCase();
+
+				if (packageName.endsWith(".")) {
+					packageName = packageName.substring(0, packageName.length() - 1);
+				}
+				packageName = packageName.trim();
+
+				final String className = packageName + "." + currHandler;
+				try {
+					final Class<?> clz = Class.forName(className);
+					if (!WebSocketAction.class.isAssignableFrom(clz)) {
+						throw new RuntimeException("Class '" + className + "' doesn't implement WebSocketAction!");
+					}
+					routes.add(new WebSocketActionRoute(currPath, clz, currName));
+				} catch (ClassNotFoundException e) {
+					LOG.error("Class '" + className + "' not found or isn't a WebSocket action!", e);
+					throw new RuntimeException("Class '" + className + "' not found or isn't a WebSocket action!", e);
+				}
 			}
 		}
 

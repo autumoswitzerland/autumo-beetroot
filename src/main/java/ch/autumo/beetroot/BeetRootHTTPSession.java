@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -104,6 +105,8 @@ public class BeetRootHTTPSession extends HTTPSession {
 
     private String externalSessionId;
 
+    private Socket socket;
+
 
 	/**
 	 * Creates the HTTP session.
@@ -152,6 +155,24 @@ public class BeetRootHTTPSession extends HTTPSession {
     public String getExternalSessionId() {
 		return externalSessionId;
 	}
+
+    /**
+     * Get the accepted socket behind this HTTP session.
+     *
+     * @return the accepted socket, or null within an external servlet container
+     */
+    public Socket getSocket() {
+    	return socket;
+    }
+
+    /**
+     * Set the accepted socket behind this HTTP session.
+     *
+     * @param socket the accepted socket
+     */
+    public void setSocket(Socket socket) {
+    	this.socket = socket;
+    }
 
     /**
      * Provide a method for executing the request and response for the HTTP body only

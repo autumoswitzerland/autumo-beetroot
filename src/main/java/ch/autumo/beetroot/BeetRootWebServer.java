@@ -34,9 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.nanohttpd.protocols.http.ClientHandler;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.request.Method;
@@ -44,7 +41,6 @@ import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
 import org.nanohttpd.protocols.http.threading.IAsyncRunner;
-import ch.autumo.beetroot.server.HTTPServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +61,13 @@ import ch.autumo.beetroot.routing.Route;
 import ch.autumo.beetroot.routing.Router;
 import ch.autumo.beetroot.security.SecureApplicationHolder;
 import ch.autumo.beetroot.server.BaseServer;
+import ch.autumo.beetroot.server.HTTPServer;
 import ch.autumo.beetroot.server.communication.Communicator;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.message.ServerCommand;
+import ch.autumo.beetroot.server.websocket.WebSocketConfig;
+import ch.autumo.beetroot.server.websocket.WebSocketInterceptor;
+import ch.autumo.beetroot.server.websocket.WebSocketManager;
 import ch.autumo.beetroot.sms.MessengerFactory;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.common.MIME;
@@ -76,6 +76,8 @@ import ch.autumo.beetroot.utils.security.Security;
 import ch.autumo.beetroot.utils.system.OS;
 import ch.autumo.beetroot.utils.web.TwoFA;
 import ch.autumo.beetroot.utils.web.Web;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * The beetRoot Web Server and Template Engine.
@@ -115,6 +117,9 @@ public class BeetRootWebServer extends HTTPServer implements BeetRootService {
 
     // The router
 	private Router beetRootrouter = null;
+
+	// The WebSocket manager (only outside a servlet context and if enabled)
+	private WebSocketManager webSocketManager = null;
 
 	// The routes (without default routes)
 	private List<Route> routes = null;
@@ -292,6 +297,9 @@ public class BeetRootWebServer extends HTTPServer implements BeetRootService {
      */
 	@Override
     public void stop() {
+		if (webSocketManager != null) {
+			webSocketManager.stop();
+		}
 		super.stop();
         try {
             SessionManager.save();
@@ -1179,6 +1187,13 @@ public class BeetRootWebServer extends HTTPServer implements BeetRootService {
 		for (Iterator<Route> iterator = routes.iterator(); iterator.hasNext();) {
 			final Route route = iterator.next();
 			addRoute(route.getRoute(), route.getPriority(), route.getHandler(), route.getInitParameter());
+		}
+		/** WebSocket endpoint */
+		final WebSocketConfig webSocketConfig = WebSocketConfig.load();
+		if (webSocketConfig.isEnabled()) {
+			webSocketManager = new WebSocketManager(webSocketConfig, beetRootrouter.getWebSocketActionRoutes());
+			super.addHTTPInterceptor(new WebSocketInterceptor(webSocketManager));
+			webSocketManager.start();
 		}
 	}
 

@@ -17,6 +17,7 @@
  */
 package ch.autumo.beetroot.routing;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,5 +58,16 @@ public interface Router {
 	 * @return routes
 	 */
 	List<Route> getRoutes();
+
+	/**
+	 * Get the WebSocket action routes. They are configured in
+	 * {@code cfg/routing.xml} with {@code <WebSocket>} elements inside a
+	 * {@code <Package>}.
+	 *
+	 * @return WebSocket action routes
+	 */
+	default List<WebSocketActionRoute> getWebSocketActionRoutes() {
+		return Collections.emptyList();
+	}
 
 }

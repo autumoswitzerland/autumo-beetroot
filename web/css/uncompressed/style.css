@@ -690,30 +690,40 @@ div.message.warning::before {
 
 
 /**
- * Refresh elements.
+ * Log live status.
  */
- #cb_log_refresh {
- 	background-color: #0e4e74;
- 	height: 34px;
- 	width: 34px;
- 	margin-top:-3px;
-	border: 1px solid #0E4E77;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
- }
-.refresh_section {
+.log_status {
 	display: flex;
-	width: 280px;
+	align-items: center;
 	float: left;
-	height: 40px;
-	margin-top: 8px;
+	height: 60px;
 	margin-left: 20px;
+	font-size: 1.0rem;
+	font-weight: 300;
+	color: #ffffff;
 }
-.refresh_section_label {
-	margin-top: 9px;
-	margin-left: 0px;
-	background-color: #07b;
-	color: white;
-	font-weight: lighter;
+.log_status .dot {
+	width: 10px;
+	height: 10px;
+	margin-right: 8px;
+	border-radius: 50%;
+	background-color: #2DC7E2;
+	-webkit-animation: 2s blink ease infinite;
+	-moz-animation: 2s blink ease infinite;
+	-ms-animation: 2s blink ease infinite;
+	-o-animation: 2s blink ease infinite;
+	animation: 2s blink ease infinite;
+}
+.log_status.is-connecting .dot {
+	background-color: #fd7e14;
+}
+.log_status.is-fallback .dot {
+	background-color: #6c757d;
+	-webkit-animation: none;
+	-moz-animation: none;
+	-ms-animation: none;
+	-o-animation: none;
+	animation: none;
 }
 
 /**

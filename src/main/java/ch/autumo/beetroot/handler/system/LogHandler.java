@@ -35,6 +35,7 @@ import ch.autumo.beetroot.handler.NoConfigHandler;
 import ch.autumo.beetroot.logging.LogEventAppender;
 import ch.autumo.beetroot.server.message.ClientAnswer;
 import ch.autumo.beetroot.server.modules.log.LogFactory;
+import ch.autumo.beetroot.server.websocket.WebSocketConfig;
 import ch.autumo.beetroot.utils.system.OS;
 import ch.autumo.beetroot.utils.web.Web;
 
@@ -63,7 +64,15 @@ public class LogHandler extends NoConfigHandler {
 	/** Log pattern. Note: 'im' not recognized in pattern. */
 	private static final String LOG_PATTERN = "%highlight{%-5p}{TRACE=white} %style{%d{yyyyMMdd-HH:mm:ss.SSS}}{bright_black} %style{[%-26.26t]}{magenta} %style{%-35.35c{1.1.1.*}}{cyan} %style{:}{bright_black} %.-1000m%ex%n";
 
-	private final PatternLayout layout;
+	private static final PatternLayout LAYOUT = PatternLayout.newBuilder()
+			.setPattern(LOG_PATTERN)
+			.setCharset(StandardCharsets.UTF_8)
+			.setDisableAnsi(false)
+			.build();
+
+	private final WebSocketConfig webSocketConfig = WebSocketConfig.load();
+
+	private int cachedLogSize = -1;
 
 
 	/**
@@ -73,11 +82,6 @@ public class LogHandler extends NoConfigHandler {
 	 */
 	public LogHandler(String entity) {
 		super(entity);
-		this.layout = PatternLayout.newBuilder()
-                .setPattern(LOG_PATTERN)
-                .setCharset(StandardCharsets.UTF_8)
-                .setDisableAnsi(false)
-                .build();
 	}
 
 	/**
@@ -108,6 +112,38 @@ public class LogHandler extends NoConfigHandler {
 			LOG.warn("Couldn't load refresh time from database; setting it to 60s.", e);
 			setVarAll("logRefreshTime", DEFAULT_REFRESH_TIME);
 		}
+
+		// WebSocket live log
+		setVarAll("websocketEnabled", webSocketConfig.isEnabled() ? "yes" : "no");
+		setVarAll("websocketPath", webSocketConfig.getPath());
+		setVarAll("websocketActionPath", LogTailWebSocketAction.ROUTE_PATH);
+	}
+
+	/**
+	 * Get the configured log size.
+	 *
+	 * @return number of log lines
+	 */
+	private int getLogSize() {
+		if (cachedLogSize >= 0) {
+			return cachedLogSize;
+		}
+		int nlines = DEFAULT_LOG_SIZE;
+		try {
+			final String sSize = BeetRootDatabaseManager.getInstance().getProperty("log.size");
+			if (sSize != null) {
+				try {
+					nlines = Integer.parseInt(sSize);
+				} catch (Exception e) {
+					LOG.error("Couldn't read 'log.size' from database properties! Using default log size '"+DEFAULT_LOG_SIZE+"'!", e);
+					nlines = DEFAULT_LOG_SIZE;
+				}
+			}
+		} catch (SQLException e) {
+			LOG.error("Couldn't read 'log.size' from database properties! Using default log size '"+DEFAULT_LOG_SIZE+"'!", e);
+		}
+		cachedLogSize = nlines;
+		return nlines;
 	}
 
 	/**
@@ -116,25 +152,8 @@ public class LogHandler extends NoConfigHandler {
 	@Override
 	public void render(BeetRootHTTPSession session) {
 
-		int nlines = DEFAULT_LOG_SIZE;
-		String sSize;
-		try {
-			sSize = BeetRootDatabaseManager .getInstance().getProperty("log.size");
-			if (sSize != null) {
-				try {
-					nlines = Integer.parseInt(sSize);
-				} catch (Exception e) {
-					LOG.error("Couldn't read 'log.size' from database properties! Using default log size '"+DEFAULT_LOG_SIZE+"'!", e);
-					nlines = DEFAULT_LOG_SIZE;
-				}
-			} else {
-				nlines = DEFAULT_LOG_SIZE;
-			}
-		} catch (SQLException e) {
-			LOG.error("Couldn't read 'log.size' from database properties! Using default log size '"+DEFAULT_LOG_SIZE+"'!", e);
-			nlines = DEFAULT_LOG_SIZE;
-		}
-		setVar("logSize", ""+nlines);
+		final int nlines = getLogSize();
+		setVarAll("logSize", ""+nlines);
 
 		ClientAnswer answer;
 		try {
@@ -171,7 +190,17 @@ public class LogHandler extends NoConfigHandler {
      * @return the formatted log line
      */
     public String format(LogEvent event) {
-        String formattedMessage = layout.toSerializable(event);
+        return formatEvent(event);
+    }
+
+    /**
+     * Formats the log event. This is also used by WebSocket log actions.
+     *
+     * @param event the log event
+     * @return the formatted log line
+     */
+    public static String formatEvent(LogEvent event) {
+        String formattedMessage = LAYOUT.toSerializable(event);
         // Post-process the formattedMessage if needed
         // formattedMessage = processCustomPatternReferences(formattedMessage, event);
         // Escape HTML characters to avoid issues with displaying in HTML
@@ -195,7 +224,7 @@ public class LogHandler extends NoConfigHandler {
     }
     */
 
-    private String replaceAnsiWithHtml(String input) {
+    private static String replaceAnsiWithHtml(String input) {
         // If the platform is Windows, handle full ANSI sequences including \u001b
         if (OS.isWindows() || OS.isUnix()) {
 

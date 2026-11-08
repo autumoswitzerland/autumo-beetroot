@@ -69,6 +69,9 @@ public class BeetRootClientHandler extends ClientHandler {
             
             // This accesses javax-servlet-api!
             IHTTPSession session = new BeetRootHTTPSession(nanoHttpd, tempFileManager, this.nanoInputStream, outputStream, this.nanoAcceptSocket.getInetAddress());
+            if (session instanceof BeetRootHTTPSession) {
+            	((BeetRootHTTPSession) session).setSocket(this.nanoAcceptSocket);
+            }
             
             while (!this.nanoAcceptSocket.isClosed()) {
                 session.execute();

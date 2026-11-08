@@ -20,6 +20,7 @@ package ch.autumo.beetroot.logging;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
@@ -49,7 +50,44 @@ public class LogEventAppender extends AbstractAppender {
 	private static int size = DEFAULT_LOG_SIZE;
 	private static LogEventList<LogEvent> logEvents = new LogEventList<>(size);
 
+	private static final List<LogEventListener> listeners = new CopyOnWriteArrayList<LogEventListener>();
+
 	private static boolean isInitialized = false;
+
+	/**
+	 * Listener that is notified for every log event.
+	 */
+	public interface LogEventListener {
+
+		/**
+		 * Called for every appended log event.
+		 *
+		 * @param event log event
+		 */
+		void onLogEvent(LogEvent event);
+	}
+
+	/**
+	 * Add a log event listener.
+	 *
+	 * @param listener listener
+	 */
+	public static void addLogEventListener(LogEventListener listener) {
+		if (listener != null && !listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	/**
+	 * Remove a log event listener.
+	 *
+	 * @param listener listener
+	 */
+	public static void removeLogEventListener(LogEventListener listener) {
+		if (listener != null) {
+			listeners.remove(listener);
+		}
+	}
 
 
     /**
@@ -76,6 +114,13 @@ public class LogEventAppender extends AbstractAppender {
     @Override
     public void append(LogEvent event) {
         logEvents.add(event);
+        for (LogEventListener listener : listeners) {
+            try {
+                listener.onLogEvent(event);
+            } catch (Exception e) {
+                // A broken listener must never break logging.
+            }
+        }
     }
 
     /**

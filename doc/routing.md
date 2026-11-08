@@ -65,6 +65,25 @@ When you define a HTML a-tag (e.g. `<a href="/{$lang}/tasks/index"....>`) or an 
 
 
 <br>
+
+## WebSocket actions
+
+WebSocket actions are registered in the same way with `<WebSocket>` elements
+inside a `<Package>`; they are addressed by their action path over the single
+WebSocket endpoint and are not language specific:
+
+```XML
+	<Package name="ch.autumo.beetroot.handler.system">
+	    <Route path="/:lang/system/log" handler="LogHandler" name="log" />
+	    <WebSocket path="/system/log/tail" handler="LogTailWebSocketAction" name="log" />
+	</Package>
+```
+
+See [WebSockets](websockets.md) for the action interface, the protocol, the
+security model and the configuration.
+
+
+<br>
 <br>
 Click <a href="../README.md">here</a> to go to the main page.
 

@@ -196,6 +196,7 @@ configuration key to get to know the possibilities and the extensive features of
 - [Referential integrity](doc/references.md)
 - [Language Management](doc/translations.md)
 - [JSON REST API](doc/json.md)
+- [WebSockets](doc/websockets.md)
 - [Dispatchers (Distributed Modules)](doc/dispatchers.md)
 - [Logging](doc/logging.md)
 - [Mailing](doc/mailing.md)

@@ -22,9 +22,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,9 @@ public class SessionManager {
 	private static final int DEFAULT_USER_SESSION_TIMEOUT = 1800; // seconds
 	
 	private static Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
+
+	/** Listeners that are notified when a session is destroyed. */
+	private static final List<SessionDestroyListener> destroyListeners = new CopyOnWriteArrayList<SessionDestroyListener>();
 	
 	/** Web container session id name / name of the session cookie, some java web containers use 'JSESSIONID'. */
 	private static String webContainerSessionIdName = DEFAULT_TOKEN_COOKIE_NAME;
@@ -76,6 +81,42 @@ public class SessionManager {
 	 * Private constructor.
 	 */
 	private SessionManager() {
+	}
+
+	/**
+	 * Listener that is notified when a user session is destroyed.
+	 */
+	public interface SessionDestroyListener {
+
+		/**
+		 * Called after a session has been removed from the session store.
+		 *
+		 * @param token the destroyed session token
+		 * @param session the destroyed session
+		 */
+		void sessionDestroyed(String token, Session session);
+	}
+
+	/**
+	 * Add a session destroy listener.
+	 *
+	 * @param listener listener
+	 */
+	public static void addDestroyListener(SessionDestroyListener listener) {
+		if (listener != null && !destroyListeners.contains(listener)) {
+			destroyListeners.add(listener);
+		}
+	}
+
+	/**
+	 * Remove a session destroy listener.
+	 *
+	 * @param listener listener
+	 */
+	public static void removeDestroyListener(SessionDestroyListener listener) {
+		if (listener != null) {
+			destroyListeners.remove(listener);
+		}
 	}
 	
 	/**
@@ -154,14 +195,44 @@ public class SessionManager {
 	}
 	
 	/**
+	 * Get an existing user session or null if it doesn't exist for the
+	 * nano cookie. In contrast to {@link #findOrCreate(BeetRootHTTPSession)},
+	 * this method never creates a session.
+	 *
+	 * @param session HTTP session
+	 * @return session user session or null
+	 */
+	public Session find(BeetRootHTTPSession session) {
+		String token = null;
+		if (session.getExternalSessionId() != null) {
+			token = session.getExternalSessionId();
+		} else {
+			token = session.getCookies().read(webContainerSessionIdName);
+		}
+		if (token == null) {
+			return null;
+		}
+		return sessions.get(token);
+	}
+
+	/**
 	 * Destroy session, though not deleted in storage file!
 	 * 
 	 * @param token token to destroy
 	 * @param cookies nano cookie handler
 	 */
 	public void destroy(String token, CookieHandler cookies) {
-		sessions.remove(token);
+		final Session session = sessions.remove(token);
 		cookies.delete(webContainerSessionIdName);
+		if (session != null) {
+			for (SessionDestroyListener listener : destroyListeners) {
+				try {
+					listener.sessionDestroyed(token, session);
+				} catch (Exception e) {
+					LOG.warn("Session destroy listener failed for token '{}'.", token, e);
+				}
+			}
+		}
 	}
 	
 	/**

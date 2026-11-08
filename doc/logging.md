@@ -26,6 +26,11 @@ beetRoot uses [SLF4j](https://slf4j.org) with [log4j2](https://logging.apache.or
 
 **NOTE:** All logging levels are set to `INFO` by default.
 
+**Live log tail**: The system log page streams the in-memory log live via a
+WebSocket action (`/system/log/tail`) when WebSockets are enabled; see
+[WebSockets](websockets.md). Without WebSockets the page reloads periodically,
+as before.
+
 
 <br>
 <br>

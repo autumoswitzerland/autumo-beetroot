@@ -304,6 +304,10 @@
 	                <additionalClasspathElements>
 	                    <additionalClasspathElement>${project.basedir}</additionalClasspathElement>
 	                </additionalClasspathElements>
+					<!-- A new JVM per test class: every test class initializes
+					     its own configuration and database managers, e.g. the
+					     WebSocket integration test runs against 'cfg/beetroot.cfg'. -->
+	                <reuseForks>false</reuseForks>
 	            </configuration>
 	        </plugin>
 
@@ -313,11 +317,18 @@
 	<dependencies>
 
 		<!-- NANO-Http -->
-
 		<!-- CVE-2022-21230: Resolved when setting 'ws_tmp_dir' in beetRoot configuration -->
 		<dependency>
 		    <groupId>org.nanohttpd</groupId>
 		    <artifactId>nanohttpd</artifactId>
+		    <version>${version.nanohttpd}</version>
+		    <scope>compile</scope>
+		</dependency>
+
+		<!-- NANO-Http WebSockets -->
+		<dependency>
+		    <groupId>org.nanohttpd</groupId>
+		    <artifactId>nanohttpd-websocket</artifactId>
 		    <version>${version.nanohttpd}</version>
 		    <scope>compile</scope>
 		</dependency>

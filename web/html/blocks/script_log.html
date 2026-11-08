@@ -1,8 +1,15 @@
-<!--  Script: customized timer & dotted line between scrollers. -->
+<!--  Script: live log via the generic WebSocket action client, fallback reload, dotted line between scrollers. -->
 <script>
-	$(document).ready(function() {
+	const websocketEnabled = "{$websocketEnabled}" === "yes";
+	const websocketPath = "{$websocketPath}";
+	const websocketAction = "{$websocketActionPath}";
+	const maxLogLines = parseInt("{$logSize}", 10) || 100;
+	const fallbackRefreshTime = parseInt("{$logRefreshTime}", 10) || 60;
 
-		const app = "{$serverName}";
+	var live = null;
+	var fallbackTimer = null;
+
+	$(document).ready(function() {
 
 		// Tooltips
 		$(function() {
@@ -11,17 +18,9 @@
 		// Year string
 		prepareYear();
 
-		// Refresh log
-		var refreshState = localStorage.getItem(app + ".log.refresh");
-		if (refreshState != null) {
-			if (refreshState == "true") {
-				$("#cb_log_refresh").prop("checked", true);
-				timer.start();
-			} else {
-				$("#cb_log_refresh").prop("checked", false);
-				timer.stop();
-			}
-		}
+		// Start the live log; fall back to periodic reloads if unavailable.
+		startLive();
+
 		/**
 		 * Repainting the line between the bottom and top navigation
 		 * buttons.
@@ -45,40 +44,101 @@
 		window.addEventListener('resize', adjustDistanceLine);
 		window.addEventListener('scroll', adjustDistanceLine);
 	});
-	var timer = {
-		    interval: null,
-		    seconds: {$logRefreshTime},
-		    start: function () {
-				if (this.interval !== null) {
-				    this.stop();
+
+	function startLive() {
+		if (websocketEnabled && window.BeetRootWS && BeetRootWS.isSupported()) {
+			live = BeetRootWS.subscribe({
+				path: websocketPath,
+				action: websocketAction,
+				onSnapshot: renderSnapshot,
+				onEvent: appendLogLine,
+				onError: function (message) {
+					console.warn("WebSocket log action failed: " + message);
+				},
+				onStatus: updateLiveStatus,
+				onGiveUp: function () {
+					// The WebSocket is not available; keep the page fresh.
+					startFallback();
 				}
-				this.seconds = {$logRefreshTime};
-		        var self = this;
-		        var span = document.getElementById('timer');
-		        span.textContent = ' (' + this.seconds + 's)';
-		        this.interval = setInterval(function () {
-		            self.seconds--;
-					if (self.seconds <= 0) {
-		                location.reload();
-		                // scroll down
-		                $('body,html').animate({ scrollTop: $(document).height() }, 500);
-		            }
-		            span.textContent = ' (' + self.seconds + 's)';
-		        }, 1000);
-		    },
-		    stop: function () {
-		        window.clearInterval(this.interval)
-				this.interval = null;
-		    }
-		}
-	function refresh() {
-		if ($('#cb_log_refresh').is(':checked')) {
-			localStorage.setItem(app + ".log.refresh", "true");
-			timer.start();
+			});
 		} else {
-			localStorage.setItem(app + ".log.refresh", "false");
-			timer.stop();
+			startFallback();
 		}
+	}
+
+	function startFallback() {
+		if (fallbackTimer !== null) {
+			return;
+		}
+		fallbackTimer = window.setInterval(function () {
+			window.location.reload();
+		}, Math.max(fallbackRefreshTime, 10) * 1000);
+		updateLiveStatus('giveup');
+	}
+
+	function updateLiveStatus(state) {
+		var status = document.getElementById('live_status');
+		if (!status) {
+			return;
+		}
+		status.classList.remove('is-live', 'is-connecting', 'is-fallback');
+		var text = status.querySelector('.text');
+		if (state === 'open') {
+			status.hidden = false;
+			status.classList.add('is-live');
+			text.textContent = 'Live';
+		} else if (state === 'connecting' || state === 'reconnecting') {
+			status.hidden = false;
+			status.classList.add('is-connecting');
+			text.textContent = 'Connecting';
+		} else if (state === 'giveup') {
+			status.hidden = false;
+			status.classList.add('is-fallback');
+			text.textContent = 'Refresh ' + fallbackRefreshTime + 's';
+		} else {
+			status.hidden = true;
+			text.textContent = '';
+		}
+	}
+
+	function renderSnapshot(lines) {
+		var terminal = document.getElementById("terminal");
+		if (!terminal || !Array.isArray(lines)) {
+			return;
+		}
+		// Remove open tooltip bubbles before replacing the content: their
+		// target elements disappear and the bubbles would never close.
+		$(".ui-tooltip").remove();
+		var atBottom = isAtBottom();
+		terminal.innerHTML = lines.join("");
+		if (atBottom) {
+			window.scrollTo(0, document.body.scrollHeight);
+		}
+	}
+
+	function appendLogLine(line) {
+		if (line === null || line === undefined) {
+			return;
+		}
+		var terminal = document.getElementById("terminal");
+		if (!terminal) {
+			return;
+		}
+		var atBottom = isAtBottom();
+		terminal.insertAdjacentHTML("beforeend", line);
+
+		// Rebuild from the bounded server snapshot if the DOM grows too much.
+		if (live !== null && live.isOpen() && terminal.childNodes.length > maxLogLines * 10) {
+			live.send({command: "snapshot"});
+		}
+
+		if (atBottom) {
+			window.scrollTo(0, document.body.scrollHeight);
+		}
+	}
+
+	function isAtBottom() {
+		return (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 50);
 	}
 
 </script>

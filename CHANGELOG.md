@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 The first release documented in this file is 3.3.0.
 
-## [Unreleased]
+## [3.4.0]
+
+### Added
+
+- General WebSocket facility for selected actions: a single
+  endpoint (`websocket_path`, default `/ws`) with JSON action dispatch over
+  action paths registered in `cfg/routing.xml` via `<WebSocket>` elements;
+  handshake authentication with the regular web session, per-action access
+  through `hasAccess(Session)`, origin check, connection limit, heartbeat and
+  a dedicated socket timeout (`websocket_*` configuration keys). WebSocket
+  connections are closed when their user session ends.
+- Generic client module `web/js/beetroot-ws.js` with automatic reconnection
+  and status callbacks.
+- Live log tail: the system log page streams the in-memory log via the
+  registered action `/system/log/tail`
+  (`ch.autumo.beetroot.handler.system.LogTailWebSocketAction`), with a status
+  indicator in the top bar and periodic reload as fallback.
+- Documentation: `doc/websockets.md`.
 
 ### Changed
 
