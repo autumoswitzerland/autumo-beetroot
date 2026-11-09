@@ -266,7 +266,7 @@ public class BeetRootConfigurationManager {
 	public synchronized void initializeWithFullPath(String configFilePath) throws Exception {
 
 		if (isInitialized) {
-    		LOG.debug("WARNING: Initialisation of beetRoot configuration manager is called more than once!");
+    		LOG.warn("Initialisation of beetRoot configuration manager is called more than once!");
     		return;
 		}
 
@@ -418,7 +418,7 @@ public class BeetRootConfigurationManager {
 	 */
 	public synchronized void initializeDesktop(String desktopCfgFile, String appName) throws Exception {
 		if (isInitialized) {
-    		LOG.debug("WARNING: Initialisation of beetRoot configuration manager is called more than once!");
+    		LOG.warn("Initialisation of beetRoot configuration manager is called more than once!");
     		return;
 		}
 		this.isWithinDesktop = true;
