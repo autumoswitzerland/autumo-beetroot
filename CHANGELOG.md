@@ -18,7 +18,7 @@ The first release documented in this file is 3.3.0.
   through `hasAccess(Session)`, origin check, connection limit, heartbeat and
   a dedicated socket timeout (`websocket_*` configuration keys). WebSocket
   connections are closed when their user session ends.
-- Generic client module `web/js/beetroot-ws.js` with automatic reconnection
+- Generic client module `web/js/websockets.js` with automatic reconnection
   and status callbacks.
 - Live log tail: the system log page streams the in-memory log via the
   registered action `/system/log/tail`

@@ -155,7 +155,7 @@ All keys are located in the `Websockets` section of `cfg/beetroot.cfg`:
 
 | Key | Default | Description |
 |---|---|---|
-| `websocket_enabled` | `no` | Enable the WebSocket endpoint. |
+| `websocket_enabled` | `yes` | Enable the WebSocket endpoint. |
 | `websocket_path` | `/ws` | Endpoint path. |
 | `websocket_timeout` | `0` | Socket timeout of upgraded connections in seconds; `0` disables the timeout. Independent of `connection_timeout`. |
 | `websocket_ping_interval` | `30` | Server heartbeat in seconds; `0` disables pings. |
@@ -168,12 +168,12 @@ All keys are located in the `Websockets` section of `cfg/beetroot.cfg`:
 
 ## Client side
 
-The generic client module `web/js/beetroot-ws.js` (loaded on every page via
+The generic client module `web/js/websockets.js` (loaded on every page via
 `web/html/blocks/head.html`) connects to the endpoint, starts an action and
 dispatches its messages to callbacks:
 
 ```HTML
-	<script src="/js/beetroot-ws.js" defer></script>
+	<script src="/js/websockets.js" defer></script>
 ```
 
 ```JavaScript

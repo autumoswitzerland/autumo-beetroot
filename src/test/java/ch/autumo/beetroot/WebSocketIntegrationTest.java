@@ -167,7 +167,7 @@ public class WebSocketIntegrationTest {
 		try (Client client = new Client(host, SESSION_TOKEN)) {
 			final Client.HttpResponse response = client.get("/en/system/log");
 			assertEquals("Log page must be served.", 200, response.status);
-			assertTrue("WebSocket client script must be included.", response.body.contains("/js/beetroot-ws.js"));
+			assertTrue("WebSocket client script must be included.", response.body.contains("/js/websockets.js"));
 			assertTrue("Live status element must be rendered.", response.body.contains("id=\"live_status\""));
 			assertTrue("Log page must subscribe to the WebSocket action.", response.body.contains("BeetRootWS.subscribe"));
 			assertFalse("WebSocket configuration variable wasn't replaced.", response.body.contains("{$websocketEnabled}"));
