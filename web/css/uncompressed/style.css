@@ -30,6 +30,7 @@
 	--link: #0e4e74;
 	--link-hover: #1cc7ff;
 	--button-hover-fg: #1cc7ff;
+	--menu-icon: #2dc7fe;
 	--label: #0e4e74;
 	--label-bg: transparent;
 	--legend: #146fa6;
@@ -1870,6 +1871,31 @@ body.sidebar-collapsed .container {
 }
 .ph-magnifying-glass::before {
 	content: "\e30c"; /* magnifying-glass */
+}
+.ph-shield-check::before {
+	content: "\e40c"; /* shield-check */
+}
+.ph-list-checks::before {
+	content: "\eadc"; /* list-checks */
+}
+.ph-terminal-window::before {
+	content: "\eae8"; /* terminal-window */
+}
+.ph-file-arrow-down::before {
+	content: "\e232"; /* file-arrow-down */
+}
+.ph-file-arrow-up::before {
+	content: "\e61e"; /* file-arrow-up */
+}
+/* Glyphs of the home tile menu (home.html); they replace the former PNGs. */
+.menuEntry .menu-icon {
+	display: block;
+	width: 128px;
+	height: 128px;
+	font-size: 110px;
+	line-height: 128px;
+	text-align: center;
+	color: var(--menu-icon);
 }
 /* Colours of the design: success, error, warning. */
 .ph-ok {

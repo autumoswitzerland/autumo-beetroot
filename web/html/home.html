@@ -12,7 +12,12 @@
 					{$if-role=Operator,Controller:}
                     <a class="portfolio-box" href="{$userlink}">
                     {$endif-role;}
-                        <img class="img-fluid" src="/img/icons/menu-user-128.png" alt="" />
+                        {$if-role=Administrator:}
+                        <span class="ph ph-users menu-icon" aria-hidden="true"></span>
+                        {$endif-role;}
+                        {$if-role=Operator,Controller:}
+                        <span class="ph ph-user menu-icon" aria-hidden="true"></span>
+                        {$endif-role;}
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
@@ -34,7 +39,7 @@
                 {$if-role=Administrator:}
                 <div class="menuEntry">
                     <a class="portfolio-box" href="/{$lang}/roles">
-                        <img class="img-fluid" src="/img/icons/menu-roles-128.png" alt="" />
+                        <span class="ph ph-shield-check menu-icon" aria-hidden="true"></span>
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
@@ -49,7 +54,7 @@
                 {$endif-role;}
                 <div class="menuEntry">
                     <a class="portfolio-box" href="/{$lang}/tasks/index?page=1">
-                        <img class="img-fluid" src="/img/icons/menu-task-128.png" alt="" />
+                        <span class="ph ph-list-checks menu-icon" aria-hidden="true"></span>
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
@@ -64,7 +69,7 @@
                 {$if-role=Administrator:}
                 <div class="menuEntry">
                     <a class="portfolio-box" href="/{$lang}/properties">
-                        <img class="img-fluid" src="/img/icons/menu-props-128.png" alt="" />
+                        <span class="ph ph-sliders menu-icon" aria-hidden="true"></span>
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
@@ -82,7 +87,7 @@
                 {$if-role=Administrator:}
                 <div class="menuEntry">
                     <a class="portfolio-box" href="/{$lang}/system/log">
-                        <img class="img-fluid" src="/img/icons/menu-log-128.png" alt="" />
+                        <span class="ph ph-terminal-window menu-icon" aria-hidden="true"></span>
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
@@ -97,7 +102,7 @@
                 {$endif-role;}
                 <div class="menuEntry">
                     <a class="portfolio-box" href="/{$lang}/files/view">
-                        <img class="img-fluid" src="/img/icons/menu-download-128.png" alt="" />
+                        <span class="ph ph-file-arrow-down menu-icon" aria-hidden="true"></span>
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
@@ -111,7 +116,7 @@
                 </div>
                 <div class="menuEntry">
                     <a class="portfolio-box" href="/{$lang}/files/add">
-                        <img class="img-fluid" src="/img/icons/menu-upload-128.png" alt="" />
+                        <span class="ph ph-file-arrow-up menu-icon" aria-hidden="true"></span>
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
                                 <div class="project-name">&nbsp;
