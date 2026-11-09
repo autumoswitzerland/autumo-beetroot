@@ -165,7 +165,7 @@ public class WebSocketManager {
 			try {
 				socket.ping(new byte[0]);
 			} catch (IOException e) {
-				LOG.debug("WebSocket ping failed; closing connection.", e);
+				LOG.trace("WebSocket ping failed; closing connection.", e);
 				close(socket, "Ping failed");
 			}
 		}
@@ -191,7 +191,7 @@ public class WebSocketManager {
 		try {
 			socket.close(CloseCode.GoingAway, reason, false);
 		} catch (IOException e) {
-			LOG.debug("Couldn't send WebSocket close frame.", e);
+			LOG.trace("Couldn't send WebSocket close frame.", e);
 		} finally {
 			socket.closeTransport();
 			connections.remove(socket);
@@ -215,7 +215,7 @@ public class WebSocketManager {
 			try {
 				socket.close(CloseCode.GoingAway, "Server shutdown", false);
 			} catch (IOException e) {
-				LOG.debug("Couldn't send WebSocket close frame during shutdown.", e);
+				LOG.trace("Couldn't send WebSocket close frame during shutdown.", e);
 			} finally {
 				socket.closeTransport();
 			}

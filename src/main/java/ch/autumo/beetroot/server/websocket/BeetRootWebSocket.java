@@ -100,7 +100,7 @@ public class BeetRootWebSocket extends WebSocket {
 			try {
 				close(CloseCode.PolicyViolation, "Too many WebSocket connections", false);
 			} catch (IOException e) {
-				LOG.debug("Couldn't close rejected WebSocket connection.", e);
+				LOG.trace("Couldn't close rejected WebSocket connection.", e);
 			}
 		}
 	}
@@ -111,7 +111,7 @@ public class BeetRootWebSocket extends WebSocket {
 			try {
 				close(CloseCode.MessageTooBig, "Message too big", false);
 			} catch (IOException e) {
-				LOG.debug("Couldn't close WebSocket after oversized message.", e);
+				LOG.trace("Couldn't close WebSocket after oversized message.", e);
 			}
 			return;
 		}
@@ -126,7 +126,7 @@ public class BeetRootWebSocket extends WebSocket {
 		} catch (JSONException e) {
 			sendError(null, "Invalid JSON message.");
 		} catch (IOException e) {
-			LOG.debug("Couldn't read WebSocket message.", e);
+			LOG.trace("Couldn't read WebSocket message.", e);
 		} catch (Exception e) {
 			LOG.warn("WebSocket message handling failed.", e);
 			sendError(null, "Action failed: " + e.getMessage());
@@ -223,7 +223,7 @@ public class BeetRootWebSocket extends WebSocket {
 		actions.clear();
 		manager.unregister(this);
 		closeTransport();
-		LOG.debug("WebSocket closed: code={}, reason={}, remote={}", code, reason, initiatedByRemote);
+		LOG.trace("WebSocket closed: code={}, reason={}, remote={}", code, reason, initiatedByRemote);
 	}
 
 	@Override
@@ -233,8 +233,8 @@ public class BeetRootWebSocket extends WebSocket {
 
 	@Override
 	protected void onException(IOException exception) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("WebSocket exception: {}", exception.getMessage());
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("WebSocket exception: {}", exception.getMessage());
 		}
 	}
 
@@ -263,7 +263,7 @@ public class BeetRootWebSocket extends WebSocket {
 					socket.close();
 				}
 			} catch (IOException e) {
-				LOG.debug("Couldn't close WebSocket transport.", e);
+				LOG.trace("Couldn't close WebSocket transport.", e);
 			}
 		}
 	}
@@ -298,7 +298,7 @@ public class BeetRootWebSocket extends WebSocket {
 		try {
 			sendJson(message);
 		} catch (IOException e) {
-			LOG.debug("Couldn't send WebSocket error message.", e);
+			LOG.trace("Couldn't send WebSocket error message.", e);
 		}
 	}
 
