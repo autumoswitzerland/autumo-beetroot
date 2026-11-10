@@ -209,7 +209,7 @@ configuration key to get to know the possibilities and the extensive features of
 <!-- BUILT WITH -->
 ## Built With
 
-* [NanoHTTPD](http://nanohttpd.org)
+* [NanoHTTPD](https://github.com/NanoHttpd/nanohttpd)
 * [Apache commons](https://commons.apache.org)
 * [SLF4j](https://www.slf4j.org)
 * [Log4j2](https://logging.apache.org/log4j/2.x)
