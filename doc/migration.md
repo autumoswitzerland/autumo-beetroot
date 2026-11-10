@@ -11,6 +11,22 @@ In general, you should always save your changes/customizations in the following 
 ## Release 3.4.0
 
 - Update JAR libraries
+- Update `web/` directory: `js/websockets.js` as well as
+  `html/blocks/head.html`, `html/blocks/layout_log.html` and
+  `html/blocks/script_log.html` (live log tail)
+- Update `cfg/routing.xml`: add the `<WebSocket>` element if you want to use
+  the live log tail (`/system/log/tail`)
+- Add the WebSocket section of `cfg/beetroot.cfg` with the keys
+  `websocket_enabled`, `websocket_path`, `websocket_timeout`,
+  `websocket_ping_interval`, `websocket_max_connections`,
+  `websocket_max_message_size`, `websocket_origin_check` and
+  `websocket_allowed_origins`
+- Note that WebSockets are only available in standalone mode, not inside a
+  servlet container
+- If you customized the design tokens, move them from
+  `web/css/uncompressed/style.css` into `web/css/default.css` (light theme) or
+  into your own `theme-<name>.css`; `style.min.css` is regenerated from
+  `uncompressed/style.css` and no longer contains a `:root` block
 
 ## Release 3.3.0
 

@@ -21,10 +21,103 @@
 /**
  * Customized design,
  * language additions,
- * Overrides.
+ * overrides and the design tokens.
  *
- * Use https://csscompressor.com/ for compression.
+ * This file is not minified and is the place for your own adjustments.
+ * The framework styles live in style.min.css (generated from
+ * web/css/uncompressed/style.css) and should not be edited.
  */
+
+
+/**
+ * Design tokens of the light theme.
+ *
+ * These CSS custom properties are the single place for the colours and
+ * dimensions of the web UI; the rules in style.min.css reference them via
+ * var(--token). A theme such as theme-dark.css overrides them with its own
+ * :root block and is loaded after this file.
+ */
+:root {
+	/* text and links */
+	--text: #0e4e74;
+	--link: #0e4e74;
+	--link-hover: #1cc7ff;
+	--button-hover-fg: #1cc7ff;
+	--menu-icon: #2dc7fe;
+	--label: #0e4e74;
+	--label-bg: transparent;
+	--legend: #146fa6;
+	--legend-bg: #f8f8f8;
+	--h1: #222222;
+	--heading-3: #0e4e74;
+	--heading-4: #0e4e74;
+	--heading-4-line: #0e4e74;
+	--heading-4-err: #0e4e74;
+	--heading-3-light: #a2eeff;
+	--heading-5: #0093e6;
+	--actions-text: #222222;
+
+	/* side menu */
+	--sidebar-bg: #e0e0e0;
+	--nav-link: #0e4e74;
+	--nav-heading: #0077aa;
+	--nav-label: #0e4e74;
+	--nav-label-bg: transparent;
+	--nav-hover: rgba(45, 199, 254, 0.10);
+	--nav-active: rgba(45, 199, 254, 0.16);
+
+	/* surfaces */
+	--body-bg: #666666;
+	--surface: #f8f8f8;
+	--container-line: #666666;
+
+	/* tables */
+	--table-bg: #f8f8f8;
+	--table-line: #cbcbcc;
+	--table-th: #146fa6;
+	--table-th-head: #222222;
+	--table-cell: #222222;
+	--table-hover: rgba(45, 199, 254, 0.07);
+
+	/* lists */
+	--list-bg: #eeeeee;
+	--list-border: #cccccc;
+	--list-item-fg: #555555;
+	--list-item-bg: #cccccc;
+	--list-item-border: #bbbbbb;
+
+	/* pagination */
+	--pager-text: #222222;
+	--pager-link: #0e4e74; /* blue instead of grey */
+	--pager-link-hover: #2dc7fe;
+	--pager-active-fg: #0e4e74;
+	--pager-active-bg: #cfe3f0; /* light blue instead of grey */
+	--pager-active-border: #9fc4da;
+	--pager-border: #b9d3e4;
+	--pager-bg: #e8f1f7;
+	--pager-hover-bg: rgba(14, 78, 116, 0.08);
+	--pager-disabled: rgba(0, 0, 0, 0.28);
+
+	/* drop down and tooltip */
+	--dropdown-bg: #f1f1f1;
+	--dropdown-fg: #000000;
+	--dropdown-hover-bg: #dddddd;
+	--dropdown-link-bg: transparent;
+	--tooltip-bg: #eaf3f8;
+	--tooltip-fg: #222222;
+	--tooltip-border: #b9d3e4;
+	--tooltip-shadow: 0 4px 14px rgba(14, 78, 116, 0.16);
+
+	/* footer */
+	--footer-bg: #222222;
+	--footer-fg: #ffffff;
+
+	/* message card */
+	--message-info: #0b5b68;
+	--message-success: #0f6b4f;
+	--message-error: #a11f2b;
+	--message-warning: #8a4a06;
+}
 
 
 /**

@@ -5,7 +5,7 @@ beetRoot comes with an "out-of-the-box" JSON REST API that serves any entity fro
 
 A REST API call looks like this:
 
-- `http://localhost:8778/tasks/index.json?apiKey=c56950c47cc9f055a17395d6bf94222d&page=1&fetchsize=2&sort=id&direction=desc&page=1`
+- `http://localhost:8778/tasks/index.json?apiKey=c56950c47cc9f055a17395d6bf94222d&page=1&fetchsize=2&sort=id&direction=desc`
 
 Example Answer:
 
@@ -28,7 +28,7 @@ Example Answer:
 	    "paginator": {
 	        "itemsPerPage": 2,
 	        "itemsTotal": 2,
-	        "lastPage": 1,
+	        "lastPage": 1
 	    }
 	}
 ```

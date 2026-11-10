@@ -29,11 +29,14 @@ The first release documented in this file is 3.3.0.
 ### Changed
 
 - Moved the patched NanoHTTPD router from `org.nanohttpd.router.RouterNanoHTTPD`
-  to `ch.autumo.beetroot.server.HTTPServer` and renamed the class to `HTTPServer`.
-  This is a breaking change for code that imports the old fully qualified name;
-  all internal references and documentation links were updated.
+  to `ch.autumo.beetroot.server.HTTPServer`. This is an internal refactoring;
+  applications, handlers, templates and routing configurations are not affected.
 - Default HTTPS protocols are now restricted to `TLSv1.2,TLSv1.3`; the obsolete
   `TLSv1` and `TLSv1.1` protocols were removed from `BaseServer`.
+- The design tokens (`:root`) moved from `web/css/uncompressed/style.css` to
+  `web/css/default.css`, the stylesheet for your own adjustments. Themes such as
+  `web/css/theme-dark.css` override them with their own `:root` block. New token
+  `--heading-4-line` for the underline of `h4` in content blocks.
 - The `ch.autumo.beetroot.server` package documentation now describes the
   server implementations.
 
@@ -41,6 +44,10 @@ The first release documented in this file is 3.3.0.
 
 - Restored the original NanoHTTPD BSD license notice in the moved `HTTPServer`
   class, alongside the autumo Apache 2.0 header.
+- The error heading (`h4`) on the error page uses its intended style again: the
+  selector in `style.css` matches the template class (`errMsg`, was `errMSg`), so
+  the error colour applies and the underline is omitted. The underline itself is
+  now the token `--heading-4-line` and therefore visible in the dark theme.
 
 ## [3.3.0]
 

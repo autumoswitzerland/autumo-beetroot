@@ -8,7 +8,7 @@ beetRoot uses [SLF4j](https://slf4j.org) with [log4j2](https://logging.apache.or
     `-Dlog4j2.configurationFile=file:<log-cfg-path>/myLogConfig.xml`
 
 - **Tomcat with beetRoot**:  
-  The default configuration `WEB-INF/log4j2.xml` within the web archive is used. When deployed by Tomcat, you can customize it as needed or specify your log file in `WEB-INF/web.xml` using the following parameter:
+  The default configuration `logging.xml` in the root of the web application is used. When deployed by Tomcat, you can customize it as needed or specify another log file in `WEB-INF/web.xml` using the following parameter:
   
     `beetRootLogConfig`
 

@@ -35,7 +35,7 @@ The translation lookup order:
 2. `web/html/<default-lang>/<entity>/<template>.html` (first language defined by `web_languages` in `beetroot.cfg`)
 3. `web/html/<entity>/<translated-template>.html`
 
-If you use translation tags, you need to populate `lang_*.properties` files in the `web/lang/tmpl` directory. Translation tags start with the prefix `l.`. Initially these translations can be populated by using the 'Translate templates' function in the [PLANT](plant.md) generator; it will add the initial translations to the file `web/lang/tmpl/lang.templates`. Start PLANT to learn more and see the following chapter below.
+If you use translation tags, you need to populate `lang_*.properties` files in the `web/lang/tmpl` directory. Translation tags start with the prefix `l.`. Initially these translations can be populated by using the 'Translate templates' function in the [PLANT](plant.md) generator; it will add the initial translations to the file `web/lang/tmpl/lang.properties`. Start PLANT to learn more and see the following chapter below.
 
 **Example:**  
 
@@ -65,7 +65,7 @@ PLANT populates template translations and inserts them into the file `web/lang/t
 - HTML template: `web/html/users/welcome.html`
 - Translated text fragment in the above template: `Hello {$username}, welcome!`
 
-The processor takes the text fragment and inserts it into the file `web/lang/tmp/lang.properties`:
+The processor takes the text fragment and inserts it into the file `web/lang/tmpl/lang.properties`:
 
 `users.welcome.1=Hello {$username}, welcome!`
 
@@ -73,7 +73,7 @@ this special case with a standard template variable, you must replace `{$usernam
 
 `{$l.users.welcome.1,{$userName}}`
 
-As you can see, the translation key uses the prefix `$l.` to distinguish between language translations and the HTML template variables that are replaced by handlers. The template engine first replaces the handler variables, then applies the translation, and finally inserts the replaced handler variables at the positions `{0}`, `{1}`, etc., as defined in the translation file `web/lang/tmp/lang.properties`.
+As you can see, the translation key uses the prefix `$l.` to distinguish between language translations and the HTML template variables that are replaced by handlers. The template engine first replaces the handler variables, then applies the translation, and finally inserts the replaced handler variables at the positions `{0}`, `{1}`, etc., as defined in the translation file `web/lang/tmpl/lang.properties`.
 
 This approach also works with multiple variables by adding additional variables after the translation key, separated by commas. Use sequential placeholders in the translation key, e.g., `{0}, {1}, {2}`, and so on.
 

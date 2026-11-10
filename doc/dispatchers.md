@@ -5,13 +5,13 @@ communication and transport layer to communicate between the beetRoot server and
 is running with a dedicated web servlet. In both cases, the dispatchers themselves handle the context and the call logic
 locally (in standalone mode) or remotely in the beetRoot server.
 
-The implemnetations is done the following way:
+The implementation works as follows:
 
 - Basically, you create a factory that checks whether a call is made from a remote location (e.g. in a web container) or locally (within the beetRoot server).
-This can be done by calling  <code>BeetRootConfigurationManager.getInstance().getServletContext();</code>.
+This can be done by calling <code>BeetRootConfigurationManager.getInstance().getServletContext();</code>.
 - If a servlet context is present, you call from a web container, and in this case your factory returns a 
-remote implementation that is part of the distributed module and that uses the {@link ch.autumo.beetroot.server.communication.ClientCommunicator} 
-or the {@link ch.autumo.beetroot.server.communication.ClientFileTransfer} to call the server.
+remote implementation that is part of the distributed module and that uses the <code>{@link ch.autumo.beetroot.server.communication.ClientCommunicator}</code> 
+or the <code>{@link ch.autumo.beetroot.server.communication.ClientFileTransfer}</code> to call the server.
 - If there is NO servlet context (null), the calls are made within the beetRoot server. In this case, the factory provides a 
 local implementation that is part of the distributed module. The dispatcher implementation itself always calls the 
 dispatcher implementation itself always calls the local implementation, and the dispatcher itself is automatically involved when remote calls 

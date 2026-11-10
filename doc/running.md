@@ -19,9 +19,9 @@ beetRoot can be run in two modes:
 
 1. Start the standalone beetRoot server using:
 
-	```bssh
-	bin/beetRoot.sh start   # Linux/macOS
-	bin/beetRoot.bat start  # Windows
+	```bash
+	bin/beetroot.sh start   # Linux/macOS
+	bin/beetroot.bat start  # Windows
 	```
 
 2. The server reads its configuration from `cfg/beetroot.cfg`. Most configuration parameters are also applicable when running beetRoot in a servlet container. All parameters are documented within the configuration file itself.
@@ -32,13 +32,13 @@ beetRoot can be run in two modes:
 
 5. Stop the standalone server properly using:
 
-	```bssh
-	bin/beetRoot.sh stop    # Linux/macOS
-	bin/beetRoot.bat stop   # Windows
+	```bash
+	bin/beetroot.sh stop    # Linux/macOS
+	bin/beetroot.bat stop   # Windows
 	```
 
 	Pressing `CTRL-C` also works as a stop signal for the server.
-	or example JNDI c
+
 All batch files and shell scripts are located in the `bin` directory.
 
 ## Servlet Web Containers
