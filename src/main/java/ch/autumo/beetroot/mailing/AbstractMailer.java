@@ -287,13 +287,9 @@ public abstract class AbstractMailer implements Mailer {
 			base = baseUrl + ":" + baseUrlPort;
 		else
 			base = baseUrl ;
-		String servletName = null;
-		final ServletContext context = BeetRootConfigurationManager.getInstance().getServletContext();
-		if (context != null) {
-			servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
-			if (servletName != null) {
-				base += ("/" + servletName);
-			}
+		final String servletPrefix = BeetRootConfigurationManager.getInstance().getServletUrlPrefix();
+		if (servletPrefix.length() != 0) {
+			base += ("/" + servletPrefix);
 		}
 		// we have no URLs pointing to images in TXT, only HTML
 		if (extension.equalsIgnoreCase("html")&& template.contains("{$ws_url}")) {

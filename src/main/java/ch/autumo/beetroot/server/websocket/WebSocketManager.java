@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.nanohttpd.protocols.websockets.CloseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,9 @@ import ch.autumo.beetroot.routing.WebSocketActionRoute;
  * <p>
  * The manager owns the action registry, enforces the connection limit, sends
  * the configured heartbeats and closes connections when their user session
- * ends.
+ * ends. It is transport neutral: the standalone server uses the NanoHTTPD
+ * transport ({@link BeetRootWebSocket}) and a servlet container uses
+ * {@link ServletWebSocketEndpoint}.
  * </p>
  */
 public class WebSocketManager {
@@ -49,7 +50,7 @@ public class WebSocketManager {
 
 	private final WebSocketConfig config;
 	private final WebSocketActionRegistry registry;
-	private final Set<BeetRootWebSocket> connections = ConcurrentHashMap.newKeySet();
+	private final Set<WebSocketSessionHandler> connections = ConcurrentHashMap.newKeySet();
 
 	private final SessionManager.SessionDestroyListener sessionDestroyListener =
 			new SessionManager.SessionDestroyListener() {
@@ -103,24 +104,24 @@ public class WebSocketManager {
 	/**
 	 * Register an opened connection.
 	 *
-	 * @param socket connection
+	 * @param handler connection handler
 	 * @return true if the connection was accepted
 	 */
-	public boolean register(BeetRootWebSocket socket) {
+	public boolean register(WebSocketSessionHandler handler) {
 		if (connections.size() >= config.getMaxConnections()) {
 			return false;
 		}
-		connections.add(socket);
+		connections.add(handler);
 		return true;
 	}
 
 	/**
 	 * Remove a closed connection.
 	 *
-	 * @param socket connection
+	 * @param handler connection handler
 	 */
-	public void unregister(BeetRootWebSocket socket) {
-		connections.remove(socket);
+	public void unregister(WebSocketSessionHandler handler) {
+		connections.remove(handler);
 	}
 
 	/**
@@ -152,21 +153,21 @@ public class WebSocketManager {
 	}
 
 	private void pingAll() {
-		for (BeetRootWebSocket socket : connections) {
-			if (!socket.isOpen()) {
-				connections.remove(socket);
+		for (WebSocketSessionHandler handler : connections) {
+			if (!handler.isOpen()) {
+				connections.remove(handler);
 				continue;
 			}
 			// A WebSocket must not outlive its user session.
-			if (socket.getUserSession() == null || socket.getUserSession().isOlderThanSessionTimeout()) {
-				close(socket, "Session timed out");
+			if (handler.getUserSession() == null || handler.getUserSession().isOlderThanSessionTimeout()) {
+				handler.close("Session timed out");
 				continue;
 			}
 			try {
-				socket.ping(new byte[0]);
+				handler.ping();
 			} catch (IOException e) {
 				LOG.trace("WebSocket ping failed; closing connection.", e);
-				close(socket, "Ping failed");
+				handler.close("Ping failed");
 			}
 		}
 	}
@@ -180,21 +181,10 @@ public class WebSocketManager {
 		if (session == null) {
 			return;
 		}
-		for (BeetRootWebSocket socket : connections) {
-			if (socket.getUserSession() == session) {
-				close(socket, "Session ended");
+		for (WebSocketSessionHandler handler : connections) {
+			if (handler.getUserSession() == session) {
+				handler.close("Session ended");
 			}
-		}
-	}
-
-	private void close(BeetRootWebSocket socket, String reason) {
-		try {
-			socket.close(CloseCode.GoingAway, reason, false);
-		} catch (IOException e) {
-			LOG.trace("Couldn't send WebSocket close frame.", e);
-		} finally {
-			socket.closeTransport();
-			connections.remove(socket);
 		}
 	}
 
@@ -211,14 +201,8 @@ public class WebSocketManager {
 			scheduler = null;
 		}
 
-		for (BeetRootWebSocket socket : connections) {
-			try {
-				socket.close(CloseCode.GoingAway, "Server shutdown", false);
-			} catch (IOException e) {
-				LOG.trace("Couldn't send WebSocket close frame during shutdown.", e);
-			} finally {
-				socket.closeTransport();
-			}
+		for (WebSocketSessionHandler handler : connections) {
+			handler.close("Server shutdown");
 		}
 		connections.clear();
 	}

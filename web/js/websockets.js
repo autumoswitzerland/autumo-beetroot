@@ -100,7 +100,12 @@
 		if (path.charAt(0) !== "/") {
 			path = "/" + path;
 		}
-		return protocol + "//" + global.location.host + path;
+		var host = global.location.host;
+		var port = this.settings.port;
+		if (port !== undefined && port !== null && port !== "" && port > 0) {
+			host = global.location.hostname + ":" + port;
+		}
+		return protocol + "//" + host + path;
 	};
 
 	Connection.prototype.open = function () {
@@ -257,6 +262,49 @@
 		this.onStatus("closed");
 	};
 
+	function startFallbackCountdown(options) {
+		options = options || {};
+		var seconds = parseInt(options.seconds, 10);
+		if (isNaN(seconds)) {
+			seconds = 60;
+		}
+		var minSeconds = options.minSeconds;
+		if (minSeconds === undefined || minSeconds === null) {
+			minSeconds = 10;
+		}
+		var remaining = Math.max(seconds, minSeconds);
+		var onTick = options.onTick || noop;
+		var onReload = options.onReload || function () {
+			global.location.reload();
+		};
+		var timer = null;
+
+		function stop() {
+			if (timer !== null) {
+				global.clearInterval(timer);
+				timer = null;
+			}
+		}
+
+		onTick(remaining);
+		timer = global.setInterval(function () {
+			remaining--;
+			if (remaining <= 0) {
+				stop();
+				onReload();
+				return;
+			}
+			onTick(remaining);
+		}, 1000);
+
+		return {
+			stop: stop,
+			getRemaining: function () {
+				return remaining;
+			}
+		};
+	}
+
 	global.BeetRootWS = {
 
 		/**
@@ -274,7 +322,14 @@
 			var connection = new Connection(options || {});
 			connection.open();
 			return connection;
-		}
+		},
+
+		/**
+		 * Start a fallback countdown that ticks every second and triggers a
+		 * reload when it reaches zero. Intended for use when a WebSocket is
+		 * unavailable or gives up reconnecting.
+		 */
+		startFallbackCountdown: startFallbackCountdown
 	};
 
 })(window);

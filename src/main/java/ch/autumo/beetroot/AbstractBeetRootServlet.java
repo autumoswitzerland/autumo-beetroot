@@ -27,12 +27,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.autumo.beetroot.logging.LoggingFactory;
+import ch.autumo.beetroot.server.websocket.ServletWebSocketEndpoint;
+import ch.autumo.beetroot.server.websocket.WebSocketConfig;
+import ch.autumo.beetroot.server.websocket.WebSocketManager;
 import ch.autumo.beetroot.utils.UtilsException;
 import ch.autumo.beetroot.utils.web.Web;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 
 /**
@@ -143,6 +148,33 @@ public class AbstractBeetRootServlet extends HttpServlet {
 		} catch (Exception e) {
 			LOG.error("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
 			throw new ServletException("Couldn't create beetroot service from class '"+beetRootServiceClass+"'!", e);
+		}
+
+
+		// 4.1 Register Jakarta WebSocket endpoint if enabled and within servlet context
+		try {
+			final WebSocketConfig wsConfig = WebSocketConfig.load();
+			if (wsConfig.isEnabled() && wsConfig.isServletTransport()) {
+				final WebSocketManager wsManager = ((BeetRootWebServer) beetRootService).getWebSocketManager();
+				if (wsManager != null) {
+					final jakarta.servlet.ServletContext servletContext = config.getServletContext();
+					final ServerContainer container =
+							(ServerContainer) servletContext
+									.getAttribute(ServerContainer.class.getName());
+					if (container != null) {
+						final ServletWebSocketEndpoint endpoint = new ServletWebSocketEndpoint(wsManager);
+						final String endpointPath = wsConfig.getPath();
+						final ServerEndpointConfig epConfig = endpoint.getConfig(endpointPath);
+						container.addEndpoint(epConfig);
+						wsManager.start();
+						LOG.info("Jakarta WebSocket endpoint registered at '{}'.", endpointPath);
+					} else {
+						LOG.warn("No Jakarta WebSocket ServerContainer found in servlet context; WebSocket disabled.");
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOG.error("Could not register Jakarta WebSocket endpoint.", e);
 		}
 
 

@@ -1,13 +1,14 @@
 <!--  Script: live log via the generic WebSocket action client, fallback reload, dotted line between scrollers. -->
 <script>
 	const websocketEnabled = "{$websocketEnabled}" === "yes";
-	const websocketPath = "{$websocketPath}";
+	const websocketPath = "{$servletName}{$websocketPath}";
 	const websocketAction = "{$websocketActionPath}";
+	const websocketPort = "{$websocketPort}";
 	const maxLogLines = parseInt("{$logSize}", 10) || 100;
 	const fallbackRefreshTime = parseInt("{$logRefreshTime}", 10) || 60;
 
 	var live = null;
-	var fallbackTimer = null;
+	var fallback = null;
 
 	$(document).ready(function() {
 
@@ -49,6 +50,7 @@
 		if (websocketEnabled && window.BeetRootWS && BeetRootWS.isSupported()) {
 			live = BeetRootWS.subscribe({
 				path: websocketPath,
+				port: websocketPort,
 				action: websocketAction,
 				onSnapshot: renderSnapshot,
 				onEvent: appendLogLine,
@@ -67,16 +69,18 @@
 	}
 
 	function startFallback() {
-		if (fallbackTimer !== null) {
+		if (fallback !== null) {
 			return;
 		}
-		fallbackTimer = window.setInterval(function () {
-			window.location.reload();
-		}, Math.max(fallbackRefreshTime, 10) * 1000);
-		updateLiveStatus('giveup');
+		fallback = BeetRootWS.startFallbackCountdown({
+			seconds: fallbackRefreshTime,
+			onTick: function (remaining) {
+				updateLiveStatus('giveup', remaining);
+			}
+		});
 	}
 
-	function updateLiveStatus(state) {
+	function updateLiveStatus(state, remaining) {
 		var status = document.getElementById('live_status');
 		if (!status) {
 			return;
@@ -94,7 +98,8 @@
 		} else if (state === 'giveup') {
 			status.hidden = false;
 			status.classList.add('is-fallback');
-			text.textContent = 'Refresh ' + fallbackRefreshTime + 's';
+			var seconds = (remaining !== undefined && remaining !== null) ? remaining : fallbackRefreshTime;
+			text.textContent = 'Refresh ' + seconds + 's';
 		} else {
 			status.hidden = true;
 			text.textContent = '';

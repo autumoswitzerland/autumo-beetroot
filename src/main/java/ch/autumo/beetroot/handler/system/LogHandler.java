@@ -117,6 +117,7 @@ public class LogHandler extends NoConfigHandler {
 		setVarAll("websocketEnabled", webSocketConfig.isEnabled() ? "yes" : "no");
 		setVarAll("websocketPath", webSocketConfig.getPath());
 		setVarAll("websocketActionPath", LogTailWebSocketAction.ROUTE_PATH);
+		setVarAll("websocketPort", "" + webSocketConfig.getSocketPort());
 	}
 
 	/**

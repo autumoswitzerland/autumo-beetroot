@@ -825,14 +825,47 @@ public class BeetRootConfigurationManager {
 	}
 
 	/**
-	 * Get servlet name if any (only in servlet context)
-	 * @return servlet name
+	 * Get servlet name if any (only in servlet context).
+	 *
+	 * <p>
+	 * The method returns the plain context path without a leading or trailing
+	 * slash, although a context path may contain slashes (e.g.
+	 * {@code app/beetroot}). All callers add the leading slash themselves when
+	 * they build an URL, and comparisons are done against normalized URIs.
+	 * </p>
+	 *
+	 * @return servlet name without leading/trailing slash, or null
 	 */
 	public String getServletName() {
 		String servletName = generalProps.getProperty("web_html_ref_pre_url_part");
-		if (servletName != null)
+		if (servletName != null) {
 			servletName = servletName.trim();
+			while (servletName.length() > 0 && servletName.charAt(0) == '/')
+				servletName = servletName.substring(1);
+			while (servletName.length() > 0 && servletName.charAt(servletName.length() - 1) == '/')
+				servletName = servletName.substring(0, servletName.length() - 1);
+		}
 		return servletName;
+	}
+
+	/**
+	 * Get the servlet name to be used as URL prefix for HTML references and
+	 * web resources.
+	 *
+	 * <p>
+	 * The configured value is only relevant for a deployment in a servlet
+	 * container. In standalone mode an empty string is returned even if
+	 * {@code web_html_ref_pre_url_part} is set, because there is no servlet
+	 * context path to prefix.
+	 * </p>
+	 *
+	 * @return servlet name or an empty string
+	 */
+	public String getServletUrlPrefix() {
+		if (!runsWithinServletContext())
+			return "";
+		final String servletName = getServletName();
+		return servletName == null ? "" : servletName;
 	}
 
 	// Load XML module configuration

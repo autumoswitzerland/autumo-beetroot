@@ -311,6 +311,15 @@ public class BeetRootWebServer extends HTTPServer implements BeetRootService {
     }
 
 	/**
+	 * Get the WebSocket manager.
+	 *
+	 * @return WebSocket manager or null if not initialized
+	 */
+	public WebSocketManager getWebSocketManager() {
+		return webSocketManager;
+	}
+
+	/**
 	 * Main serve method for the beetRoot-engine.
 	 *
 	 * @param session nano session.

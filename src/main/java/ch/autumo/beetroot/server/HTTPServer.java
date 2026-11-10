@@ -941,7 +941,7 @@ public class HTTPServer extends NanoHTTPD {
         public UriRouter() {
             this.routePrioritizer = new DefaultRoutePrioritizer();
             
-    		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+    		servletName = BeetRootConfigurationManager.getInstance().getServletUrlPrefix();
     		if (servletName != null && servletName.length() != 0)
     			insertServletNameInTemplateRefs = true; 
         }

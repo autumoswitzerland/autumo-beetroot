@@ -33,14 +33,14 @@ import ch.autumo.beetroot.Session;
  */
 public final class WebSocketContext {
 
-	private final BeetRootWebSocket socket;
+	private final WebSocketConnection connection;
 	private final Session session;
 	private final String actionPath;
 	private final Map<String, String> pathParams;
 
-	WebSocketContext(BeetRootWebSocket socket, Session session, String actionPath,
+	WebSocketContext(WebSocketConnection connection, Session session, String actionPath,
 			Map<String, String> pathParams) {
-		this.socket = socket;
+		this.connection = connection;
 		this.session = session;
 		this.actionPath = actionPath;
 		this.pathParams = pathParams == null
@@ -81,7 +81,7 @@ public final class WebSocketContext {
 	 * @return true if open
 	 */
 	public boolean isOpen() {
-		return socket.isOpen();
+		return connection.isOpen();
 	}
 
 	/**
@@ -91,7 +91,11 @@ public final class WebSocketContext {
 	 * @throws IOException IO exception
 	 */
 	public void sendEvent(Object data) throws IOException {
-		socket.sendActionEvent(actionPath, data);
+		final JSONObject message = new JSONObject();
+		message.put("action", actionPath);
+		message.put("type", "event");
+		message.put("data", data == null ? JSONObject.NULL : data);
+		sendJson(message);
 	}
 
 	/**
@@ -101,7 +105,11 @@ public final class WebSocketContext {
 	 * @throws IOException IO exception
 	 */
 	public void sendSnapshot(JSONArray data) throws IOException {
-		socket.sendActionSnapshot(actionPath, data);
+		final JSONObject message = new JSONObject();
+		message.put("action", actionPath);
+		message.put("type", "snapshot");
+		message.put("data", data == null ? new JSONArray() : data);
+		sendJson(message);
 	}
 
 	/**
@@ -111,7 +119,7 @@ public final class WebSocketContext {
 	 * @throws IOException IO exception
 	 */
 	public void sendMessage(JSONObject message) throws IOException {
-		socket.sendJson(message);
+		sendJson(message);
 	}
 
 	/**
@@ -120,7 +128,22 @@ public final class WebSocketContext {
 	 * @param message error message
 	 */
 	public void sendError(String message) {
-		socket.sendError(actionPath, message);
+		final JSONObject json = new JSONObject();
+		json.put("action", actionPath);
+		json.put("type", "error");
+		json.put("message", message == null ? "Unknown error." : message);
+		try {
+			sendJson(json);
+		} catch (IOException e) {
+			// Nothing left to do; the connection is gone.
+		}
+	}
+
+	private void sendJson(JSONObject message) throws IOException {
+		if (!connection.isOpen()) {
+			return;
+		}
+		connection.send(message.toString());
 	}
 
 }

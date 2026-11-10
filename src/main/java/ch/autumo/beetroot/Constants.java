@@ -225,6 +225,12 @@ public class Constants {
 	public static final String KEY_WS_PORT = "ws_port";
 	
 	/**
+	 * WebSocket server port (for distributed deployments where WebSocket runs
+	 * on a different port than HTTP). Falls back to ws_port if not set.
+	 */
+	public static final String KEY_WEBSOCKET_PORT = "websocket_port";
+	
+	/**
 	 * Start web server?
 	 */
 	public static final String KEY_WS_START = "ws_start";
@@ -440,5 +446,10 @@ public class Constants {
 	 * Postgre db with PGJDBC-NG driver.
 	 */
 	public static String JDBC_POSTGRE_NG_DB = "jdbc:pgsql";	
+
+	/**
+	 * WebSocket session token name.
+	 */
+	public static final String KEY_WEBSOCKET_SESSION_TOKEN = "websocket_session_token";
 	
 }

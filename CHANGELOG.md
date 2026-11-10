@@ -18,8 +18,16 @@ The first release documented in this file is 3.3.0.
   through `hasAccess(Session)`, origin check, connection limit, heartbeat and
   a dedicated socket timeout (`websocket_*` configuration keys). WebSocket
   connections are closed when their user session ends.
-- Generic client module `web/js/websockets.js` with automatic reconnection
-  and status callbacks.
+- Jakarta WebSocket transport for servlet containers (e.g. Tomcat, Jetty,
+  WebLogic), sharing the same transport-neutral protocol/action layer as the
+  standalone NanoHTTPD WebSocket transport.
+- `websocket_port` configuration key for distributed deployments where the
+  browser must connect to the beetRoot WebSocket server on a different port
+  than the HTTP/UI server (falls back to `ws_port` if not set). The client
+  module `web/js/websockets.js` accepts an optional `port` when subscribing.
+- Generic client module `web/js/websockets.js` with automatic reconnection,
+  status callbacks and a reusable fallback countdown helper
+  (`BeetRootWS.startFallbackCountdown`) for periodic reload fallback.
 - Live log tail: the system log page streams the in-memory log via the
   registered action `/system/log/tail`
   (`ch.autumo.beetroot.handler.system.LogTailWebSocketAction`), with a status
@@ -48,6 +56,13 @@ The first release documented in this file is 3.3.0.
   selector in `style.css` matches the template class (`errMsg`, was `errMSg`), so
   the error colour applies and the underline is omitted. The underline itself is
   now the token `--heading-4-line` and therefore visible in the dark theme.
+- `web_html_ref_pre_url_part` is only applied inside a servlet container. A value
+  configured in standalone mode is ignored instead of prefixing all HTML
+  references and web resources. Leading and trailing slashes in the configured
+  value are ignored.
+- Avoid noisy errors when sending WebSocket messages to connections that are
+  already closed (e.g. during shutdown) by checking the connection state before
+  sending.
 
 ## [3.3.0]
 

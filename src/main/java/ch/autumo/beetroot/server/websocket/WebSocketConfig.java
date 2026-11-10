@@ -28,8 +28,10 @@ import ch.autumo.beetroot.Constants;
  * WebSocket configuration, read from the beetRoot configuration.
  *
  * <p>
- * The WebSocket facility is a general framework feature. It is only active
- * outside a servlet container and only if {@code websocket_enabled=yes}.
+ * The WebSocket facility is a general framework feature. It is active if
+ * {@code websocket_enabled=yes} and a WebSocket transport is available: the
+ * standalone server uses the NanoHTTPD transport, a servlet container uses the
+ * Jakarta WebSocket API.
  * </p>
  */
 public final class WebSocketConfig {
@@ -53,9 +55,10 @@ public final class WebSocketConfig {
 	private final int maxMessageSize;
 	private final boolean originCheck;
 	private final Set<String> allowedOrigins;
+	private final int socketPort;
 
 	private WebSocketConfig(boolean enabled, String path, int timeout, int pingInterval,
-			int maxConnections, int maxMessageSize, boolean originCheck, Set<String> allowedOrigins) {
+			int maxConnections, int maxMessageSize, boolean originCheck, Set<String> allowedOrigins, int socketPort) {
 		this.enabled = enabled;
 		this.path = path;
 		this.timeout = timeout;
@@ -64,6 +67,7 @@ public final class WebSocketConfig {
 		this.maxMessageSize = maxMessageSize;
 		this.originCheck = originCheck;
 		this.allowedOrigins = Collections.unmodifiableSet(allowedOrigins);
+		this.socketPort = socketPort;
 	}
 
 	/**
@@ -74,8 +78,7 @@ public final class WebSocketConfig {
 	public static WebSocketConfig load() {
 		final BeetRootConfigurationManager cfg = BeetRootConfigurationManager.getInstance();
 
-		final boolean enabled = cfg.getYesOrNo(Constants.KEY_WEBSOCKET_ENABLED, Constants.NO)
-				&& !cfg.runsWithinServletContext();
+		final boolean enabled = cfg.getYesOrNo(Constants.KEY_WEBSOCKET_ENABLED, Constants.NO);
 
 		String path = cfg.getString(Constants.KEY_WEBSOCKET_PATH, DEFAULT_PATH);
 		if (path == null || path.trim().length() == 0) {
@@ -88,6 +91,11 @@ public final class WebSocketConfig {
 		}
 		if (path.length() > 1 && path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
+		}
+
+		int socketPort = cfg.getInt(Constants.KEY_WEBSOCKET_PORT, -1);
+		if (socketPort < 0) {
+			socketPort = cfg.getInt(Constants.KEY_WS_PORT, 8778);
 		}
 
 		int timeout = cfg.getInt(Constants.KEY_WEBSOCKET_TIMEOUT, DEFAULT_TIMEOUT);
@@ -124,7 +132,7 @@ public final class WebSocketConfig {
 		}
 
 		return new WebSocketConfig(enabled, path, timeout, pingInterval, maxConnections,
-				maxMessageSize, originCheck, allowedOrigins);
+				maxMessageSize, originCheck, allowedOrigins, socketPort);
 	}
 
 	/**
@@ -134,6 +142,16 @@ public final class WebSocketConfig {
 	 */
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	/**
+	 * Is this configuration used inside a servlet container?
+	 *
+	 * @return true if the WebSocket transport is the container's Jakarta
+	 *         WebSocket implementation
+	 */
+	public boolean isServletTransport() {
+		return BeetRootConfigurationManager.getInstance().runsWithinServletContext();
 	}
 
 	/**
@@ -197,6 +215,15 @@ public final class WebSocketConfig {
 	 */
 	public Set<String> getAllowedOrigins() {
 		return allowedOrigins;
+	}
+
+	/**
+	 * Get the WebSocket server port.
+	 *
+	 * @return WebSocket port
+	 */
+	public int getSocketPort() {
+		return socketPort;
 	}
 
 }

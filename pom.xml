@@ -70,6 +70,7 @@
 		<version.jakarta.activation.api>2.1.4</version.jakarta.activation.api>
 		<version.jakarta.mail>2.0.2</version.jakarta.mail>
 		<version.jakarta.servlet.api>6.1.0</version.jakarta.servlet.api>
+		<version.jakarta.websocket.api>2.2.0</version.jakarta.websocket.api>
 		<version.javase>3.5.4</version.javase>
 		<version.json>20260814</version.json>
 		<version.jsoup>1.23.1</version.jsoup>
@@ -252,7 +253,7 @@
 			                <includeScope>compile</includeScope>
 			                <excludeScope>provided</excludeScope>
 							<outputDirectory>${basedir}/lib</outputDirectory>
-							<excludeArtifactIds>jakarta.servlet-api,javax.mail-api,jakarta.activation-api</excludeArtifactIds>
+							<excludeArtifactIds>jakarta.servlet-api,javax.mail-api,jakarta.activation-api,jakarta.websocket-api</excludeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>
@@ -518,6 +519,22 @@
 		    <groupId>jakarta.servlet</groupId>
 		    <artifactId>jakarta.servlet-api</artifactId>
 		    <version>${version.jakarta.servlet.api}</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<!-- Jakarta WebSocket API -->
+
+		<dependency>
+		    <groupId>jakarta.websocket</groupId>
+		    <artifactId>jakarta.websocket-api</artifactId>
+		    <version>${version.jakarta.websocket.api}</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>jakarta.websocket</groupId>
+		    <artifactId>jakarta.websocket-client-api</artifactId>
+		    <version>${version.jakarta.websocket.api}</version>
 		    <scope>provided</scope>
 		</dependency>
 

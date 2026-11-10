@@ -86,7 +86,7 @@ The out-of-box log tail action is a good reference:
 
 ## Protocol
 
-A single endpoint is used (see `websocket_path` below). The client starts an
+A single endpoint is used (see `websocket_path` and `websocket_port` below). The client starts an
 action by sending its action path:
 
 ```JSON
@@ -127,8 +127,11 @@ automatically when the connection is closed.
 - The connection limit (`websocket_max_connections`) is enforced with
   `503 Service Unavailable`.
 
-WebSocket runs over the existing web port; with HTTPS enabled it automatically
-uses `wss://` as well.
+### Transport and ports
+
+- **Standalone server (NanoHTTPD)**: WebSocket runs over the existing web server port (`ws_port` / `websocket_port` fallback) and the configured `websocket_path`; with HTTPS enabled it automatically uses `wss://`.
+- **Servlet container (Jakarta WebSocket)**: When beetRoot runs inside a servlet container, the same WebSocket actions/protocol are exposed through the container's Jakarta WebSocket API on `websocket_path`.
+- **Distributed deployments** (web application served by a servlet container, WebSocket server on a separate standalone beetRoot server): the browser must connect to the beetRoot WebSocket server port. Use `websocket_port` to configure this port explicitly (if not set, `ws_port` is used). In this case HTTP/UI and WebSocket endpoints run on different ports/hosts as configured.
 
 <br>
 
@@ -143,9 +146,7 @@ uses `wss://` as well.
 - Every connection blocks one thread in the NanoHTTPD thread pool; keep
   `websocket_max_connections` reasonable.
 
-**Note**: The WebSocket facility is not available when beetRoot runs inside a
-servlet container (web archive), because the underlying NanoHTTPD interceptor
-is not involved in that mode. The configuration is ignored there.
+In servlet containers the transport is provided by the Jakarta WebSocket endpoint integration; the action layer, protocol and session handling remain the same as in standalone mode. WebSocket connections are closed when their user session ends.
 
 <br>
 
@@ -157,6 +158,7 @@ All keys are located in the `Websockets` section of `cfg/beetroot.cfg`:
 |---|---|---|
 | `websocket_enabled` | `yes` | Enable the WebSocket endpoint. |
 | `websocket_path` | `/ws` | Endpoint path. |
+| `websocket_port` | (falls back to `ws_port`, default `8778`) | WebSocket server port. Relevant for distributed deployments where the browser must connect to the beetRoot WebSocket server on a different port than the HTTP/UI server; if not set, `ws_port` is used. |
 | `websocket_timeout` | `0` | Socket timeout of upgraded connections in seconds; `0` disables the timeout. Independent of `connection_timeout`. |
 | `websocket_ping_interval` | `30` | Server heartbeat in seconds; `0` disables pings. |
 | `websocket_max_connections` | `200` | Maximum number of concurrent connections. |
@@ -179,6 +181,7 @@ dispatches its messages to callbacks:
 ```JavaScript
 	var live = BeetRootWS.subscribe({
 		path: '/ws',                       // endpoint, default '/ws'
+		port: 8778,                        // optional: WebSocket server port (e.g. websocket_port in distributed deployments)
 		action: '/system/log/tail',        // action path from 'cfg/routing.xml'
 		onSnapshot: function (data) {},    // {"type":"snapshot","data":[...]}
 		onEvent: function (data) {},       // {"type":"event","data":...}
@@ -204,9 +207,21 @@ exponential backoff. The status callback receives:
 | `giveup` | Reconnect limit reached. |
 | `unsupported` | Browser has no WebSocket support. |
 
+For fallback handling when a connection cannot be established or gives up reconnecting, the module also provides a reusable countdown helper:
+
+```JavaScript
+	var fallback = BeetRootWS.startFallbackCountdown({
+		seconds: 60,
+		onTick: function (remaining) {
+			// update UI, e.g. "Refresh <remaining>s"
+		}
+	});
+	// fallback.stop(); fallback.getRemaining();
+```
+
 The log page `web/html/blocks/script_log.html` uses this module for its live
-tail and falls back to periodic reloads if WebSockets are disabled or
-unavailable.
+tail and falls back to periodic reloads with a visible countdown if WebSockets
+are disabled or unavailable.
 
 <br>
 <br>

@@ -216,6 +216,16 @@ public class SessionManager {
 	}
 
 	/**
+	 * Find a session by external session ID (token).
+	 *
+	 * @param token the external session ID/token
+	 * @return the session or null if not found
+	 */
+	public Session findByExternalSessionId(String token) {
+		return sessions.get(token);
+	}
+
+	/**
 	 * Destroy session, though not deleted in storage file!
 	 * 
 	 * @param token token to destroy

@@ -288,7 +288,7 @@ public abstract class BaseHandler extends DefaultHandler implements Handler {
 		// IF section handler
 		ish = new IfSectionHandler(this);
 
-		servletName = BeetRootConfigurationManager.getInstance().getString("web_html_ref_pre_url_part");
+		servletName = BeetRootConfigurationManager.getInstance().getServletUrlPrefix();
 		if (servletName != null && servletName.length() != 0) {
 			insertServletNameInTemplateRefs = true;
 			pattern_href_rev = Pattern.compile("href=\\\"/"+servletName+"http");

@@ -25,7 +25,7 @@ The following template variables are always parsed and you can use them as often
 - `{$userlink}` : Link to user profile
 - `{$title}` : Page title (within add, edit, view and list)
 - `{$serverName}` : Server name, taken from `server_name` in `cfg/beetroot.cfg` (default `beetRoot`)
-- `{$servletName}` : Servlet context path with a leading `/`, taken from `web_html_ref_pre_url_part`; empty if that key is not set
+- `{$servletName}` : Servlet context path with a leading `/`, taken from `web_html_ref_pre_url_part`; only filled inside a servlet container and empty otherwise (the configured value is ignored in standalone mode)
 - `{$id}` : Obfuscated object id (within add, edit and view)
 - `{$dbid}` : Real database id (within add, edit and view); cannot be used to access entities per URL!
 - `{$csrfToken}` : CSRF token

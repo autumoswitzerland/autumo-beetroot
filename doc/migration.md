@@ -17,12 +17,14 @@ In general, you should always save your changes/customizations in the following 
 - Update `cfg/routing.xml`: add the `<WebSocket>` element if you want to use
   the live log tail (`/system/log/tail`)
 - Add the WebSocket section of `cfg/beetroot.cfg` with the keys
-  `websocket_enabled`, `websocket_path`, `websocket_timeout`,
-  `websocket_ping_interval`, `websocket_max_connections`,
-  `websocket_max_message_size`, `websocket_origin_check` and
-  `websocket_allowed_origins`
-- Note that WebSockets are only available in standalone mode, not inside a
-  servlet container
+  `websocket_enabled`, `websocket_path`, `websocket_port`,
+  `websocket_timeout`, `websocket_ping_interval`,
+  `websocket_max_connections`, `websocket_max_message_size`,
+  `websocket_origin_check` and `websocket_allowed_origins`
+- WebSockets are available in standalone mode (NanoHTTPD transport) and inside
+  servlet containers (Jakarta WebSocket transport). In distributed deployments
+  set `websocket_port` to the beetRoot WebSocket server port if it differs from
+  the HTTP/UI port.
 - If you customized the design tokens, move them from
   `web/css/uncompressed/style.css` into `web/css/default.css` (light theme) or
   into your own `theme-<name>.css`; `style.min.css` is regenerated from
