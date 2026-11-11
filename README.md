@@ -1,36 +1,12 @@
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/autumoswitzerland/autumo-beetroot.svg?style=for-the-badge
-[contributors-url]: https://github.com/autumoswitzerland/autumo-beetroot/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/autumoswitzerland/autumo-beetroot.svg?style=for-the-badge
-[forks-url]: https://github.com/autumoswitzerland/autumo-beetroot/network/members
-[stars-shield]: https://img.shields.io/github/stars/autumoswitzerland/autumo-beetroot.svg?style=for-the-badge
-[stars-url]: https://github.com/autumoswitzerland/autumo-beetroot/stargazers
-[issues-shield]: https://img.shields.io/github/issues/autumoswitzerland/autumo-beetroot.svg?style=for-the-badge
-[issues-url]: https://github.com/autumoswitzerland/autumo-beetroot/issues
-[license-shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge
-[license-url]: https://opensource.org/licenses/Apache-2.0
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://www.linkedin.com/company/autumo
 [video-url]: https://youtu.be/X2_FVYiMnIE
 
 <div id="top"></div>
 
-
-
-<!-- PROJECT SHIELDS -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-<!-- PROJECT LOGO -->
-<br>
 <div align="center">
+
+  <!-- PROJECT LOGO -->
   <a href="https://github.com/autumoswitzerland/autumo-beetroot">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png">
@@ -39,15 +15,23 @@
     </picture>
   </a>
 
-<h1 align="center">autumo beetRoot</h1>
+  <h1 align="center">autumo beetRoot</h1>
 
-  <p align="center">
-    A Slim & Rapid Java Web Framework
-    <br>
-    <a href="https://github.com/autumoswitzerland/autumo-beetroot/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/autumoswitzerland/autumo-beetroot/issues">Request Feature</a>
-  </p>
+  A Slim & Rapid Java Web Framework
+
+  <!-- PROJECT SHIELDS -->
+  <img src="https://img.shields.io/github/contributors/autumoswitzerland/autumo-beetroot">
+  <img src="https://img.shields.io/github/forks/autumoswitzerland/autumo-beetroot">
+  <img src="https://img.shields.io/github/stars/autumoswitzerland/autumo-beetroot">
+  <img src="https://img.shields.io/github/issues/autumoswitzerland/autumo-beetroot">
+  <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg">
+  <a href="https://www.linkedin.com/company/autumo"><img src="https://img.shields.io/badge/-LinkedIn-black.svg?logo=linkedin&colorB=555"></a>
+
+  <br><br>
+  <a href="https://github.com/autumoswitzerland/autumo-beetroot/issues">Report Bug</a>
+  ·
+  <a href="https://github.com/autumoswitzerland/autumo-beetroot/issues">Request Feature</a>
+
 </div>
 
 
