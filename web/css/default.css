@@ -183,6 +183,11 @@ footer {
 	}
 }
 
+
+/**
+ * Login/Logout page specific adjustments (only affects .log-container) - beetRoot
+ */
+
 legend.login {
 	color: #ffefbe;
 	border-bottom: 2px solid #ac9f81;
@@ -194,7 +199,6 @@ label.login {
 a.login {
 	color: #07b;
 }
-
 .container.clearfix .log-container {
 	align-items: center;
 }
@@ -210,17 +214,26 @@ a.login {
 	width: 100%;
 	margin-top: 28px;
 	margin-bottom: 56px;
+	row-gap: 24px;
+	align-items: stretch;
+}
+.log-container-2 > .log-left button {
+	margin: 0;
+	margin-bottom: -16px;
+}
+.log-container-2 > .log-left fieldset {
+	margin: 0;
+	width: 100%;
 }
 .log-container-2 > .log-left,
 .log-container-2 > .log-right {
 	float: none;
 	min-width: 400px;
+	min-height: 400px;
 	flex: 1 1 400px;
+	align-self: stretch;
+	box-sizing: border-box;
 }
-.log-container-2 > .log-right {
-    padding-top: 36px;
-}
-
 .log-container legend {
 	background-color: transparent !important;
 }
@@ -231,9 +244,8 @@ a.login {
 	opacity: 0.5;
 }
 .log-info-box {
+	margin: auto 0;
 	text-align: center;
-	padding: 24px 12px 24px 12px;
-	margin-right: 20px;
 	border: 0px solid #444444;
 	border-radius: 8px;
 	font-weight: lighter;
@@ -250,9 +262,209 @@ a.login {
 .log-info-box a:hover, .log-info-box a:focus {
 	color: #ffffff !important;
 }
-.log-info-box img {
-	margin-top: 12px;
-	width: 274px;
-	filter: hue-rotate(80deg) saturate(1) contrast(1);
-	opacity: 0.5;
+.log-container .log-container-2 {
+	align-items: stretch;
+	row-gap: 24px;
+}
+.log-container .log-left,
+.log-container .log-right {
+	align-self: stretch;
+	box-sizing: border-box;
+}
+.log-container .log-left {
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+	border: 1px solid rgba(255, 140, 66, 0.35);
+	border-radius: 24px;
+	padding: 32px 12px;
+	margin: 0 24px;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(
+		rgba(60, 30, 15, 0.28),
+		rgba(60, 30, 15, 0.52)
+	);
+}
+.log-container .log-right {
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+	border: 1px solid rgba(200, 70, 140, 0.25);
+	border-radius: 24px;
+	padding: 32px 0;
+	margin: 0 24px;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(
+		rgba(40, 20, 60, 0.24),
+		rgba(40, 20, 60, 0.48)
+	);
+}
+.log-container .log-left form,
+.log-container .log-left fieldset {
+	width: 100%;
+	box-sizing: border-box;
+}
+.log-container legend.login {
+	font-size: 1.4rem;
+	font-weight: 400;
+	padding-bottom: 6px;
+	margin-bottom: 18px;
+	letter-spacing: 0.02em;
+	color: #ffefbe;
+	border-bottom: 2px solid rgba(255, 175, 101, 0.6);
+}
+.log-container label.login {
+	margin-bottom: 6px;
+	font-weight: 400;
+	color: #cccccc;
+}
+.log-container .log-left .input input,
+.log-container .log-left input[type="text"],
+.log-container .log-left input[type="password"] {
+	opacity: 0.7;
+	width: 100%;
+	box-sizing: border-box;
+	background-color: rgba(255, 140, 66, 0.1) !important;
+	border-color: rgba(255, 140, 66, 0.45) !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.log-container .log-left input:focus {
+	border-color: #ff8c42 !important;
+	box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.22);
+	outline: none;
+}
+.log-container .strength_wrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.log-container .strength_wrapper .strength_input {
+	flex: 1 1 auto;
+}
+.log-container .button_strength {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: rgba(255, 140, 66, 0.18);
+	border: 1px solid rgba(255, 140, 66, 0.55);
+	color: #ffaf65;
+	font-size: 0.9rem;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.log-container .button_strength:hover,
+.log-container .button_strength:focus {
+	background: rgba(255, 140, 66, 0.28);
+	color: #ffffff;
+	border-color: rgba(255, 175, 101, 0.75);
+	text-decoration: none;
+}
+.log-container a.login {
+	display: inline-block;
+	margin-top: 4px;
+	margin-bottom: 12px;
+	color: #b87739;
+	transition: color 0.2s ease;
+}
+.log-container a.login:hover,
+.log-container a.login:focus {
+	color: #ffffff;
+}
+.log-container .log-left button[type="submit"] {
+	margin-top: 8px;
+	width: 100%;
+	padding: 10px 16px;
+	border-radius: 10px;
+	background: linear-gradient(90deg, rgba(255, 140, 66, 0.48), rgba(200, 70, 140, 0.32));
+	border: 1px solid rgba(255, 175, 101, 0.85);
+	color: #ffffff;
+	font-size: 1.4rem;
+	font-weight: 500;
+	text-shadow: 0 1px 12px rgba(255, 140, 66, 0.28);
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.log-container .log-left button[type="submit"]:hover,
+.log-container .log-left button[type="submit"]:focus {
+	background: linear-gradient(90deg, rgba(255, 140, 66, 0.6), rgba(200, 70, 140, 0.42));
+	border-color: rgba(255, 210, 170, 0.95);
+	color: #ffffff;
+	box-shadow: 0 4px 18px rgba(255, 140, 66, 0.32), 0 0 0 1px rgba(200, 70, 140, 0.25);
+	filter: brightness(1.06);
+}
+.log-container .log-info-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+	padding: 24px 12px;
+	margin-right: 20px;
+	width: 100%;
+	text-align: center;
+}
+.log-container .log-info-box p {
+	font-size: 1.4rem;
+	font-weight: lighter;
+	margin: 0;
+	width: 100%;
+	max-width: 340px;
+	text-align: center;
+}
+.log-container .log-info-box a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	padding: 10px 16px;
+	border-radius: 10px;
+	background: rgba(200, 70, 140, 0.18);
+	border: 1px solid rgba(200, 70, 140, 0.5);
+	color: #f2a3c7;
+	text-decoration: none;
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.log-container .log-info-box a:hover,
+.log-container .log-info-box a:focus {
+	background: rgba(200, 70, 140, 0.32);
+	color: #ffffff;
+	border-color: rgba(230, 120, 170, 0.8);
+	box-shadow: 0 4px 18px rgba(200, 70, 140, 0.28);
+	text-decoration: none;
+}
+.log-container .log-info-box img {
+	width: 256px;
+	filter: hue-rotate(90deg) saturate(1.0) contrast(1) drop-shadow(0 4px 18px rgba(200, 70, 140, 0.18));
+	opacity: 0.7;
+	margin-bottom: 12px;
+}
+.log-container .login-info-box {
+	padding: 24px 12px;
+	margin-right: 20px;
+	width: 100%;
+	min-height: 200px;
+}
+.log-container .log-left h3 {
+	padding-left: 24px;
+	margin: 0;
+}
+.log-container .log-left h3 a {
+	color: #ffaf65;
+}
+.log-container .log-left h3 a:hover,
+.log-container .log-left h3 a:focus {
+	color: #ffffff;
+}
+@media (max-width: 900px) {
+	.log-container .log-left,
+	.log-container .log-right {
+		min-width: 100%;
+		flex: 1 1 100%;
+		margin: 12px 0;
+	}
+
+	.log-container .log-container-2 {
+		row-gap: 18px;
+	}
 }
