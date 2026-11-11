@@ -22,9 +22,10 @@
   <!-- PROJECT SHIELDS -->
   <img src="https://img.shields.io/badge/version-3.4.0-FFD54F">
   <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg">
-  <img src="https://img.shields.io/badge/Java-21-orange">
+  <img src="https://img.shields.io/badge/Java-17-orange">
   <img src="https://img.shields.io/github/contributors/autumoswitzerland/autumo-beetroot">
   <img src="https://img.shields.io/github/issues/autumoswitzerland/autumo-beetroot">
+  <br>
   <img src="https://img.shields.io/github/forks/autumoswitzerland/autumo-beetroot">
   <img src="https://img.shields.io/github/stars/autumoswitzerland/autumo-beetroot">
 
@@ -32,6 +33,7 @@
   <a href="https://github.com/autumoswitzerland/autumo-beetroot/issues">Report Bug</a>
   ·
   <a href="https://github.com/autumoswitzerland/autumo-beetroot/issues">Request Feature</a>
+  <br><br>
 
 </div>
 
