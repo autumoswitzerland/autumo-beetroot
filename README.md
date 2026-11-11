@@ -32,7 +32,11 @@
 <br>
 <div align="center">
   <a href="https://github.com/autumoswitzerland/autumo-beetroot">
-    <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png" alt="Logo" width="256" height="256" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png">
+      <img src="https://raw.githubusercontent.com/autumoswitzerland/autumo-beetroot/master/web/img/beetroot.png" alt="Logo" width="256" height="256" />
+    </picture>
   </a>
 
 <h1 align="center">autumo beetRoot</h1>
