@@ -129,7 +129,7 @@ automatically when the connection is closed.
 
 ### Transport and ports
 
-- **Standalone server (NanoHTTPD)**: WebSocket runs over the existing web server port (`ws_port` / `websocket_port` fallback) and the configured `websocket_path`; with HTTPS enabled it automatically uses `wss://`.
+- **Standalone server (NanoHTTPD)**: WebSocket runs over the existing web server port (`websocket_port` / `ws_port` fallback) and the configured `websocket_path`; with HTTPS enabled it automatically uses `wss://`.
 - **Servlet container (Jakarta WebSocket)**: When beetRoot runs inside a servlet container, the same WebSocket actions/protocol are exposed through the container's Jakarta WebSocket API on `websocket_path`.
 - **Distributed deployments** (web application served by a servlet container, WebSocket server on a separate standalone beetRoot server): the browser must connect to the beetRoot WebSocket server port. Use `websocket_port` to configure this port explicitly (if not set, `ws_port` is used). In this case HTTP/UI and WebSocket endpoints run on different ports/hosts as configured.
 
