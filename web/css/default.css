@@ -331,6 +331,23 @@ a.login {
 	box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.22);
 	outline: none;
 }
+/* Browser autofill (Chrome/Edge): the browser paints its own pale background
+   and the :focus rule above would remove the inset shadow that hides it.
+   The opaque colour matches the translucent field colour over the panel
+   gradient (the field is rendered with opacity 0.7). */
+.log-container .log-left input:-webkit-autofill,
+.log-container .log-left input:-webkit-autofill:hover,
+.log-container .log-left input:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--input-fg, #e2e6ea);
+	caret-color: var(--input-fg, #e2e6ea);
+	box-shadow: 0 0 0 1000px #503a2f inset;
+	-webkit-box-shadow: 0 0 0 1000px #503a2f inset;
+	transition: border-color 0.2s ease;
+}
+.log-container .log-left input:-webkit-autofill:focus {
+	box-shadow: 0 0 0 1000px #503a2f inset, 0 0 0 2px rgba(255, 140, 66, 0.22);
+	-webkit-box-shadow: 0 0 0 1000px #503a2f inset, 0 0 0 2px rgba(255, 140, 66, 0.22);
+}
 .log-container .strength_wrapper {
 	display: flex;
 	align-items: center;
