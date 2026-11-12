@@ -4,7 +4,7 @@
 
 **© 2026 [autumo GmbH](https://autumo.ch)**
 Date: 2026-10-26
-Version 3.2.0
+Version 3.4.0
 
 ## Libraries
 
@@ -96,6 +96,39 @@ Version 3.2.0
 | License | Apache License, Version 2.0 |
 | License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
 
+**Apache HttpComponents (core, client, async-client)**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/search?q=g:org.apache.httpcomponents |
+| Homepage | https://hc.apache.org/index.html |
+| Description | The Apache HttpComponents project is responsible for creating and maintaining a toolset of low level Java components focused on HTTP and associated protocols. |
+| License (short) | Apache 2.0 |
+| License | Apache License, Version 2.0 |
+| License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
+
+**Apache HttpComponents HttpClient**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/org.apache.httpcomponents/httpclient |
+| Homepage | https://hc.apache.org/httpcomponents-client |
+| Description | Apache HttpComponents Client |
+| License (short) | Apache 2.0 |
+| License | Apache License, Version 2.0 |
+| License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
+
+**Apache HttpComponents HttpCore**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/org.apache.httpcomponents/httpcore |
+| Homepage | https://hc.apache.org/httpcomponents-core-ga |
+| Description | Apache HttpComponents Core |
+| License (short) | Apache 2.0 |
+| License | Apache License, Version 2.0 |
+| License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
+
 **Apache Log4j API**
 
 | Field | Value |
@@ -140,17 +173,6 @@ Version 3.2.0
 | License | Apache License, Version 2.0 |
 | License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
 
-**Apache HttpComponents (core, client, async-client)**
-
-| Field | Value |
-|-------|-------|
-| Maven | https://search.maven.org/search?q=g:org.apache.httpcomponents |
-| Homepage | https://hc.apache.org/index.html |
-| Description | The Apache HttpComponents project is responsible for creating and maintaining a toolset of low level Java components focused on HTTP and associated protocols. |
-| License (short) | Apache 2.0 |
-| License | Apache License, Version 2.0 |
-| License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
-
 **Bouncy Castle Provider**
 
 | Field | Value |
@@ -184,6 +206,17 @@ Version 3.2.0
 | License | The Apache Software License, Version 2.0 |
 | License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
 
+**H2 Database Engine**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/com.h2database/h2 |
+| Homepage | https://h2database.com |
+| Description | A fast SQL database that can run embedded or a server mode with support for transactions, encryption, full search, etc. Storage can be disk-based or in-memory. |
+| License (short) | EPL 1.0 |
+| License | MPL 2.0 or EPL 1.0 |
+| License link | https://h2database.com/html/license.html |
+
 **HikariCP**
 
 | Field | Value |
@@ -195,16 +228,16 @@ Version 3.2.0
 | License | The Apache Software License, Version 2.0 |
 | License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
 
-**Java Advanced Imaging Image I/O Tools API core (standalone)**
+**Jakarta Activation API**
 
 | Field | Value |
 |-------|-------|
-| Maven | https://search.maven.org/artifact/com.github.jai-imageio/jai-imageio-core |
-| Homepage | https://github.com/jai-imageio/jai-imageio-core |
-| Description | Java Advanced Imaging Image I/O Tools API core, but without the classes involved with javax.media.jai dependencies, JPEG2000 or codecLibJIIO, meaning that this library can be distributed under the modified BSD license and should be GPL compatible. |
-| License (short) | BSD 3-clause |
-| License | The BSD 3-Clause License |
-| License link | https://github.com/jai-imageio/jai-imageio-core/blob/master/LICENSE.txt |
+| Maven | https://search.maven.org/artifact/jakarta.activation/jakarta.activation-api |
+| Homepage | https://jakarta.ee/specifications/activation/ |
+| Description | Jakarta Activation API |
+| License (short) | EPL 2.0 |
+| License | Eclipse Public License v. 2.0 |
+| License link | https://www.eclipse.org/legal/epl-2.0/ |
 
 **Jakarta Mail API**
 
@@ -217,6 +250,17 @@ Version 3.2.0
 | License | Eclipse Public License v2.0, GNU General Public License 2.0 with Classpath Exception, Eclipse Distribution License - v 1.0 |
 | License link | http://www.eclipse.org/legal/epl-2.0, https://projects.eclipse.org/license/secondary-gpl-2.0-cp, http://www.eclipse.org/org/documents/edl-v10.php |
 
+**Jakarta Mail API**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/com.sun.mail/jakarta.mail |
+| Homepage | https://jakarta.ee/specifications/mail/ |
+| Description | Jakarta Mail API implementation |
+| License (short) | EPL 2.0 |
+| License | Eclipse Public License v. 2.0 |
+| License link | https://www.eclipse.org/legal/epl-2.0/ |
+
 **Jakarta Servlet API**
 
 | Field | Value |
@@ -227,6 +271,39 @@ Version 3.2.0
 | License (short) | EPL 2.0, GPL2 w/ CPE |
 | License | Eclipse Public License v2.0, GNU General Public License 2.0 with Classpath Exception, |
 | License link | http://www.eclipse.org/legal/epl-2.0, https://www.gnu.org/software/classpath/license.html |
+
+**Jakarta WebSocket API**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/jakarta.websocket/jakarta.websocket-api |
+| Homepage | https://jakarta.ee/specifications/websocket/ |
+| Description | Jakarta WebSocket API |
+| License (short) | EPL 2.0 |
+| License | Eclipse Public License v. 2.0 |
+| License link | https://www.eclipse.org/legal/epl-2.0/ |
+
+**Jakarta WebSocket Client API**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/jakarta.websocket/jakarta.websocket-client-api |
+| Homepage | https://jakarta.ee/specifications/websocket/ |
+| Description | Jakarta WebSocket Client API |
+| License (short) | EPL 2.0 |
+| License | Eclipse Public License v. 2.0 |
+| License link | https://www.eclipse.org/legal/epl-2.0/ |
+
+**Java Advanced Imaging Image I/O Tools API core (standalone)**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/com.github.jai-imageio/jai-imageio-core |
+| Homepage | https://github.com/jai-imageio/jai-imageio-core |
+| Description | Java Advanced Imaging Image I/O Tools API core, but without the classes involved with javax.media.jai dependencies, JPEG2000 or codecLibJIIO, meaning that this library can be distributed under the modified BSD license and should be GPL compatible. |
+| License (short) | BSD 3-clause |
+| License | The BSD 3-Clause License |
+| License link | https://github.com/jai-imageio/jai-imageio-core/blob/master/LICENSE.txt |
 
 **JColor**
 
@@ -246,6 +323,39 @@ Version 3.2.0
 | Maven | https://search.maven.org/artifact/com.beust/jcommander |
 | Homepage | https://jcommander.org |
 | Description | Command line parsing library for Java |
+| License (short) | Apache 2.0 |
+| License | Apache License, Version 2.0 |
+| License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
+
+**JJWT API**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/io.jsonwebtoken/jjwt-api |
+| Homepage | https://github.com/jwtk/jjwt |
+| Description | JJWT aims to be the easiest to use and understand library for creating and verifying JSON Web Tokens (JWTs) on the JVM and Android. |
+| License (short) | Apache 2.0 |
+| License | Apache License, Version 2.0 |
+| License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
+
+**JJWT Extension for Jackson**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/io.jsonwebtoken/jjwt-jackson |
+| Homepage | https://github.com/jwtk/jjwt |
+| Description | JJWT extension for the Faster XML farmework.. |
+| License (short) | Apache 2.0 |
+| License | Apache License, Version 2.0 |
+| License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
+
+**JJWT Implementation**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/io.jsonwebtoken/jjwt-impl |
+| Homepage | https://github.com/jwtk/jjwt |
+| Description | JJWT aims to be the easiest to use and understand library for creating and verifying JSON Web Tokens (JWTs) on the JVM and Android. |
 | License (short) | Apache 2.0 |
 | License | Apache License, Version 2.0 |
 | License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
@@ -272,38 +382,38 @@ Version 3.2.0
 | License | The MIT License |
 | License link | https://jsoup.org/license |
 
-**JJWT API**
+**Log4j SLF4J2 Binding**
 
 | Field | Value |
 |-------|-------|
-| Maven | https://search.maven.org/artifact/io.jsonwebtoken/jjwt-api |
-| Homepage | https://github.com/jwtk/jjwt |
-| Description | JJWT aims to be the easiest to use and understand library for creating and verifying JSON Web Tokens (JWTs) on the JVM and Android. |
+| Maven | https://search.maven.org/artifact/org.apache.logging.log4j/log4j-slf4j2-impl |
+| Homepage | https://logging.apache.org/log4j/2.x/ |
+| Description | Apache Log4j SLF4J 2.0 Binding |
 | License (short) | Apache 2.0 |
 | License | Apache License, Version 2.0 |
-| License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
+| License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
 
-**JJWT Implementation**
+**MariaDB Java Client**
 
 | Field | Value |
 |-------|-------|
-| Maven | https://search.maven.org/artifact/io.jsonwebtoken/jjwt-impl |
-| Homepage | https://github.com/jwtk/jjwt |
-| Description | JJWT aims to be the easiest to use and understand library for creating and verifying JSON Web Tokens (JWTs) on the JVM and Android. |
-| License (short) | Apache 2.0 |
-| License | Apache License, Version 2.0 |
-| License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
+| Maven | https://search.maven.org/artifact/org.mariadb.jdbc/mariadb-java-client |
+| Homepage | https://mariadb.com/kb/en/mariadb/about-mariadb-connector-j/ |
+| Description | JDBC driver for MariaDB and MySQL |
+| License (short) | LGPL 2.1 |
+| License | LGPL-2.1 |
+| License link | - |
 
-**JJWT Extension for Jackson**
+**NanoHTTPD WebSocket**
 
 | Field | Value |
 |-------|-------|
-| Maven | https://search.maven.org/artifact/io.jsonwebtoken/jjwt-jackson |
-| Homepage | https://github.com/jwtk/jjwt |
-| Description | JJWT extension for the Faster XML farmework.. |
-| License (short) | Apache 2.0 |
-| License | Apache License, Version 2.0 |
-| License link | http://www.apache.org/licenses/LICENSE-2.0.txt |
+| Maven | https://search.maven.org/artifact/org.nanohttpd/nanohttpd-websocket |
+| Homepage | https://github.com/NanoHttpd/nanohttpd |
+| Description | NanoHTTPD WebSocket extension |
+| License (short) | BSD 3-Clause |
+| License | BSD 3-Clause License |
+| License link | https://github.com/NanoHttpd/nanohttpd/blob/master/LICENSE.md |
 
 **NanoHTTPD – a tiny web server in Java**
 
@@ -326,6 +436,17 @@ Version 3.2.0
 | License (short) | Apache 2.0 |
 | License | Apache 2 |
 | License link | http://www.apache.org/licenses/LICENSE-2.0.txt, http://www.gnu.org/licenses/lgpl-3.0.txt |
+
+**PostgreSQL JDBC Driver**
+
+| Field | Value |
+|-------|-------|
+| Maven | https://search.maven.org/artifact/org.postgresql/postgresql |
+| Homepage | https://jdbc.postgresql.org |
+| Description | PostgreSQL JDBC Driver Postgresql |
+| License (short) | BSD 2-clause |
+| License | BSD-2-Clause |
+| License link | https://jdbc.postgresql.org/about/license.html |
 
 **Spring Security Crypto**
 
@@ -403,40 +524,3 @@ Version 3.2.0
 | License (short) | Apache 2.0 |
 | License | The Apache Software License, Version 2.0 |
 | License link | https://www.apache.org/licenses/LICENSE-2.0.txt |
-
-**H2 Database Engine**
-
-| Field | Value |
-|-------|-------|
-| Maven | https://search.maven.org/artifact/com.h2database/h2 |
-| Homepage | https://h2database.com |
-| Description | A fast SQL database that can run embedded or a server mode with support for transactions, encryption, full search, etc. Storage can be disk-based or in-memory. |
-| License (short) | EPL 1.0 |
-| License | MPL 2.0 or EPL 1.0 |
-| License link | https://h2database.com/html/license.html |
-
-**MariaDB Java Client**
-
-| Field | Value |
-|-------|-------|
-| Maven | https://search.maven.org/artifact/org.mariadb.jdbc/mariadb-java-client |
-| Homepage | https://mariadb.com/kb/en/mariadb/about-mariadb-connector-j/ |
-| Description | JDBC driver for MariaDB and MySQL |
-| License (short) | LGPL 2.1 |
-| License | LGPL-2.1 |
-| License link | - |
-
-**PostgreSQL JDBC Driver**
-
-| Field | Value |
-|-------|-------|
-| Maven | https://search.maven.org/artifact/org.postgresql/postgresql |
-| Homepage | https://jdbc.postgresql.org |
-| Description | PostgreSQL JDBC Driver Postgresql |
-| License (short) | BSD 2-clause |
-| License | BSD-2-Clause |
-| License link | https://jdbc.postgresql.org/about/license.html |
-
-**Notes:**
-
-- All generic licenses of the third-party-software above can be found in the directory &bdquo;etc/licenses&rdquo;.
